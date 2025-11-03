@@ -1,0 +1,43 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "openapi": "rm -rf src/api && openapi-generator-cli generate -i http://localhost:9000/docs -g typescript-axios -o src/api --additional-properties withSeparateModelsAndApi=true,supportsES6=true,useSingleRequestParameter=true,apiPackage=api,modelPackage=models --skip-validate-spec",
+    "openapi:playout": "pnpm tsx ../../s-openapi.ts https://dev-streaming.gviet.vn:8783/api/playout/api-docs-json ./src/schemas/playoutApi.json"
+  },
+  "dependencies": {
+    "@antfu/utils": "^0.7.7",
+    "@element-plus/icons-vue": "^2.3.1",
+    "@element-plus/nuxt": "^1.0.8",
+    "@nuxtjs/sitemap": "^7.2.10",
+    "@nuxtjs/tailwindcss": "^6.11.4",
+    "@tanstack/vue-query": "^5.28.9",
+    "axios": "^1.6.8",
+    "boxicons": "^2.1.4",
+    "chart.js": "^4.4.4",
+    "embla-carousel-autoplay": "^8.1.3",
+    "embla-carousel-vue": "^8.1.3",
+    "nuxt": "^3.11.1",
+    "swiper": "^11.2.6",
+    "vue": "^3.4.21",
+    "vue-router": "^4.3.0"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.6.0",
+    "@unocss/nuxt": "^0.59.4",
+    "@vue-macros/nuxt": "^1.9.33",
+    "@vueuse/core": "^10.9.0",
+    "@vueuse/nuxt": "^10.9.0",
+    "autoprefixer": "^10.4.19",
+    "openapi-typescript": "^6.7.5",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "tsx": "^4.7.1"
+  }
+}
