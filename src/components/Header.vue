@@ -25,7 +25,7 @@ const mainMenuItems = [
     { name: 'Video', path: '/video' },
     { name: 'Tour and Prices', path: '/tour', hasSubmenu: true },
     { name: 'News', path: '/news' },
-    { name: 'Booking guide', path: '/booking-guide' },
+    { name: 'Booking guide', path: '/booking' },
     { name: 'Contact us', path: '/contact' },
     { name: 'Links', path: '/links' },
 ]

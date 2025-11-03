@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useHead({
-  title: 'Bapw Design'
+  title: 'Motobike Tours'
 })
 </script>
 

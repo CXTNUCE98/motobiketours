@@ -1,80 +1,36 @@
-<script setup lang="ts">
-import Facebook from "@/public/social_facebook.png"
-import Instagram from "@/public/social_instagram.png"
-
-const footerLinks = {
-    'Trang': [
-        { label: 'Trang chủ', path: '/' },
-        { label: 'Bộ sưu tập', path: '/collections' },
-        { label: 'Dịch vụ', path: '/service' },
-        { label: 'Về chúng tôi', path: '/about' }
-    ],
-    'Bộ sưu tập': [
-        { label: 'Bộ sưu tập 1', path: '/bst1' },
-        { label: 'Bộ sưu tập 2', path: '/bst2' },
-        { label: 'Bộ sưu tập 3', path: '/bst3' },
-        { label: 'Bộ sưu tập 4', path: '/bst4' }
-    ],
-    'Liên hệ': [
-        { label: 'Vinhome Smartcity', path: 'mailto:info@bdesign.com' },
-        { label: 'bdesign@gmail.com', path: 'bdesign@gmail.com' },
-        { label: '0961717906', path: '0961717906' }
-    ]
-};
-
-const socialLinks = [
-    { icon: 'facebook', path: Facebook, redirect: 'https://www.facebook.com/talafanMU' },
-    { icon: 'instagram', path: Instagram, redirect: 'https://www.instagram.com/thuongg149/' },
-    // { icon: 'twitter', path: 'https://twitter.com', }
-];
+<script setup>
 </script>
 
 <template>
-    <footer class="mt-24 pt-16 pb-8 border-t-1 border-#C9C9C9 ">
+    <footer class="border-t-1 border-#555 bg-#333 text-#eee max-w-6xl mx-auto">
         <div class="container mx-auto px-4">
-            <!-- Main Footer Content -->
-            <div class="flex flex-col mb-66px justify-center gap-0 md:(justify-start flex-row gap-8)">
-                <!-- Brand Section -->
-                <div class="grow-2 text-center max-w-393px md:text-left pb-100px">
-                    <NuxtLink to="/" class="text-40px font-bold flex gap-2 md:justify-start justify-center items-end playfair-display text-#292F36">
-                        <img src="@/public/logo.png" class="pb-3 h-48px" />                        
-                    </NuxtLink>
-
-                    <p class="text-gray-600 mb-6 text-22px md:px-0 px-2">
-                        Thiết kế theo yêu cầu, định hình phong cách của bạn
-                    </p>
-                    <div class="flex gap-54px space-x-4 md:justify-start justify-center">
-                        <a v-for="social in socialLinks" :key="social.icon" :href="social.redirect" target="_blank"
-                            rel="noopener noreferrer" class="text-gray-600 hover:text-black transition-colors">
-                            <img :src="social.path" alt="social">
-                            <!-- <span class="sr-only">{{ social.icon }}</span> -->
-                            <!-- <i :class="'fab fa-' + social.icon"></i> -->
-                        </a>
-                    </div>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between py-18px gap-16px">
+                <!-- Left: copyright -->
+                <div class="text-12px leading-relaxed md:text-14px">
+                    <p>Copyright 2015 Vietnam, Hoi An, Danang Motorcycle Adventures. Quang Easy Rider</p>
+                    <p>Powered by <a href="https://web360.com.vn" target="_blank" rel="noopener noreferrer"
+                            class="text-#f4a21a hover:underline">Web360</a></p>
                 </div>
 
-                <!-- Footer Links -->
-                <template v-for="(links, title) in footerLinks" :key="title">
-                    <div class="grow-1 md:(block text-left) flex flex-col items-center text-center pb-30px" :class="{'grow-2' :title === 'Liên hệ'}">
-                        <h4 class="font-500 mb-24px text-25px playfair-display">{{ title }}</h4>
-                        <ul class="">
-                            <li v-for="link in links" :key="link.path" class="pb-24px">
-                                <NuxtLink :to="link.path"
-                                    class="text-#4D5053 text-22px font-400 hover:text-black transition-colors">
-                                    {{ link.label }}
-                                </NuxtLink>
-                            </li>
-                        </ul>
+                <!-- Right: logo + contact -->
+                <div class="flex items-start md:items-center gap-12px md:gap-16px self-end md:self-auto">
+                    <img src="../public/motobike_footer.png" alt="Quang Easy Rider"
+                        class="w-100% w-auto hidden md:block">
+
+                    <div class="grid grid-cols-[auto,1fr] gap-x-10px gap-y-6px text-12px md:text-14px">
+                        <span class="text-#f4a21a">Mobile</span>
+                        <span>(+84)0903579094 (Mr Quang)</span>
+
+                        <span class="text-#f4a21a">Email</span>
+                        <span>vietnammotorbikegroup@gmail.com</span>
+
+                        <span class="text-#f4a21a">Website</span>
+                        <span>
+                            <a href="http://www.danangmotorbiketours.com" target="_blank" rel="noopener noreferrer"
+                                class="hover:underline">www.danangmotorbiketours.com</a>
+                        </span>
                     </div>
-                </template>
-
-            </div>
-
-            <!-- Copyright -->
-            <div class="border-t border-gray-200 pt-8">
-                <p class="text-center text-gray-600 text-sm">
-                    © {{ new Date().getFullYear() }} B Design. All rights reserved.
-                </p>
+                </div>
             </div>
         </div>
     </footer>
@@ -83,19 +39,5 @@ const socialLinks = [
 <style scoped>
 .container {
     max-width: 1152px;
-}
-
-/* Smooth transitions */
-.transition-colors {
-    transition-property: color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    transition-duration: 300ms;
-}
-
-.playfair-display {
-    font-family: "Playfair Display", serif;
-    font-optical-sizing: auto;
-    font-weight: 500;
-    font-style: normal;
 }
 </style>
