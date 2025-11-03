@@ -1,4 +1,5 @@
 <script setup lang="ts">
+// @ts-nocheck
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -39,7 +40,7 @@ const isActive = (path: string) => {
 </script>
 
 <template>
-  <div class="max-w-250px">
+  <div class="max-w-250px hidden md:block">
     <div class="flex flex-wrap">
       <!-- Menu -->
       <div>

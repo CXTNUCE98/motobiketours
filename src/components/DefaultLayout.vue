@@ -5,9 +5,9 @@ import Sidebar from './Sidebar.vue'
 <template>
     <Header />
     <div class="pt-2">
-        <div class="max-w-6xl mx-auto flex">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row px-4 md:px-0">
             <Sidebar />
-            <div class="DetailC pl-2 w-full">
+            <div class="DetailC md:pl-2 w-full">
                 <slot />
             </div>
         </div>
