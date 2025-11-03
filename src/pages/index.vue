@@ -1,8 +1,25 @@
-<script setup>
+<script setup lang="ts">
+
+const router = useRouter();
+function navigateToNews(id: string) {
+    router.push(`/news/${id}`);
+}
 </script>
 
 <template>
     <div>
+        <div class="text-22px font-bold text-#FF0042">NEWS</div>
+        <p class="text-17px font-bold text-#1B7CCE">These attractions, tourism in Da Nang</p>
+        <div class="pl-35px">
+            <p class="font-italic">By Quang Easyrider</p>
+            <div class="font-semibold">Referring to tourism can not forget to Da Nang since it not only natural but also
+                by imposing the
+                typical architecture, unique and hospitable spirit of the people of the coastal city.
+            </div>
+            <div class="flex justify-end cursor-pointer">
+                <div @click="navigateToNews('2134')" class="text-17px font-bold text-#02964C">More details>></div>
+            </div>
+        </div>
         <div><span style="font-size:24px"><strong>ABOUT ME</strong></span><br>
             <br>
             My name’s Quang. I have over 20 years as a guide for the tour minibus-car-motorbike. With many years of
@@ -36,68 +53,45 @@
             So please come and visit us about our tours and...DO IT !<br>
             &nbsp;
         </div>
+        <div class="flex flex-col md:flex-row gap-4 pb-2">
+            <div class="w-full md:w-[60%]">
+                <img class="pb-2 w-full" src="../public/gallery.jpg" alt="gallery">
+                <div class="grid grid-cols-2 gap-2">
+                    <img class="w-full object-cover" src="../public/h-1.jpg" alt="h_1">
+                    <img class="w-full object-cover" src="../public/h-2.jpg" alt="h_2">
+                    <img class="w-full object-cover" src="../public/h-3.jpg" alt="h_3">
+                    <img class="w-full object-cover" src="../public/h-4.jpg" alt="h_4">
+                </div>
+            </div>
+            <div class="w-full md:w-[40%] md:min-w-[300px]">
+                <img class="w-full pb-2" src="../public/yellow_back.png" alt="yellow_back">
+                <div class="flex flex-col gap-2">
+                    <div>
+                        <p class="text-[#02964C] text-[20px] font-bold">CONTACT</p>
+                        <p class="font-semibold text-center mt-4 italic">QUANG EASYRIDER</p>
+                        <div class="space-y-2 font-semibold">
+                            <div class="flex gap-2">
+                                <label class="min-w-[70px]">Website :</label>
+                                <p class="text-[#1B7CCE]">danangmotorbiketours.com</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <label class="min-w-[70px]">Email :</label>
+                                <p>vietnammotorbikegroup@gmail.com</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <label class="min-w-[70px]">Tel :</label>
+                                <p>(+84)0903.579094 (Mr Quang)</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <label class="min-w-[70px]">Add :</label>
+                                <p>14 Nguyen Thi Thap St, Thanh Khe Pistris, Danang City, Vietnam</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
-<style scoped>
-.honey-img {
-    height: 690px;
-    width: 474px;
-    overflow: hidden;
-}
-
-.vertical-text {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    transform: rotate(180deg);
-    white-space: nowrap;
-    font-family: Arial, sans-serif;
-    font-size: 51px;
-    color: #E6E6E6;
-    font-weight: bold;
-}
-
-/* Hiệu ứng đếm số */
-.odometer-animation {
-    display: inline-block;
-    position: relative;
-}
-
-.odometer-animation span {
-    font-size: 16px;
-    vertical-align: super;
-    opacity: 0.8;
-}
-
-/* CSS cơ bản */
-.container {
-    max-width: 1136px;
-}
-
-/* Smooth transitions */
-.transition-all {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Media queries */
-@media (max-width: 768px) {
-    .odometer-animation {
-        font-size: 65px;
-    }
-}
-
-.dm-serif {
-    font-family: "DM Serif Display", serif;
-    font-weight: 400;
-    font-style: normal;
-}
-
-.playfair-display {
-    font-family: "Playfair Display", serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-}
-
-/* Sidebar menu styles moved to Sidebar component */
-</style>
+<style scoped></style>

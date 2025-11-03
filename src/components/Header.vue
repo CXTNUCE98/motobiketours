@@ -125,7 +125,7 @@ onBeforeUnmount(() => {
                             'flex items-center gap-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium transition-all duration-200',
                             isActive(item.path)
                                 ? 'text-[#FFFF00]'
-                                : 'text-white hover:bg-#c7b6b680'
+                                : 'text-white hover:bg-[#c7b6b680]'
                         ]">
                             <span class="text-xs md:text-sm">▸</span>
                             <span>{{ item.name }}</span>
