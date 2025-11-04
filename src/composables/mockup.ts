@@ -37,3 +37,39 @@ export const photos = [
     { id: 'mytho', title: 'Mỹ Tho', src: [Mytho1, Mytho2, Mytho3] },
     { id: 'hotel', title: 'Hotel', src: [Hotel1, Hotel2, Hotel3] },
 ]
+
+// Simple mock videos list. Thumbnails re-use existing photos assets
+export const videos = [
+    {
+        id: 'riding-hue-night',
+        title: 'Riding through Huế at Night',
+        thumbnail: Hotel1,
+        date: '07.07.2015 10:00',
+        excerpt: 'Nightlife in Huế is dazzling – hop on and enjoy the cool breeze.',
+        youtubeId: 'jq2pn8b6q-A',
+    },
+    {
+        id: 'phu-quoc-island',
+        title: "Phú Quốc Island - Việt Nam's Largest Island",
+        thumbnail: Mytho1,
+        date: '07.07.2015 10:05',
+        excerpt: 'Crystal beaches, pepper farms, and sun-kissed rides along the coast.',
+        youtubeId: 'YQ8DNkV4PBo',
+    },
+    {
+        id: 'cu-chi-tunnels',
+        title: 'Explore Củ Chi Tunnels by Moto',
+        thumbnail: Cuchi,
+        date: '27.07.2015 03:35',
+        excerpt: 'A historic route into the countryside and the famous tunnel system.',
+        youtubeId: 'U1usrHw-GvI',
+    },
+    {
+        id: 'my-son-sanctuary',
+        title: 'My Sơn Sanctuary Morning Ride',
+        thumbnail: Myson,
+        date: '27.07.2015 03:47',
+        excerpt: 'Ancient towers, green hills, and a peaceful sunrise ride.',
+        youtubeId: '9zCLK3u9V70',
+    },
+]
