@@ -10,6 +10,7 @@ useHead({
     <DefaultLayout>
       <NuxtPage />
     </DefaultLayout>
+    <Notification />
   </NuxtLayout>
 </template>
 
