@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useRoute } from 'vue-router'
 const currentSlide = ref(0)
 const isHovering = ref(false)
 
@@ -82,10 +84,10 @@ const prevSlide = () => {
 }
 
 // Auto-play (optional)
-let autoPlayInterval: NodeJS.Timeout | null = null
+let autoPlayInterval: ReturnType<typeof setInterval> | null = null
 
 // Keyboard navigation
-const handleKeyDown = (event: KeyboardEvent) => {
+const handleKeyDown = (event: any) => {
     if (event.key === 'ArrowLeft') {
         prevSlide()
     } else if (event.key === 'ArrowRight') {
@@ -100,14 +102,14 @@ onMounted(() => {
         }
     }, 5000)
 
-    window.addEventListener('keydown', handleKeyDown)
+    globalThis.addEventListener('keydown', handleKeyDown)
 })
 
 onBeforeUnmount(() => {
     if (autoPlayInterval) {
         clearInterval(autoPlayInterval)
     }
-    window.removeEventListener('keydown', handleKeyDown)
+    globalThis.removeEventListener('keydown', handleKeyDown)
 })
 </script>
 
@@ -218,7 +220,7 @@ onBeforeUnmount(() => {
                     <div v-for="(slide, index) in slides" :key="index" class="absolute inset-0 w-full h-full"
                         :style="{ left: `${index * 100}%` }">
                         <img :src="slide.image" :alt="`Slide ${index + 1}`" class="w-full h-full object-cover"
-                            @error="(e: any) => { e.target.style.display = 'none' }" />
+                            @error="(e) => { e.target.style.display = 'none' }" />
                     </div>
                 </div>
 

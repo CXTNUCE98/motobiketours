@@ -981,3 +981,69 @@ I finished my journey in the&nbsp;Mekong Delta&nbsp;which somehow felt like comi
 </div>    </div>`,
   },
 ];
+
+// Mock tours and prices used by Tour pages
+export type Tour = {
+  id: string;
+  title: string;
+  duration: string; // e.g. "5 days and 4 nights"
+  routes: string;
+  type: string;
+  priceUsd?: number | string; // undefined means "Call"
+  thumbnail: string;
+  departFrom: string; // e.g. "Sai Gon"
+};
+
+export const tours: Tour[] = [
+  {
+    id: 'sm6-sg-hcmc-central-highland-mui-ne',
+    title: 'TOUR SM6: SAI GON - HO CHI MINH TRAIL - CENTRAL HIGHLAND - MUI NE',
+    duration: '5 days and 4 nights',
+    routes: 'Dai Ninh mountain pass, Hw 27, Hw 14 (Ho Chi Minh trail)',
+    type: 'saigon motorbikes, saigon motorbike tours, easy rider saigon',
+    priceUsd: 'Liên hệ',
+    thumbnail: Mytho2,
+    departFrom: 'Sai Gon',
+  },
+  {
+    id: 'sm4-sg-hcmc-central-highland-nha-trang',
+    title: 'TOUR SM4: SAI GON - HO CHI MINH TRAIL - CENTRAL HIGHLAND - NHA TRANG',
+    duration: '4 days and 3 nights',
+    routes: 'Hw 26, Hw 27, Hw 14 (HCM trail)',
+    type: 'Saigon motorbikes, saigon motorbike tours, easy rider saigon',
+    priceUsd: 'Liên hệ',
+    thumbnail: Rungsu1,
+    departFrom: 'Sai Gon',
+  },
+  {
+    id: 'srg3-sg-mekong-delta-rach-gia',
+    title: 'TOUR SRG3: SAI GON - MEKONG DELTA - RACH GIA',
+    duration: '3 days and 2 nights',
+    routes: 'Sai Gon - Ben Tre - Can Tho - Rach Gia',
+    type: 'Saigon motorbikes/ motorbike tours, easy rider saigon',
+    priceUsd: 'Liên hệ',
+    thumbnail: Mytho1,
+    departFrom: 'Sai Gon',
+  },
+  {
+    id: 'shn14-sg-central-highland-hcmc-trail-ha-noi',
+    title: 'TOUR SHN14: SAI GON - CENTRAL HIGHLAND - HO CHI MINH TRAIL - HA NOI',
+    duration: '14 days and 13 nights',
+    routes:
+      'Sai Gon - Dong Xoai - Dakmil - Lak lake - Pleiku - Kon Tum - Kham Duc - Hoi An - Hue - DMZ - Phong Nha cave - Nghe An - Thanh Hoa - Hoa Binh - Ha Noi',
+    type: 'Saigon motorbikes/ motorbike tours, easy rider saigon',
+    priceUsd: 'Liên hệ',
+    thumbnail: Rungsu3,
+    departFrom: 'Sai Gon',
+  },
+  {
+    id: 'mn2-mui-ne-sand-dunes-phan-thiet',
+    title: 'TOUR MN2: MUI NE - RED & WHITE SAND DUNES - PHAN THIET',
+    duration: '2 days and 1 night',
+    routes: 'Mui Ne - Red Sand Dunes - White Sand Dunes - Phan Thiet - Mui Ne',
+    type: 'Mui Ne day trips, sand dunes, coastal ride',
+    priceUsd: 'Liên hệ',
+    thumbnail: Mytho3,
+    departFrom: 'Mui Ne',
+  },
+];
