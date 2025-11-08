@@ -40,131 +40,76 @@ const isActive = (path: string) => {
 </script>
 
 <template>
-  <div class="max-w-250px hidden md:block">
-    <div class="flex flex-wrap">
-      <!-- Menu -->
-      <div>
-        <nav class="side-menu w-full">
-          <ul class="menu-root">
-            <li
-              v-for="(item, index) in mainMenuItems"
-              :key="index"
-              :class="[ 'relative', isActive(item.path) ? 'is-active' : '' , item.hasSubmenu ? 'has-sub' : '' ]"
-              @mouseenter="item.hasSubmenu ? (isTourMenuOpen = true) : null"
-              @mouseleave="item.hasSubmenu ? (isTourMenuOpen = false) : null"
-            >
-              <NuxtLink :to="item.hasSubmenu ? '#' : item.path">
-                {{ item.name }}
-              </NuxtLink>
-              <ul v-if="item.hasSubmenu && isTourMenuOpen" class="submenu">
-                <li v-for="(tour, tIndex) in tourMenu" :key="tIndex">
-                  <NuxtLink :to="tour.path" :class="[ route.path === tour.path ? 'bg-#6b7d47' : '' ]">{{ tour.name }}</NuxtLink>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </nav>
-      </div>
+  <div class="hidden lg:block w-80 space-y-6">
+    <!-- Navigation Menu -->
+    <div class="bg-white rounded-xl shadow-soft p-6">
+      <h3 class="font-display font-bold text-lg text-secondary-800 mb-4">Navigation</h3>
+      <nav>
+        <ul class="space-y-1">
+          <li
+            v-for="(item, index) in mainMenuItems"
+            :key="index"
+            class="relative"
+            @mouseenter="item.hasSubmenu ? (isTourMenuOpen = true) : null"
+            @mouseleave="item.hasSubmenu ? (isTourMenuOpen = false) : null"
+          >
+            <NuxtLink :to="item.hasSubmenu ? '#' : item.path" :class="[
+              'flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200',
+              isActive(item.path)
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-secondary-700 hover:bg-gray-50 hover:text-primary-600'
+            ]">
+              <span>{{ item.name }}</span>
+              <i v-if="item.hasSubmenu" class='bx bx-chevron-right text-sm'></i>
+            </NuxtLink>
+            <ul v-if="item.hasSubmenu && isTourMenuOpen" class="mt-1 ml-4 space-y-1">
+              <li v-for="(tour, tIndex) in tourMenu" :key="tIndex">
+                <NuxtLink :to="tour.path" :class="[
+                  'flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all duration-200',
+                  route.path === tour.path 
+                    ? 'bg-primary-50 text-primary-600 font-medium' 
+                    : 'text-secondary-600 hover:bg-gray-50 hover:text-primary-600'
+                ]">
+                  <i class='bx bx-map-pin text-xs'></i>
+                  <span>{{ tour.name }}</span>
+                </NuxtLink>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
 
-      <div>
-        <img src="/tripadvisor.png" alt="tripadvisor" class="w-full">
-      </div>
+    <!-- TripAdvisor Badge -->
+    <div class="bg-white rounded-xl shadow-soft p-6">
+      <img src="/tripadvisor.png" alt="TripAdvisor" class="w-full h-auto">
+    </div>
 
-      <!-- Page facebook -->
-      <div class="w-full">
-        <iframe
-          src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fquangmotorbiketours&tabs=timeline&width=500&height=450&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
-          width="500" height="120" class="w-full border-none overflow-hidden max-w-full"
-        />
-      </div>
+    <!-- Facebook Page -->
+    <div class="bg-white rounded-xl shadow-soft p-6">
+      <h3 class="font-display font-bold text-lg text-secondary-800 mb-4">Follow Us</h3>
+      <iframe
+        src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fquangmotorbiketours&tabs=timeline&width=300&height=200&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+        width="100%" height="200" class="border-none overflow-hidden rounded-lg"
+      />
+    </div>
 
-      <div class="text-center w-full p-2 bg-gray-100 text-#b1282e font-bold">
-        VIET NAM MAP
+    <!-- Vietnam Map -->
+    <div class="bg-white rounded-xl shadow-soft overflow-hidden">
+      <div class="bg-gradient-to-r from-primary-500 to-adventure-500 text-white text-center py-3 px-4">
+        <h3 class="font-display font-bold text-sm uppercase tracking-wider">Vietnam Map</h3>
       </div>
-      <!-- Map -->
       <iframe
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7865151.0039991485!2d100.60649716662665!3d15.729659658322086!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31157a4d736a1e5f%3A0xb03bb0c9e2fe62be!2zVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1762162784619!5m2!1svi!2s"
-        width="250" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+        width="100%" height="350" style="border:0;" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade"
       />
     </div>
   </div>
-  
 </template>
 
 <style scoped>
-/* Sidebar menu */
-.side-menu {
-  width: 100%;
-}
-
-.side-menu .menu-root {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  background: #00743c;
-  color: #fff;
-  width: 250px;
-}
-
-.side-menu .menu-root > li {
-  position: relative;
-}
-
-.side-menu .menu-root > li > a {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  padding: 10px 16px 10px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.side-menu .menu-root > li > a::before {
-  content: "\2022";
-  display: inline-block;
-  margin-right: 10px;
-}
-
-.side-menu .menu-root > li:hover > a,
-.side-menu .menu-root > li.is-active > a {
-  background: #198c4d;
-}
-
-.side-menu .has-sub > .submenu {
-  display: none;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: 260px;
-  background: #00743c;
-  z-index: 10;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.side-menu .has-sub:hover > .submenu {
-  display: block;
-}
-
-.side-menu .submenu > li > a {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  padding: 10px 16px 10px 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.side-menu .submenu > li > a::before {
-  content: "\203A";
-  display: inline-block;
-  margin-right: 10px;
-}
-
-.side-menu .submenu > li > a:hover {
-  background: #198c4d;
-}
+/* No additional styles needed with Tailwind */
 </style>
 
 

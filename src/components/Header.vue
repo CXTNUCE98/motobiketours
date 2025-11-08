@@ -114,36 +114,48 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <!-- Menu bar -->
-    <nav class="bg-[#02964c] w-full max-w-6xl mx-auto relative z-50">
-        <div class="container mx-auto px-4">
+    <!-- Modern Navigation Bar -->
+    <nav class="bg-white shadow-md w-full sticky top-0 z-50 border-b border-gray-100">
+        <div class="container mx-auto px-4 max-w-7xl">
             <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center justify-center">
-                <ul class="flex items-center gap-0 flex-wrap justify-center">
+            <div class="hidden lg:flex items-center justify-between py-4">
+                <!-- Logo -->
+                <NuxtLink to="/" class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-adventure-500 rounded-lg flex items-center justify-center">
+                        <i class='bx bx-trip text-white text-2xl'></i>
+                    </div>
+                    <div>
+                        <div class="font-display font-bold text-xl text-secondary-800">Vietnam Adventures</div>
+                        <div class="text-xs text-secondary-500">Motorbike Tours</div>
+                    </div>
+                </NuxtLink>
+
+                <!-- Main Navigation -->
+                <ul class="flex items-center gap-1">
                     <li v-for="(item, index) in mainMenuItems" :key="index" class="relative group"
                         @mouseenter="item.hasSubmenu ? openTourMenu() : null"
                         @mouseleave="item.hasSubmenu ? closeTourMenu() : null">
                         <NuxtLink :to="item.hasSubmenu ? '#' : item.path" :class="[
-                            'flex items-center gap-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium transition-all duration-200',
+                            'flex items-center gap-1 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg',
                             isActive(item.path)
-                                ? 'text-[#FFFF00]'
-                                : 'text-white hover:bg-[#c7b6b680]'
+                                ? 'text-primary-600 bg-primary-50'
+                                : 'text-secondary-700 hover:text-primary-600 hover:bg-gray-50'
                         ]">
-                            <span class="text-xs md:text-sm">▸</span>
                             <span>{{ item.name }}</span>
+                            <i v-if="item.hasSubmenu" class='bx bx-chevron-down text-sm transition-transform group-hover:rotate-180'></i>
                         </NuxtLink>
 
                         <!-- Submenu for Tour and Prices -->
                         <div v-if="item.hasSubmenu && isTourMenuOpen"
-                            class="absolute left-0 top-full bg-[#02964c] min-w-[200px] shadow-lg z-50 mt-0"
+                            class="absolute left-0 top-full bg-white min-w-[220px] shadow-lg rounded-lg mt-2 border border-gray-100 overflow-hidden"
                             @mouseenter="openTourMenu()" @mouseleave="closeTourMenu()">
                             <ul class="py-2">
                                 <li v-for="(tour, tourIndex) in tourMenu" :key="tourIndex">
                                     <NuxtLink :to="tour.path" :class="[
-                                        'flex items-center gap-1 px-4 py-2 text-sm md:text-base text-[#FFFF00] hover:bg-[#6b7d47] transition-all duration-200',
-                                        route.path === tour.path ? 'bg-[#6b7d47]' : ''
+                                        'flex items-center gap-2 px-4 py-2.5 text-sm text-secondary-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-200',
+                                        route.path === tour.path ? 'bg-primary-50 text-primary-600 font-medium' : ''
                                     ]">
-                                        <span class="text-xs">▸</span>
+                                        <i class='bx bx-map-pin text-xs'></i>
                                         <span>{{ tour.name }}</span>
                                     </NuxtLink>
                                 </li>
@@ -154,118 +166,131 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Mobile Menu -->
-            <div class="md:hidden">
-                <button @click="toggleMobileMenu"
-                    class="w-full flex items-center justify-between px-4 py-3 text-white font-medium">
-                    <span class="flex items-center gap-1">
-                        <span class="text-xs">▸</span>
-                        <span>Menu</span>
-                    </span>
-                    <svg class="w-5 h-5 transition-transform duration-200" :class="{ 'rotate-180': isMobileMenuOpen }"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-
-                <transition name="slide-down">
-                    <div v-if="isMobileMenuOpen" class="bg-[#027a3d]">
-                        <ul class="py-2">
-                            <li v-for="(item, index) in mainMenuItems" :key="index">
-                                <NuxtLink :to="item.path" @click="closeMobileMenu" :class="[
-                                    'flex items-center gap-1 px-4 py-2 text-sm text-white hover:bg-[#6b7d47] hover:text-[#FFFF00] transition-all duration-200',
-                                    isActive(item.path) ? 'bg-[#6b7d47] text-[#FFFF00]' : ''
-                                ]">
-                                    <span class="text-xs">▸</span>
-                                    <span>{{ item.name }}</span>
-                                </NuxtLink>
-
-                                <!-- Tour submenu items on mobile -->
-                                <div v-if="item.hasSubmenu && isActive(item.path)" class="bg-[#025d2e] pl-8">
-                                    <ul>
-                                        <li v-for="(tour, tourIndex) in tourMenu" :key="tourIndex">
-                                            <NuxtLink :to="tour.path" @click="closeMobileMenu" :class="[
-                                                'flex items-center gap-1 px-4 py-2 text-sm text-[#FFFF00] hover:bg-[#6b7d47] transition-all duration-200',
-                                                route.path === tour.path ? 'bg-[#6b7d47]' : ''
-                                            ]">
-                                                <span class="text-xs">▸</span>
-                                                <span>{{ tour.name }}</span>
-                                            </NuxtLink>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
+            <div class="lg:hidden flex items-center justify-between py-3">
+                <NuxtLink to="/" class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-adventure-500 rounded-lg flex items-center justify-center">
+                        <i class='bx bx-trip text-white text-xl'></i>
                     </div>
-                </transition>
+                    <div class="font-display font-bold text-lg text-secondary-800">Vietnam Adventures</div>
+                </NuxtLink>
+
+                <button @click="toggleMobileMenu" class="p-2 text-secondary-700 hover:bg-gray-100 rounded-lg">
+                    <i :class="isMobileMenuOpen ? 'bx bx-x' : 'bx bx-menu'" class="text-2xl"></i>
+                </button>
             </div>
+
+            <transition name="slide-down">
+                <div v-if="isMobileMenuOpen" class="lg:hidden pb-4 border-t border-gray-100 mt-2">
+                    <ul class="space-y-1 pt-2">
+                        <li v-for="(item, index) in mainMenuItems" :key="index">
+                            <NuxtLink :to="item.path" @click="closeMobileMenu" :class="[
+                                'flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200',
+                                isActive(item.path) ? 'bg-primary-50 text-primary-600' : 'text-secondary-700 hover:bg-gray-50'
+                            ]">
+                                <span>{{ item.name }}</span>
+                                <i v-if="item.hasSubmenu" class='bx bx-chevron-right text-sm'></i>
+                            </NuxtLink>
+
+                            <!-- Tour submenu items on mobile -->
+                            <div v-if="item.hasSubmenu && isActive(item.path)" class="ml-4 mt-1 space-y-1">
+                                <NuxtLink v-for="(tour, tourIndex) in tourMenu" :key="tourIndex" :to="tour.path" @click="closeMobileMenu" :class="[
+                                    'flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-all duration-200',
+                                    route.path === tour.path ? 'bg-primary-50 text-primary-600 font-medium' : 'text-secondary-600 hover:bg-gray-50'
+                                ]">
+                                    <i class='bx bx-map-pin text-xs'></i>
+                                    <span>{{ tour.name }}</span>
+                                </NuxtLink>
+                            </div>
+                        </li>
+                    </ul>
+                    <NuxtLink to="/contact" @click="closeMobileMenu" class="mt-4 block w-full px-6 py-3 bg-gradient-to-r from-primary-500 to-adventure-500 text-white font-semibold rounded-lg text-center hover:shadow-lg transition-all duration-200">
+                        Book Now
+                    </NuxtLink>
+                </div>
+            </transition>
         </div>
     </nav>
 
-    <header class="bg-[#202C3A] w-full max-w-6xl mx-auto">
-        <div class="container">
-            <div class="flex items-center justify-end">
-                <!-- Right side - Motorcycle image -->
-                <div class="flex-shrink-0 ml-8">
-                    <img src="/logo_bg.jpg" alt="Motorcycle" class="h-24 md:h-32 lg:h-40 object-contain" />
-                </div>
-            </div>
-        </div>
+    <!-- Hero Carousel Header -->
+    <header class="bg-secondary-900 w-full max-w-7xl mx-auto">
         <!-- Carousel -->
         <div class="relative w-full" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
             <!-- Main Image Container -->
-            <div class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
-                <!-- Slide Images -->
-                <div class="absolute inset-0 transition-transform duration-500 ease-in-out"
+            <div class="relative w-full h-[450px] md:h-[550px] lg:h-[650px] overflow-hidden">
+                <!-- Slide Images with Overlay -->
+                <div class="absolute inset-0 transition-transform duration-700 ease-in-out"
                     :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
                     <div v-for="(slide, index) in slides" :key="index" class="absolute inset-0 w-full h-full"
                         :style="{ left: `${index * 100}%` }">
                         <img :src="slide.image" :alt="`Slide ${index + 1}`" class="w-full h-full object-cover"
                             @error="(e) => { e.target.style.display = 'none' }" />
+                        <!-- Gradient Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                     </div>
                 </div>
 
-                <!-- Navigation Buttons (only visible on hover) -->
-                <button v-if="isHovering" @click="prevSlide"
-                    class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300"
+                <!-- Hero Content Overlay -->
+                <div class="absolute inset-0 flex items-center justify-center text-center px-4 z-10">
+                    <div class="max-w-4xl">
+                        <h1 class="font-display font-bold text-4xl md:text-5xl lg:text-6xl text-white mb-4 drop-shadow-lg">
+                            Discover Vietnam by Motorbike
+                        </h1>
+                        <p class="text-lg md:text-xl text-white/90 mb-8 drop-shadow-md">
+                            Authentic adventures through breathtaking landscapes and hidden gems
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <NuxtLink to="/tour" class="px-8 py-3.5 bg-gradient-to-r from-primary-500 to-adventure-500 text-white font-semibold rounded-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                Explore Tours
+                            </NuxtLink>
+                            <NuxtLink to="/contact" class="px-8 py-3.5 bg-white text-secondary-800 font-semibold rounded-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                                Contact Us
+                            </NuxtLink>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <button @click="prevSlide"
+                    class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 hover:opacity-100 group-hover:opacity-100"
                     aria-label="Previous slide">
-                    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
+                    <i class='bx bx-chevron-left text-3xl'></i>
                 </button>
 
-                <button v-if="isHovering" @click="nextSlide"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300"
+                <button @click="nextSlide"
+                    class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 hover:opacity-100 group-hover:opacity-100"
                     aria-label="Next slide">
-                    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
+                    <i class='bx bx-chevron-right text-3xl'></i>
                 </button>
             </div>
 
             <!-- Pagination Indicators -->
-            <div
-                class="absolute bottom-0 left-0 right-0 flex justify-center items-center gap-1.5 md:gap-2 py-4 bg-transparent flex-wrap px-4 w-full">
+            <div class="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-2 z-20">
                 <button v-for="(slide, index) in slides" :key="index" @click="goToSlide(index)" :class="[
-                    'min-w-[36px] md:min-w-[44px] h-9 md:h-11 px-2 md:px-3 text-sm md:text-base font-semibold transition-all duration-300 rounded-sm',
+                    'transition-all duration-300 rounded-full',
                     currentSlide === index
-                        ? 'bg-white text-[#202C3A] shadow-md scale-105'
-                        : 'box-color text-white hover:bg-[#2a3540] hover:scale-105'
-                ]">
-                    {{ index }}
+                        ? 'w-8 h-2 bg-white'
+                        : 'w-2 h-2 bg-white/50 hover:bg-white/75'
+                ]" :aria-label="`Go to slide ${index + 1}`">
                 </button>
             </div>
         </div>
     </header>
-    <!-- Depart from -->
-    <div
-        class="hidden md:flex justify-center items-center gap-2 md:gap-4 py-2 bg-[#02964c] relative max-w-6xl mx-auto text-white text-sm md:text-base font-semibold flex-wrap px-4">
-        <span>DEPART FROM:</span>
-        <NuxtLink v-for="(item, index) in tourMenu" :key="index" :to="item.path" :class="[
-            'px-2 md:px-3 transition-colors duration-200',
-            route.path === item.path ? 'text-[#FFFF00]' : 'text-white hover:text-[#FFFF00]'
-        ]">
-            {{ item.name }}
-        </NuxtLink>
+    
+    <!-- Depart From Section -->
+    <div class="bg-gradient-to-r from-primary-500 to-adventure-500 w-full max-w-7xl mx-auto">
+        <div class="container mx-auto px-4">
+            <div class="hidden md:flex justify-center items-center gap-2 py-4 text-#334155 text-sm font-medium flex-wrap">
+                <span class="font-semibold">DEPART FROM:</span>
+                <NuxtLink v-for="(item, index) in tourMenu" :key="index" :to="item.path" :class="[
+                    'px-3 py-1.5 rounded-lg transition-all duration-200',
+                    route.path === item.path 
+                        ? 'bg-white text-primary-600 font-semibold' 
+                        : 'hover:bg-white/20'
+                ]">
+                    {{ item.name }}
+                </NuxtLink>
+            </div>
+        </div>
     </div>
 </template>
 

@@ -4,10 +4,10 @@ import Sidebar from './Sidebar.vue'
 
 <template>
     <Header />
-    <div class="pt-2">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row px-4 md:px-0">
+    <div class="bg-gray-50 min-h-screen">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row px-4 py-8 gap-8">
             <Sidebar />
-            <div class="DetailC md:pl-2 w-full">
+            <div class="flex-1 bg-white rounded-lg shadow-soft p-6 lg:p-8">
                 <slot />
             </div>
         </div>
