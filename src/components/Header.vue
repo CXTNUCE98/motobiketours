@@ -114,8 +114,31 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+    <!-- Top Bar with Contact Info -->
+    <div class="bg-white border-b border-gray-200 w-full max-w-6xl mx-auto">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center text-sm">
+            <div class="flex items-center gap-4 text-gray-600">
+                <span class="font-semibold">HOTLINE:</span>
+                <a href="tel:+84903579094" class="text-[#FF6B35] font-bold hover:text-[#E91E63] transition-colors">
+                    +84 903 579 094
+                </a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="#" class="text-gray-500 hover:text-[#FF6B35] transition-colors">
+                    <i class="bx bxl-facebook-circle text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-500 hover:text-[#25D366] transition-colors">
+                    <i class="bx bxl-whatsapp text-xl"></i>
+                </a>
+                <a href="#" class="text-gray-500 hover:text-[#0088cc] transition-colors">
+                    <i class="bx bxl-telegram text-xl"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- Menu bar -->
-    <nav class="bg-[#02964c] w-full max-w-6xl mx-auto relative z-50">
+    <nav class="bg-white w-full max-w-6xl mx-auto relative z-50 shadow-md border-b-2 border-[#FF6B35]">
         <div class="container mx-auto px-4">
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center justify-center">
@@ -124,10 +147,10 @@ onBeforeUnmount(() => {
                         @mouseenter="item.hasSubmenu ? openTourMenu() : null"
                         @mouseleave="item.hasSubmenu ? closeTourMenu() : null">
                         <NuxtLink :to="item.hasSubmenu ? '#' : item.path" :class="[
-                            'flex items-center gap-1 px-3 md:px-4 py-2 md:py-3 text-sm md:text-base font-medium transition-all duration-200',
+                            'flex items-center gap-1 px-3 md:px-4 py-3 md:py-4 text-sm md:text-base font-semibold transition-all duration-300 relative',
                             isActive(item.path)
-                                ? 'text-[#FFFF00]'
-                                : 'text-white hover:bg-[#c7b6b680]'
+                                ? 'text-[#FF6B35] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-r after:from-[#FF6B35] after:to-[#E91E63]'
+                                : 'text-gray-700 hover:text-[#FF6B35]'
                         ]">
                             <span class="text-xs md:text-sm">▸</span>
                             <span>{{ item.name }}</span>
@@ -135,13 +158,13 @@ onBeforeUnmount(() => {
 
                         <!-- Submenu for Tour and Prices -->
                         <div v-if="item.hasSubmenu && isTourMenuOpen"
-                            class="absolute left-0 top-full bg-[#02964c] min-w-[200px] shadow-lg z-50 mt-0"
+                            class="absolute left-0 top-full bg-white min-w-[220px] shadow-2xl z-50 mt-0 border-t-2 border-[#FF6B35] rounded-b-lg"
                             @mouseenter="openTourMenu()" @mouseleave="closeTourMenu()">
                             <ul class="py-2">
                                 <li v-for="(tour, tourIndex) in tourMenu" :key="tourIndex">
                                     <NuxtLink :to="tour.path" :class="[
-                                        'flex items-center gap-1 px-4 py-2 text-sm md:text-base text-[#FFFF00] hover:bg-[#6b7d47] transition-all duration-200',
-                                        route.path === tour.path ? 'bg-[#6b7d47]' : ''
+                                        'flex items-center gap-2 px-4 py-3 text-sm md:text-base font-medium text-gray-700 hover:bg-gradient-to-r hover:from-[#FFF5F0] hover:to-[#FFE8E0] hover:text-[#FF6B35] transition-all duration-300',
+                                        route.path === tour.path ? 'bg-gradient-to-r from-[#FFF5F0] to-[#FFE8E0] text-[#FF6B35]' : ''
                                     ]">
                                         <span class="text-xs">▸</span>
                                         <span>{{ tour.name }}</span>
@@ -156,7 +179,7 @@ onBeforeUnmount(() => {
             <!-- Mobile Menu -->
             <div class="md:hidden">
                 <button @click="toggleMobileMenu"
-                    class="w-full flex items-center justify-between px-4 py-3 text-white font-medium">
+                    class="w-full flex items-center justify-between px-4 py-3 text-gray-700 font-medium">
                     <span class="flex items-center gap-1">
                         <span class="text-xs">▸</span>
                         <span>Menu</span>
@@ -168,24 +191,24 @@ onBeforeUnmount(() => {
                 </button>
 
                 <transition name="slide-down">
-                    <div v-if="isMobileMenuOpen" class="bg-[#027a3d]">
+                    <div v-if="isMobileMenuOpen" class="bg-gray-50">
                         <ul class="py-2">
                             <li v-for="(item, index) in mainMenuItems" :key="index">
                                 <NuxtLink :to="item.path" @click="closeMobileMenu" :class="[
-                                    'flex items-center gap-1 px-4 py-2 text-sm text-white hover:bg-[#6b7d47] hover:text-[#FFFF00] transition-all duration-200',
-                                    isActive(item.path) ? 'bg-[#6b7d47] text-[#FFFF00]' : ''
+                                    'flex items-center gap-1 px-4 py-3 text-sm text-gray-700 hover:bg-[#FFF5F0] hover:text-[#FF6B35] transition-all duration-300',
+                                    isActive(item.path) ? 'bg-[#FFF5F0] text-[#FF6B35] font-semibold' : ''
                                 ]">
                                     <span class="text-xs">▸</span>
                                     <span>{{ item.name }}</span>
                                 </NuxtLink>
 
                                 <!-- Tour submenu items on mobile -->
-                                <div v-if="item.hasSubmenu && isActive(item.path)" class="bg-[#025d2e] pl-8">
+                                <div v-if="item.hasSubmenu && isActive(item.path)" class="bg-white pl-8">
                                     <ul>
                                         <li v-for="(tour, tourIndex) in tourMenu" :key="tourIndex">
                                             <NuxtLink :to="tour.path" @click="closeMobileMenu" :class="[
-                                                'flex items-center gap-1 px-4 py-2 text-sm text-[#FFFF00] hover:bg-[#6b7d47] transition-all duration-200',
-                                                route.path === tour.path ? 'bg-[#6b7d47]' : ''
+                                                'flex items-center gap-1 px-4 py-2 text-sm text-gray-600 hover:bg-[#FFF5F0] hover:text-[#FF6B35] transition-all duration-300',
+                                                route.path === tour.path ? 'bg-[#FFF5F0] text-[#FF6B35]' : ''
                                             ]">
                                                 <span class="text-xs">▸</span>
                                                 <span>{{ tour.name }}</span>
@@ -201,27 +224,38 @@ onBeforeUnmount(() => {
         </div>
     </nav>
 
-    <header class="bg-[#202C3A] w-full max-w-6xl mx-auto">
-        <div class="container">
-            <div class="flex items-center justify-end">
-                <!-- Right side - Motorcycle image -->
-                <div class="flex-shrink-0 ml-8">
-                    <img src="/logo_bg.jpg" alt="Motorcycle" class="h-24 md:h-32 lg:h-40 object-contain" />
-                </div>
-            </div>
-        </div>
-        <!-- Carousel -->
+    <!-- Hero Carousel -->
+    <header class="relative w-full max-w-6xl mx-auto overflow-hidden">
         <div class="relative w-full" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
             <!-- Main Image Container -->
-            <div class="relative w-full h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden">
+            <div class="relative w-full h-[450px] md:h-[550px] lg:h-[650px] overflow-hidden">
                 <!-- Slide Images -->
-                <div class="absolute inset-0 transition-transform duration-500 ease-in-out"
+                <div class="absolute inset-0 transition-transform duration-700 ease-in-out"
                     :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
                     <div v-for="(slide, index) in slides" :key="index" class="absolute inset-0 w-full h-full"
                         :style="{ left: `${index * 100}%` }">
-                        <img :src="slide.image" :alt="`Slide ${index + 1}`" class="w-full h-full object-cover"
+                        <img :src="slide.image" :alt="`Slide ${index + 1}`" class="w-full h-full object-cover brightness-90"
                             @error="(e) => { e.target.style.display = 'none' }" />
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50"></div>
                     </div>
+                </div>
+
+                <!-- Hero Content Overlay -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-4">
+                    <h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-2xl">
+                        VIETNAM MOTORBIKE TOURS
+                    </h1>
+                    <p class="text-white text-lg md:text-xl lg:text-2xl mb-2 italic drop-shadow-lg">
+                        Khám phá vẻ đẹp vô tận của Việt Nam
+                    </p>
+                    <p class="text-white/90 text-base md:text-lg mb-8 drop-shadow-lg font-light italic">
+                        Discover the endless beauty of Vietnam
+                    </p>
+                    <NuxtLink to="/tour" 
+                        class="bg-gradient-to-r from-[#FF6B35] to-[#FF5722] hover:from-[#FF5722] hover:to-[#E91E63] text-white px-10 py-4 rounded-full font-bold text-lg shadow-2xl transform hover:scale-110 transition-all duration-300 uppercase tracking-wider">
+                        BOOK TOUR
+                    </NuxtLink>
                 </div>
 
                 <!-- Navigation Buttons (only visible on hover) -->
@@ -243,29 +277,32 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Pagination Indicators -->
-            <div
-                class="absolute bottom-0 left-0 right-0 flex justify-center items-center gap-1.5 md:gap-2 py-4 bg-transparent flex-wrap px-4 w-full">
+            <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-2 z-20">
                 <button v-for="(slide, index) in slides" :key="index" @click="goToSlide(index)" :class="[
-                    'min-w-[36px] md:min-w-[44px] h-9 md:h-11 px-2 md:px-3 text-sm md:text-base font-semibold transition-all duration-300 rounded-sm',
+                    'transition-all duration-300 rounded-full',
                     currentSlide === index
-                        ? 'bg-white text-[#202C3A] shadow-md scale-105'
-                        : 'box-color text-white hover:bg-[#2a3540] hover:scale-105'
+                        ? 'w-12 h-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63]'
+                        : 'w-3 h-3 bg-white/60 hover:bg-white'
                 ]">
-                    {{ index }}
                 </button>
             </div>
         </div>
     </header>
-    <!-- Depart from -->
-    <div
-        class="hidden md:flex justify-center items-center gap-2 md:gap-4 py-2 bg-[#02964c] relative max-w-6xl mx-auto text-white text-sm md:text-base font-semibold flex-wrap px-4">
-        <span>DEPART FROM:</span>
-        <NuxtLink v-for="(item, index) in tourMenu" :key="index" :to="item.path" :class="[
-            'px-2 md:px-3 transition-colors duration-200',
-            route.path === item.path ? 'text-[#FFFF00]' : 'text-white hover:text-[#FFFF00]'
-        ]">
-            {{ item.name }}
-        </NuxtLink>
+    <!-- Depart from - Quick Links -->
+    <div class="hidden md:block bg-white border-t border-gray-200 relative max-w-6xl mx-auto shadow-sm">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-center items-center gap-4 flex-wrap">
+                <span class="text-gray-700 font-bold text-sm uppercase tracking-wide">Depart From:</span>
+                <NuxtLink v-for="(item, index) in tourMenu" :key="index" :to="item.path" :class="[
+                    'px-4 py-2 text-sm font-medium rounded-full transition-all duration-300',
+                    route.path === item.path 
+                        ? 'bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white shadow-md' 
+                        : 'text-gray-600 hover:text-[#FF6B35] hover:bg-[#FFF5F0]'
+                ]">
+                    {{ item.name }}
+                </NuxtLink>
+            </div>
+        </div>
     </div>
 </template>
 

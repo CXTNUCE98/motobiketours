@@ -18,11 +18,14 @@ function share() {
 </script>
 <template>
     <div>
-        <div class="text-22px font-bold text-#02964C mb-2">Video » {{ video?.title }}</div>
-        <div class="h-1 bg-[#02964C] mb-4"></div>
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ video?.title }}</h1>
+            <div class="h-1 w-20 bg-gradient-to-r from-[#FF6B35] to-[#E91E63]"></div>
+        </div>
 
         <div v-if="video" class="max-w-5xl">
-            <div class="relative w-full aspect-video bg-black rounded-md overflow-hidden">
+            <div class="relative w-full aspect-video bg-black rounded-xl overflow-hidden shadow-2xl">
                 <iframe
                     v-if="video"
                     class="w-full h-full"
@@ -34,29 +37,42 @@ function share() {
                 ></iframe>
             </div>
 
-            <div class="mt-3 text-12px text-gray-500">{{ video.date }}</div>
-            <div class="mt-1 text-14px">{{ video.excerpt }}</div>
+            <div class="mt-4 bg-white rounded-lg shadow-md p-5">
+                <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                    <i class="bx bx-calendar text-[#FFA726]"></i>
+                    <span>{{ video.date }}</span>
+                </div>
+                <div class="text-gray-700 leading-relaxed">{{ video.excerpt }}</div>
 
-            <div class="mt-4 flex gap-2 justify-end">
-                <button @click="share" class="bg-[#4267B2] text-white px-3 py-1 rounded">Share</button>
+                <div class="mt-4 flex gap-3 justify-end">
+                    <button @click="share" 
+                        class="inline-flex items-center gap-2 bg-gradient-to-r from-[#4267B2] to-[#365899] hover:from-[#365899] hover:to-[#4267B2] text-white px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                        <i class="bx bxl-facebook-circle"></i>
+                        Share
+                    </button>
+                </div>
             </div>
         </div>
         
-        <div class="mt-8">
-            <div class="text-16px font-bold text-#02964C uppercase mb-2">Video khác</div>
-            <div class="h-1 bg-[#02964C] mb-4"></div>
+        <div class="mt-10">
+            <div class="flex items-center gap-2 mb-6">
+                <i class="bx bx-video text-[#E91E63] text-2xl"></i>
+                <h2 class="text-2xl font-bold text-gray-800">Related Videos</h2>
+            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 <router-link
                     v-for="rv in relatedVideos"
                     :key="rv.id"
                     :to="`/video/${rv.id}`"
-                    class="group block rounded-md overflow-hidden shadow-sm hover:shadow-md transition bg-white"
+                    class="group block rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                     <div class="relative">
-                        <img :src="rv.thumbnail" :alt="rv.title" class="w-full h-[160px] object-cover" />
-                    <div class="absolute inset-0 bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition"></div>
-                    <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-14px px-3 py-2">
+                        <img :src="rv.thumbnail" :alt="rv.title" class="w-full h-[160px] object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div class="absolute inset-0 bg-black bg-opacity-30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                            <i class="bx bx-play-circle text-white text-5xl"></i>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent text-white text-sm px-3 py-3 font-semibold">
                             {{ rv.title }}
                         </div>
                     </div>

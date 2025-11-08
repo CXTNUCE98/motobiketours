@@ -55,15 +55,18 @@ function share() {
 </script>
 <template>
     <div>
-        <div class="text-22px font-bold text-#02964C mb-2">Photos » {{ photoItem?.title }}</div>
-        <div class="h-1 bg-[#02964C] mb-4"></div>
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ photoItem?.title }}</h1>
+            <div class="h-1 w-20 bg-gradient-to-r from-[#FF6B35] to-[#E91E63]"></div>
+        </div>
 
         <div v-if="images.length" class="w-full max-w-5xl">
-            <div v-if="!hasMultiple" class="w-full">
+            <div v-if="!hasMultiple" class="w-full bg-white rounded-xl shadow-2xl overflow-hidden">
                 <img :src="images[0]" :alt="photoItem?.title" class="w-full h-auto object-contain" />
             </div>
 
-            <div v-else class="relative" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
+            <div v-else class="relative bg-white rounded-xl shadow-2xl overflow-hidden" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
                 <div class="relative w-full overflow-hidden">
                     <div class="flex transition-transform duration-500 ease-in-out" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
                         <div v-for="(img, i) in images" :key="i" class="min-w-full">
@@ -72,19 +75,35 @@ function share() {
                     </div>
                 </div>
 
-                <button v-if="isHovering" @click="prev" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-10 h-10 rounded-full flex items-center justify-center">‹</button>
-                <button v-if="isHovering" @click="next" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/40 text-white w-10 h-10 rounded-full flex items-center justify-center">›</button>
+                <button v-if="isHovering" @click="prev" 
+                    class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg">
+                    <i class="bx bx-chevron-left text-2xl"></i>
+                </button>
+                <button v-if="isHovering" @click="next" 
+                    class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg">
+                    <i class="bx bx-chevron-right text-2xl"></i>
+                </button>
 
-                <div class="mt-2 flex gap-2 overflow-x-auto pb-1">
-                    <button v-for="(img, i) in images" :key="i" @click="goTo(i)" :class="['border-2 p-0.5 rounded-sm', currentIndex === i ? 'border-[#02964C]' : 'border-transparent']">
-                        <img :src="img" :alt="`${photoItem?.title} ${i+1}`" class="w-[100px] h-[70px] object-cover" />
+                <div class="p-4 bg-gray-50 flex gap-2 overflow-x-auto">
+                    <button v-for="(img, i) in images" :key="i" @click="goTo(i)" 
+                        :class="['border-3 p-1 rounded-lg transition-all duration-300 hover:scale-105', 
+                        currentIndex === i ? 'border-[#FF6B35] shadow-lg' : 'border-gray-300 opacity-70']">
+                        <img :src="img" :alt="`${photoItem?.title} ${i+1}`" class="w-[100px] h-[70px] object-cover rounded" />
                     </button>
                 </div>
             </div>
 
-            <div class="mt-4 flex gap-2 justify-end">
-                <button @click="like" class="bg-[#1877F2] text-white px-3 py-1 rounded">Like</button>
-                <button @click="share" class="bg-[#4267B2] text-white px-3 py-1 rounded">Share</button>
+            <div class="mt-6 flex gap-3 justify-end">
+                <button @click="like" 
+                    class="inline-flex items-center gap-2 bg-gradient-to-r from-[#1877F2] to-[#166fe5] hover:from-[#166fe5] hover:to-[#1877F2] text-white px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                    <i class="bx bx-like"></i>
+                    Like
+                </button>
+                <button @click="share" 
+                    class="inline-flex items-center gap-2 bg-gradient-to-r from-[#4267B2] to-[#365899] hover:from-[#365899] hover:to-[#4267B2] text-white px-5 py-2 rounded-full font-semibold shadow-md hover:shadow-lg transition-all duration-300">
+                    <i class="bx bxl-facebook-circle"></i>
+                    Share
+                </button>
             </div>
         </div>
     </div>

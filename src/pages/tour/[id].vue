@@ -165,16 +165,22 @@ function selectThumb(i) {
 <template>
     <div class="container mx-auto px-4 py-6" v-if="isDepartFrom">
         <div class="mb-3">
-            <NuxtLink to="/tour" class="text-[#0d6efd] hover:underline">← All tours</NuxtLink>
+            <NuxtLink to="/tour" class="inline-flex items-center gap-2 text-[#FF6B35] hover:text-[#E91E63] font-medium transition-colors">
+                <i class="bx bx-arrow-back"></i>
+                All tours
+            </NuxtLink>
         </div>
         <h1 class="text-2xl font-semibold mb-2">Tour and Price</h1>
-        <div class="text-green-700 font-medium mb-4">Depart from: <span class="font-semibold capitalize">{{ id.replace(/-/g, ' ') }}</span></div>
+        <div class="text-[#FF6B35] font-medium mb-4 flex items-center gap-2">
+            <i class="bx bx-map-pin"></i>
+            <span>Depart from: <span class="font-semibold capitalize">{{ id.replace(/-/g, ' ') }}</span></span>
+        </div>
 
         <div class="flex flex-col gap-6">
             <div v-for="item in cityTours" :key="item.id" class="grid grid-cols-1 md:grid-cols-12 gap-4 border-b pb-6">
                 <img :src="item.thumbnail" :alt="item.title" class="w-full h-[160px] object-cover rounded md:col-span-3" />
                 <div class="md:col-span-9">
-                    <NuxtLink :to="'/tour/' + item.id" class="text-[#0d6efd] hover:underline font-semibold">{{ item.title }}</NuxtLink>
+                    <NuxtLink :to="'/tour/' + item.id" class="text-gray-800 hover:text-[#FF6B35] font-bold text-xl transition-colors">{{ item.title }}</NuxtLink>
                     <div class="mt-2 text-sm leading-7">
                         <div><span class="font-semibold">Duration</span> : {{ item.duration }}</div>
                         <div><span class="font-semibold">Routes</span> : {{ item.routes }}</div>
@@ -183,10 +189,10 @@ function selectThumb(i) {
                     <div class="mt-2 flex items-center gap-6 text-sm">
                         <div>
                             <span class="font-semibold">Price:</span>
-                            <span class="text-[#0d6efd]">{{ item.priceUsd }}</span>
+                            <span class="text-[#FF6B35] font-bold">{{ item.priceUsd }}</span>
                         </div>
-                        <NuxtLink :to="'/tour/' + item.id" class="text-[#0d6efd] hover:underline">More details</NuxtLink>
-                        <NuxtLink to="/contact" class="text-[#0d6efd] hover:underline">Book now</NuxtLink>
+                        <NuxtLink :to="'/tour/' + item.id" class="text-[#FF6B35] hover:text-[#E91E63] font-medium transition-colors">More details</NuxtLink>
+                        <NuxtLink to="/contact" class="text-[#FFA726] hover:text-[#FF9800] font-medium transition-colors">Book now</NuxtLink>
                     </div>
                 </div>
             </div>
@@ -195,11 +201,17 @@ function selectThumb(i) {
 
     <div class="container mx-auto px-4 py-6" v-else-if="tour">
         <div class="mb-4">
-            <NuxtLink to="/tour" class="text-[#0d6efd] hover:underline">← Back to all tours</NuxtLink>
+            <NuxtLink to="/tour" class="inline-flex items-center gap-2 text-[#FF6B35] hover:text-[#E91E63] font-medium transition-colors">
+                <i class="bx bx-arrow-back"></i>
+                Back to all tours
+            </NuxtLink>
         </div>
 
         <h1 class="text-2xl font-semibold mb-2">{{ tour.title }}</h1>
-        <div class="text-green-700 font-medium mb-4">Depart from: <span class="font-semibold">{{ tour.departFrom }}</span></div>
+        <div class="text-[#FF6B35] font-medium mb-4 flex items-center gap-2">
+            <i class="bx bx-map-pin"></i>
+            <span>Depart from: <span class="font-semibold">{{ tour.departFrom }}</span></span>
+        </div>
 
         <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div class="md:col-span-7" @mouseenter="isHovering=true" @mouseleave="isHovering=false">
@@ -210,13 +222,13 @@ function selectThumb(i) {
                         :key="i"
                         :src="g"
                         @click="selectThumb(i)"
-                        :class="['h-16 w-full object-cover rounded border cursor-pointer', i === selectedIndex ? 'ring-2 ring-green-600 border-green-600' : '']"
+                        :class="['h-16 w-full object-cover rounded border cursor-pointer', i === selectedIndex ? 'ring-2 ring-[#FF6B35] border-[#FF6B35]' : '']"
                     />
                 </div>
             </div>
 
             <div class="text-sm leading-7 md:col-span-5">
-                <div class="text-lg font-semibold text-[#0d6efd] mb-2">Tour {{ tourCode }}</div>
+                <div class="text-lg font-semibold text-[#FF6B35] mb-2">Tour {{ tourCode }}</div>
                 <div><span class="font-semibold">Duration</span> : {{ tour.duration }}</div>
                 <div><span class="font-semibold">Destinations</span> : </div>
                 <div><span class="font-semibold">Routes</span> : {{ tour.routes }}</div>
@@ -225,9 +237,9 @@ function selectThumb(i) {
                 <div class="mt-4 flex items-center justify-between">
                     <div>
                         <span class="font-semibold">Price :</span>
-                        <span class="text-[#d33] font-bold ml-1">{{ tour.priceUsd || '375 USD' }}</span>
+                        <span class="text-[#FF6B35] font-bold ml-1 text-2xl">{{ tour.priceUsd || '375 USD' }}</span>
                     </div>
-                    <NuxtLink to="/contact" class="px-4 py-2 bg-[#28a745] text-white rounded hover:opacity-90">Book now</NuxtLink>
+                    <NuxtLink to="/contact" class="px-6 py-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] hover:from-[#E91E63] hover:to-[#FF6B35] text-white rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase text-sm tracking-wide">Book now</NuxtLink>
                 </div>
             </div>
         </div>
@@ -237,11 +249,11 @@ function selectThumb(i) {
         <div class="mt-4">
             <div class="flex gap-3 text-sm border-b">
                 <button
-                    :class="activeTab==='overview' ? 'px-4 py-2 -mb-px border-b-2 border-green-600 text-green-700' : 'px-4 py-2 -mb-px border-b-2 border-transparent'"
+                    :class="activeTab==='overview' ? 'px-4 py-2 -mb-px border-b-2 border-[#FF6B35] text-[#FF6B35] font-semibold' : 'px-4 py-2 -mb-px border-b-2 border-transparent text-gray-600 hover:text-[#FF6B35]'"
                     @click="setActive('overview')"
                 >Overview</button>
                 <button
-                    :class="activeTab==='contact' ? 'px-4 py-2 -mb-px border-b-2 border-green-600 text-green-700' : 'px-4 py-2 -mb-px border-b-2 border-transparent'"
+                    :class="activeTab==='contact' ? 'px-4 py-2 -mb-px border-b-2 border-[#FF6B35] text-[#FF6B35] font-semibold' : 'px-4 py-2 -mb-px border-b-2 border-transparent text-gray-600 hover:text-[#FF6B35]'"
                     @click="setActive('contact')"
                 >Contact us</button>
             </div>
@@ -253,7 +265,10 @@ function selectThumb(i) {
     </div>
     <div v-else class="container mx-auto px-4 py-6">
         <p class="text-red-600">Tour not found.</p>
-        <NuxtLink to="/tour" class="text-[#0d6efd] hover:underline">Back to all tours</NuxtLink>
+            <NuxtLink to="/tour" class="inline-flex items-center gap-2 text-[#FF6B35] hover:text-[#E91E63] font-medium transition-colors">
+                <i class="bx bx-arrow-back"></i>
+                Back to all tours
+            </NuxtLink>
     </div>
 </template>
 

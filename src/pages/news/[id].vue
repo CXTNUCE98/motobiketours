@@ -35,17 +35,21 @@ const detailHtml = computed(() => {
 })
 </script>
 <template>
-    <div v-html="detailHtml">
+    <div class="bg-white rounded-xl shadow-lg p-6 mb-8" v-html="detailHtml">
     </div>
+    
     <div class="mt-8">
-        <div class="text-16px font-bold text-#02964C uppercase mb-2">OTHER NEWS</div>
-        <div class="h-1 bg-[#02964C] mb-4"></div>
+        <div class="flex items-center gap-2 mb-4">
+            <i class="bx bx-news text-[#FF6B35] text-2xl"></i>
+            <h2 class="text-2xl font-bold text-gray-800">OTHER NEWS</h2>
+        </div>
 
-        <ul class="space-y-2">
-            <li v-for="rv in related" :key="rv.id" class="flex items-start gap-2">
-                <span class="text-#02964C">›</span>
-                <router-link :to="`/news/${rv.id}`" class="text-#1a73e8 hover:underline">
-                    {{ rv.title }}
+        <ul class="space-y-3">
+            <li v-for="rv in related" :key="rv.id" class="group">
+                <router-link :to="`/news/${rv.id}`" 
+                    class="flex items-start gap-3 p-3 rounded-lg hover:bg-gradient-to-r hover:from-[#FFF5F0] hover:to-[#FFE8E0] transition-all duration-300">
+                    <i class="bx bx-chevron-right text-[#FF6B35] text-xl mt-0.5 group-hover:translate-x-1 transition-transform"></i>
+                    <span class="text-gray-700 hover:text-[#FF6B35] font-medium transition-colors">{{ rv.title }}</span>
                 </router-link>
             </li>
         </ul>

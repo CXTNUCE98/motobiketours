@@ -67,19 +67,54 @@ const submit = async () => {
 
 <template>
     <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">
+                <span class="text-gray-800">CONTACT </span>
+                <span class="text-[#E91E63]">US</span>
+            </h1>
+            <p class="text-gray-600 text-lg">Get in touch with us for any inquiries</p>
+        </div>
+
         <div class="grid md:grid-cols-2 gap-8">
+            <!-- Contact Info Section -->
             <div>
-                <h1 class="text-2xl font-bold text-green-700 mb-4">Contact us</h1>
-                <div class="space-y-2 text-sm leading-6">
-                    <p><strong>Add:</strong> 14 Nguyen Thi Thap St, Thanh Khe Distr, Danang City, Vietnam</p>
-                    <p><strong>Tel:</strong> (+84) 0903.579094 Mr Quang</p>
-                    <p><strong>Email:</strong> vietnamMotorbikeGroup@gmail.com</p>
-                    <p><strong>Website:</strong> <a class="text-green-700 underline" href="https://danangmotorbiketours.com" target="_blank" rel="noopener">danangmotorbiketours.com</a></p>
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="bx bx-info-circle text-[#FF6B35] text-3xl"></i>
+                        Contact Information
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
+                            <span class="text-[#FFA726] font-semibold min-w-[70px]">Address:</span>
+                            <p class="text-gray-700">14 Nguyen Thi Thap St, Thanh Khe District, Danang City, Vietnam</p>
+                        </div>
+                        <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
+                            <span class="text-[#FFA726] font-semibold min-w-[70px]">Tel:</span>
+                            <a href="tel:+84903579094" class="text-[#FF6B35] hover:text-[#E91E63] font-semibold">
+                                (+84) 0903.579094 Mr Quang
+                            </a>
+                        </div>
+                        <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
+                            <span class="text-[#FFA726] font-semibold min-w-[70px]">Email:</span>
+                            <a href="mailto:vietnamMotorbikeGroup@gmail.com" class="text-[#FF6B35] hover:text-[#E91E63] font-semibold">
+                                vietnamMotorbikeGroup@gmail.com
+                            </a>
+                        </div>
+                        <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
+                            <span class="text-[#FFA726] font-semibold min-w-[70px]">Website:</span>
+                            <a class="text-[#FF6B35] hover:text-[#E91E63] font-semibold" href="https://danangmotorbiketours.com" target="_blank" rel="noopener">
+                                danangmotorbiketours.com
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
-                <p class="mt-6 italic text-rose-700 text-sm">
-                    Come with us for the experience of a lifetime either as a rider or as a pillion passengers on one of our motorbikes!
-                </p>
+                <div class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white p-5 rounded-xl shadow-lg mb-6">
+                    <p class="italic text-lg">
+                        Come with us for the experience of a lifetime either as a rider or as a pillion passenger on one of our motorbikes!
+                    </p>
+                </div>
 
                 <div class="mt-6 rounded-lg overflow-hidden shadow">
                     <iframe
@@ -89,30 +124,61 @@ const submit = async () => {
                 </div>
             </div>
 
+            <!-- Contact Form Section -->
             <div>
-                <h2 class="text-lg font-semibold mb-3">We are willing to organize your tours as per your request</h2>
-                <div class="rounded-xl p-6 bg-white shadow border border-gray-100">
-                    <div class="grid grid-cols-1 gap-4">
+                <div class="bg-white rounded-xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <i class="bx bx-message-square-dots text-[#E91E63] text-3xl"></i>
+                        Send Us a Message
+                    </h2>
+                    <p class="text-gray-600 mb-6">We are willing to organize your tours as per your request</p>
+                    
+                    <div class="grid grid-cols-1 gap-5">
                         <div>
-                            <input v-model="form.fullName" @input="clearError('fullName')" type="text" placeholder="Full Name" class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-green-600" />
-                            <p v-if="errors.fullName" class="mt-1 text-xs text-red-600">{{ errors.fullName }}</p>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+                            <input v-model="form.fullName" @input="clearError('fullName')" type="text" 
+                                placeholder="Enter your full name" 
+                                class="px-4 py-3 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:border-[#FF6B35] transition-colors duration-300" />
+                            <p v-if="errors.fullName" class="mt-2 text-sm text-red-600">{{ errors.fullName }}</p>
                         </div>
                         <div>
-                            <input v-model="form.email" @input="clearError('email')" type="email" placeholder="Email" class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-green-600" />
-                            <p v-if="errors.email" class="mt-1 text-xs text-red-600">{{ errors.email }}</p>
-                        </div>
-                        <input v-model="form.phone" type="tel" placeholder="Phone" class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-green-600" />
-                        <input v-model="form.country" type="text" placeholder="Country" class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-green-600" />
-                        <div>
-                            <input v-model="form.title" @input="clearError('title')" type="text" placeholder="Title" class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-green-600" />
-                            <p v-if="errors.title" class="mt-1 text-xs text-red-600">{{ errors.title }}</p>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input v-model="form.email" @input="clearError('email')" type="email" 
+                                placeholder="your@email.com" 
+                                class="px-4 py-3 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:border-[#FF6B35] transition-colors duration-300" />
+                            <p v-if="errors.email" class="mt-2 text-sm text-red-600">{{ errors.email }}</p>
                         </div>
                         <div>
-                            <textarea v-model="form.content" @input="clearError('content')" rows="5" placeholder="Content" class="px-3 py-2 border rounded w-full focus:outline-none focus:ring-2 focus:ring-green-600"></textarea>
-                            <p v-if="errors.content" class="mt-1 text-xs text-red-600">{{ errors.content }}</p>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone</label>
+                            <input v-model="form.phone" type="tel" 
+                                placeholder="Your phone number" 
+                                class="px-4 py-3 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:border-[#FF6B35] transition-colors duration-300" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+                            <input v-model="form.country" type="text" 
+                                placeholder="Your country" 
+                                class="px-4 py-3 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:border-[#FF6B35] transition-colors duration-300" />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Title *</label>
+                            <input v-model="form.title" @input="clearError('title')" type="text" 
+                                placeholder="Message title" 
+                                class="px-4 py-3 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:border-[#FF6B35] transition-colors duration-300" />
+                            <p v-if="errors.title" class="mt-2 text-sm text-red-600">{{ errors.title }}</p>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Message *</label>
+                            <textarea v-model="form.content" @input="clearError('content')" rows="5" 
+                                placeholder="Tell us about your tour requirements..." 
+                                class="px-4 py-3 border-2 border-gray-300 rounded-lg w-full focus:outline-none focus:border-[#FF6B35] transition-colors duration-300"></textarea>
+                            <p v-if="errors.content" class="mt-2 text-sm text-red-600">{{ errors.content }}</p>
                         </div>
                         <div class="flex justify-end">
-                            <button :disabled="isSubmitting" @click="submit" class="px-4 py-2 bg-green-700 text-white rounded disabled:opacity-60">{{ isSubmitting ? 'Sending...' : 'Send' }}</button>
+                            <button :disabled="isSubmitting" @click="submit" 
+                                class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] hover:from-[#E91E63] hover:to-[#FF6B35] text-white px-8 py-4 rounded-full font-bold disabled:opacity-60 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase tracking-wide">
+                                {{ isSubmitting ? 'Sending...' : 'Send Message' }}
+                            </button>
                         </div>
                     </div>
                 </div>

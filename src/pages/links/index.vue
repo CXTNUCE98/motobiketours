@@ -43,33 +43,46 @@ const links: LinkItem[] = [
 </script>
 
 <template>
-    <div class="bg-white">
-        <div class="px-4 py-4 md:px-6">
-            <div class="border-b-2 border-#1f8a44 pb-2 mb-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-#1f8a44">Links</h1>
-            </div>
+    <div>
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">
+                <span class="text-gray-800">USEFUL </span>
+                <span class="text-[#E91E63]">LINKS</span>
+            </h1>
+            <p class="text-gray-600 text-lg">Helpful resources for your Vietnam adventure</p>
+        </div>
 
+        <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
             <ul class="space-y-6">
-                <li v-for="(item, idx) in links" :key="idx" class="group">
-                    <div class="text-xl md:text-2xl leading-snug text-#1d2731">
+                <li v-for="(item, idx) in links" :key="idx" class="group border-b border-gray-200 pb-6 last:border-b-0 last:pb-0">
+                    <div class="text-xl md:text-2xl leading-snug text-gray-800 font-semibold">
                         <template v-if="item.url">
-                            <a :href="item.url" target="_blank" rel="noopener" class="hover:text-#1f8a44 underline-offset-2">
-                                {{ item.title }}
+                            <a :href="item.url" target="_blank" rel="noopener" 
+                                class="hover:text-[#FF6B35] transition-colors duration-300 flex items-start gap-2 group">
+                                <i class="bx bx-link-external text-[#FF6B35] mt-1"></i>
+                                <span>{{ item.title }}</span>
                             </a>
                         </template>
                         <template v-else>
-                            {{ item.title }}
+                            <div class="flex items-start gap-2">
+                                <i class="bx bx-info-circle text-[#E91E63] mt-1"></i>
+                                <span>{{ item.title }}</span>
+                            </div>
                         </template>
                     </div>
-                    <div v-if="item.display" class="text-#1a73e8 text-sm md:text-base mt-1">
-                        <a :href="item.url" target="_blank" rel="noopener" class="hover:underline">
+                    <div v-if="item.display" class="text-[#FF6B35] text-sm md:text-base mt-2 ml-7">
+                        <a :href="item.url" target="_blank" rel="noopener" 
+                            class="hover:text-[#E91E63] hover:underline transition-colors duration-300 font-medium">
                             {{ item.display }}
                         </a>
                     </div>
 
-                    <ul v-if="item.children?.length" class="mt-4 space-y-2">
-                        <li v-for="(child, cIdx) in item.children" :key="cIdx" class="text-#1a73e8">
-                            <a :href="child.url" target="_blank" rel="noopener" class="hover:underline">
+                    <ul v-if="item.children?.length" class="mt-4 space-y-2 ml-7">
+                        <li v-for="(child, cIdx) in item.children" :key="cIdx">
+                            <a :href="child.url" target="_blank" rel="noopener" 
+                                class="text-[#FFA726] hover:text-[#FF9800] hover:underline transition-colors duration-300 flex items-center gap-2">
+                                <i class="bx bx-right-arrow-alt"></i>
                                 {{ child.title }}
                             </a>
                         </li>
@@ -83,8 +96,4 @@ const links: LinkItem[] = [
 
 
 <style scoped>
-.text-#1f8a44 { color: #1f8a44; }
-.border-#1f8a44 { border-color: #1f8a44; }
-.text-#1d2731 { color: #1d2731; }
-.text-#1a73e8 { color: #1a73e8; }
 </style>

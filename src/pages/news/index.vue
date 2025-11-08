@@ -5,31 +5,48 @@ import { news } from '../../composables/mockup'
 
 <template>
     <div>
-        <div class="text-22px font-bold text-#02964C mb-2">News</div>
-        <div class="h-1 bg-[#02964C] mb-4"></div>
+        <!-- Page Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-2">
+                <span class="text-gray-800">LATEST </span>
+                <span class="text-[#E91E63]">NEWS</span>
+            </h1>
+            <p class="text-gray-600 text-lg">Stay updated with our travel stories</p>
+        </div>
 
-        <div class="flex flex-col gap-4">
+        <div class="grid grid-cols-1 gap-6">
             <div
                 v-for="n in news"
                 :key="n.id"
-                class="flex gap-3 p-3 rounded-md shadow-sm border border-gray/20 hover:shadow-md transition bg-white"
+                class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-[#FF6B35]"
             >
-                <router-link :to="`/news/${n.id}`" class="shrink-0">
-                    <img :src="n.thumbnail" :alt="n.title" class="w-[160px] h-[100px] object-cover rounded-sm" />
-                </router-link>
-
-                <div class="flex-1 min-w-0">
-                    <router-link :to="`/news/${n.id}`" class="block text-[#02964C] font-semibold hover:underline">
-                        {{ n.title }}
+                <div class="flex flex-col md:flex-row gap-0">
+                    <router-link :to="`/news/${n.id}`" class="shrink-0 overflow-hidden">
+                        <img :src="n.thumbnail" :alt="n.title" 
+                            class="w-full md:w-[200px] h-[200px] object-cover group-hover:scale-110 transition-transform duration-500" />
                     </router-link>
-                    <div class="text-12px text-gray-500 mt-1">{{ n.date }}</div>
-                    <div class="text-14px text-gray-800 mt-1 line-clamp-2">{{ n.excerpt }}</div>
-                </div>
 
-                <div class="self-center">
-                    <router-link :to="`/news/${n.id}`" class="text-12px bg-[#02964C] text-white px-3 py-1 rounded hover:opacity-90">
-                        More detail »
-                    </router-link>
+                    <div class="flex-1 p-5 flex flex-col justify-between">
+                        <div>
+                            <router-link :to="`/news/${n.id}`" 
+                                class="block text-gray-800 text-xl font-bold hover:text-[#FF6B35] transition-colors duration-300 mb-2">
+                                {{ n.title }}
+                            </router-link>
+                            <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
+                                <i class="bx bx-calendar text-[#FFA726]"></i>
+                                <span>{{ n.date }}</span>
+                            </div>
+                            <div class="text-gray-700 line-clamp-2">{{ n.excerpt }}</div>
+                        </div>
+
+                        <div class="mt-4">
+                            <router-link :to="`/news/${n.id}`" 
+                                class="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] hover:from-[#E91E63] hover:to-[#FF6B35] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                                Read More
+                                <i class="bx bx-right-arrow-alt"></i>
+                            </router-link>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
