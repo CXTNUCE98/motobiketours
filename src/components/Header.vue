@@ -1,373 +1,371 @@
-<script lang="ts" setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
-const currentSlide = ref(0)
-const isHovering = ref(false)
 
 const route = useRoute()
+const isScrolled = ref(false)
 
-// Tour locations submenu
-const tourMenu = [
-    { name: 'Sai Gon', path: '/tour/sai-gon' },
-    { name: 'Mui ne', path: '/tour/mui-ne' },
-    { name: 'Dalat', path: '/tour/dalat' },
-    { name: 'Nha Trang', path: '/tour/nha-trang' },
-    { name: 'Da Nang', path: '/tour/da-nang' },
-    { name: 'Hoi An', path: '/tour/hoi-an' },
-    { name: 'Hue', path: '/tour/hue' },
-    { name: 'Dong Hoi', path: '/tour/dong-hoi' },
-    { name: 'Ha Noi', path: '/tour/ha-noi' },
+// Handle scroll event with throttling
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null
+
+const handleScroll = () => {
+    if (process.client) {
+        // Clear existing timeout
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout)
+        }
+
+        // Throttle scroll event
+        scrollTimeout = setTimeout(() => {
+            isScrolled.value = window.scrollY > 10
+        }, 10)
+    }
+}
+
+// Menu items với tiếng Việt
+const menuItems = [
+    { name: 'TRANG CHỦ', path: '/', icon: '' },
+    { name: 'GIỚI THIỆU', path: '/about', icon: '' },
+    { name: 'TOUR DU LỊCH', path: '/tour', hasDropdown: true, icon: '' },
+    { name: 'DỊCH VỤ', path: '/services', hasDropdown: true, icon: '' },
+    { name: 'TIN TỨC', path: '/news', hasDropdown: true, icon: '' },
+    { name: 'THƯ VIỆN', path: '/photos', hasDropdown: true, icon: '' },
+    { name: 'LIÊN HỆ', path: '/contact', icon: '' },
 ]
 
-// Main menu items
-const mainMenuItems = [
-    { name: 'Home', path: '/' },
-    { name: 'About us', path: '/about' },
-    { name: 'Photos', path: '/photos' },
-    { name: 'Video', path: '/video' },
-    { name: 'Tour and Prices', path: '/tour', hasSubmenu: true },
-    { name: 'News', path: '/news' },
-    { name: 'Booking guide', path: '/booking' },
-    { name: 'Contact us', path: '/contact' },
-    { name: 'Links', path: '/links' },
-]
+const cartCount = ref(0)
+const showMobileMenu = ref(false)
 
-const isTourMenuOpen = ref(false)
-const isMobileMenuOpen = ref(false)
-const activePath = computed(() => route.path)
+// Carousel
+const currentSlide = ref(0)
+const totalSlides = 3
+const isHovering = ref(false)
+
+const slides = [
+    {
+        title: 'Tìm Chuyến Tham Quan Hoàn Hảo Của Bạn Tại Trekeel',
+        subtitle: 'Khám Phá Thế Giới',
+        description: 'Địa điểm độc đáo cả trong và ngoài nước. Mạng đến sự đa dạng để khách hàng thoải mái lựa chọn chuyến đi cho riêng mình.',
+        image: '/carousel/1.jpg',
+        videoThumb: '/carousel/2.jpg'
+    },
+    {
+        title: 'Khám Phá Vẻ Đẹp Việt Nam',
+        subtitle: 'Du Lịch Trọn Vẹn',
+        description: 'Trải nghiệm những điểm đến tuyệt vời nhất tại Việt Nam cùng đội ngũ hướng dẫn viên chuyên nghiệp.',
+        image: '/carousel/3.jpg',
+        videoThumb: '/carousel/4.jpg'
+    },
+    {
+        title: 'Hành Trình Đáng Nhớ',
+        subtitle: 'Kỷ Niệm Khó Quên',
+        description: 'Tạo nên những kỷ niệm đẹp cùng gia đình và bạn bè trong những chuyến đi khó quên.',
+        image: '/carousel/5.jpg',
+        videoThumb: '/carousel/6.jpg'
+    }
+]
 
 const isActive = (path: string) => {
-    if (path === '/tour') {
-        return route.path.startsWith('/tour')
+    if (path === '/') {
+        return route.path === '/'
     }
-    return route.path === path
-}
-
-const openTourMenu = () => {
-    isTourMenuOpen.value = true
-}
-
-const closeTourMenu = () => {
-    isTourMenuOpen.value = false
-}
-
-const toggleMobileMenu = () => {
-    isMobileMenuOpen.value = !isMobileMenuOpen.value
-}
-
-const closeMobileMenu = () => {
-    isMobileMenuOpen.value = false
-}
-
-// Generate slides - hỗ trợ cả số bắt đầu từ 0 hoặc 1
-// Nếu muốn bắt đầu từ 0.jpg, đặt startFrom = 0, nếu từ 1.jpg thì startFrom = 1
-const startFrom = 1 // Thay đổi thành 0 nếu ảnh bắt đầu từ 0.jpg
-const totalSlides = 8 // Số lượng ảnh hiện có (có thể tăng lên 16 khi có thêm ảnh)
-
-const slides = Array.from({ length: totalSlides }, (_, i) => ({
-    image: `/carousel/${i + startFrom}.jpg`,
-    index: i
-}))
-
-const goToSlide = (index: number) => {
-    if (index >= 0 && index < slides.length) {
-        currentSlide.value = index
-    }
+    return route.path.startsWith(path)
 }
 
 const nextSlide = () => {
-    currentSlide.value = (currentSlide.value + 1) % slides.length
+    currentSlide.value = (currentSlide.value + 1) % totalSlides
 }
 
 const prevSlide = () => {
-    currentSlide.value = (currentSlide.value - 1 + slides.length) % slides.length
+    currentSlide.value = (currentSlide.value - 1 + totalSlides) % totalSlides
 }
 
-// Auto-play (optional)
+const goToSlide = (index: number) => {
+    currentSlide.value = index
+}
+
+// Auto-play carousel
 let autoPlayInterval: ReturnType<typeof setInterval> | null = null
 
-// Keyboard navigation
-const handleKeyDown = (event: any) => {
-    if (event.key === 'ArrowLeft') {
-        prevSlide()
-    } else if (event.key === 'ArrowRight') {
-        nextSlide()
-    }
-}
-
 onMounted(() => {
+    // Setup scroll listener
+    if (process.client) {
+        window.addEventListener('scroll', handleScroll)
+        handleScroll() // Check initial scroll position
+    }
+
+    // Setup carousel auto-play
     autoPlayInterval = setInterval(() => {
         if (!isHovering.value) {
             nextSlide()
         }
     }, 5000)
-
-    globalThis.addEventListener('keydown', handleKeyDown)
 })
 
 onBeforeUnmount(() => {
+    // Cleanup scroll listener
+    if (process.client) {
+        window.removeEventListener('scroll', handleScroll)
+        if (scrollTimeout) {
+            clearTimeout(scrollTimeout)
+        }
+    }
+
+    // Cleanup carousel interval
     if (autoPlayInterval) {
         clearInterval(autoPlayInterval)
     }
-    globalThis.removeEventListener('keydown', handleKeyDown)
 })
 </script>
 
 <template>
-    <!-- Top Bar with Contact Info -->
-    <div class="bg-white border-b border-gray-200 w-full max-w-6xl mx-auto">
-        <div class="container mx-auto px-4 py-2 flex justify-between items-center text-sm">
-            <div class="flex items-center gap-4 text-gray-600">
-                <span class="font-semibold">HOTLINE:</span>
-                <a href="tel:+84903579094" class="text-[#FF6B35] font-bold hover:text-[#E91E63] transition-colors">
-                    +84 903 579 094
-                </a>
-            </div>
-            <div class="flex items-center gap-3">
-                <a href="#" class="text-gray-500 hover:text-[#FF6B35] transition-colors">
-                    <i class="bx bxl-facebook-circle text-xl"></i>
-                </a>
-                <a href="#" class="text-gray-500 hover:text-[#25D366] transition-colors">
-                    <i class="bx bxl-whatsapp text-xl"></i>
-                </a>
-                <a href="#" class="text-gray-500 hover:text-[#0088cc] transition-colors">
-                    <i class="bx bxl-telegram text-xl"></i>
-                </a>
-            </div>
-        </div>
-    </div>
+    <!-- Main Header - Fixed at top -->
+    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-gray-200 transition-all duration-300 bg-white"
+        :class="isScrolled ? 'shadow-lg' : 'shadow-sm'" style="will-change: transform;">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <!-- Logo -->
+                <NuxtLink to="/" class="flex items-center">
+                    <div class="text-2xl md:text-3xl font-bold">
+                        <span class="text-gray-800">TREK</span><span class="text-[#E91E63]">EEL</span>
+                    </div>
+                </NuxtLink>
 
-    <!-- Menu bar -->
-    <nav class="bg-white w-full max-w-6xl mx-auto relative z-50 shadow-md border-b-2 border-[#FF6B35]">
-        <div class="container mx-auto px-4">
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center justify-center">
-                <ul class="flex items-center gap-0 flex-wrap justify-center">
-                    <li v-for="(item, index) in mainMenuItems" :key="index" class="relative group"
-                        @mouseenter="item.hasSubmenu ? openTourMenu() : null"
-                        @mouseleave="item.hasSubmenu ? closeTourMenu() : null">
-                        <NuxtLink :to="item.hasSubmenu ? '#' : item.path" :class="[
-                            'flex items-center gap-1 px-3 md:px-4 py-3 md:py-4 text-sm md:text-base font-semibold transition-all duration-300 relative',
-                            isActive(item.path)
-                                ? 'text-[#FF6B35] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-1 after:bg-gradient-to-r after:from-[#FF6B35] after:to-[#E91E63]'
-                                : 'text-gray-700 hover:text-[#FF6B35]'
-                        ]">
-                            <span class="text-xs md:text-sm">▸</span>
-                            <span>{{ item.name }}</span>
-                        </NuxtLink>
+                <!-- Desktop Navigation -->
+                <nav class="hidden lg:flex items-center space-x-1">
+                    <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" :class="[
+                        'px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center gap-1',
+                        isActive(item.path)
+                            ? 'text-[#E91E63]'
+                            : 'text-gray-700 hover:text-[#E91E63]'
+                    ]">
+                        {{ item.name }}
+                        <svg v-if="item.hasDropdown" class="w-3 h-3" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </NuxtLink>
+                </nav>
 
-                        <!-- Submenu for Tour and Prices -->
-                        <div v-if="item.hasSubmenu && isTourMenuOpen"
-                            class="absolute left-0 top-full bg-white min-w-[220px] shadow-2xl z-50 mt-0 border-t-2 border-[#FF6B35] rounded-b-lg"
-                            @mouseenter="openTourMenu()" @mouseleave="closeTourMenu()">
-                            <ul class="py-2">
-                                <li v-for="(tour, tourIndex) in tourMenu" :key="tourIndex">
-                                    <NuxtLink :to="tour.path" :class="[
-                                        'flex items-center gap-2 px-4 py-3 text-sm md:text-base font-medium text-gray-700 hover:bg-gradient-to-r hover:from-[#FFF5F0] hover:to-[#FFE8E0] hover:text-[#FF6B35] transition-all duration-300',
-                                        route.path === tour.path ? 'bg-gradient-to-r from-[#FFF5F0] to-[#FFE8E0] text-[#FF6B35]' : ''
-                                    ]">
-                                        <span class="text-xs">▸</span>
-                                        <span>{{ tour.name }}</span>
-                                    </NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-                </ul>
+                <!-- Right Icons -->
+                <div class="flex items-center gap-3 md:gap-4">
+                    <!-- Search Icon -->
+                    <button class="text-gray-700 hover:text-[#E91E63] transition-colors">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+
+                    <!-- User Icon -->
+                    <button class="text-gray-700 hover:text-[#E91E63] transition-colors">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </button>
+
+                    <!-- Cart Icon with Badge -->
+                    <button class="relative text-gray-700 hover:text-[#E91E63] transition-colors">
+                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span
+                            class="absolute -top-2 -right-2 bg-[#E91E63] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                            {{ cartCount }}
+                        </span>
+                    </button>
+
+                    <!-- Language Selector -->
+                    <button
+                        class="hidden md:flex items-center gap-1 text-gray-700 hover:text-[#E91E63] transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                        </svg>
+                    </button>
+
+                    <!-- Red Circle Button (notification or menu) -->
+                    <button
+                        class="w-8 h-8 md:w-9 md:h-9 bg-[#E91E63] rounded-full flex items-center justify-center text-white hover:bg-[#C2185B] transition-colors shadow-md">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                    </button>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button @click="showMobileMenu = !showMobileMenu"
+                        class="lg:hidden text-gray-700 hover:text-[#E91E63]">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Mobile Menu -->
-            <div class="md:hidden">
-                <button @click="toggleMobileMenu"
-                    class="w-full flex items-center justify-between px-4 py-3 text-gray-700 font-medium">
-                    <span class="flex items-center gap-1">
-                        <span class="text-xs">▸</span>
-                        <span>Menu</span>
-                    </span>
-                    <svg class="w-5 h-5 transition-transform duration-200" :class="{ 'rotate-180': isMobileMenuOpen }"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-
-                <transition name="slide-down">
-                    <div v-if="isMobileMenuOpen" class="bg-gray-50">
-                        <ul class="py-2">
-                            <li v-for="(item, index) in mainMenuItems" :key="index">
-                                <NuxtLink :to="item.path" @click="closeMobileMenu" :class="[
-                                    'flex items-center gap-1 px-4 py-3 text-sm text-gray-700 hover:bg-[#FFF5F0] hover:text-[#FF6B35] transition-all duration-300',
-                                    isActive(item.path) ? 'bg-[#FFF5F0] text-[#FF6B35] font-semibold' : ''
-                                ]">
-                                    <span class="text-xs">▸</span>
-                                    <span>{{ item.name }}</span>
-                                </NuxtLink>
-
-                                <!-- Tour submenu items on mobile -->
-                                <div v-if="item.hasSubmenu && isActive(item.path)" class="bg-white pl-8">
-                                    <ul>
-                                        <li v-for="(tour, tourIndex) in tourMenu" :key="tourIndex">
-                                            <NuxtLink :to="tour.path" @click="closeMobileMenu" :class="[
-                                                'flex items-center gap-1 px-4 py-2 text-sm text-gray-600 hover:bg-[#FFF5F0] hover:text-[#FF6B35] transition-all duration-300',
-                                                route.path === tour.path ? 'bg-[#FFF5F0] text-[#FF6B35]' : ''
-                                            ]">
-                                                <span class="text-xs">▸</span>
-                                                <span>{{ tour.name }}</span>
-                                            </NuxtLink>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </transition>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero Carousel -->
-    <header class="relative w-full max-w-6xl mx-auto overflow-hidden">
-        <div class="relative w-full" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
-            <!-- Main Image Container -->
-            <div class="relative w-full h-[450px] md:h-[550px] lg:h-[650px] overflow-hidden">
-                <!-- Slide Images -->
-                <div class="absolute inset-0 transition-transform duration-700 ease-in-out"
-                    :style="{ transform: `translateX(-${currentSlide * 100}%)` }">
-                    <div v-for="(slide, index) in slides" :key="index" class="absolute inset-0 w-full h-full"
-                        :style="{ left: `${index * 100}%` }">
-                        <img :src="slide.image" :alt="`Slide ${index + 1}`" class="w-full h-full object-cover brightness-90"
-                            @error="(e) => { e.target.style.display = 'none' }" />
-                        <!-- Dark Overlay -->
-                        <div class="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50"></div>
-                    </div>
-                </div>
-
-                <!-- Hero Content Overlay -->
-                <div class="absolute inset-0 flex flex-col items-center justify-center text-center z-10 px-4">
-                    <h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-bold mb-4 drop-shadow-2xl">
-                        VIETNAM MOTORBIKE TOURS
-                    </h1>
-                    <p class="text-white text-lg md:text-xl lg:text-2xl mb-2 italic drop-shadow-lg">
-                        Khám phá vẻ đẹp vô tận của Việt Nam
-                    </p>
-                    <p class="text-white/90 text-base md:text-lg mb-8 drop-shadow-lg font-light italic">
-                        Discover the endless beauty of Vietnam
-                    </p>
-                    <NuxtLink to="/tour" 
-                        class="bg-gradient-to-r from-[#FF6B35] to-[#FF5722] hover:from-[#FF5722] hover:to-[#E91E63] text-white px-10 py-4 rounded-full font-bold text-lg shadow-2xl transform hover:scale-110 transition-all duration-300 uppercase tracking-wider">
-                        BOOK TOUR
+            <div v-if="showMobileMenu" class="lg:hidden pb-4">
+                <nav class="flex flex-col space-y-2">
+                    <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" @click="showMobileMenu = false"
+                        :class="[
+                            'px-4 py-2 text-sm font-medium transition-colors duration-200',
+                            isActive(item.path)
+                                ? 'text-[#E91E63] bg-pink-50'
+                                : 'text-gray-700 hover:text-[#E91E63] hover:bg-gray-50'
+                        ]">
+                        {{ item.name }}
                     </NuxtLink>
-                </div>
-
-                <!-- Navigation Buttons (only visible on hover) -->
-                <button v-if="isHovering" @click="prevSlide"
-                    class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300"
-                    aria-label="Previous slide">
-                    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-
-                <button v-if="isHovering" @click="nextSlide"
-                    class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/50 hover:bg-black/70 text-white w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center transition-all duration-300"
-                    aria-label="Next slide">
-                    <svg class="w-6 h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Pagination Indicators -->
-            <div class="absolute bottom-6 left-0 right-0 flex justify-center items-center gap-2 z-20">
-                <button v-for="(slide, index) in slides" :key="index" @click="goToSlide(index)" :class="[
-                    'transition-all duration-300 rounded-full',
-                    currentSlide === index
-                        ? 'w-12 h-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63]'
-                        : 'w-3 h-3 bg-white/60 hover:bg-white'
-                ]">
-                </button>
+                </nav>
             </div>
         </div>
     </header>
-    <!-- Depart from - Quick Links -->
-    <div class="hidden md:block bg-white border-t border-gray-200 relative max-w-6xl mx-auto shadow-sm">
-        <div class="container mx-auto px-4 py-4">
-            <div class="flex justify-center items-center gap-4 flex-wrap">
-                <span class="text-gray-700 font-bold text-sm uppercase tracking-wide">Depart From:</span>
-                <NuxtLink v-for="(item, index) in tourMenu" :key="index" :to="item.path" :class="[
-                    'px-4 py-2 text-sm font-medium rounded-full transition-all duration-300',
-                    route.path === item.path 
-                        ? 'bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white shadow-md' 
-                        : 'text-gray-600 hover:text-[#FF6B35] hover:bg-[#FFF5F0]'
-                ]">
-                    {{ item.name }}
-                </NuxtLink>
+
+    <!-- Spacer for fixed header - matches header height -->
+    <div class="h-16 md:h-20 w-full"></div>
+
+    <div class="w-full bg-white">
+        <!-- Hero Carousel Section -->
+        <div class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden bg-map"
+            style="z-index: 1;">
+            <div class="max-w-7xl mx-auto px-4 py-12 md:py-20">
+                <div class="flex flex-col lg:flex-row items-center gap-8 lg:gap-12" @mouseenter="isHovering = true"
+                    @mouseleave="isHovering = false">
+                    <!-- Left Content -->
+                    <div class="flex-1 text-center lg:text-left space-y-6 z-10">
+                        <transition name="fade" mode="out-in">
+                            <div :key="currentSlide">
+                                <p class="text-gray-600 text-sm md:text-base font-medium mb-2">
+                                    {{ slides[currentSlide].subtitle }}
+                                </p>
+                                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-#094174 leading-tight mb-4">
+                                    {{ slides[currentSlide].title }}
+                                </h1>
+                                <p
+                                    class="text-gray-600 text-base md:text-lg leading-relaxed mb-8 max-w-xl mx-auto lg:mx-0">
+                                    {{ slides[currentSlide].description }}
+                                </p>
+                                <NuxtLink to="/booking"
+                                    class="inline-block bg-[#E91E63] hover:bg-[#C2185B] text-white px-8 py-3 md:px-10 md:py-4 rounded-lg font-bold text-sm md:text-base uppercase tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                    ĐẶT BÂY GIỜ
+                                </NuxtLink>
+                            </div>
+                        </transition>
+                    </div>
+
+                    <!-- Right Image - Circular Design -->
+                    <div class="flex-1 relative flex items-center justify-center">
+                        <transition name="fade" mode="out-in">
+                            <div :key="currentSlide" class="relative">
+                                <!-- Main circular image -->
+                                <div
+                                    class="relative w-[300px] h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]">
+                                    <!-- Background decorative circles -->
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full blur-3xl">
+                                    </div>
+
+                                    <!-- Main image circle -->
+                                    <div
+                                        class="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-8 border-white">
+                                        <img :src="slides[currentSlide].image" :alt="slides[currentSlide].title"
+                                            class="w-full h-full object-cover" />
+                                    </div>
+
+                                    <!-- Video thumbnail overlay (top left) -->
+                                    <div
+                                        class="absolute -top-4 -left-4 md:-top-8 md:-left-8 w-32 h-24 md:w-48 md:h-36 rounded-2xl overflow-hidden shadow-xl border-4 border-white bg-white transform hover:scale-105 transition-transform duration-300">
+                                        <img :src="slides[currentSlide].videoThumb" alt="Video"
+                                            class="w-full h-full object-cover" />
+                                        <!-- Play button -->
+                                        <div class="absolute inset-0 flex items-center justify-center bg-black/20">
+                                            <button
+                                                class="w-12 h-12 md:w-16 md:h-16 bg-[#E91E63] rounded-full flex items-center justify-center shadow-lg hover:bg-[#C2185B] transition-colors">
+                                                <svg class="w-5 h-5 md:w-7 md:h-7 text-white ml-1" fill="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path d="M8 5v14l11-7z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Airplane icon (bottom right) -->
+                                    <!-- <div class="absolute -bottom-4 -right-4 md:-bottom-6 md:-right-6 w-20 h-20 md:w-24 md:h-24 bg-white rounded-full shadow-xl flex items-center justify-center transform hover:scale-110 transition-transform duration-300">
+                    <svg class="w-10 h-10 md:w-12 md:h-12 text-[#E91E63]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                  </div> -->
+                                </div>
+                            </div>
+                        </transition>
+                    </div>
+                </div>
+
+                <!-- Carousel Indicators -->
+                <div class="flex justify-center items-center gap-2 mt-8 lg:mt-12">
+                    <button v-for="index in totalSlides" :key="index" @click="goToSlide(index - 1)" :class="[
+                        'transition-all duration-300',
+                        currentSlide === index - 1
+                            ? 'w-8 h-2 bg-[#E91E63] rounded-full'
+                            : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
+                    ]"></button>
+                </div>
             </div>
+
+            <!-- Decorative elements -->
+            <div class="absolute top-10 right-10 w-20 h-20 bg-blue-200/20 rounded-full blur-2xl"></div>
+            <div class="absolute bottom-20 left-20 w-32 h-32 bg-purple-200/20 rounded-full blur-3xl"></div>
         </div>
     </div>
 </template>
 
 <style scoped>
-.container {
-    max-width: 1200px;
+/* Fade transition for carousel */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
-.quang-easyrider {
-    font-family: 'Dancing Script', cursive;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-}
-
-.box-color {
-    background: rgba(48, 47, 47, 0.7);
-}
-
-/* Slide down animation for mobile menu */
-.slide-down-enter-active,
-.slide-down-leave-active {
-    transition: all 0.3s ease;
-    max-height: 1000px;
-    overflow: hidden;
-}
-
-.slide-down-enter-from {
-    max-height: 0;
+.fade-enter-from {
     opacity: 0;
+    transform: translateX(-20px);
 }
 
-.slide-down-enter-to {
-    max-height: 1000px;
-    opacity: 1;
-}
-
-.slide-down-leave-from {
-    max-height: 1000px;
-    opacity: 1;
-}
-
-.slide-down-leave-to {
-    max-height: 0;
+.fade-leave-to {
     opacity: 0;
+    transform: translateX(20px);
 }
 
-/* Responsive adjustments */
-@media (max-width: 640px) {
-    .container {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
+/* Custom scrollbar for dropdowns */
+select {
+    scrollbar-width: thin;
+    scrollbar-color: #E91E63 #f1f1f1;
 }
 
-@media (min-width: 641px) and (max-width: 1024px) {
-    .container {
-        padding-left: 2rem;
-        padding-right: 2rem;
-    }
+select::-webkit-scrollbar {
+    width: 8px;
 }
 
-@media (min-width: 1025px) {
-    .container {
-        padding-left: 3rem;
-        padding-right: 3rem;
-    }
+select::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+select::-webkit-scrollbar-thumb {
+    background: #E91E63;
+    border-radius: 4px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+    background: #C2185B;
+}
+
+.bg-map {
+    background-image: url('/map.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: overlay;
 }
 </style>

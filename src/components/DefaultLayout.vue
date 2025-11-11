@@ -2,13 +2,16 @@
 </script>
 
 <template>
+    <!-- Header with full width -->
     <Header />
-    <div class="pt-6 pb-12">
-        <div class="max-w-6xl mx-auto px-4 md:px-6">
-            <div class="w-full">
-                <slot />
-            </div>
-        </div>
-    </div>
+    
+    <!-- Main Content Area -->
+    <main class="py-8 bg-gray-50">
+        <!-- <div class="max-w-7xl mx-auto px-4 md:px-6"> -->
+            <slot />
+        <!-- </div> -->
+    </main>
+    
+    <!-- Footer -->
     <Footer />
 </template>
