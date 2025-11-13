@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
                     <div class="text-2xl md:text-3xl font-bold">
-                        <span class="text-gray-800">TREK</span><span class="text-[#E91E63]">EEL</span>
+                        <span class="text-gray-800">THE</span><span class="text-[#E91E63]">AN</span>
                     </div>
                 </NuxtLink>
 

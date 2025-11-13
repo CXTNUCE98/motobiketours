@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useWindowScroll } from '@vueuse/core';
+
 const router = useRouter();
 function navigateToNews(id: string) {
     router.push(`/news/${id}`);
@@ -29,12 +33,341 @@ const handleSearch = () => {
     // Handle search logic here
     console.log('Search:', searchForm.value);
 };
+
+// Parallax effect for testimonial background
+const testimonialBgOffset = ref(0);
+const testimonialSection = ref<any>(null);
+
+const { y: scrollY } = useWindowScroll();
+
+watch(scrollY, () => {
+    if (testimonialSection.value && typeof window !== 'undefined') {
+        const rect = testimonialSection.value.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        // Tính toán parallax dựa trên vị trí của section trong viewport
+        // Khi section vào viewport, background bắt đầu di chuyển
+        if (rect.top < windowHeight && rect.bottom > 0) {
+            // Tính toán offset: background di chuyển chậm hơn scroll (50% tốc độ)
+            // rect.top là khoảng cách từ top của section đến top của viewport
+            const scrollAmount = windowHeight - rect.top;
+            // Parallax effect: background di chuyển với tốc độ 50%
+            testimonialBgOffset.value = -(scrollAmount * 0.5);
+        } else if (rect.bottom <= 0) {
+            // Section đã scroll qua hết, giữ offset cuối cùng
+            testimonialBgOffset.value = -(windowHeight * 0.5);
+        } else {
+            // Section chưa vào viewport
+            testimonialBgOffset.value = 0;
+        }
+    }
+});
+
+// Newsletter form
+const newsletterEmail = ref('');
+const handleNewsletter = () => {
+    console.log('Newsletter signup:', newsletterEmail.value);
+    // Add newsletter signup logic here
+};
+
+// Testimonials data
+const testimonials = [
+    {
+        id: 1,
+        name: 'Samuel Kaisinger',
+        image: '/photos/hotel1.jpg',
+        text: 'Tôi và đội ngũ nhân viên chuyên nghiệp nhiệt tình, sự thân thiện, vui vẻ của nhân viên ở Tripo giúp có cảm giác thoải mái, tự nhiên và sẵn sàng quay lại với công ty du lịch trong những chuyến đi tiếp theo.'
+    },
+    {
+        id: 2,
+        name: 'Maurice Nygaard',
+        image: '/photos/hotel2.jpg',
+        text: 'Cảm ơn Trekeel đã mang đến cho tôi một kỳ nghỉ du lịch hoàn hảo về trải nghiệm văn hóa chân thực và điều mà chúng tôi đánh giá cao là dịch vụ của công ty cho các chuyến đi tiếp theo và giới thiệu quảng bá đến bạn bè của tôi.'
+    },
+    {
+        id: 3,
+        name: 'John Smith',
+        image: '/photos/hotel3.jpg',
+        text: 'Dịch vụ tuyệt vời! Đội ngũ hướng dẫn viên rất chuyên nghiệp và nhiệt tình. Tôi sẽ chắc chắn quay lại và giới thiệu cho bạn bè.'
+    }
+];
+
+// Carousel state
+const currentTestimonialIndex = ref(0);
+let carouselInterval: ReturnType<typeof setInterval> | null = null;
+
+// Function to change testimonial
+const goToTestimonial = (index: number) => {
+    currentTestimonialIndex.value = index;
+    // Reset auto-play timer when user manually changes
+    resetCarouselTimer();
+};
+
+// Auto-play carousel
+const startCarousel = () => {
+    // Clear existing interval if any
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+    }
+
+    // Set interval to auto-advance every 5 seconds
+    carouselInterval = setInterval(() => {
+        currentTestimonialIndex.value = (currentTestimonialIndex.value + 1) % testimonials.length;
+    }, 5000);
+};
+
+// Reset carousel timer
+const resetCarouselTimer = () => {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+    }
+    startCarousel();
+};
+
+// Pause carousel (optional - for hover pause)
+const pauseCarousel = () => {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+    }
+};
+
+// Resume carousel
+const resumeCarousel = () => {
+    if (!carouselInterval) {
+        startCarousel();
+    }
+};
+
+// Animation refs for fade in animations
+const customerSection = ref<any>(null);
+
+// Top Destinations tours data
+const topDestinationsTours = [
+    {
+        id: 'nam-cat-tien',
+        image: '/carousel/1.jpg',
+        title: 'Tour Nam Cát Tiên 2N1D: Thiên Nhiên Hoang Sơ Rừng',
+        price: 4500000,
+        originalPrice: 4972000,
+        discount: 9,
+        rating: 5,
+        duration: '3 ngày 2 đêm',
+        people: '3 người',
+        to: '/tour/nam-cat-tien'
+    },
+    {
+        id: 'mien-tay',
+        image: '/carousel/2.jpg',
+        title: 'Tour Miền Tây 4N3D: Cái Bè - Sóc Trăng - Bạc Liêu - Cà',
+        price: 3490000,
+        rating: 5,
+        duration: '4 ngày 3 đêm',
+        people: '5 người',
+        to: '/tour/mien-tay'
+    },
+    {
+        id: 'mien-bac-hcm',
+        image: '/carousel/3.jpg',
+        title: 'Tour Miền Bắc 4N3D: HCM - Hạ Long - Ninh Bình - Sapa',
+        price: 16780000,
+        rating: 5,
+        duration: '4 ngày 3 đêm',
+        people: '7 người',
+        to: '/tour/mien-bac-hcm'
+    },
+    {
+        id: 'mien-bac-ha-noi',
+        image: '/carousel/4.jpg',
+        title: 'Tour Miền Bắc 5N4D: Hà Nội - Ninh Bình - Vịnh Hạ Long',
+        price: 9100000,
+        rating: 5,
+        duration: '5 ngày 4 đêm',
+        people: '7 người',
+        to: '/tour/mien-bac-ha-noi'
+    }
+];
+
+// Tour Da Nang data
+const tourDaNangTours = [
+    {
+        id: 'hue',
+        image: '/photos/cungdinhhue.jpg',
+        title: 'TOUR HUẾ 1 NGÀY TỪ ĐÀ NẴNG',
+        price: 750000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Khám phá lịch sử',
+        showPeulisLabel: false,
+        to: '/tour/hue'
+    },
+    {
+        id: 'bana',
+        image: '/carousel/2.jpg',
+        title: 'ĐÀ NẴNG – BÀ NÀ HILLS',
+        price: 1250000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Tour Bà Nà',
+        showPeulisLabel: false,
+        to: '/tour/bana'
+    },
+    {
+        id: 'hoian',
+        image: '/carousel/4.jpg',
+        title: 'ĐÀ NẴNG – NGŨ HÀNH SƠN – HỘI AN',
+        price: 400000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Tour ghép',
+        showPeulisLabel: false,
+        to: '/tour/hoian'
+    }
+];
+
+// Tour Hot data
+const tourHotTours = [
+    {
+        id: 'hue-hot',
+        image: '/photos/cungdinhhue.jpg',
+        title: 'TOUR HUẾ 1 NGÀY TỪ ĐÀ NẴNG',
+        price: 750000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Khám phá lịch sử',
+        showPeulisLabel: false,
+        to: '/tour/hue'
+    },
+    {
+        id: 'bana-hot',
+        image: '/carousel/2.jpg',
+        title: 'ĐÀ NẴNG – BÀ NÀ HILLS',
+        price: 1250000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Tour Bà Nà',
+        showPeulisLabel: false,
+        to: '/tour/bana'
+    },
+    {
+        id: 'hoian-hot',
+        image: '/carousel/4.jpg',
+        title: 'ĐÀ NẴNG – NGŨ HÀNH SƠN – HỘI AN',
+        price: 400000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Tour ghép',
+        showPeulisLabel: false,
+        to: '/tour/hoian'
+    },
+    {
+        id: 'sontra-hot',
+        image: '/carousel/5.jpg',
+        title: 'SƠN TRÀ – NGŨ HÀNH SƠN – HỘI AN',
+        price: 450000,
+        rating: 5,
+        duration: '1 ngày',
+        people: '2-4 người',
+        badge: 'Tour Hội An',
+        showPeulisLabel: false,
+        to: '/tour/sontra'
+    }
+];
+
+// News data
+const latestNews = [
+    {
+        id: 'dong-nai-destinations',
+        image: '/carousel/1.jpg',
+        title: 'Những Điểm Đến Đẹp Lạ Không Nhiều Người Biết Ở Đồng Nai',
+        date: '04/05/2024',
+        views: 103,
+        description: 'Ngoài khu du lịch Bửu Long, Vườn Quốc gia Nam Cát Tiên đã quá quen thuộc, Đồng Nai còn nhiều điểm tham quan độc đáo, thích hợp cho những ai yêu thích khám phá và trải nghiệm.',
+        to: '/news/dong-nai-destinations'
+    },
+    {
+        id: 'bac-giang-village',
+        image: '/carousel/2.jpg',
+        title: 'Làng Cổ Thuần Việt Ở Bắc Giang',
+        date: '04/05/2024',
+        views: 46,
+        description: 'Nhịp sống chậm rãi, yên bình trên đường quê rợp bóng tre, hòa cùng khói lam chiều trên ruộng tại làng Sấu thuộc huyện Tân Yên.',
+        to: '/news/bac-giang-village'
+    },
+    {
+        id: 'thanh-hoa-tourism',
+        image: '/carousel/3.jpg',
+        title: 'Thanh Hóa Đón Gần 500.000 Khách Du Lịch, Gấp 9 Lần Đà Lạt',
+        date: '04/05/2024',
+        views: 50,
+        description: 'Trong 3 ngày của kỳ nghỉ lễ Giỗ tổ Hùng Vương, các điểm du lịch của tỉnh Thanh Hóa đã đón hơn 460.000 lượt khách; doanh thu đạt 520 tỉ đồng.',
+        to: '/news/thanh-hoa-tourism'
+    }
+];
+
+// Start carousel and setup animations on mount
+onMounted(() => {
+    startCarousel();
+
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    // Setup intersection observer for fade in animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    // Observer for fade in top animation
+    const observer = new (window as any).IntersectionObserver((entries: any[]) => {
+        entries.forEach((entry: any) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-fade-in-top');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe customer section for fade in left
+    if (customerSection.value) {
+        const customerObserver = new (window as any).IntersectionObserver((entries: any[]) => {
+            entries.forEach((entry: any) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-left');
+                    customerObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        customerObserver.observe(customerSection.value);
+    }
+
+    // Observe all sections with class 'fade-in-section'
+    setTimeout(() => {
+        document.querySelectorAll('.fade-in-section').forEach((section: any) => {
+            observer.observe(section);
+        });
+    }, 100);
+});
+
+// Cleanup on unmount
+onUnmounted(() => {
+    if (carouselInterval) {
+        clearInterval(carouselInterval);
+        carouselInterval = null;
+    }
+});
 </script>
 
 <template>
     <div>
         <!-- Tìm kiếm chuyến tham quan -->
-        <section class="py-12 md:py-16 bg-gray-50">
+        <section class="fade-in-section py-12 md:py-16 bg-gray-50">
             <div class="max-w-6xl mx-auto px-4">
                 <!-- Header Text -->
                 <div class="text-center mb-8 md:mb-12">
@@ -99,7 +432,7 @@ const handleSearch = () => {
         </section>
 
         <!-- Popular tour -->
-        <section class="py-12 md:py-16 bg-white">
+        <section class="fade-in-section py-12 md:py-16 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4">
                 <!-- Header Text -->
                 <div class="text-center mb-8 md:mb-12">
@@ -177,357 +510,296 @@ const handleSearch = () => {
         </section>
 
         <!-- Tour Da Nang Section -->
-        <section class="max-w-7xl mx-auto px-4 md:px-6 py-4">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-bold mb-2">
-                    <span class="text-gray-800">TOUR </span>
-                    <span class="text-[#E91E63]">ĐÀ NẴNG</span>
-                </h2>
-                <p class="text-gray-600 text-lg">Tour ghép hàng ngày khởi hành từ TP Đà Nẵng giá rẻ</p>
-            </div>
+        <section class="fade-in-section py-12 md:py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 md:px-6">
+                <div class="text-center mb-8 md:mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">
+                        <span class="text-gray-800">TOUR </span>
+                        <span class="text-[#E91E63]">ĐÀ NẴNG</span>
+                    </h2>
+                    <p class="text-gray-600 text-lg">Tour ghép hàng ngày khởi hành từ TP Đà Nẵng giá rẻ</p>
+                </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Sample Tour Cards -->
-                <NuxtLink to="/tour/hue"
-                    class="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="/photos/cungdinhhue.jpg" alt="Tour Huế"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-
-                        <!-- Badge -->
-                        <div
-                            class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2">
-                            <i class="bx bx-map text-[#FF6B35]"></i>
-                            <span class="text-sm font-semibold text-gray-700">Khám phá lịch sử</span>
-                        </div>
-
-                        <!-- Price -->
-                        <div
-                            class="absolute top-4 right-4 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                            750.000đ
-                        </div>
-
-                        <!-- Content -->
-                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
-                            <h3 class="text-xl font-bold mb-1">TOUR HUẾ 1 NGÀY TỪ ĐÀ NẴNG</h3>
-                        </div>
-                    </div>
-                </NuxtLink>
-
-                <NuxtLink to="/tour/bana"
-                    class="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="/carousel/2.jpg" alt="Bà Nà Hills"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-
-                        <div
-                            class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2">
-                            <i class="bx bx-cable-car text-[#FF6B35]"></i>
-                            <span class="text-sm font-semibold text-gray-700">Tour Bà Nà</span>
-                        </div>
-
-                        <div
-                            class="absolute top-4 right-4 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                            1.250.000đ
-                        </div>
-
-                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
-                            <h3 class="text-xl font-bold mb-1">ĐÀ NẴNG – BÀ NÀ HILLS</h3>
-                        </div>
-                    </div>
-                </NuxtLink>
-
-                <NuxtLink to="/tour/hoian"
-                    class="group relative overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="/carousel/4.jpg" alt="Hội An"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-
-                        <div
-                            class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-2">
-                            <i class="bx bx-building-house text-[#FF6B35]"></i>
-                            <span class="text-sm font-semibold text-gray-700">Tour ghép</span>
-                        </div>
-
-                        <div
-                            class="absolute top-4 right-4 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-4 py-2 rounded-full font-bold shadow-lg">
-                            400.000đ
-                        </div>
-
-                        <div class="absolute bottom-0 left-0 right-0 p-5 text-white">
-                            <h3 class="text-xl font-bold mb-1">ĐÀ NẴNG – NGŨ HÀNH SƠN – HỘI AN</h3>
-                        </div>
-                    </div>
-                </NuxtLink>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <TourCard v-for="tour in tourDaNangTours" :key="tour.id" :id="tour.id" :image="tour.image"
+                        :title="tour.title" :price="tour.price" :rating="tour.rating" :duration="tour.duration"
+                        :people="tour.people" :badge="tour.badge" :show-peulis-label="tour.showPeulisLabel"
+                        :to="tour.to" />
+                </div>
             </div>
         </section>
+
         <!-- Tour Hot Section -->
-        <section class="max-w-7xl mx-auto px-4 md:px-6 py-4">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-bold mb-2">
-                    <span class="text-gray-800">TOUR </span>
-                    <span class="text-[#E91E63]">HOT</span>
-                </h2>
-                <p class="text-gray-600 text-lg">Tour được nhiều khách lựa chọn nhất</p>
-            </div>
+        <section class="fade-in-section py-12 md:py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 md:px-6">
+                <div class="text-center mb-8 md:mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">
+                        <span class="text-gray-800">TOUR </span>
+                        <span class="text-[#E91E63]">HOT</span>
+                    </h2>
+                    <p class="text-gray-600 text-lg">Tour được nhiều khách lựa chọn nhất</p>
+                </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                <NuxtLink to="/tour/hue"
-                    class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="/photos/cungdinhhue.jpg" alt="Tour Huế"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 px-2 py-1 rounded text-xs font-semibold text-gray-700 flex items-center gap-1">
-                            <i class="bx bx-map-alt text-[#FF6B35]"></i>
-                            <span>Khám phá lịch sử</span>
-                        </div>
-                        <div
-                            class="absolute top-3 right-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-3 py-1 rounded-full text-sm font-bold">
-                            750.000đ
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
-                            <h4 class="font-bold text-sm">TOUR HUẾ 1 NGÀY TỪ ĐÀ NẴNG</h4>
-                        </div>
-                    </div>
-                </NuxtLink>
-
-                <NuxtLink to="/tour/bana"
-                    class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="/carousel/2.jpg" alt="Bà Nà"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 px-2 py-1 rounded text-xs font-semibold text-gray-700 flex items-center gap-1">
-                            <i class="bx bx-cable-car text-[#FF6B35]"></i>
-                            <span>Tour Bà Nà</span>
-                        </div>
-                        <div
-                            class="absolute top-3 right-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-3 py-1 rounded-full text-sm font-bold">
-                            1.250.000đ
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
-                            <h4 class="font-bold text-sm">ĐÀ NẴNG – BÀ NÀ HILLS</h4>
-                        </div>
-                    </div>
-                </NuxtLink>
-
-                <NuxtLink to="/tour/hoian"
-                    class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="/carousel/4.jpg" alt="Hội An"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 px-2 py-1 rounded text-xs font-semibold text-gray-700 flex items-center gap-1">
-                            <i class="bx bx-moon text-[#FF6B35]"></i>
-                            <span>Tour ghép</span>
-                        </div>
-                        <div
-                            class="absolute top-3 right-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-3 py-1 rounded-full text-sm font-bold">
-                            400.000đ
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
-                            <h4 class="font-bold text-sm">ĐÀ NẴNG – NGŨ HÀNH SƠN – HỘI AN</h4>
-                        </div>
-                    </div>
-                </NuxtLink>
-
-                <NuxtLink to="/tour/sontra"
-                    class="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
-                    <div class="relative h-48 overflow-hidden">
-                        <img src="/carousel/5.jpg" alt="Sơn Trà"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                        <div
-                            class="absolute top-3 left-3 bg-white/90 px-2 py-1 rounded text-xs font-semibold text-gray-700 flex items-center gap-1">
-                            <i class="bx bx-landscape text-[#FF6B35]"></i>
-                            <span>Tour Hội An</span>
-                        </div>
-                        <div
-                            class="absolute top-3 right-3 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white px-3 py-1 rounded-full text-sm font-bold">
-                            450.000đ
-                        </div>
-                        <div class="absolute bottom-0 left-0 right-0 p-3 text-white">
-                            <h4 class="font-bold text-sm">SƠN TRÀ – NGŨ HÀNH SƠN – HỘI AN</h4>
-                        </div>
-                    </div>
-                </NuxtLink>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <TourCard v-for="tour in tourHotTours" :key="tour.id" :id="tour.id" :image="tour.image"
+                        :title="tour.title" :price="tour.price" :rating="tour.rating" :duration="tour.duration"
+                        :people="tour.people" :badge="tour.badge" :show-peulis-label="tour.showPeulisLabel"
+                        :to="tour.to" />
+                </div>
             </div>
         </section>
 
-        <!-- About Section -->
-        <div class="bg-white rounded-xl shadow-lg max-w-7xl mx-auto px-4 md:px-6 py-4">
-            <div class="text-center mb-6">
-                <h2 class="text-4xl font-bold mb-2">
-                    <span class="text-gray-800">ABOUT </span>
-                    <span class="text-[#E91E63]">ME</span>
-                </h2>
+        <!-- Parallax Background Section -->
+        <div class="parallax"></div>
+
+        <!-- Testimonials Content Section -->
+        <section ref="testimonialSection" class="testimonials-content relative">
+            <div class="relative z-10 h-full flex items-end justify-start">
+                <div class="w-full px-2 md:px-4 lg:px-6 pb-4 md:pb-6">
+                    <!-- Testimonial Card -->
+                    <div ref="customerSection"
+                        class="max-w-3xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 relative customer-section-fade"
+                        @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
+                        <!-- Icon xe hơi -->
+                        <div class="absolute top-0 right-4 w-20 h-20 md:w-24 md:h-24">
+                            <img src="/logo-car.png" alt="logo-car" class="w-full h-full object-contain">
+                        </div>
+
+                        <!-- customer -->
+                        <div>
+                            <p class="text-red-600 text-sm font-semibold mb-2">#KHÁCH HÀNG HÀI LÒNG</p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-[#094174] mb-8">
+                                Khách Hàng Của Chúng Tôi Nói Gì
+                            </h2>
+
+                            <!-- Current Testimonial with transition -->
+                            <transition name="fade" mode="out-in">
+                                <div :key="currentTestimonialIndex">
+                                    <p class="text-gray-600 text-base md:text-lg leading-relaxed mb-8">
+                                        {{ testimonials[currentTestimonialIndex].text }}
+                                    </p>
+
+                                    <!-- Author -->
+                                    <div class="flex items-center gap-4">
+                                        <img :src="testimonials[currentTestimonialIndex].image"
+                                            :alt="testimonials[currentTestimonialIndex].name"
+                                            class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-gray-200" />
+                                        <div>
+                                            <h3 class="text-lg md:text-xl font-bold text-[#094174]">
+                                                {{ testimonials[currentTestimonialIndex].name }}
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </transition>
+                        </div>
+
+                        <!-- Carousel indicators -->
+                        <div class="flex justify-center gap-3 mt-8">
+                            <button v-for="(testimonial, index) in testimonials" :key="testimonial.id"
+                                @click="goToTestimonial(index)" :class="[
+                                    'w-10 h-1.5 rounded-full transition-all duration-300',
+                                    currentTestimonialIndex === index
+                                        ? 'bg-red-500'
+                                        : 'bg-gray-300 hover:bg-gray-400'
+                                ]" :aria-label="`Go to testimonial ${index + 1}`"></button>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-4">
-                <p class="text-center text-lg">
-                    My name's <span class="font-bold text-[#FF6B35]">Quang</span>. I have over 20 years as a guide for
-                    the tour minibus-car-motorbike.
-                    With many years of experience as a tour guide, I believe I will make guests please. With cruise
-                    along the
-                    <span class="font-semibold text-[#E91E63]">Ho Chi Minh Trail</span> to discover the country's 54
-                    ethnic to learn about
-                    the customs and traditions of each ethnic group in Vietnam.
-                </p>
+        <!-- Newsletter Section - không có parallax -->
+        <section class="fade-in-section py-20 md:py-32 bg-white">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+                    <!-- Form Side -->
+                    <div>
+                        <p class="text-red-600 text-sm font-semibold mb-2">Nhận Ưu Đãi</p>
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[#094174] mb-8">
+                            Đăng Ký Cho Chúng Tôi
+                        </h2>
 
-                <p>
-                    And on the path of the legendary Ho Chi Minh you can admire the spectacular mountains,
-                    beautiful waterfalls wild and learn about the history of the Ho Chi Minh trail. Is a legendary road
-                    of
-                    Vietnam during the war against American and I make sure that you will feel excited to discover and
-                    learn
-                    the secret of Vietnam country.
-                </p>
+                        <div class="space-y-4">
+                            <input v-model="newsletterEmail" type="email" placeholder="Địa chỉ email......"
+                                class="w-full px-6 py-4 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none text-gray-700 placeholder-gray-400 transition-all" />
+                            <button @click="handleNewsletter"
+                                class="bg-[#E91E63] hover:bg-[#C2185B] text-white font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+                                Đăng Ký
+                            </button>
+                        </div>
 
-                <div class="bg-gradient-to-r from-[#FFF5F0] to-[#FFE8E0] p-4 rounded-lg border-l-4 border-[#FF6B35]">
-                    <p class="text-[#FF6B35] font-bold italic">My company have Car and minivan too (Guide)</p>
+                        <!-- Partner Logos -->
+                        <!-- <div class="flex flex-wrap items-center gap-8 mt-12">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Quora_logo_2015.svg"
+                                alt="Quora" class="h-8 opacity-60 hover:opacity-100 transition-opacity" />
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg"
+                                alt="Airbnb" class="h-8 opacity-60 hover:opacity-100 transition-opacity" />
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/1/1b/Snapdeal_logo.svg"
+                                alt="Snapdeal" class="h-8 opacity-60 hover:opacity-100 transition-opacity" />
+                        </div> -->
+                    </div>
+
+                    <!-- Image Side -->
+                    <div class="relative">
+                        <img src="/news-letter-image.png" alt="Newsletter" class="w-full h-auto object-contain " />
+                    </div>
                 </div>
+            </div>
+        </section>
 
-                <div class="my-6 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                    <a href="http://thicongnhadanang.blogspot.com/" target="_blank" class="block">
-                        <img class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500"
-                            alt="vietnam-danang-hoian-easyrider" src="../public/best_discover_vn.jpg" />
-                    </a>
-                </div>
-
-                <div class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white p-6 rounded-xl shadow-xl">
-                    <h3 class="text-2xl font-bold mb-3">Why choose us?</h3>
-                    <p class="text-white/95 leading-relaxed">
-                        We always try to offer tourists and travellers the tours in which they get to see the
-                        most spectacular views of the <strong>Central Highland</strong>, <strong>Mekong Delta</strong>,
-                        countrysides, <strong>Ho Chi Minh trails</strong> through Vietnam and all about the local life
-                        of
-                        people that we meet on the road. This is the only way to get off the beaten tracks.
+        <section class="fade-in-section py-12 md:py-16 bg-white">
+            <div class="max-w-7xl mx-auto px-4 md:px-6">
+                <!-- Header Text -->
+                <div class="text-center mb-8 md:mb-12">
+                    <p class="text-red-600 text-sm md:text-base font-medium mb-2">
+                        Điểm Đến Hàng Đầu
+                    </p>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174] mb-4">
+                        Tour Nổi Bật Của Chúng Tôi
+                    </h2>
+                    <p class="text-gray-600 text-base md:text-lg max-w-3xl mx-auto">
+                        Những địa điểm đặc sắc cả trong và ngoài nước. Mang đến sự đa dạng cho khách hàng thoải mái lựa
+                        chọn chuyến đi cho mình.
                     </p>
                 </div>
 
-                <p>
-                    After working really hard for a long time, we have been strongly recommended in many different
-                    guidebooks such as <span class="font-semibold">Lonely Planet</span>,
-                    <span class="font-semibold">Rough Guide</span> etc...and of course in many reputed sites such as:
-                </p>
-
-                <div class="flex flex-wrap justify-center gap-3 my-4">
-                    <a href="https://www.tripadvisor.com" target="_blank"
-                        class="inline-flex items-center gap-2 bg-[#FF6B35] hover:bg-[#E91E63] text-white px-5 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-                        <i class="bx bx-globe"></i>
-                        www.tripadvisor.com
-                    </a>
-                    <a href="https://www.travelfish.org" target="_blank"
-                        class="inline-flex items-center gap-2 bg-[#FF6B35] hover:bg-[#E91E63] text-white px-5 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-                        <i class="bx bx-globe"></i>
-                        www.travelfish.org
-                    </a>
-                    <a href="https://www.lonelyplanet.com" target="_blank"
-                        class="inline-flex items-center gap-2 bg-[#FF6B35] hover:bg-[#E91E63] text-white px-5 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-                        <i class="bx bx-globe"></i>
-                        www.lonelyplanet.com
-                    </a>
-                </div>
-
-                <div
-                    class="bg-gradient-to-r from-[#FFA726] to-[#FF9800] text-white p-6 rounded-xl text-center font-bold text-2xl shadow-xl">
-                    So please come and visit us about our tours and...DO IT!
+                <!-- Top Destinations Tours Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <TourCard v-for="tour in topDestinationsTours" :key="tour.id" :id="tour.id" :image="tour.image"
+                        :title="tour.title" :price="tour.price" :original-price="tour.originalPrice"
+                        :discount="tour.discount" :rating="tour.rating" :duration="tour.duration" :people="tour.people"
+                        :to="tour.to" />
                 </div>
             </div>
-        </div>
-        <!-- Gallery & Contact Section -->
-        <div class="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto px-4 md:px-6">
-            <!-- Gallery -->
-            <div class="w-full md:w-[60%]">
-                <div class="bg-white rounded-lg shadow-lg p-4">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-1 h-6 bg-[#FF6B35]"></div>
-                        <h3 class="text-2xl font-bold text-[#1a2332]">PHOTO GALLERY</h3>
-                    </div>
-                    <div
-                        class="rounded-lg overflow-hidden shadow-md mb-4 hover:shadow-xl transition-shadow duration-300">
-                        <img class="w-full h-64 object-cover transform hover:scale-105 transition-transform duration-500"
-                            src="../public/gallery.jpg" alt="gallery">
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                            <img class="w-full h-40 object-cover transform hover:scale-110 transition-transform duration-500"
-                                src="../public/h-1.jpg" alt="h_1">
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                            <img class="w-full h-40 object-cover transform hover:scale-110 transition-transform duration-500"
-                                src="../public/h-2.jpg" alt="h_2">
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                            <img class="w-full h-40 object-cover transform hover:scale-110 transition-transform duration-500"
-                                src="../public/h-3.jpg" alt="h_3">
-                        </div>
-                        <div class="rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                            <img class="w-full h-40 object-cover transform hover:scale-110 transition-transform duration-500"
-                                src="../public/h-4.jpg" alt="h_4">
-                        </div>
-                    </div>
+        </section>
+
+        <!-- News -->
+        <section class="fade-in-section py-12 md:py-16 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 md:px-6">
+                <!-- Header Text -->
+                <div class="text-center mb-8 md:mb-12">
+                    <p class="text-red-600 text-sm md:text-base font-medium mb-2">
+                        Tin Tức
+                    </p>
+                    <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174]">
+                        Bài Viết Mới Nhất
+                    </h2>
+                </div>
+
+                <!-- News Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <NewsCard
+                        v-for="newsItem in latestNews"
+                        :key="newsItem.id"
+                        :id="newsItem.id"
+                        :image="newsItem.image"
+                        :title="newsItem.title"
+                        :date="newsItem.date"
+                        :views="newsItem.views"
+                        :description="newsItem.description"
+                        :to="newsItem.to"
+                    />
                 </div>
             </div>
+        </section>
 
-            <!-- Contact -->
-            <div class="w-full md:w-[40%] md:min-w-[300px]">
-                <div class="bg-gradient-to-br from-[#2C3E50] to-[#34495E] rounded-xl shadow-xl p-6 text-white">
-                    <div class="flex items-center gap-2 mb-4">
-                        <div class="w-1 h-6 bg-[#FF6B35]"></div>
-                        <h3 class="text-2xl font-bold">CONTACT INFO</h3>
-                    </div>
-
-                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-5 mb-4">
-                        <p class="font-bold text-xl text-center text-[#FF6B35] mb-4 italic">QUANG EASYRIDER</p>
-                        <div class="space-y-3">
-                            <div
-                                class="flex items-start gap-3 bg-white/10 p-3 rounded-lg hover:bg-white/20 transition-colors duration-300">
-                                <span class="text-[#FFA726] font-semibold min-w-[70px]">Website:</span>
-                                <a href="http://danangmotorbiketours.com" target="_blank"
-                                    class="text-white hover:text-[#FFA726] transition-colors duration-300">
-                                    danangmotorbiketours.com
-                                </a>
-                            </div>
-                            <div
-                                class="flex items-start gap-3 bg-white/10 p-3 rounded-lg hover:bg-white/20 transition-colors duration-300">
-                                <span class="text-[#FFA726] font-semibold min-w-[70px]">Email:</span>
-                                <a href="mailto:vietnammotorbikegroup@gmail.com"
-                                    class="text-white hover:text-[#FFA726] transition-colors duration-300 break-all">
-                                    vietnammotorbikegroup@gmail.com
-                                </a>
-                            </div>
-                            <div
-                                class="flex items-start gap-3 bg-white/10 p-3 rounded-lg hover:bg-white/20 transition-colors duration-300">
-                                <span class="text-[#FFA726] font-semibold min-w-[70px]">Tel:</span>
-                                <a href="tel:+84903579094"
-                                    class="text-white hover:text-[#FFA726] transition-colors duration-300">
-                                    (+84)0903.579094 (Mr Quang)
-                                </a>
-                            </div>
-                            <div
-                                class="flex items-start gap-3 bg-white/10 p-3 rounded-lg hover:bg-white/20 transition-colors duration-300">
-                                <span class="text-[#FFA726] font-semibold min-w-[70px]">Address:</span>
-                                <p class="text-white">14 Nguyen Thi Thap St, Thanh Khe District, Danang City, Vietnam
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center">
-                        <img class="w-full rounded-lg shadow-lg" src="../public/yellow_back.png" alt="Tripadvisor">
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.testimonial-bg-layer {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    right: 0;
+    bottom: -150px;
+    background-image: url('/testimonial-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    will-change: transform;
+    z-index: 0;
+}
+
+.parallax {
+    /* The image used */
+    background-image: url('/testimonial-bg.jpg');
+
+    /* Full height - sử dụng viewport height */
+    height: 80vh;
+    min-height: 600px;
+
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Turn off parallax scrolling for tablets and phones */
+@media only screen and (max-device-width: 1366px) {
+    .parallax {
+        background-attachment: scroll;
+    }
+}
+
+/* Đảm bảo content section có background trong suốt và nằm trên parallax */
+.testimonials-content {
+    background: transparent;
+    position: relative;
+    z-index: 10;
+    /* Đưa content lên trên parallax bằng negative margin */
+    margin-top: -80vh;
+    /* Chiều cao bằng với parallax để content nằm ở dưới */
+    height: 80vh;
+    min-height: 600px;
+}
+
+/* Fade transition cho carousel */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Fade in from top animation for all sections */
+.fade-in-section {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.fade-in-section.animate-fade-in-top {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Fade in from left animation for customer section */
+.customer-section-fade {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.customer-section-fade.animate-fade-in-left {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+</style>
