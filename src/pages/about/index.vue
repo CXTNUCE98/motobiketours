@@ -1,88 +1,227 @@
 <script lang="ts" setup>
 
+// Tour guides data
+const tourGuides = [
+    {
+        id: 1,
+        name: 'Jane Cooper',
+        image: 'https://tte.edu.vn/public/upload/2025/01/avatar-cho39.webp',
+        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+    },
+    {
+        id: 2,
+        name: 'Wade Warren',
+        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH7wZvz7hnx8d5vw-S4y-jQNTAzrHICXvM8A&s',
+        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+    },
+    {
+        id: 3,
+        name: 'Jenny Wilson',
+        image: 'https://maunailxinh.com/wp-content/uploads/2025/06/avatar-meo-ngau%E2%80%8B-2.jpg',
+        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+    },
+    {
+        id: 4,
+        name: 'Mamnun Khan',
+        image: 'https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-7.jpg',
+        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+    }
+]
 </script>
 
 <template>
-    <div>
-        <!-- Page Header -->
-        <div class="text-center mb-8">
-            <h1 class="text-4xl font-bold mb-2">
-                <span class="text-gray-800">ABOUT </span>
-                <span class="text-[#E91E63]">ME</span>
-            </h1>
-            <p class="text-gray-600 text-lg">Your trusted guide to Vietnam's hidden treasures</p>
-        </div>
+    <div class="bg-white min-h-screen">
+        <!-- Spacer for fixed header -->
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20">
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
+                <!-- Left Side - Text Content -->
+                <div class="space-y-6 sm:space-y-8 order-2 lg:order-1">
+                    <!-- Main Title -->
+                    <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-4 sm:mb-6 leading-tight">
+                        THEAN || Đại Lý Du Lịch & Đặt Tour
+                    </h1>
 
-        <!-- Content -->
-        <div class="bg-white rounded-xl shadow-lg p-8 mb-6">
-            <div class="prose prose-lg max-w-none text-gray-700 leading-relaxed space-y-4">
-                <p class="text-center text-lg">
-                    My name's <span class="font-bold text-[#FF6B35]">Quang</span>. I have over 20 years as a guide for the tour minibus-car-motorbike. 
-                    With many years of experience as a tour guide, I believe I will make guests please. With cruise along the 
-                    <span class="font-semibold text-[#E91E63]">Ho Chi Minh Trail</span> to discover the country's 54 ethnic to learn about 
-                    the customs and traditions of each ethnic group in Vietnam.
-                </p>
+                    <!-- Section 1: Giới thiệu về THEAN -->
+                    <div class="space-y-3 sm:space-y-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Giới thiệu về THEAN</h2>
+                        <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                            THEAN là đại lý du lịch trực tuyến uy tín tại Việt Nam, chuyên cung cấp các dịch vụ du lịch đa dạng và chất lượng cao.
+                        </p>
+                        
+                        <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                            Các dịch vụ chính của chúng tôi bao gồm:
+                        </p>
+                        
+                        <ul class="space-y-1.5 sm:space-y-2 text-gray-700 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">
+                            <li>Đặt vé máy bay, tàu hỏa, xe khách</li>
+                            <li>Đặt phòng khách sạn, resort</li>
+                            <li>Đặt tour du lịch trong nước và quốc tế</li>
+                            <li>Dịch vụ visa du lịch</li>
+                            <li>Dịch vụ thuê xe du lịch</li>
+                            <li>Dịch vụ bảo hiểm du lịch</li>
+                        </ul>
 
-                <p>
-                    And on the path of the legendary Ho Chi Minh you can admire the spectacular mountains,
-                    beautiful waterfalls wild and learn about the history of the Ho Chi Minh trail. Is a legendary road of
-                    Vietnam during the war against American and I make sure that you will feel excited to discover and learn
-                    the secret of Vietnam country.
-                </p>
+                        <p class="text-gray-700 leading-relaxed text-sm sm:text-base">
+                            Với đội ngũ nhân viên chuyên nghiệp, nhiệt tình và giàu kinh nghiệm, THEAN cam kết mang đến cho khách hàng những trải nghiệm du lịch tuyệt vời nhất.
+                        </p>
+                    </div>
 
-                <div class="bg-gradient-to-r from-[#FFF5F0] to-[#FFE8E0] p-4 rounded-lg border-l-4 border-[#FF6B35]">
-                    <p class="text-[#FF6B35] font-bold italic">My company have Car and minivan too (Guide)</p>
+                    <!-- Section 2: Ưu điểm -->
+                    <div class="space-y-3 sm:space-y-4">
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800">Ưu điểm khi sử dụng dịch vụ của THEAN</h2>
+                        
+                        <ul class="space-y-1.5 sm:space-y-2 text-gray-700 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">
+                            <li>Giá cả cạnh tranh</li>
+                            <li>Chất lượng dịch vụ uy tín</li>
+                            <li>Sản phẩm du lịch đa dạng</li>
+                            <li>Đặt tour và vé máy bay nhanh chóng, dễ dàng</li>
+                            <li>Hỗ trợ tư vấn 24/7</li>
+                            <li>Nhiều chương trình khuyến mãi hấp dẫn</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div class="my-6 rounded-lg overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
-                    <a href="http://thicongnhadanang.blogspot.com/" target="_blank" class="block">
-                        <img class="w-full h-full object-cover transform hover:scale-105 transition-transform duration-500" 
-                            alt="vietnam-danang-hoian-easyrider"
-                            src="../../public/best_discover_vn.jpg" />
-                    </a>
-                </div>
-
-                <div class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white p-6 rounded-xl shadow-xl">
-                    <h3 class="text-2xl font-bold mb-3">Why choose us?</h3>
-                    <p>
-                        We always try to offer tourists and travellers the tours in which they get to see the
-                        most spectacular views of the <strong>Central Highland</strong>, <strong>Mekong Delta</strong>, 
-                        countrysides, <strong>Ho Chi Minh trails</strong> through Vietnam and all about the local life of 
-                        people that we meet on the road. This is the only way to get off the beaten tracks.
-                    </p>
-                </div>
-
-                <p>
-                    After working really hard for a long time, we have been strongly recommended in many different
-                    guidebooks such as <span class="font-semibold">Lonely Planet</span>, 
-                    <span class="font-semibold">Rough Guide</span> etc...and of course in many reputed sites such as:
-                </p>
-
-                <div class="flex flex-wrap justify-center gap-3 my-4">
-                    <a href="https://www.tripadvisor.com" target="_blank" 
-                        class="inline-flex items-center gap-2 bg-[#FF6B35] hover:bg-[#E91E63] text-white px-5 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-                        <i class="bx bx-globe"></i>
-                        www.tripadvisor.com
-                    </a>
-                    <a href="https://www.travelfish.org" target="_blank" 
-                        class="inline-flex items-center gap-2 bg-[#FF6B35] hover:bg-[#E91E63] text-white px-5 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-                        <i class="bx bx-globe"></i>
-                        www.travelfish.org
-                    </a>
-                    <a href="https://www.lonelyplanet.com" target="_blank" 
-                        class="inline-flex items-center gap-2 bg-[#FF6B35] hover:bg-[#E91E63] text-white px-5 py-3 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold">
-                        <i class="bx bx-globe"></i>
-                        www.lonelyplanet.com
-                    </a>
-                </div>
-
-                <div class="bg-gradient-to-r from-[#FFA726] to-[#FF9800] text-white p-6 rounded-xl text-center font-bold text-2xl shadow-xl">
-                    So please come and visit us about our tours and...DO IT!
+                <!-- Right Side - Image Collage -->
+                <div class="flex flex-col gap-3 sm:gap-4 order-1 lg:order-2">
+                    <!-- Top Image (Larger) -->
+                    <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden shadow-lg">
+                        <img 
+                            src="/photos/taynguyen.jpg" 
+                            alt="Mountain adventure" 
+                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        />
+                    </div>
+                    
+                    <!-- Bottom Two Images -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <!-- Bottom Left Image -->
+                        <div class="w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden shadow-lg">
+                            <img 
+                                src="/photos/mytho1.jpg" 
+                                alt="Beach relaxation" 
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            />
+                        </div>
+                        
+                        <!-- Bottom Right Image -->
+                        <div class="w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden shadow-lg">
+                            <img 
+                                src="/photos/cungdinhhue.jpg" 
+                                alt="Cultural tour" 
+                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Hướng dẫn viên du lịch Section -->
+        <section class="bg-gray-50 py-12 sm:py-16 md:py-20 lg:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Section Header -->
+                <div class="text-center mb-8 sm:mb-12 md:mb-16">
+                    <p class="text-red-600 text-xs sm:text-sm font-semibold mb-2 uppercase tracking-wide">
+                        Hướng Dẫn Viên Du Lịch
+                    </p>
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 leading-tight">
+                        Gặp Gỡ Hướng Dẫn Viên Xuất Sắc Của Chúng Tôi
+                    </h2>
+                </div>
+
+                <!-- Tour Guides Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                    <div 
+                        v-for="guide in tourGuides" 
+                        :key="guide.id"
+                        class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+                    >
+                        <!-- Profile Image -->
+                        <div class="relative h-64 sm:h-72 md:h-80 overflow-hidden">
+                            <img 
+                                :src="guide.image" 
+                                :alt="guide.name"
+                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                        </div>
+
+                        <!-- Card Content -->
+                        <div class="p-4 sm:p-5 md:p-6">
+                            <!-- Category/Role -->
+                            <p class="text-red-600 text-xs sm:text-sm font-bold uppercase tracking-wide mb-2">
+                                HƯỚNG DẪN VIÊN DU LỊCH
+                            </p>
+
+                            <!-- Name -->
+                            <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
+                                {{ guide.name }}
+                            </h3>
+
+                            <!-- Description -->
+                            <p class="text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-4">
+                                {{ guide.description }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </template>
 
 <style scoped>
+/* ============================================
+   Image Hover Effects
+   ============================================ */
+img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+}
+
+/* Prevent layout shift on image hover */
+div[class*="overflow-hidden"] {
+    overflow: hidden;
+}
+
+/* ============================================
+   Responsive Typography
+   ============================================ */
+@media (max-width: 640px) {
+    h1 {
+        line-height: 1.2;
+    }
+    
+    h2 {
+        line-height: 1.3;
+    }
+}
+
+/* ============================================
+   List Styling Improvements
+   ============================================ */
+ul {
+    line-height: 1.6;
+}
+
+/* ============================================
+   Spacing Utilities
+   ============================================ */
+@media (max-width: 640px) {
+    .space-y-6 > * + * {
+        margin-top: 1rem;
+    }
+}
+
+/* ============================================
+   Line Clamp Utility
+   ============================================ */
+.line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
 </style>

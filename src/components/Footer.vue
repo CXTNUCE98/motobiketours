@@ -1,46 +1,100 @@
 <script setup>
+const tourLinks = [
+    { title: 'Tour Miền Bắc 2', url: '/tour/city/mien-bac' },
+    { title: 'Tour Miền Bắc 1', url: '/tour/city/mien-bac' },
+    { title: 'Tour Miền Bắc', url: '/tour/city/mien-bac' },
+    { title: 'Tour Miền Trung', url: '/tour/city/mien-trung' },
+    { title: 'Tour Miền Nam', url: '/tour/city/mien-nam' },
+    { title: 'Tour Trong Nước', url: '/tour' },
+    { title: 'Tour Châu Á', url: '/tour' }
+];
+
+const galleryImages = [
+    '/carousel/1.jpg',
+    '/carousel/2.jpg',
+    '/carousel/3.jpg',
+    '/carousel/4.jpg',
+    '/carousel/5.jpg',
+    '/carousel/6.jpg'
+];
 </script>
 
 <template>
-    <footer class="bg-gradient-to-br from-[#2C3E50] to-[#34495E] text-gray-200 max-w-6xl mx-auto mt-12 shadow-2xl">
-        <div class="border-t-4 border-gradient-to-r from-[#FF6B35] via-[#E91E63] to-[#FFA726]" style="border-image: linear-gradient(90deg, #FF6B35, #E91E63, #FFA726) 1;"></div>
-        <div class="container mx-auto px-4 py-8">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <!-- Left: copyright -->
-                <div class="text-sm leading-relaxed">
-                    <p class="font-medium text-white text-lg mb-2">Vietnam Motorcycle Adventures</p>
-                    <p class="text-gray-300">Copyright © 2015 - 2025 Hoi An, Danang</p>
-                    <p class="text-[#FF6B35] font-bold mt-1">Quang Easy Rider</p>
-                    <p class="text-xs mt-3 text-gray-400">Powered by <a href="https://web360.com.vn" target="_blank" rel="noopener noreferrer"
-                            class="text-[#FFA726] hover:text-[#FF6B35] hover:underline transition-colors duration-300">Web360</a></p>
-                </div>
-
-                <!-- Right: contact -->
-                <div class="flex items-start md:items-center gap-4 md:gap-6 self-end md:self-auto">
-                    <img src="../public/motobike_footer.png" alt="Quang Easy Rider"
-                        class="w-auto h-24 hidden md:block drop-shadow-2xl opacity-90">
-
-                    <div class="space-y-2 text-sm">
-                        <div class="flex items-center gap-2">
-                            <i class="bx bx-phone text-[#FF6B35] text-lg"></i>
-                            <span class="text-[#FFA726] font-semibold">Mobile:</span>
-                            <a href="tel:+84903579094" class="text-white hover:text-[#FF6B35] transition-colors">(+84)0903579094 (Mr Quang)</a>
+    <footer class="bg-white text-gray-700 relative overflow-hidden">
+        <div class="container mx-auto px-6 py-12 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-10 gap-8">
+                <!-- Logo and Contact Info -->
+                <div class="lg:col-span-3">
+                    <div class="mb-6">
+                        <h2 class="text-3xl font-bold">
+                            <span class="text-black">THE</span><span class="text-red-600">AN</span>
+                        </h2>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-2">Địa chỉ</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                14 Nguyen Thi Thap St, Thanh Khe District, Danang City, Vietnam
+                            </p>
                         </div>
-
-                        <div class="flex items-center gap-2">
-                            <i class="bx bx-envelope text-[#FF6B35] text-lg"></i>
-                            <span class="text-[#FFA726] font-semibold">Email:</span>
-                            <a href="mailto:vietnammotorbikegroup@gmail.com" class="text-white hover:text-[#FF6B35] transition-colors">vietnammotorbikegroup@gmail.com</a>
+                        
+                        <div class="border-t border-gray-200 pt-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Nhận email</h3>
+                            <a href="mailto:vietnamMotorbikeGroup@gmail.com" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                vietnamMotorbikeGroup@gmail.com
+                            </a>
                         </div>
-
-                        <div class="flex items-center gap-2">
-                            <i class="bx bx-globe text-[#FF6B35] text-lg"></i>
-                            <span class="text-[#FFA726] font-semibold">Website:</span>
-                            <a href="http://www.danangmotorbiketours.com" target="_blank" rel="noopener noreferrer"
-                                class="text-white hover:text-[#FF6B35] hover:underline transition-colors duration-300">www.danangmotorbiketours.com</a>
+                        
+                        <div class="border-t border-gray-200 pt-4">
+                            <h3 class="font-semibold text-gray-800 mb-2">Số điện thoại</h3>
+                            <a href="tel:19009477" class="text-gray-700 hover:text-red-600 transition-colors font-medium">
+                                (+84) 0903.579094 Mr An
+                            </a>
                         </div>
                     </div>
                 </div>
+
+                <!-- Tour Menu -->
+                <div class="lg:col-span-3">
+                    <div class="space-y-6">
+                        <!-- Tour Nội Bật -->
+                        <div>
+                            <h3 class="font-bold text-gray-800 mb-4 text-lg">Tour Nội Bật</h3>
+                            <ul class="space-y-2">
+                                <li v-for="(link, index) in tourLinks.slice(0, 3)" :key="index">
+                                    <NuxtLink :to="link.url" class="text-gray-600 hover:text-red-600 transition-colors text-sm flex items-center">
+                                        <span class="mr-2">›</span>
+                                        {{ link.title }}
+                                    </NuxtLink>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Thư Viện Ảnh -->
+                        <div>
+                            <h3 class="font-bold text-gray-800 mb-4 text-lg">Thư Viện Ảnh</h3>
+                            <ul class="space-y-2">
+                                <li v-for="(link, index) in tourLinks.slice(3)" :key="index">
+                                    <NuxtLink :to="link.url" class="text-gray-600 hover:text-red-600 transition-colors text-sm flex items-center">
+                                        <span class="mr-2">›</span>
+                                        {{ link.title }}
+                                    </NuxtLink>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery -->
+                <div class="lg:col-span-4">
+                    <div class="grid grid-cols-3 gap-2">
+                        <div v-for="(image, index) in galleryImages" :key="index" class="aspect-square overflow-hidden rounded">
+                            <img :src="image" :alt="`Gallery ${index + 1}`" class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </footer>
@@ -48,6 +102,6 @@
 
 <style scoped>
 .container {
-    max-width: 1152px;
+    max-width: 1400px;
 }
 </style>
