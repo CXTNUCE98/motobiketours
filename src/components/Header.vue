@@ -29,7 +29,7 @@ const menuItems = [
     { name: 'TOUR DU LỊCH', path: '/tour', hasDropdown: true, icon: '' },
     { name: 'DỊCH VỤ', path: '/services', hasDropdown: true, icon: '' },
     { name: 'TIN TỨC', path: '/news', hasDropdown: true, icon: '' },
-    { name: 'THƯ VIỆN', path: '/photos', hasDropdown: true, icon: '' },
+    { name: 'BLOG', path: '/blog', hasDropdown: true, icon: '' },
     { name: 'LIÊN HỆ', path: '/contact', icon: '' },
 ]
 
@@ -71,7 +71,7 @@ onBeforeUnmount(() => {
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
                     <div class="text-2xl md:text-3xl font-bold">
-                        <span class="text-gray-800">THE</span><span class="text-[#E91E63]">AN</span>
+                        <span class="text-gray-800">AN</span><span class="text-[#1A71C7]">DAGO</span>
                     </div>
                 </NuxtLink>
 
@@ -80,8 +80,8 @@ onBeforeUnmount(() => {
                     <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" :class="[
                         'px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center gap-1',
                         isActive(item.path)
-                            ? 'text-[#E91E63]'
-                            : 'text-gray-700 hover:text-[#E91E63]'
+                            ? 'text-[#1A71C7]'
+                            : 'text-gray-700 hover:text-[#1A71C7]'
                     ]">
                         {{ item.name }}                        
                     </NuxtLink>
@@ -90,7 +90,7 @@ onBeforeUnmount(() => {
                 <!-- Right Icons -->
                 <div class="flex items-center gap-3 md:gap-4">
                     <!-- Search Icon -->
-                    <button class="text-gray-700 hover:text-[#E91E63] transition-colors">
+                    <button class="text-gray-700 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- User Icon -->
-                    <button class="text-gray-700 hover:text-[#E91E63] transition-colors">
+                    <button class="text-gray-700 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -106,20 +106,20 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- Cart Icon with Badge -->
-                    <button class="relative text-gray-700 hover:text-[#E91E63] transition-colors">
+                    <button class="relative text-gray-700 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         <span
-                            class="absolute -top-2 -right-2 bg-[#E91E63] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                            class="absolute -top-2 -right-2 bg-[#1A71C7] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                             {{ cartCount }}
                         </span>
                     </button>
 
                     <!-- Language Selector -->
                     <button
-                        class="hidden md:flex items-center gap-1 text-gray-700 hover:text-[#E91E63] transition-colors">
+                        class="hidden md:flex items-center gap-1 text-gray-700 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 
                     <!-- Red Circle Button (notification or menu) -->
                     <button
-                        class="w-8 h-8 md:w-9 md:h-9 bg-[#E91E63] rounded-full flex items-center justify-center text-white hover:bg-[#C2185B] transition-colors shadow-md">
+                        class="w-8 h-8 md:w-9 md:h-9 bg-[#1A71C7] rounded-full flex items-center justify-center text-white hover:bg-[#C2185B] transition-colors shadow-md">
                         <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
 
                     <!-- Mobile Menu Toggle -->
                     <button @click="showMobileMenu = !showMobileMenu"
-                        class="lg:hidden text-gray-700 hover:text-[#E91E63]">
+                        class="lg:hidden text-gray-700 hover:text-[#1A71C7]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -153,8 +153,8 @@ onBeforeUnmount(() => {
                         :class="[
                             'px-4 py-2 text-sm font-medium transition-colors duration-200',
                             isActive(item.path)
-                                ? 'text-[#E91E63] bg-pink-50'
-                                : 'text-gray-700 hover:text-[#E91E63] hover:bg-gray-50'
+                                ? 'text-[#1A71C7] bg-pink-50'
+                                : 'text-gray-700 hover:text-[#1A71C7] hover:bg-gray-50'
                         ]">
                         {{ item.name }}
                     </NuxtLink>
@@ -168,7 +168,7 @@ onBeforeUnmount(() => {
 /* Custom scrollbar for dropdowns */
 select {
     scrollbar-width: thin;
-    scrollbar-color: #E91E63 #f1f1f1;
+    scrollbar-color: #1A71C7 #f1f1f1;
 }
 
 select::-webkit-scrollbar {
@@ -180,7 +180,7 @@ select::-webkit-scrollbar-track {
 }
 
 select::-webkit-scrollbar-thumb {
-    background: #E91E63;
+    background: #1A71C7;
     border-radius: 4px;
 }
 

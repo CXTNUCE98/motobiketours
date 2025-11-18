@@ -14,7 +14,7 @@ function formatPrice(priceUsd) {
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-2">
                 <span class="text-gray-800">ALL </span>
-                <span class="text-[#E91E63]">TOURS</span>
+                <span class="text-[#1A71C7]">TOURS</span>
             </h1>
             <p class="text-gray-600 text-lg">Discover amazing motorcycle tours across Vietnam</p>
         </div>
@@ -70,7 +70,7 @@ function formatPrice(priceUsd) {
                             </div>
                             <div class="flex gap-3 ml-auto">
                                 <NuxtLink :to="'/tour/' + tour.id" 
-                                    class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] hover:from-[#E91E63] hover:to-[#FF6B35] text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg font-bold uppercase text-sm tracking-wide">
+                                    class="bg-gradient-to-r from-[#FF6B35] to-[#1A71C7] hover:from-[#1A71C7] hover:to-[#FF6B35] text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg font-bold uppercase text-sm tracking-wide">
                                     View Details
                                 </NuxtLink>
                                 <NuxtLink to="/contact" 

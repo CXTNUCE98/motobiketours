@@ -24,9 +24,7 @@ const locations = [
 ];
 
 const brands = [
-    { value: '', label: 'Thương hiệu' },
-    { value: 'trekeel', label: 'Trekeel' },
-    { value: 'other', label: 'Khác' }
+    { value: '', label: 'Số ngày' },
 ];
 
 const handleSearch = () => {
@@ -445,7 +443,7 @@ onUnmounted(() => {
                                         {{ slides[currentSlide].description }}
                                     </p>
                                     <NuxtLink to="/booking"
-                                        class="inline-block bg-[#E91E63] hover:bg-[#C2185B] text-white px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 rounded-lg font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                                        class="inline-block bg-[#1A71C7] hover:bg-[#C2185B] text-white px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 rounded-lg font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                                         ĐẶT BÂY GIỜ
                                     </NuxtLink>
                                 </div>
@@ -479,7 +477,7 @@ onUnmounted(() => {
                                             <!-- Play button -->
                                             <div class="absolute inset-0 flex items-center justify-center bg-black/20">
                                                 <button
-                                                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-[#E91E63] rounded-full flex items-center justify-center shadow-lg hover:bg-[#C2185B] transition-colors">
+                                                    class="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 bg-[#1A71C7] rounded-full flex items-center justify-center shadow-lg hover:bg-[#C2185B] transition-colors">
                                                     <svg class="w-4 h-4 sm:w-5 sm:h-5 md:w-7 md:h-7 text-white ml-0.5 sm:ml-1" fill="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path d="M8 5v14l11-7z" />
@@ -498,7 +496,7 @@ onUnmounted(() => {
                         <button v-for="index in totalSlides" :key="index" @click="goToSlide(index - 1)" :class="[
                             'transition-all duration-300',
                             currentSlide === index - 1
-                                ? 'w-8 h-2 bg-[#E91E63] rounded-full'
+                                ? 'w-8 h-2 bg-[#1A71C7] rounded-full'
                                 : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
                         ]" :aria-label="`Go to slide ${index}`"></button>
                     </div>
@@ -566,7 +564,7 @@ onUnmounted(() => {
 
                     <!-- Search Button -->
                     <button @click="handleSearch"
-                        class="w-full md:w-14 h-12 md:h-14 bg-[#E91E63] hover:bg-[#C2185B] text-white rounded-full md:rounded-r-full md:rounded-l-none flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex-shrink-0">
+                        class="w-full md:w-14 h-12 md:h-14 bg-[#1A71C7] hover:bg-[#C2185B] text-white rounded-full md:rounded-r-full md:rounded-l-none flex items-center justify-center transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
@@ -659,7 +657,7 @@ onUnmounted(() => {
                 <div class="text-center mb-8 md:mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold mb-2">
                         <span class="text-gray-800">TOUR </span>
-                        <span class="text-[#E91E63]">ĐÀ NẴNG</span>
+                        <span class="text-[#1A71C7]">ĐÀ NẴNG</span>
                     </h2>
                     <p class="text-gray-600 text-lg">Tour ghép hàng ngày khởi hành từ TP Đà Nẵng giá rẻ</p>
                 </div>
@@ -679,7 +677,7 @@ onUnmounted(() => {
                 <div class="text-center mb-8 md:mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold mb-2">
                         <span class="text-gray-800">TOUR </span>
-                        <span class="text-[#E91E63]">HOT</span>
+                        <span class="text-[#1A71C7]">HOT</span>
                     </h2>
                     <p class="text-gray-600 text-lg">Tour được nhiều khách lựa chọn nhất</p>
                 </div>
@@ -768,7 +766,7 @@ onUnmounted(() => {
                             <input v-model="newsletterEmail" type="email" placeholder="Địa chỉ email......"
                                 class="w-full px-6 py-4 rounded-lg border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 focus:outline-none text-gray-700 placeholder-gray-400 transition-all" />
                             <button @click="handleNewsletter"
-                                class="bg-[#E91E63] hover:bg-[#C2185B] text-white font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
+                                class="bg-[#1A71C7] hover:bg-[#C2185B] text-white font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
                                 Đăng Ký
                             </button>
                         </div>

@@ -67,13 +67,13 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #FF6B35, #E91E63);
+  background: linear-gradient(180deg, #0aeeee, #1A71C7);
   border-radius: 10px;
   border: 2px solid var(--color-gray-light);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #E91E63, #FF6B35);
+  background: linear-gradient(180deg, #1A71C7, #0aeeee);
 }
 
 /* Utility classes */

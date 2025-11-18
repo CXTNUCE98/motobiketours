@@ -21,7 +21,7 @@ function share() {
         <!-- Page Header -->
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ video?.title }}</h1>
-            <div class="h-1 w-20 bg-gradient-to-r from-[#FF6B35] to-[#E91E63]"></div>
+            <div class="h-1 w-20 bg-gradient-to-r from-[#FF6B35] to-[#1A71C7]"></div>
         </div>
 
         <div v-if="video" class="max-w-5xl">
@@ -56,7 +56,7 @@ function share() {
         
         <div class="mt-10">
             <div class="flex items-center gap-2 mb-6">
-                <i class="bx bx-video text-[#E91E63] text-2xl"></i>
+                <i class="bx bx-video text-[#1A71C7] text-2xl"></i>
                 <h2 class="text-2xl font-bold text-gray-800">Related Videos</h2>
             </div>
 

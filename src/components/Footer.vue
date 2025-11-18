@@ -27,7 +27,7 @@ const galleryImages = [
                 <div class="lg:col-span-3">
                     <div class="mb-6">
                         <h2 class="text-3xl font-bold">
-                            <span class="text-black">THE</span><span class="text-red-600">AN</span>
+                            <span class="text-black">AN</span><span class="text-#1A71C7">DAGO</span>
                         </h2>
                     </div>
                     
@@ -35,21 +35,21 @@ const galleryImages = [
                         <div>
                             <h3 class="font-semibold text-gray-800 mb-2">Địa chỉ</h3>
                             <p class="text-gray-600 leading-relaxed">
-                                14 Nguyen Thi Thap St, Thanh Khe District, Danang City, Vietnam
+                                53 Phạm Ngọc Mậu, Thanh Khê, Đà Nẵng
                             </p>
                         </div>
                         
                         <div class="border-t border-gray-200 pt-4">
                             <h3 class="font-semibold text-gray-800 mb-2">Nhận email</h3>
-                            <a href="mailto:vietnamMotorbikeGroup@gmail.com" class="text-blue-600 hover:text-blue-800 transition-colors">
-                                vietnamMotorbikeGroup@gmail.com
+                            <a href="mailto:contact.andago@gmail.com" class="text-blue-600 hover:text-blue-800 transition-colors">
+                                contact.andago@gmail.com
                             </a>
                         </div>
                         
                         <div class="border-t border-gray-200 pt-4">
                             <h3 class="font-semibold text-gray-800 mb-2">Số điện thoại</h3>
-                            <a href="tel:19009477" class="text-gray-700 hover:text-red-600 transition-colors font-medium">
-                                (+84) 0903.579094 Mr An
+                            <a href="tel:0854242357" class="text-gray-700 hover:text-red-600 transition-colors font-medium">
+                                0854.242.357 (Mr An)
                             </a>
                         </div>
                     </div>

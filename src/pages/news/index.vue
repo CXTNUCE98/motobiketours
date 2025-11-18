@@ -9,7 +9,7 @@ import { news } from '../../composables/mockup'
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-2">
                 <span class="text-gray-800">LATEST </span>
-                <span class="text-[#E91E63]">NEWS</span>
+                <span class="text-[#1A71C7]">NEWS</span>
             </h1>
             <p class="text-gray-600 text-lg">Stay updated with our travel stories</p>
         </div>
@@ -41,7 +41,7 @@ import { news } from '../../composables/mockup'
 
                         <div class="mt-4">
                             <router-link :to="`/news/${n.id}`" 
-                                class="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF6B35] to-[#E91E63] hover:from-[#E91E63] hover:to-[#FF6B35] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                                class="inline-flex items-center gap-2 bg-gradient-to-r from-[#FF6B35] to-[#1A71C7] hover:from-[#1A71C7] hover:to-[#FF6B35] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                                 Read More
                                 <i class="bx bx-right-arrow-alt"></i>
                             </router-link>

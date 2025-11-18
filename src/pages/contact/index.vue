@@ -71,7 +71,7 @@ const submit = async () => {
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-2">
                 <span class="text-gray-800">CONTACT </span>
-                <span class="text-[#E91E63]">US</span>
+                <span class="text-[#1A71C7]">US</span>
             </h1>
             <p class="text-gray-600 text-lg">Get in touch with us for any inquiries</p>
         </div>
@@ -91,26 +91,26 @@ const submit = async () => {
                         </div>
                         <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
                             <span class="text-[#FFA726] font-semibold min-w-[70px]">Tel:</span>
-                            <a href="tel:+84903579094" class="text-[#FF6B35] hover:text-[#E91E63] font-semibold">
+                            <a href="tel:+84903579094" class="text-[#FF6B35] hover:text-[#1A71C7] font-semibold">
                                 (+84) 0903.579094 Mr Quang
                             </a>
                         </div>
                         <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
                             <span class="text-[#FFA726] font-semibold min-w-[70px]">Email:</span>
-                            <a href="mailto:vietnamMotorbikeGroup@gmail.com" class="text-[#FF6B35] hover:text-[#E91E63] font-semibold">
+                            <a href="mailto:vietnamMotorbikeGroup@gmail.com" class="text-[#FF6B35] hover:text-[#1A71C7] font-semibold">
                                 vietnamMotorbikeGroup@gmail.com
                             </a>
                         </div>
                         <div class="flex items-start gap-3 bg-[#f8f9fa] p-3 rounded-lg">
                             <span class="text-[#FFA726] font-semibold min-w-[70px]">Website:</span>
-                            <a class="text-[#FF6B35] hover:text-[#E91E63] font-semibold" href="https://danangmotorbiketours.com" target="_blank" rel="noopener">
+                            <a class="text-[#FF6B35] hover:text-[#1A71C7] font-semibold" href="https://danangmotorbiketours.com" target="_blank" rel="noopener">
                                 danangmotorbiketours.com
                             </a>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] text-white p-5 rounded-xl shadow-lg mb-6">
+                <div class="bg-gradient-to-r from-[#FF6B35] to-[#1A71C7] text-white p-5 rounded-xl shadow-lg mb-6">
                     <p class="italic text-lg">
                         Come with us for the experience of a lifetime either as a rider or as a pillion passenger on one of our motorbikes!
                     </p>
@@ -128,7 +128,7 @@ const submit = async () => {
             <div>
                 <div class="bg-white rounded-xl shadow-lg p-6">
                     <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <i class="bx bx-message-square-dots text-[#E91E63] text-3xl"></i>
+                        <i class="bx bx-message-square-dots text-[#1A71C7] text-3xl"></i>
                         Send Us a Message
                     </h2>
                     <p class="text-gray-600 mb-6">We are willing to organize your tours as per your request</p>
@@ -176,7 +176,7 @@ const submit = async () => {
                         </div>
                         <div class="flex justify-end">
                             <button :disabled="isSubmitting" @click="submit" 
-                                class="bg-gradient-to-r from-[#FF6B35] to-[#E91E63] hover:from-[#E91E63] hover:to-[#FF6B35] text-white px-8 py-4 rounded-full font-bold disabled:opacity-60 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase tracking-wide">
+                                class="bg-gradient-to-r from-[#FF6B35] to-[#1A71C7] hover:from-[#1A71C7] hover:to-[#FF6B35] text-white px-8 py-4 rounded-full font-bold disabled:opacity-60 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase tracking-wide">
                                 {{ isSubmitting ? 'Sending...' : 'Send Message' }}
                             </button>
                         </div>

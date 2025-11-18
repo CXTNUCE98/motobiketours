@@ -8,7 +8,7 @@ import { videos } from '../../composables/mockup'
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-2">
                 <span class="text-gray-800">VIDEO </span>
-                <span class="text-[#E91E63]">GALLERY</span>
+                <span class="text-[#1A71C7]">GALLERY</span>
             </h1>
             <p class="text-gray-600 text-lg">Watch our Vietnam adventure videos</p>
         </div>
@@ -17,7 +17,7 @@ import { videos } from '../../composables/mockup'
             <div
                 v-for="v in videos"
                 :key="v.id"
-                class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-[#E91E63]"
+                class="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border-l-4 border-[#1A71C7]"
             >
                 <div class="flex flex-col md:flex-row gap-0">
                     <router-link :to="`/video/${v.id}`" class="shrink-0 overflow-hidden relative">
@@ -32,7 +32,7 @@ import { videos } from '../../composables/mockup'
                     <div class="flex-1 p-5 flex flex-col justify-between">
                         <div>
                             <router-link :to="`/video/${v.id}`" 
-                                class="block text-gray-800 text-xl font-bold hover:text-[#E91E63] transition-colors duration-300 mb-2">
+                                class="block text-gray-800 text-xl font-bold hover:text-[#1A71C7] transition-colors duration-300 mb-2">
                                 {{ v.title }}
                             </router-link>
                             <div class="flex items-center gap-2 text-sm text-gray-500 mb-3">
@@ -44,7 +44,7 @@ import { videos } from '../../composables/mockup'
 
                         <div class="mt-4">
                             <router-link :to="`/video/${v.id}`" 
-                                class="inline-flex items-center gap-2 bg-gradient-to-r from-[#E91E63] to-[#D81B60] hover:from-[#D81B60] hover:to-[#E91E63] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
+                                class="inline-flex items-center gap-2 bg-gradient-to-r from-[#1A71C7] to-[#D81B60] hover:from-[#D81B60] hover:to-[#1A71C7] text-white px-5 py-2 rounded-full text-sm font-bold shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-105">
                                 <i class="bx bx-play"></i>
                                 Watch Video
                             </router-link>

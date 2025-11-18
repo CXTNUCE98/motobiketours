@@ -48,7 +48,7 @@ const links: LinkItem[] = [
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-2">
                 <span class="text-gray-800">USEFUL </span>
-                <span class="text-[#E91E63]">LINKS</span>
+                <span class="text-[#1A71C7]">LINKS</span>
             </h1>
             <p class="text-gray-600 text-lg">Helpful resources for your Vietnam adventure</p>
         </div>
@@ -66,14 +66,14 @@ const links: LinkItem[] = [
                         </template>
                         <template v-else>
                             <div class="flex items-start gap-2">
-                                <i class="bx bx-info-circle text-[#E91E63] mt-1"></i>
+                                <i class="bx bx-info-circle text-[#1A71C7] mt-1"></i>
                                 <span>{{ item.title }}</span>
                             </div>
                         </template>
                     </div>
                     <div v-if="item.display" class="text-[#FF6B35] text-sm md:text-base mt-2 ml-7">
                         <a :href="item.url" target="_blank" rel="noopener" 
-                            class="hover:text-[#E91E63] hover:underline transition-colors duration-300 font-medium">
+                            class="hover:text-[#1A71C7] hover:underline transition-colors duration-300 font-medium">
                             {{ item.display }}
                         </a>
                     </div>

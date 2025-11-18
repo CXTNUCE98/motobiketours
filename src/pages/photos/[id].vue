@@ -58,7 +58,7 @@ function share() {
         <!-- Page Header -->
         <div class="mb-6">
             <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ photoItem?.title }}</h1>
-            <div class="h-1 w-20 bg-gradient-to-r from-[#FF6B35] to-[#E91E63]"></div>
+            <div class="h-1 w-20 bg-gradient-to-r from-[#FF6B35] to-[#1A71C7]"></div>
         </div>
 
         <div v-if="images.length" class="w-full max-w-5xl">

@@ -10,7 +10,7 @@ const photos = photosList
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold mb-2">
                 <span class="text-gray-800">PHOTO </span>
-                <span class="text-[#E91E63]">GALLERY</span>
+                <span class="text-[#1A71C7]">GALLERY</span>
             </h1>
             <p class="text-gray-600 text-lg">Explore the beauty of Vietnam through our lens</p>
         </div>
