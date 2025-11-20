@@ -1,0 +1,236 @@
+<script setup>
+import { ref } from 'vue';
+import { services } from '../../composables/services';
+
+const searchQuery = ref('');
+
+const filteredServices = computed(() => {
+    if (!searchQuery.value) return services;
+    
+    const query = searchQuery.value.toLowerCase();
+    return services.filter(service =>
+        service.title.toLowerCase().includes(query) ||
+        service.description.toLowerCase().includes(query) ||
+        service.features.some(f => f.toLowerCase().includes(query))
+    );
+});
+</script>
+
+<template>
+    <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+        <!-- Hero Section -->
+        <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-24 overflow-hidden">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute inset-0"
+                    style="background-image: url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h1 class="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
+                        <span class="block">Dịch Vụ</span>
+                        <span class="block bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">
+                            Du Lịch Xe Máy
+                        </span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                        Trải nghiệm đa dạng - Phục vụ chuyên nghiệp - Giá cả hợp lý
+                    </p>
+
+                    <!-- Search Bar -->
+                    <div class="max-w-2xl mx-auto">
+                        <div class="relative">
+                            <input v-model="searchQuery" type="text"
+                                placeholder="Tìm kiếm dịch vụ..."
+                                class="w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 text-lg shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 transition-all duration-300" />
+                            <button
+                                class="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3 rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
+                            <div class="text-3xl font-bold">{{ services.length }}</div>
+                            <div class="text-sm text-blue-100">Dịch vụ</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
+                            <div class="text-3xl font-bold">24/7</div>
+                            <div class="text-sm text-blue-100">Hỗ trợ</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
+                            <div class="text-3xl font-bold">5.0</div>
+                            <div class="text-sm text-blue-100">Đánh giá</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wave Divider -->
+            <div class="absolute bottom-0 left-0 right-0">
+                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                    <path
+                        d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+                        fill="rgb(249, 250, 251)" />
+                </svg>
+            </div>
+        </div>
+
+        <!-- Services Grid -->
+        <div class="container mx-auto px-4 py-16">
+            <div v-if="filteredServices.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <NuxtLink v-for="(service, index) in filteredServices" :key="service.id" :to="`/service/${service.id}`"
+                    class="group animate-fade-in" :style="{ animationDelay: `${index * 0.1}s` }">
+                    <div
+                        class="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 border-2 border-gray-100 h-full">
+                        <!-- Image -->
+                        <div class="relative h-64 overflow-hidden">
+                            <img :src="service.thumbnail" :alt="service.title"
+                                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                            <div
+                                class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-70 group-hover:opacity-50 transition-opacity duration-500">
+                            </div>
+
+                            <!-- Icon Badge -->
+                            <div
+                                class="absolute top-6 left-6 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform duration-300">
+                                <i :class="`bx ${service.icon} text-3xl text-white`"></i>
+                            </div>
+
+                            <!-- Price Badge -->
+                            <div
+                                class="absolute bottom-6 right-6 px-4 py-2 rounded-xl bg-white/95 backdrop-blur-sm shadow-lg">
+                                <div class="text-sm font-semibold text-gray-600">Từ</div>
+                                <div class="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                                    {{ service.priceRange }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content -->
+                        <div class="p-6">
+                            <h3
+                                class="text-2xl font-bold text-gray-800 mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-purple-600 transition-colors duration-300">
+                                {{ service.shortTitle }}
+                            </h3>
+
+                            <p class="text-gray-600 mb-4 line-clamp-2">
+                                {{ service.description }}
+                            </p>
+
+                            <!-- Features -->
+                            <div class="space-y-2 mb-6">
+                                <div v-for="(feature, idx) in service.features.slice(0, 3)" :key="idx"
+                                    class="flex items-start gap-2 text-sm text-gray-600">
+                                    <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor"
+                                        viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="line-clamp-1">{{ feature }}</span>
+                                </div>
+                            </div>
+
+                            <!-- CTA Button -->
+                            <button
+                                class="w-full px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl font-bold hover:scale-105 transition-transform duration-300 shadow-lg flex items-center justify-center gap-2">
+                                <span>Xem Chi Tiết</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </NuxtLink>
+            </div>
+
+            <!-- Empty State -->
+            <div v-else class="text-center py-20">
+                <div class="inline-block p-8 bg-gray-100 rounded-full mb-6">
+                    <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy dịch vụ nào</h3>
+                <p class="text-gray-600 mb-6">Hãy thử tìm kiếm với từ khóa khác</p>
+                <button @click="searchQuery = ''"
+                    class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
+                    Xóa tìm kiếm
+                </button>
+            </div>
+        </div>
+
+        <!-- Why Choose Us Section -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+            <div class="container mx-auto px-4">
+                <h2 class="text-4xl font-bold text-center mb-12">Tại Sao Chọn Chúng Tôi?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                            <i class="bx bx-shield-check text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">An Toàn & Bảo Hiểm</h3>
+                        <p class="text-blue-100">Bảo hiểm toàn diện, thiết bị an toàn đầy đủ</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                            <i class="bx bx-user-check text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Chuyên Nghiệp</h3>
+                        <p class="text-blue-100">Đội ngũ hướng dẫn viên giàu kinh nghiệm</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                            <i class="bx bx-support text-4xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Hỗ Trợ 24/7</h3>
+                        <p class="text-blue-100">Luôn sẵn sàng hỗ trợ bạn mọi lúc mọi nơi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<style scoped>
+@keyframes fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>

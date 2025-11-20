@@ -27,7 +27,7 @@ const menuItems = [
     { name: 'TRANG CHỦ', path: '/', icon: '' },
     { name: 'GIỚI THIỆU', path: '/about', icon: '' },
     { name: 'TOUR DU LỊCH', path: '/tour', hasDropdown: true, icon: '' },
-    { name: 'DỊCH VỤ', path: '/services', hasDropdown: true, icon: '' },
+    { name: 'DỊCH VỤ', path: '/service', hasDropdown: true, icon: '' },
     { name: 'TIN TỨC', path: '/news', hasDropdown: true, icon: '' },
     { name: 'BLOG', path: '/blog', hasDropdown: true, icon: '' },
     { name: 'LIÊN HỆ', path: '/contact', icon: '' },

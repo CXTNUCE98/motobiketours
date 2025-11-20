@@ -1,0 +1,272 @@
+// @ts-nocheck
+import Hotel1 from '../public/photos/hotel1.jpg';
+import Hotel2 from '../public/photos/hotel2.jpg';
+import Hotel3 from '../public/photos/hotel3.jpg';
+import Mytho2 from '../public/photos/mytho2.jpg';
+
+// Services data
+export type Service = {
+  id: string;
+  title: string;
+  shortTitle: string;
+  description: string;
+  thumbnail: string;
+  icon: string;
+  features: string[];
+  priceRange: string;
+  duration?: string;
+  highlights: string[];
+  included: string[];
+  notIncluded: string[];
+  reviews: {
+    id: string;
+    name: string;
+    avatar: string;
+    rating: number;
+    date: string;
+    comment: string;
+  }[];
+};
+
+export const services: Service[] = [
+  {
+    id: 'tour-gia-dinh',
+    title: 'Tour Gia Đình - Trải Nghiệm Cùng Người Thân Yêu',
+    shortTitle: 'Tour Gia Đình',
+    description: 'Chuyến đi hoàn hảo dành cho gia đình với lộ trình an toàn, phù hợp mọi lứa tuổi. Khám phá Việt Nam cùng người thân yêu với những trải nghiệm đáng nhớ và kỷ niệm khó quên.',
+    thumbnail: Hotel1,
+    icon: 'bx-home-heart',
+    features: [
+      'Lộ trình an toàn, phù hợp trẻ em và người lớn tuổi',
+      'Hướng dẫn viên nhiệt tình, kinh nghiệm với gia đình',
+      'Xe máy đời mới, bảo hiểm đầy đủ',
+      'Lịch trình linh hoạt theo nhu cầu gia đình',
+      'Điểm dừng chân thú vị cho trẻ em',
+      'Hỗ trợ ghế ngồi an toàn cho trẻ nhỏ'
+    ],
+    priceRange: 'Từ 1.500.000 VNĐ/ngày',
+    duration: 'Linh hoạt từ 1-7 ngày',
+    highlights: [
+      'Khám phá các điểm đến thân thiện với gia đình',
+      'Trải nghiệm văn hóa địa phương',
+      'Ẩm thực đặc sản phù hợp mọi lứa tuổi',
+      'Chụp ảnh kỷ niệm tại các địa điểm đẹp',
+      'Tham quan các khu vui chơi, công viên',
+      'Nghỉ ngơi tại khách sạn tiện nghi'
+    ],
+    included: [
+      'Xe máy và nhiên liệu',
+      'Hướng dẫn viên chuyên nghiệp',
+      'Bảo hiểm du lịch',
+      'Nước uống và khăn lạnh',
+      'Mũ bảo hiểm cho mọi thành viên',
+      'Áo mưa (nếu cần)',
+      'Hỗ trợ 24/7'
+    ],
+    notIncluded: [
+      'Chi phí ăn uống cá nhân',
+      'Vé tham quan các điểm đến',
+      'Chi phí khách sạn',
+      'Đồ uống có cồn',
+      'Chi phí cá nhân khác'
+    ],
+    reviews: [
+      {
+        id: '1',
+        name: 'Anh Minh & Gia đình',
+        avatar: 'https://ui-avatars.com/api/?name=Minh+Nguyen&background=4F46E5&color=fff',
+        rating: 5,
+        date: '15/11/2024',
+        comment: 'Chuyến đi tuyệt vời! Các bé rất thích và hướng dẫn viên rất chu đáo. Lộ trình phù hợp với gia đình có trẻ nhỏ. Chúng tôi sẽ quay lại!'
+      },
+      {
+        id: '2',
+        name: 'Chị Hương',
+        avatar: 'https://ui-avatars.com/api/?name=Huong+Tran&background=EC4899&color=fff',
+        rating: 5,
+        date: '10/11/2024',
+        comment: 'Dịch vụ chuyên nghiệp, an toàn. Bố mẹ già của tôi rất hài lòng. Cảm ơn đội ngũ đã tạo nên kỷ niệm đẹp cho gia đình!'
+      }
+    ]
+  },
+  {
+    id: 'tour-doanh-nghiep',
+    title: 'Tour Doanh Nghiệp - Team Building Đẳng Cấp',
+    shortTitle: 'Tour Doanh Nghiệp',
+    description: 'Giải pháp hoàn hảo cho các hoạt động team building, du lịch công ty. Kết hợp giữa khám phá thiên nhiên và xây dựng tinh thần đồng đội với những trải nghiệm độc đáo trên xe máy.',
+    thumbnail: Hotel2,
+    icon: 'bx-briefcase',
+    features: [
+      'Tổ chức sự kiện team building chuyên nghiệp',
+      'Lộ trình thiết kế riêng cho doanh nghiệp',
+      'Đội ngũ hướng dẫn viên giàu kinh nghiệm',
+      'Xe máy cao cấp, đồng bộ',
+      'Hỗ trợ logistics đầy đủ',
+      'Chương trình gắn kết đội nhóm'
+    ],
+    priceRange: 'Từ 2.500.000 VNĐ/người',
+    duration: 'Linh hoạt từ 1-5 ngày',
+    highlights: [
+      'Hoạt động team building sáng tạo',
+      'Khám phá địa danh nổi tiếng',
+      'Gala dinner tại địa điểm đặc biệt',
+      'Chụp ảnh kỷ niệm chuyên nghiệp',
+      'Trò chơi tương tác trên đường đi',
+      'Phát triển kỹ năng làm việc nhóm'
+    ],
+    included: [
+      'Xe máy và nhiên liệu đầy đủ',
+      'Hướng dẫn viên chuyên nghiệp',
+      'Bảo hiểm toàn diện',
+      'Thiết bị an toàn đầy đủ',
+      'Nước uống và bữa ăn nhẹ',
+      'Photographer chuyên nghiệp',
+      'Quà lưu niệm công ty',
+      'Hỗ trợ 24/7'
+    ],
+    notIncluded: [
+      'Chi phí khách sạn (có thể hỗ trợ đặt)',
+      'Bữa ăn chính (có thể đặt thêm)',
+      'Vé tham quan',
+      'Đồ uống có cồn',
+      'Chi phí cá nhân khác'
+    ],
+    reviews: [
+      {
+        id: '1',
+        name: 'Công ty TNHH ABC',
+        avatar: 'https://ui-avatars.com/api/?name=ABC+Company&background=10B981&color=fff',
+        rating: 5,
+        date: '20/11/2024',
+        comment: 'Chương trình team building tuyệt vời! Nhân viên rất hào hứng và gắn kết hơn sau chuyến đi. Dịch vụ chuyên nghiệp, đáng tin cậy.'
+      },
+      {
+        id: '2',
+        name: 'Tập đoàn XYZ',
+        avatar: 'https://ui-avatars.com/api/?name=XYZ+Group&background=F59E0B&color=fff',
+        rating: 5,
+        date: '18/11/2024',
+        comment: 'Đội ngũ tổ chức rất chuyên nghiệp. Lộ trình được thiết kế phù hợp với mục tiêu công ty. Chúng tôi sẽ hợp tác lâu dài!'
+      }
+    ]
+  },
+  {
+    id: 'tour-theo-yeu-cau',
+    title: 'Tour Theo Yêu Cầu - Thiết Kế Riêng Cho Bạn',
+    shortTitle: 'Tour Theo Yêu Cầu',
+    description: 'Tạo nên hành trình riêng của bạn! Chúng tôi thiết kế tour du lịch xe máy hoàn toàn theo ý muốn, sở thích và ngân sách của bạn. Từ lộ trình, thời gian đến các điểm dừng chân.',
+    thumbnail: Hotel3,
+    icon: 'bx-customize',
+    features: [
+      'Thiết kế lộ trình 100% theo yêu cầu',
+      'Tư vấn chuyên sâu từ chuyên gia',
+      'Linh hoạt về thời gian và địa điểm',
+      'Dịch vụ VIP cao cấp',
+      'Hỗ trợ đặt khách sạn, nhà hàng',
+      'Photographer riêng (tùy chọn)'
+    ],
+    priceRange: 'Liên hệ để báo giá',
+    duration: 'Tùy chỉnh theo yêu cầu',
+    highlights: [
+      'Lộ trình độc quyền, không trùng lặp',
+      'Khám phá những địa điểm ít người biết',
+      'Trải nghiệm văn hóa sâu sắc',
+      'Ẩm thực địa phương đặc sắc',
+      'Nghỉ ngơi tại các resort cao cấp',
+      'Hoạt động ngoài trời thú vị'
+    ],
+    included: [
+      'Tư vấn và thiết kế lộ trình miễn phí',
+      'Xe máy cao cấp theo yêu cầu',
+      'Hướng dẫn viên chuyên nghiệp',
+      'Bảo hiểm toàn diện',
+      'Thiết bị an toàn đầy đủ',
+      'Hỗ trợ logistics',
+      'Hỗ trợ 24/7'
+    ],
+    notIncluded: [
+      'Chi phí ăn uống (tùy lộ trình)',
+      'Chi phí khách sạn (tùy lựa chọn)',
+      'Vé tham quan',
+      'Dịch vụ bổ sung (photographer, v.v.)',
+      'Chi phí cá nhân khác'
+    ],
+    reviews: [
+      {
+        id: '1',
+        name: 'Anh Tuấn',
+        avatar: 'https://ui-avatars.com/api/?name=Tuan+Le&background=8B5CF6&color=fff',
+        rating: 5,
+        date: '25/11/2024',
+        comment: 'Chuyến đi honeymoon tuyệt vời! Đội ngũ đã thiết kế lộ trình lãng mạn theo đúng mong muốn của vợ chồng tôi. Mọi thứ đều hoàn hảo!'
+      },
+      {
+        id: '2',
+        name: 'Chị Mai',
+        avatar: 'https://ui-avatars.com/api/?name=Mai+Pham&background=EF4444&color=fff',
+        rating: 5,
+        date: '22/11/2024',
+        comment: 'Dịch vụ VIP đẳng cấp! Từ tư vấn đến thực hiện đều rất chuyên nghiệp. Lộ trình được thiết kế riêng rất phù hợp với nhóm bạn tôi.'
+      }
+    ]
+  },
+  {
+    id: 'dich-vu-thue-xe-san-bay',
+    title: 'Dịch Vụ Cho Thuê Xe Đưa Đón Sân Bay - Tiện Lợi & An Toàn',
+    shortTitle: 'Đưa Đón Sân Bay',
+    description: 'Dịch vụ đưa đón sân bay chuyên nghiệp, đúng giờ, an toàn. Xe máy và ô tô đời mới, tài xế giàu kinh nghiệm. Phục vụ 24/7 tại các sân bay lớn trên toàn quốc.',
+    thumbnail: Mytho2,
+    icon: 'bx-taxi',
+    features: [
+      'Phục vụ 24/7 mọi chuyến bay',
+      'Xe đời mới, sạch sẽ, tiện nghi',
+      'Tài xế chuyên nghiệp, lịch sự',
+      'Đúng giờ, không chờ đợi',
+      'Giá cả minh bạch, cạnh tranh',
+      'Hỗ trợ hành lý lớn'
+    ],
+    priceRange: 'Từ 150.000 VNĐ',
+    duration: 'Theo chuyến',
+    highlights: [
+      'Đón tận nơi, đúng giờ',
+      'Theo dõi chuyến bay real-time',
+      'Hỗ trợ hành lý miễn phí',
+      'Nước uống miễn phí trên xe',
+      'Wifi miễn phí (xe ô tô)',
+      'Thanh toán linh hoạt'
+    ],
+    included: [
+      'Xe và nhiên liệu',
+      'Tài xế chuyên nghiệp',
+      'Bảo hiểm hành khách',
+      'Nước uống miễn phí',
+      'Hỗ trợ hành lý',
+      'Phí đường cao tốc (nếu có)',
+      'Hỗ trợ 24/7'
+    ],
+    notIncluded: [
+      'Phí gửi xe tại sân bay',
+      'Chi phí chờ đợi quá 15 phút',
+      'Điểm đón/trả ngoài khu vực quy định',
+      'Dịch vụ bổ sung khác'
+    ],
+    reviews: [
+      {
+        id: '1',
+        name: 'Anh Khoa',
+        avatar: 'https://ui-avatars.com/api/?name=Khoa+Nguyen&background=3B82F6&color=fff',
+        rating: 5,
+        date: '28/11/2024',
+        comment: 'Dịch vụ tuyệt vời! Đúng giờ, tài xế lịch sự. Tôi đã sử dụng nhiều lần và rất hài lòng. Giá cả hợp lý.'
+      },
+      {
+        id: '2',
+        name: 'Chị Lan',
+        avatar: 'https://ui-avatars.com/api/?name=Lan+Vo&background=EC4899&color=fff',
+        rating: 5,
+        date: '26/11/2024',
+        comment: 'Xe sạch sẽ, tài xế nhiệt tình giúp đỡ hành lý. Đặc biệt là dịch vụ 24/7 rất tiện lợi cho chuyến bay sáng sớm.'
+      }
+    ]
+  }
+];
