@@ -20,12 +20,8 @@
     "@tanstack/vue-query": "^5.28.9",
     "axios": "^1.6.8",
     "boxicons": "^2.1.4",
-    "chart.js": "^4.4.4",
-    "embla-carousel-autoplay": "^8.1.3",
-    "embla-carousel-vue": "^8.1.3",
-    "nuxt": "^3.11.1",
     "nodemailer": "^6.9.13",
-    "swiper": "^11.2.6",
+    "nuxt": "^3.11.1",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
   },

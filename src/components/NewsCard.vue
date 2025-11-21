@@ -30,17 +30,12 @@ const handleCardClick = () => {
 </script>
 
 <template>
-    <div
-        class="group relative bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
-        @click="handleCardClick"
-    >
+    <div class="group relative bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+        @click="handleCardClick">
         <!-- Image Container -->
         <div class="relative h-64 overflow-hidden">
-            <img
-                :src="image"
-                :alt="title"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-            />
+            <img :src="image" :alt="title" loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
         </div>
 
         <!-- Metadata Bar (Below Image) -->
@@ -68,7 +63,8 @@ const handleCardClick = () => {
         <!-- Content -->
         <div class="p-5 pt-4">
             <!-- Title -->
-            <h3 class="text-gray-800 font-bold text-base mb-3 line-clamp-2 min-h-[3rem] group-hover:text-red-600 transition-colors duration-300">
+            <h3
+                class="text-gray-800 font-bold text-base mb-3 line-clamp-2 min-h-[3rem] group-hover:text-red-600 transition-colors duration-300">
                 {{ title }}
             </h3>
 
@@ -95,4 +91,3 @@ const handleCardClick = () => {
     overflow: hidden;
 }
 </style>
-

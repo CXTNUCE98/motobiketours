@@ -67,7 +67,7 @@ const toggleWishlist = (e: Event) => {
         @click="handleCardClick" style="backdrop-filter: blur(10px);">
         <!-- Image Container with Gradient Overlay -->
         <div class="relative h-64 overflow-hidden">
-            <img :src="image" :alt="title"
+            <img :src="image" :alt="title" loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 
             <!-- Gradient Overlay -->
