@@ -20,7 +20,7 @@ const props = defineProps<{
 // Filter state
 const selectedDuration = ref<string[]>([]);
 const priceMin = ref(0);
-const priceMax = ref(10000000);
+const priceMax = ref(2000);
 const selectedTypes = ref<string[]>([]);
 const selectedDepartFrom = ref('');
 
@@ -45,13 +45,19 @@ const departFromOptions = [
     { value: 'ha-noi', label: 'Hà Nội' },
     { value: 'da-nang', label: 'Đà Nẵng' },
     { value: 'hue', label: 'Huế' },
-    { value: 'mui-ne', label: 'Mũi Né' }
+    { value: 'hoi-an', label: 'Hội An' },
+    { value: 'da-lat', label: 'Đà Lạt' },
+    { value: 'nha-trang', label: 'Nha Trang' },
+    { value: 'mui-ne', label: 'Mũi Né' },
+    { value: 'ha-giang', label: 'Hà Giang' },
+    { value: 'sapa', label: 'Sapa' },
+    { value: 'phu-quoc', label: 'Phú Quốc' }
 ];
 
 const activeFilterCount = computed(() => {
     let count = 0;
     if (selectedDuration.value.length > 0) count++;
-    if (priceMin.value > 0 || priceMax.value < 10000000) count++;
+    if (priceMin.value > 0 || priceMax.value < 2000) count++;
     if (selectedTypes.value.length > 0) count++;
     if (selectedDepartFrom.value) count++;
     return count;
@@ -87,15 +93,13 @@ const applyFilters = () => {
 const clearFilters = () => {
     selectedDuration.value = [];
     priceMin.value = 0;
-    priceMax.value = 10000000;
+    priceMax.value = 2000;
     selectedTypes.value = [];
     selectedDepartFrom.value = '';
     emit('clear');
 };
 
-const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('vi-VN').format(price);
-};
+
 </script>
 
 <template>
@@ -137,19 +141,19 @@ const formatPrice = (price: number) => {
 
         <!-- Price Range Filter -->
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 mb-3">Khoảng giá</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Khoảng giá (USD)</label>
             <div class="space-y-4">
                 <div>
                     <label class="text-xs text-gray-500 mb-1 block">Từ</label>
-                    <input v-model.number="priceMin" type="range" min="0" max="10000000" step="500000"
+                    <input v-model.number="priceMin" type="range" min="0" max="2000" step="50"
                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                    <div class="text-sm font-semibold text-blue-600 mt-1">{{ formatPrice(priceMin) }} ₫</div>
+                    <div class="text-sm font-semibold text-blue-600 mt-1">${{ priceMin }}</div>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500 mb-1 block">Đến</label>
-                    <input v-model.number="priceMax" type="range" min="0" max="10000000" step="500000"
+                    <input v-model.number="priceMax" type="range" min="0" max="2000" step="50"
                         class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                    <div class="text-sm font-semibold text-blue-600 mt-1">{{ formatPrice(priceMax) }} ₫</div>
+                    <div class="text-sm font-semibold text-blue-600 mt-1">${{ priceMax }}</div>
                 </div>
             </div>
         </div>
