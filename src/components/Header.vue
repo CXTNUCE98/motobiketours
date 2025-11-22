@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 
 
+import LoginPopup from '@/components/LoginPopup.vue'
+
 const route = useRoute()
+const router = useRouter()
 const { theme, toggleTheme } = useTheme()
 const isScrolled = ref(false)
+const showLoginPopup = ref(false)
 
 // Handle scroll event with throttling
 let scrollTimeout: ReturnType<typeof setTimeout> | null = null
@@ -63,6 +67,10 @@ onBeforeUnmount(() => {
         }
     }
 })
+
+function formLogin() {
+    showLoginPopup.value = true
+}
 </script>
 
 <template>
@@ -102,7 +110,7 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- User Icon -->
-                    <button class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                    <button @click="formLogin" class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -174,6 +182,7 @@ onBeforeUnmount(() => {
                 </nav>
             </div>
         </div>
+        <LoginPopup v-model="showLoginPopup" />
     </header>
 </template>
 
