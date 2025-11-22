@@ -24,36 +24,6 @@ useHead({
   --color-primary-dark: #FF5722;
   --color-secondary: #FFA726;
   --color-secondary-dark: #FF9800;
-  --color-accent: #E91E63;
-  --color-accent-dark: #D81B60;
-  --color-dark: #2C3E50;
-  --color-dark-alt: #34495E;
-  --color-gray-light: #F5F7FA;
-  --color-gray: #E8EBF0;
-  --color-text: #2C3E50;
-  --color-text-light: #5A6C7D;
-}
-
-html {
-  font-family: "Open Sans", sans-serif;
-  scroll-behavior: smooth;
-}
-
-body {
-  @apply antialiased;
-  background-color: var(--color-gray-light);
-  color: var(--color-text);
-}
-
-/* Global transitions */
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
   transform: translateY(10px);
 }
 
@@ -66,10 +36,20 @@ body {
   background: var(--color-gray-light);
 }
 
+.dark ::-webkit-scrollbar-track {
+  background: #1f2937;
+  /* gray-800 */
+}
+
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(180deg, #0aeeee, #1A71C7);
   border-radius: 10px;
   border: 2px solid var(--color-gray-light);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  border-color: #1f2937;
+  /* gray-800 */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -86,11 +66,11 @@ body {
 }
 
 .card {
-  @apply bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300;
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700;
 }
 
 .section-title {
-  @apply flex items-center gap-2 mb-4;
+  @apply flex items-center gap-2 mb-4 text-gray-900 dark:text-white;
 }
 
 .section-title::before {

@@ -43,9 +43,10 @@ const formatPrice = (price: number | string) => {
 </script>
 
 <template>
-    <div class="bg-white rounded-2xl shadow-2xl p-6 sticky top-24 border-2 border-gray-100">
+    <div
+        class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 sticky top-24 border-2 border-gray-100 dark:border-gray-700">
         <!-- Price Section -->
-        <div class="mb-6 pb-6 border-b-2 border-gray-100">
+        <div class="mb-6 pb-6 border-b-2 border-gray-100 dark:border-gray-700">
             <div class="flex items-baseline gap-3 mb-2">
                 <span
                     class="text-4xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
@@ -55,50 +56,50 @@ const formatPrice = (price: number | string) => {
                     {{ formatPrice(originalPrice) }} ₫
                 </span>
             </div>
-            <p class="text-sm text-gray-500">Giá cho mỗi người</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Giá cho mỗi người</p>
         </div>
 
         <!-- Tour Highlights -->
         <div class="space-y-4 mb-6">
             <div class="flex items-center gap-3">
                 <div
-                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center flex-shrink-0">
+                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <p class="text-xs text-gray-500">Thời gian</p>
-                    <p class="text-sm font-semibold text-gray-800">{{ duration }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Thời gian</p>
+                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ duration }}</p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3">
                 <div
-                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center flex-shrink-0">
+                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <p class="text-xs text-gray-500">Số lượng</p>
-                    <p class="text-sm font-semibold text-gray-800">{{ groupSize }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Số lượng</p>
+                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ groupSize }}</p>
                 </div>
             </div>
 
             <div v-if="difficulty" class="flex items-center gap-3">
                 <div
-                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-50 to-red-50 flex items-center justify-center flex-shrink-0">
+                    class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <p class="text-xs text-gray-500">Độ khó</p>
-                    <p class="text-sm font-semibold text-gray-800">{{ difficulty }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Độ khó</p>
+                    <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ difficulty }}</p>
                 </div>
             </div>
         </div>
@@ -118,8 +119,8 @@ const formatPrice = (price: number | string) => {
             <button @click="toggleWishlist"
                 class="w-full border-2 font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2"
                 :class="isWishlisted
-                    ? 'border-red-500 bg-red-50 text-red-600 hover:bg-red-100'
-                    : 'border-gray-300 bg-white text-gray-700 hover:border-red-500 hover:bg-red-50 hover:text-red-600'">
+                    ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30'
+                    : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-red-500 hover:bg-red-50 dark:hover:bg-gray-700 hover:text-red-600'">
                 <svg class="w-5 h-5 transition-all duration-300" :fill="isWishlisted ? 'currentColor' : 'none'"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -130,8 +131,8 @@ const formatPrice = (price: number | string) => {
         </div>
 
         <!-- Share Section -->
-        <div class="pt-6 border-t-2 border-gray-100">
-            <p class="text-sm font-semibold text-gray-700 mb-3">Chia sẻ tour này</p>
+        <div class="pt-6 border-t-2 border-gray-100 dark:border-gray-700">
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Chia sẻ tour này</p>
             <div class="flex gap-3">
                 <button @click="shareOn('facebook')"
                     class="flex-1 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 shadow-md">
@@ -158,16 +159,16 @@ const formatPrice = (price: number | string) => {
         </div>
 
         <!-- Trust Badge -->
-        <div class="mt-6 pt-6 border-t-2 border-gray-100">
-            <div class="flex items-center gap-3 text-sm text-gray-600">
+        <div class="mt-6 pt-6 border-t-2 border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                 <svg class="w-6 h-6 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd"
                         d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                         clip-rule="evenodd" />
                 </svg>
                 <div>
-                    <p class="font-semibold text-gray-800">Đảm bảo hoàn tiền 100%</p>
-                    <p class="text-xs text-gray-500">Hủy miễn phí trước 24h</p>
+                    <p class="font-semibold text-gray-800 dark:text-gray-200">Đảm bảo hoàn tiền 100%</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Hủy miễn phí trước 24h</p>
                 </div>
             </div>
         </div>

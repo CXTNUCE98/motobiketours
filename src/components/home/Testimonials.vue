@@ -53,7 +53,7 @@ onUnmounted(() => {
             <div class="relative z-10 h-full flex items-end justify-start">
                 <div class="w-full px-2 md:px-4 lg:px-6 pb-4 md:pb-6">
                     <!-- Testimonial Card -->
-                    <div class="max-w-3xl bg-white rounded-3xl shadow-2xl p-8 md:p-12 relative customer-section-fade"
+                    <div class="max-w-3xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 relative customer-section-fade"
                         @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
                         <!-- Icon xe hơi -->
                         <div class="absolute top-0 right-4 w-20 h-20 md:w-24 md:h-24">
@@ -62,15 +62,17 @@ onUnmounted(() => {
 
                         <!-- customer -->
                         <div>
-                            <p class="text-red-600 text-sm font-semibold mb-2">#KHÁCH HÀNG HÀI LÒNG</p>
-                            <h2 class="text-3xl md:text-4xl font-bold text-[#094174] mb-8">
+                            <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-2">#KHÁCH HÀNG HÀI LÒNG
+                            </p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-[#094174] dark:text-blue-400 mb-8">
                                 Khách Hàng Của Chúng Tôi Nói Gì
                             </h2>
 
                             <!-- Current Testimonial with transition -->
                             <transition name="fade" mode="out-in">
                                 <div :key="currentTestimonialIndex">
-                                    <p class="text-gray-600 text-base md:text-lg leading-relaxed mb-8">
+                                    <p
+                                        class="text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed mb-8">
                                         {{ testimonials[currentTestimonialIndex].text }}
                                     </p>
 
@@ -80,7 +82,7 @@ onUnmounted(() => {
                                             :alt="testimonials[currentTestimonialIndex].name" loading="lazy"
                                             class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-gray-200" />
                                         <div>
-                                            <h3 class="text-lg md:text-xl font-bold text-[#094174]">
+                                            <h3 class="text-lg md:text-xl font-bold text-[#094174] dark:text-blue-400">
                                                 {{ testimonials[currentTestimonialIndex].name }}
                                             </h3>
                                         </div>

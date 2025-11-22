@@ -149,9 +149,11 @@ const handleClearFilters = () => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30">
+    <div
+        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
         <!-- Hero Section -->
-        <div class="relative bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 text-white py-20 overflow-hidden">
+        <div
+            class="relative bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 dark:from-blue-900 dark:via-cyan-900 dark:to-blue-900 text-white py-20 overflow-hidden">
             <!-- Background Pattern -->
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute inset-0"
@@ -167,7 +169,7 @@ const handleClearFilters = () => {
                             Tour Du Lịch Xe Máy
                         </span>
                     </h1>
-                    <p class="text-xl md:text-2xl mb-8 text-blue-100">
+                    <p class="text-xl md:text-2xl mb-8 text-blue-100 dark:text-blue-200">
                         Trải nghiệm Việt Nam theo cách đặc biệt nhất
                     </p>
 
@@ -176,7 +178,7 @@ const handleClearFilters = () => {
                         <div class="relative">
                             <input v-model="searchQuery" type="text"
                                 placeholder="Tìm kiếm tour theo tên, địa điểm, loại hình..."
-                                class="w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 text-lg shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 transition-all duration-300" />
+                                class="w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 dark:text-white bg-white dark:bg-gray-800 text-lg shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 dark:focus:ring-gray-600/50 transition-all duration-300 placeholder-gray-400" />
                             <button
                                 class="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-red-600 to-pink-600 text-white p-3 rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,15 +191,15 @@ const handleClearFilters = () => {
 
                     <!-- Quick Stats -->
                     <div class="grid grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
                             <div class="text-3xl font-bold">{{ tours.length }}+</div>
                             <div class="text-sm text-blue-100">Tours</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
                             <div class="text-3xl font-bold">1000+</div>
                             <div class="text-sm text-blue-100">Khách hàng</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
+                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
                             <div class="text-3xl font-bold">5.0</div>
                             <div class="text-sm text-blue-100">Đánh giá</div>
                         </div>
@@ -210,7 +212,7 @@ const handleClearFilters = () => {
                 <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
                     <path
                         d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
-                        fill="rgb(249, 250, 251)" />
+                        class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
                 </svg>
             </div>
         </div>
@@ -227,14 +229,14 @@ const handleClearFilters = () => {
                 <div class="flex-1">
                     <!-- Toolbar -->
                     <div
-                        class="bg-white rounded-2xl shadow-lg p-4 mb-8 flex flex-wrap items-center justify-between gap-4">
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-8 flex flex-wrap items-center justify-between gap-4 transition-colors duration-300">
                         <div class="flex items-center gap-3">
-                            <span class="text-gray-700 font-semibold">
+                            <span class="text-gray-700 dark:text-gray-300 font-semibold">
                                 {{ filteredTours.length }} tours
                             </span>
                             <span class="text-gray-400">|</span>
                             <button @click="showFilters = !showFilters"
-                                class="lg:hidden flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors duration-300 font-medium">
+                                class="lg:hidden flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-300 font-medium">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -246,7 +248,7 @@ const handleClearFilters = () => {
                         <div class="flex items-center gap-3">
                             <!-- Sort Dropdown -->
                             <select v-model="sortBy"
-                                class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 text-sm font-medium text-gray-700 cursor-pointer">
+                                class="px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all duration-300 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 cursor-pointer">
                                 <option value="default">Mặc định</option>
                                 <option value="price-low">Giá thấp đến cao</option>
                                 <option value="price-high">Giá cao đến thấp</option>
@@ -254,16 +256,16 @@ const handleClearFilters = () => {
                             </select>
 
                             <!-- View Mode Toggle -->
-                            <div class="flex bg-gray-100 rounded-lg p-1">
+                            <div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                                 <button @click="viewMode = 'grid'" class="p-2 rounded transition-all duration-300"
-                                    :class="viewMode === 'grid' ? 'bg-white shadow-md text-blue-600' : 'text-gray-400 hover:text-gray-600'">
+                                    :class="viewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-md text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path
                                             d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                     </svg>
                                 </button>
                                 <button @click="viewMode = 'list'" class="p-2 rounded transition-all duration-300"
-                                    :class="viewMode === 'list' ? 'bg-white shadow-md text-blue-600' : 'text-gray-400 hover:text-gray-600'">
+                                    :class="viewMode === 'list' ? 'bg-white dark:bg-gray-600 shadow-md text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'">
                                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
                                             d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
@@ -283,7 +285,7 @@ const handleClearFilters = () => {
                                 <!-- Grid View -->
                                 <NuxtLink v-if="viewMode === 'grid'" :to="`/tour/${tour.id}`" class="block group">
                                     <div
-                                        class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100">
+                                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                                         <!-- Image -->
                                         <div class="relative h-56 overflow-hidden">
                                             <img :src="tour.thumbnail" :alt="tour.title"
@@ -307,11 +309,11 @@ const handleClearFilters = () => {
                                         <!-- Content -->
                                         <div class="p-5">
                                             <h3
-                                                class="text-lg font-bold text-gray-800 mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-blue-600 transition-colors duration-300">
+                                                class="text-lg font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                                                 {{ tour.title }}
                                             </h3>
 
-                                            <div class="space-y-2 mb-4 text-sm text-gray-600">
+                                            <div class="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-300">
                                                 <div class="flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-orange-500" fill="currentColor"
                                                         viewBox="0 0 20 20">
@@ -332,7 +334,7 @@ const handleClearFilters = () => {
                                             </div>
 
                                             <div
-                                                class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                                class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                 <div
                                                     class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                                                     ${{ tour.priceUsd }}
@@ -349,7 +351,7 @@ const handleClearFilters = () => {
                                 <!-- List View -->
                                 <NuxtLink v-else :to="`/tour/${tour.id}`" class="block group">
                                     <div
-                                        class="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl border border-gray-100">
+                                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl border border-gray-100 dark:border-gray-700">
                                         <div class="flex flex-col md:flex-row">
                                             <!-- Image -->
                                             <div class="relative md:w-80 h-56 md:h-auto overflow-hidden flex-shrink-0">
@@ -370,11 +372,11 @@ const handleClearFilters = () => {
                                             <div class="flex-1 p-6 flex flex-col justify-between">
                                                 <div>
                                                     <h3
-                                                        class="text-2xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors duration-300">
+                                                        class="text-2xl font-bold text-gray-800 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                                                         {{ tour.title }}
                                                     </h3>
 
-                                                    <div class="space-y-2 mb-4 text-gray-600">
+                                                    <div class="space-y-2 mb-4 text-gray-600 dark:text-gray-300">
                                                         <div class="flex items-center gap-2">
                                                             <svg class="w-5 h-5 text-orange-500" fill="currentColor"
                                                                 viewBox="0 0 20 20">
@@ -383,7 +385,7 @@ const handleClearFilters = () => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>Khởi hành:</strong> {{ tour.departFrom
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -404,13 +406,13 @@ const handleClearFilters = () => {
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>Loại:</strong> {{
                                                                 tour.type
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
 
                                                 <div
-                                                    class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                                    class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                     <div
                                                         class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                                                         ${{ tour.priceUsd }}
@@ -435,25 +437,24 @@ const handleClearFilters = () => {
                         <!-- Pagination -->
                         <div v-if="totalPages > 1" class="flex justify-center mt-12 gap-2">
                             <button @click="changePage(currentPage - 1)" :disabled="currentPage === 1"
-                                class="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                class="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 text-gray-600 dark:text-gray-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 19l-7-7 7-7" />
                                 </svg>
                             </button>
 
                             <button v-for="page in totalPages" :key="page" @click="changePage(page)"
-                                class="w-10 h-10 rounded-lg font-medium transition-all duration-300" :class="currentPage === page
+                                class="w-10 h-10 rounded-lg font-medium transition-all duration-300"
+                                :class="currentPage === page
                                     ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg scale-110'
-                                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'">
+                                    : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'">
                                 {{ page }}
                             </button>
 
                             <button @click="changePage(currentPage + 1)" :disabled="currentPage === totalPages"
-                                class="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300">
-                                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
+                                class="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300 text-gray-600 dark:text-gray-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 5l7 7-7 7" />
                                 </svg>
@@ -463,14 +464,16 @@ const handleClearFilters = () => {
 
                     <!-- Empty State -->
                     <div v-else class="text-center py-20">
-                        <div class="inline-block p-8 bg-gray-100 rounded-full mb-6">
-                            <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="inline-block p-8 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+                            <svg class="w-24 h-24 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy tour nào</h3>
-                        <p class="text-gray-600 mb-6">Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm của bạn</p>
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Không tìm thấy tour nào</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm của bạn
+                        </p>
                         <button @click="handleClearFilters"
                             class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
                             Xóa bộ lọc
@@ -503,6 +506,7 @@ const handleClearFilters = () => {
 .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -510,6 +514,7 @@ const handleClearFilters = () => {
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

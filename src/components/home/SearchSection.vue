@@ -14,31 +14,31 @@ const handleSearch = () => {
 </script>
 
 <template>
-    <section class="fade-in-section py-12 md:py-16 bg-gray-50">
+    <section class="fade-in-section py-12 md:py-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <div class="max-w-6xl mx-auto px-4">
             <!-- Header Text -->
             <div class="text-center mb-8 md:mb-12">
-                <p class="text-red-600 text-sm md:text-base font-medium mb-2">
+                <p class="text-red-600 dark:text-red-400 text-sm md:text-base font-medium mb-2">
                     Tìm Chuyến Tham Quan Hoàn Hảo Theo Sở Thích Của Bạn !!
                 </p>
-                <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174]">
+                <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174] dark:text-blue-400">
                     Tìm Kiếm Chuyến Đi Tốt Nhất Của Bạn
                 </h2>
             </div>
 
             <!-- Search Bar Container -->
             <div
-                class="bg-white rounded-16px md:rounded-full shadow-xl p-2 md:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-0">
+                class="bg-white dark:bg-gray-800 rounded-16px md:rounded-full shadow-xl p-2 md:p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2 md:gap-0 transition-colors duration-300">
                 <!-- Keyword Input -->
                 <div class="flex-1 md:flex-[2]">
                     <input v-model="searchForm.keyword" type="text" placeholder="Nhập từ khóa......"
-                        class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-l-full md:rounded-r-none border border-gray-200 focus:outline-none text-sm md:text-base " />
+                        class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-l-full md:rounded-r-none border border-gray-200 dark:border-gray-700 focus:outline-none text-sm md:text-base bg-transparent dark:text-white placeholder-gray-400" />
                 </div>
 
                 <!-- Location Dropdown -->
                 <div class="flex-1 relative">
                     <select v-model="searchForm.location"
-                        class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-none border border-gray-200 border-l-0 focus:outline-none appearance-none bg-white text-sm md:text-base cursor-pointer ">
+                        class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-none border border-gray-200 dark:border-gray-700 border-l-0 focus:outline-none appearance-none bg-white dark:bg-gray-800 text-sm md:text-base cursor-pointer dark:text-white">
                         <option v-for="loc in locations" :key="loc.value" :value="loc.value">
                             {{ loc.label }}
                         </option>
@@ -53,7 +53,7 @@ const handleSearch = () => {
                 <!-- Brand Dropdown -->
                 <div class="flex-1 relative">
                     <select v-model="searchForm.brand"
-                        class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-none border border-gray-200 border-l-0  focus:outline-none appearance-none bg-white text-sm md:text-base cursor-pointer ">
+                        class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-none border border-gray-200 dark:border-gray-700 border-l-0  focus:outline-none appearance-none bg-white dark:bg-gray-800 text-sm md:text-base cursor-pointer dark:text-white">
                         <option v-for="brand in brands" :key="brand.value" :value="brand.value">
                             {{ brand.label }}
                         </option>

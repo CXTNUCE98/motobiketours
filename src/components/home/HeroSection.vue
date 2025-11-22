@@ -37,8 +37,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="w-full bg-white">
-        <div class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 relative overflow-hidden bg-map"
+    <div class="w-full bg-white dark:bg-gray-900 transition-colors duration-300">
+        <div class="bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden bg-map"
             style="z-index: 1;">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20">
                 <div class="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12"
@@ -47,15 +47,16 @@ onUnmounted(() => {
                     <div class="flex-1 text-center lg:text-left space-y-4 sm:space-y-6 z-10 w-full">
                         <transition name="fade" mode="out-in">
                             <div :key="currentSlide">
-                                <p class="text-gray-600 text-xs sm:text-sm md:text-base font-medium mb-2">
+                                <p
+                                    class="text-gray-600 dark:text-gray-300 text-xs sm:text-sm md:text-base font-medium mb-2">
                                     {{ slides[currentSlide].subtitle }}
                                 </p>
                                 <h1
-                                    class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#094174] leading-tight mb-3 sm:mb-4">
+                                    class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#094174] dark:text-blue-400 leading-tight mb-3 sm:mb-4">
                                     {{ slides[currentSlide].title }}
                                 </h1>
                                 <p
-                                    class="text-gray-600 text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0">
+                                    class="text-gray-600 dark:text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0">
                                     {{ slides[currentSlide].description }}
                                 </p>
                                 <NuxtLink to="/booking"
@@ -75,19 +76,19 @@ onUnmounted(() => {
                                     class="relative w-[250px] h-[250px] sm:w-[300px] sm:h-[300px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px] mx-auto">
                                     <!-- Background decorative circles -->
                                     <div
-                                        class="absolute inset-0 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full blur-3xl">
+                                        class="absolute inset-0 bg-gradient-to-br from-blue-200/30 to-purple-200/30 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full blur-3xl">
                                     </div>
 
                                     <!-- Main image circle -->
                                     <div
-                                        class="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-4 sm:border-6 md:border-8 border-white">
+                                        class="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-4 sm:border-6 md:border-8 border-white dark:border-gray-800">
                                         <img :src="slides[currentSlide].image" :alt="slides[currentSlide].title"
                                             class="w-full h-full object-cover" />
                                     </div>
 
                                     <!-- Video thumbnail overlay (top left) -->
                                     <div
-                                        class="absolute -top-2 -left-2 sm:-top-4 sm:-left-4 md:-top-8 md:-left-8 w-24 h-18 sm:w-32 sm:h-24 md:w-48 md:h-36 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border-2 sm:border-4 border-white bg-white transform hover:scale-105 transition-transform duration-300">
+                                        class="absolute -top-2 -left-2 sm:-top-4 sm:-left-4 md:-top-8 md:-left-8 w-24 h-18 sm:w-32 sm:h-24 md:w-48 md:h-36 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border-2 sm:border-4 border-white dark:border-gray-800 bg-white dark:bg-gray-800 transform hover:scale-105 transition-transform duration-300">
                                         <img :src="slides[currentSlide].videoThumb" alt="Video"
                                             class="w-full h-full object-cover" />
                                         <!-- Play button -->
@@ -113,14 +114,17 @@ onUnmounted(() => {
                         'transition-all duration-300',
                         currentSlide === index - 1
                             ? 'w-8 h-2 bg-[#1A71C7] rounded-full'
-                            : 'w-2 h-2 bg-gray-300 rounded-full hover:bg-gray-400'
+                            : 'w-2 h-2 bg-gray-300 dark:bg-gray-600 rounded-full hover:bg-gray-400 dark:hover:bg-gray-500'
                     ]" :aria-label="`Go to slide ${index}`"></button>
                 </div>
             </div>
 
             <!-- Decorative elements -->
-            <div class="absolute top-10 right-10 w-20 h-20 bg-blue-200/20 rounded-full blur-2xl"></div>
-            <div class="absolute bottom-20 left-20 w-32 h-32 bg-purple-200/20 rounded-full blur-3xl"></div>
+            <div class="absolute top-10 right-10 w-20 h-20 bg-blue-200/20 dark:bg-blue-900/20 rounded-full blur-2xl">
+            </div>
+            <div
+                class="absolute bottom-20 left-20 w-32 h-32 bg-purple-200/20 dark:bg-purple-900/20 rounded-full blur-3xl">
+            </div>
         </div>
     </div>
 </template>

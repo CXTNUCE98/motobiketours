@@ -30,7 +30,7 @@ const handleCardClick = () => {
 </script>
 
 <template>
-    <div class="group relative bg-white rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
+    <div class="group relative bg-white dark:bg-gray-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer"
         @click="handleCardClick">
         <!-- Image Container -->
         <div class="relative h-64 overflow-hidden">
@@ -39,8 +39,8 @@ const handleCardClick = () => {
         </div>
 
         <!-- Metadata Bar (Below Image) -->
-        <div class="px-5 pt-3 pb-2 border-b border-gray-200">
-            <div class="flex items-center gap-4 text-gray-600 text-xs md:text-sm">
+        <div class="px-5 pt-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+            <div class="flex items-center gap-4 text-gray-600 dark:text-gray-400 text-xs md:text-sm">
                 <div class="flex items-center gap-1.5">
                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -64,12 +64,12 @@ const handleCardClick = () => {
         <div class="p-5 pt-4">
             <!-- Title -->
             <h3
-                class="text-gray-800 font-bold text-base mb-3 line-clamp-2 min-h-[3rem] group-hover:text-red-600 transition-colors duration-300">
+                class="text-gray-800 dark:text-white font-bold text-base mb-3 line-clamp-2 min-h-[3rem] group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">
                 {{ title }}
             </h3>
 
             <!-- Description -->
-            <p class="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+            <p class="text-gray-600 dark:text-gray-300 text-sm line-clamp-3 leading-relaxed">
                 {{ description }}
             </p>
         </div>

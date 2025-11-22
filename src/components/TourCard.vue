@@ -63,7 +63,7 @@ const toggleWishlist = (e: Event) => {
 </script>
 
 <template>
-    <div class="group relative bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100"
+    <div class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700"
         @click="handleCardClick" style="backdrop-filter: blur(10px);">
         <!-- Image Container with Gradient Overlay -->
         <div class="relative h-64 overflow-hidden">
@@ -115,7 +115,7 @@ const toggleWishlist = (e: Event) => {
         </div>
 
         <!-- Content with Glassmorphism Effect -->
-        <div class="p-6 bg-gradient-to-br from-white to-gray-50">
+        <div class="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
             <!-- Rating Stars -->
             <div class="flex items-center gap-1 mb-3">
                 <svg v-for="i in 5" :key="i" class="w-4 h-4 transition-colors duration-300"
@@ -139,35 +139,35 @@ const toggleWishlist = (e: Event) => {
 
             <!-- Tour Title -->
             <h3
-                class="text-gray-800 font-bold text-base mb-4 line-clamp-2 min-h-[3rem] leading-relaxed group-hover:text-blue-600 transition-colors duration-300">
+                class="text-gray-800 dark:text-white font-bold text-base mb-4 line-clamp-2 min-h-[3rem] leading-relaxed group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                 {{ title }}
             </h3>
 
             <!-- Details with Icons -->
             <div class="space-y-3 mb-5">
-                <div class="flex items-center gap-3 text-gray-600 text-sm">
+                <div class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm">
                     <div
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 flex items-center justify-center">
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <span class="font-semibold text-gray-700">Thời gian:</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-200">Thời gian:</span>
                         <span class="ml-1">{{ duration }}</span>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 text-gray-600 text-sm">
+                <div class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm">
                     <div
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center">
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
                         <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <span class="font-semibold text-gray-700">Số lượng:</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-200">Số lượng:</span>
                         <span class="ml-1">{{ people }}</span>
                     </div>
                 </div>
@@ -175,7 +175,7 @@ const toggleWishlist = (e: Event) => {
 
             <!-- Book Tour Button with Gradient -->
             <button @click.stop="handleBookTour"
-                class="w-full bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 group/btn">
+                class="w-full bg-#1A71C7 hover:opacity-80 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 group/btn">
                 <svg class="w-5 h-5 transition-transform duration-300 group-hover/btn:rotate-12" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

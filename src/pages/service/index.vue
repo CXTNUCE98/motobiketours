@@ -1,12 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { services } from '../../composables/services';
 
 const searchQuery = ref('');
 
 const filteredServices = computed(() => {
     if (!searchQuery.value) return services;
-    
+
     const query = searchQuery.value.toLowerCase();
     return services.filter(service =>
         service.title.toLowerCase().includes(query) ||
@@ -17,9 +17,11 @@ const filteredServices = computed(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30">
+    <div
+        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
         <!-- Hero Section -->
-        <div class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-24 overflow-hidden">
+        <div
+            class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-24 overflow-hidden">
             <!-- Background Pattern -->
             <div class="absolute inset-0 opacity-10">
                 <div class="absolute inset-0"
@@ -42,9 +44,8 @@ const filteredServices = computed(() => {
                     <!-- Search Bar -->
                     <div class="max-w-2xl mx-auto">
                         <div class="relative">
-                            <input v-model="searchQuery" type="text"
-                                placeholder="Tìm kiếm dịch vụ..."
-                                class="w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 text-lg shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 transition-all duration-300" />
+                            <input v-model="searchQuery" type="text" placeholder="Tìm kiếm dịch vụ..."
+                                class="w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 dark:text-white bg-white dark:bg-gray-800 text-lg shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 dark:focus:ring-gray-600 transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-500" />
                             <button
                                 class="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3 rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,18 +79,19 @@ const filteredServices = computed(() => {
                 <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
                     <path
                         d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
-                        fill="rgb(249, 250, 251)" />
+                        class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
                 </svg>
             </div>
         </div>
 
         <!-- Services Grid -->
         <div class="container mx-auto px-4 py-16">
-            <div v-if="filteredServices.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div v-if="filteredServices.length > 0"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                 <NuxtLink v-for="(service, index) in filteredServices" :key="service.id" :to="`/service/${service.id}`"
                     class="group animate-fade-in" :style="{ animationDelay: `${index * 0.1}s` }">
                     <div
-                        class="bg-white rounded-3xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 border-2 border-gray-100 h-full">
+                        class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-3 border-2 border-gray-100 dark:border-gray-700 h-full">
                         <!-- Image -->
                         <div class="relative h-64 overflow-hidden">
                             <img :src="service.thumbnail" :alt="service.title"
@@ -106,9 +108,10 @@ const filteredServices = computed(() => {
 
                             <!-- Price Badge -->
                             <div
-                                class="absolute bottom-6 right-6 px-4 py-2 rounded-xl bg-white/95 backdrop-blur-sm shadow-lg">
-                                <div class="text-sm font-semibold text-gray-600">Từ</div>
-                                <div class="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                                class="absolute bottom-6 right-6 px-4 py-2 rounded-xl bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm shadow-lg">
+                                <div class="text-sm font-semibold text-gray-600 dark:text-gray-400">Từ</div>
+                                <div
+                                    class="text-lg font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
                                     {{ service.priceRange }}
                                 </div>
                             </div>
@@ -117,18 +120,18 @@ const filteredServices = computed(() => {
                         <!-- Content -->
                         <div class="p-6">
                             <h3
-                                class="text-2xl font-bold text-gray-800 mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-purple-600 transition-colors duration-300">
+                                class="text-2xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
                                 {{ service.shortTitle }}
                             </h3>
 
-                            <p class="text-gray-600 mb-4 line-clamp-2">
+                            <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
                                 {{ service.description }}
                             </p>
 
                             <!-- Features -->
                             <div class="space-y-2 mb-6">
                                 <div v-for="(feature, idx) in service.features.slice(0, 3)" :key="idx"
-                                    class="flex items-start gap-2 text-sm text-gray-600">
+                                    class="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
                                     <svg class="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path fill-rule="evenodd"
@@ -155,14 +158,15 @@ const filteredServices = computed(() => {
 
             <!-- Empty State -->
             <div v-else class="text-center py-20">
-                <div class="inline-block p-8 bg-gray-100 rounded-full mb-6">
-                    <svg class="w-24 h-24 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="inline-block p-8 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+                    <svg class="w-24 h-24 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-2">Không tìm thấy dịch vụ nào</h3>
-                <p class="text-gray-600 mb-6">Hãy thử tìm kiếm với từ khóa khác</p>
+                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Không tìm thấy dịch vụ nào</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">Hãy thử tìm kiếm với từ khóa khác</p>
                 <button @click="searchQuery = ''"
                     class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
                     Xóa tìm kiếm
@@ -176,21 +180,24 @@ const filteredServices = computed(() => {
                 <h2 class="text-4xl font-bold text-center mb-12">Tại Sao Chọn Chúng Tôi?</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                     <div class="text-center">
-                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                        <div
+                            class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                             <i class="bx bx-shield-check text-4xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">An Toàn & Bảo Hiểm</h3>
                         <p class="text-blue-100">Bảo hiểm toàn diện, thiết bị an toàn đầy đủ</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                        <div
+                            class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                             <i class="bx bx-user-check text-4xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Chuyên Nghiệp</h3>
                         <p class="text-blue-100">Đội ngũ hướng dẫn viên giàu kinh nghiệm</p>
                     </div>
                     <div class="text-center">
-                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
+                        <div
+                            class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                             <i class="bx bx-support text-4xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Hỗ Trợ 24/7</h3>

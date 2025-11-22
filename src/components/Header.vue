@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
+import { useTheme } from '@/composables/useTheme'
+
 
 const route = useRoute()
+const { theme, toggleTheme } = useTheme()
 const isScrolled = ref(false)
 
 // Handle scroll event with throttling
@@ -64,14 +67,15 @@ onBeforeUnmount(() => {
 
 <template>
     <!-- Main Header - Fixed at top -->
-    <header class="fixed top-0 left-0 right-0 z-[999] border-b border-gray-200 transition-all duration-300 bg-white"
+    <header
+        class="fixed top-0 left-0 right-0 z-[999] border-b border-gray-200 dark:border-gray-700 transition-all duration-300 bg-white dark:bg-gray-900"
         :class="isScrolled ? 'shadow-lg' : 'shadow-sm'" style="will-change: transform;">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-16 md:h-20">
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
                     <div class="text-2xl md:text-3xl font-bold">
-                        <span class="text-gray-800">AN</span><span class="text-[#1A71C7]">DAGO</span>
+                        <span class="text-gray-800 dark:text-white">AN</span><span class="text-[#1A71C7]">DAGO</span>
                     </div>
                 </NuxtLink>
 
@@ -81,16 +85,16 @@ onBeforeUnmount(() => {
                         'px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center gap-1',
                         isActive(item.path)
                             ? 'text-[#1A71C7]'
-                            : 'text-gray-700 hover:text-[#1A71C7]'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] dark:hover:text-[#1A71C7]'
                     ]">
-                        {{ item.name }}                        
+                        {{ item.name }}
                     </NuxtLink>
                 </nav>
 
                 <!-- Right Icons -->
                 <div class="flex items-center gap-3 md:gap-4">
                     <!-- Search Icon -->
-                    <button class="text-gray-700 hover:text-[#1A71C7] transition-colors">
+                    <button class="text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -98,7 +102,7 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- User Icon -->
-                    <button class="text-gray-700 hover:text-[#1A71C7] transition-colors">
+                    <button class="text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -106,7 +110,7 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- Cart Icon with Badge -->
-                    <button class="relative text-gray-700 hover:text-[#1A71C7] transition-colors">
+                    <button class="relative text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -119,25 +123,33 @@ onBeforeUnmount(() => {
 
                     <!-- Language Selector -->
                     <button
-                        class="hidden md:flex items-center gap-1 text-gray-700 hover:text-[#1A71C7] transition-colors">
+                        class="hidden md:flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
                         </svg>
                     </button>
 
-                    <!-- Red Circle Button (notification or menu) -->
-                    <button
-                        class="w-8 h-8 md:w-9 md:h-9 bg-[#1A71C7] rounded-full flex items-center justify-center text-white hover:bg-[#C2185B] transition-colors shadow-md">
-                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- Dark | Light theme -->
+                    <button @click="toggleTheme"
+                        class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300">
+                        <!-- Sun icon for light mode -->
+                        <svg v-if="theme === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <!-- Moon icon for dark mode -->
+                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                         </svg>
                     </button>
 
+
                     <!-- Mobile Menu Toggle -->
                     <button @click="showMobileMenu = !showMobileMenu"
-                        class="lg:hidden text-gray-700 hover:text-[#1A71C7]">
+                        class="lg:hidden text-gray-700 dark:text-gray-300 hover:text-[#1A71C7]">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -147,14 +159,15 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Mobile Menu -->
-            <div v-if="showMobileMenu" class="lg:hidden pb-4">
+            <div v-if="showMobileMenu" class="lg:hidden pb-4 bg-white dark:bg-gray-900">
                 <nav class="flex flex-col space-y-2">
                     <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" @click="showMobileMenu = false"
                         :class="[
                             'px-4 py-2 text-sm font-medium transition-colors duration-200',
                             isActive(item.path)
-                                ? 'text-[#1A71C7] bg-pink-50'
-                                : 'text-gray-700 hover:text-[#1A71C7] hover:bg-gray-50'
+
+                                ? 'text-[#1A71C7] bg-pink-50 dark:bg-gray-800'
+                                : 'text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] hover:bg-gray-50 dark:hover:bg-gray-800'
                         ]">
                         {{ item.name }}
                     </NuxtLink>

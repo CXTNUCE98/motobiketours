@@ -3,14 +3,14 @@ import { tourHotTours } from '@/data/homeData';
 </script>
 
 <template>
-    <section class="fade-in-section py-12 md:py-16 bg-gray-50">
+    <section class="fade-in-section py-12 md:py-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-4 md:px-6">
             <div class="text-center mb-8 md:mb-12">
                 <h2 class="text-3xl md:text-4xl font-bold mb-2">
-                    <span class="text-gray-800">TOUR </span>
-                    <span class="text-[#1A71C7]">HOT</span>
+                    <span class="text-gray-800 dark:text-white">TOUR </span>
+                    <span class="text-[#1A71C7] dark:text-blue-400">HOT</span>
                 </h2>
-                <p class="text-gray-600 text-lg">Tour được nhiều khách lựa chọn nhất</p>
+                <p class="text-gray-600 dark:text-gray-300 text-lg">Tour được nhiều khách lựa chọn nhất</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
