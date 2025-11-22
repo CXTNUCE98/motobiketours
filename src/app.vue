@@ -24,7 +24,6 @@ useHead({
   --color-primary-dark: #FF5722;
   --color-secondary: #FFA726;
   --color-secondary-dark: #FF9800;
-  transform: translateY(10px);
 }
 
 /* Custom scrollbar */
