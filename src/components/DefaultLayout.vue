@@ -8,7 +8,7 @@ const { theme } = useTheme();
     <Header />
     
     <!-- Main Content Area -->
-    <main class="py-12 md:py-20" :class="{ 'bg-#111827': theme === 'dark' }">
+    <main class="py-12 md:py-20 bg-white dark:bg-gray-900 transition-colors duration-300 min-h-screen">
         <!-- <div class="max-w-7xl mx-auto px-4 md:px-6"> -->
             <slot />
         <!-- </div> -->

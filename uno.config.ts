@@ -160,6 +160,10 @@ export const unoConfig: UserConfig = {
     ['text-helper', 'text-13px leading-20px mb-4px font-medium'],
     ['flex-center', 'flex items-center justify-center'],
     ['el-form-label', '[&_.el-form-item\\_\\_label]:(mb-2px! font-semibold!)'],
+    ['btn-primary', 'bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase text-sm tracking-wide'],
+    ['btn-secondary', 'bg-gradient-to-r from-brand-secondary to-brand-secondary-dark text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase text-sm tracking-wide'],
+    ['card', 'bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700'],
+    ['section-title', 'flex items-center gap-2 mb-4 text-gray-900 dark:text-white before:content-[""] before:w-1 before:h-8 before:bg-[#FFB800]'],
   ],
   presets: [
     presetTypography(),
@@ -183,6 +187,31 @@ export const unoConfig: UserConfig = {
         jakarta: {
           name: 'Plus Jakarta Sans',
           weights: ['200', '300', '400', '500', '600', '700', '800', '900'],
+          italic: true,
+        },
+        serif: {
+          name: 'DM Serif Display',
+          weights: ['400'],
+          italic: true,
+        },
+        jost: {
+          name: 'Jost',
+          weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+          italic: true,
+        },
+        playfair: {
+          name: 'Playfair Display',
+          weights: ['400', '500', '600', '700', '800', '900'],
+          italic: true,
+        },
+        roboto: {
+          name: 'Roboto',
+          weights: ['100', '300', '400', '500', '700', '900'],
+          italic: true,
+        },
+        opensans: {
+          name: 'Open Sans',
+          weights: ['300', '400', '500', '600', '700', '800'],
           italic: true,
         },
       },
