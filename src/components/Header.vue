@@ -68,14 +68,14 @@ onBeforeUnmount(() => {
 <template>
     <!-- Main Header - Fixed at top -->
     <header
-        class="fixed top-0 left-0 right-0 z-[999] border-b border-gray-200 dark:border-gray-700 transition-all duration-300 bg-white dark:bg-gray-900"
+        class="fixed top-0 left-0 right-0 z-[999] border-b border-slate-200 dark:border-slate-700 transition-all duration-300 bg-white dark:bg-slate-900"
         :class="isScrolled ? 'shadow-lg' : 'shadow-sm'" style="will-change: transform;">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-between h-16 md:h-20">
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
                     <div class="text-2xl md:text-3xl font-bold">
-                        <span class="text-gray-800 dark:text-white">AN</span><span class="text-[#1A71C7]">DAGO</span>
+                        <span class="text-slate-800 dark:text-white">AN</span><span class="text-sky-500 dark:text-cyan-400">DAGO</span>
                     </div>
                 </NuxtLink>
 
@@ -84,8 +84,8 @@ onBeforeUnmount(() => {
                     <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" :class="[
                         'px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center gap-1',
                         isActive(item.path)
-                            ? 'text-[#1A71C7]'
-                            : 'text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] dark:hover:text-[#1A71C7]'
+                            ? 'text-sky-500 dark:text-cyan-400'
+                            : 'text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400'
                     ]">
                         {{ item.name }}
                     </NuxtLink>
@@ -94,7 +94,7 @@ onBeforeUnmount(() => {
                 <!-- Right Icons -->
                 <div class="flex items-center gap-3 md:gap-4">
                     <!-- Search Icon -->
-                    <button class="text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
+                    <button class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -102,7 +102,7 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- User Icon -->
-                    <button class="text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
+                    <button class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -110,20 +110,20 @@ onBeforeUnmount(() => {
                     </button>
 
                     <!-- Cart Icon with Badge -->
-                    <button class="relative text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
+                    <button class="relative text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                         <span
-                            class="absolute -top-2 -right-2 bg-[#1A71C7] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                            class="absolute -top-2 -right-2 bg-gradient-to-r from-sky-500 to-blue-600 dark:from-cyan-500 dark:to-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                             {{ cartCount }}
                         </span>
                     </button>
 
                     <!-- Language Selector -->
                     <button
-                        class="hidden md:flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] transition-colors">
+                        class="hidden md:flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
 
                     <!-- Dark | Light theme -->
                     <button @click="toggleTheme"
-                        class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-gray-700 dark:text-gray-300">
+                        class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300">
                         <!-- Sun icon for light mode -->
                         <svg v-if="theme === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor"
                             viewBox="0 0 24 24">
@@ -149,7 +149,7 @@ onBeforeUnmount(() => {
 
                     <!-- Mobile Menu Toggle -->
                     <button @click="showMobileMenu = !showMobileMenu"
-                        class="lg:hidden text-gray-700 dark:text-gray-300 hover:text-[#1A71C7]">
+                        class="lg:hidden text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4 6h16M4 12h16M4 18h16" />
@@ -159,15 +159,15 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- Mobile Menu -->
-            <div v-if="showMobileMenu" class="lg:hidden pb-4 bg-white dark:bg-gray-900">
+            <div v-if="showMobileMenu" class="lg:hidden pb-4 bg-white dark:bg-slate-900">
                 <nav class="flex flex-col space-y-2">
                     <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" @click="showMobileMenu = false"
                         :class="[
                             'px-4 py-2 text-sm font-medium transition-colors duration-200',
                             isActive(item.path)
 
-                                ? 'text-[#1A71C7] bg-pink-50 dark:bg-gray-800'
-                                : 'text-gray-700 dark:text-gray-300 hover:text-[#1A71C7] hover:bg-gray-50 dark:hover:bg-gray-800'
+                                ? 'text-sky-500 dark:text-cyan-400 bg-sky-50 dark:bg-slate-800'
+                                : 'text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                         ]">
                         {{ item.name }}
                     </NuxtLink>
