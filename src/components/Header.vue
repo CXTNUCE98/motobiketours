@@ -4,13 +4,20 @@ import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
 
 
+import { useAuth } from '@/composables/useAuth'
 import LoginPopup from '@/components/LoginPopup.vue'
 
 const route = useRoute()
 const router = useRouter()
 const { theme, toggleTheme } = useTheme()
+const { isAuthenticated, user, logout } = useAuth()
 const isScrolled = ref(false)
 const showLoginPopup = ref(false)
+
+const handleLogout = () => {
+    logout()
+    router.push('/')
+}
 
 // Handle scroll event with throttling
 let scrollTimeout: ReturnType<typeof setTimeout> | null = null
@@ -71,6 +78,11 @@ onBeforeUnmount(() => {
 function formLogin() {
     showLoginPopup.value = true
 }
+
+watch(() => user.value, () => {
+    console.log('user', user.value);
+
+})
 </script>
 
 <template>
@@ -83,7 +95,8 @@ function formLogin() {
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
                     <div class="text-2xl md:text-3xl font-bold">
-                        <span class="text-slate-800 dark:text-white">AN</span><span class="text-sky-500 dark:text-cyan-400">DAGO</span>
+                        <span class="text-slate-800 dark:text-white">AN</span><span
+                            class="text-sky-500 dark:text-cyan-400">DAGO</span>
                     </div>
                 </NuxtLink>
 
@@ -102,23 +115,67 @@ function formLogin() {
                 <!-- Right Icons -->
                 <div class="flex items-center gap-3 md:gap-4">
                     <!-- Search Icon -->
-                    <button class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                    <button
+                        class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </button>
 
-                    <!-- User Icon -->
-                    <button @click="formLogin" class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </button>
+                    <!-- User Icon / Profile Menu -->
+                    <div class="relative">
+                        <button v-if="!isAuthenticated" @click="formLogin"
+                            class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </button>
+
+                        <!-- Authenticated User Dropdown -->
+                        <div v-else class="group relative">
+                            <button
+                                class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                                <div
+                                    class="w-8 h-8 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-sky-600 dark:text-cyan-400 font-bold text-sm">
+                                    {{ user?.userName?.charAt(0).toUpperCase() || 'U' }}
+                                </div>
+                                <span class="hidden md:block font-medium text-sm max-w-[100px] truncate">
+                                    {{ user?.userName || 'User' }}
+                                </span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </button>
+
+                            <!-- Dropdown Menu -->
+                            <div
+                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
+                                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+                                    <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
+                                        user?.userName
+                                        }}</p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
+                                </div>
+
+                                <NuxtLink to="/profile"
+                                    class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                                    Profile Settings
+                                </NuxtLink>
+
+                                <button @click="handleLogout"
+                                    class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                    Sign out
+                                </button>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Cart Icon with Badge -->
-                    <button class="relative text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                    <button
+                        class="relative text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                         <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />

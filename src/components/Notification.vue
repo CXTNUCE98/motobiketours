@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { NotificationItem } from '@/composables/notifications'
+import { useNotifications } from '@/composables/notifications'
 const { items, remove } = useNotifications()
 
 const colorByType: Record<string, string> = {
@@ -27,10 +27,7 @@ const iconByType: Record<string, string> = {
       </div>
     </div>
   </div>
-  
+
 </template>
 
-<style scoped>
-</style>
-
-
+<style scoped></style>
