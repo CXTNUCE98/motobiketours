@@ -19,7 +19,7 @@ export const testimonials = [
     id: 2,
     name: 'Maurice Nygaard',
     image: '/photos/hotel2.jpg',
-    text: 'Cảm ơn Trekeel đã mang đến cho tôi một kỳ nghỉ du lịch hoàn hảo về trải nghiệm văn hóa chân thực và điều mà chúng tôi đánh giá cao là dịch vụ của công ty cho các chuyến đi tiếp theo và giới thiệu quảng bá đến bạn bè của tôi.',
+    text: 'Cảm ơn ANDAGO đã mang đến cho tôi một kỳ nghỉ du lịch hoàn hảo về trải nghiệm văn hóa chân thực và điều mà chúng tôi đánh giá cao là dịch vụ của công ty cho các chuyến đi tiếp theo và giới thiệu quảng bá đến bạn bè của tôi.',
   },
   {
     id: 3,
@@ -199,7 +199,7 @@ export const latestNews = [
 
 export const slides = [
   {
-    title: 'Tìm Chuyến Tham Quan Hoàn Hảo Của Bạn Tại Trekeel',
+    title: 'Tìm Chuyến Tham Quan Hoàn Hảo Của Bạn Tại ANDAGO',
     subtitle: 'Khám Phá Thế Giới',
     description:
       'Địa điểm độc đáo cả trong và ngoài nước. Mạng đến sự đa dạng để khách hàng thoải mái lựa chọn chuyến đi cho riêng mình.',

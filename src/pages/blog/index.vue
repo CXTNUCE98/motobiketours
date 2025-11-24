@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { blogPosts } from '../../data/blogPosts'
 
 // Active category filter
+const router = useRouter()
 const activeCategory = ref('All')
 
 // Search query
@@ -78,6 +79,10 @@ const formatDate = (dateString) => {
   const date = new Date(dateString)
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
+
+function createNewBlog() {
+  router.push('/blog/create')
+}
 </script>
 
 <template>
@@ -111,13 +116,19 @@ const formatDate = (dateString) => {
 
     <div class="container mx-auto px-4 py-12 max-w-7xl">
       <!-- Category Filter -->
-      <div class="flex overflow-x-auto pb-4 mb-12 gap-3 no-scrollbar">
-        <button v-for="category in categories" :key="category" @click="setCategory(category)"
-          class="px-6 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border"
-          :class="activeCategory === category
-            ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-lg shadow-indigo-200 transform -translate-y-1'
-            : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'">
-          {{ category }}
+      <div class="flex justify-between items-center">
+        <div class="flex overflow-x-auto pt-2 pb-4 gap-3 no-scrollbar">
+          <button v-for="category in categories" :key="category" @click="setCategory(category)"
+            class="px-6 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border"
+            :class="activeCategory === category
+              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-lg shadow-indigo-200 transform -translate-y-1'
+              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'">
+            {{ category }}
+          </button>
+        </div>
+        <button @click="createNewBlog"
+          class="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md px-6 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border">
+          Create New Post
         </button>
       </div>
 
@@ -152,7 +163,7 @@ const formatDate = (dateString) => {
                     <div>
                       <div class="text-white font-bold">{{ featuredPost.author.name }}</div>
                       <div class="text-gray-400 text-sm">{{ formatDate(featuredPost.date) }} • {{ featuredPost.readTime
-                        }}</div>
+                      }}</div>
                     </div>
                   </div>
                 </div>
@@ -249,7 +260,7 @@ const formatDate = (dateString) => {
                 class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
                 <span
                   class="text-gray-600 dark:text-gray-300 font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{{
-                  category }}</span>
+                    category }}</span>
                 <span
                   class="bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-xs font-bold px-2 py-1 rounded-md group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900/50 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                   {{ categoryCounts[category] || 0 }}
