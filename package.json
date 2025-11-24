@@ -26,6 +26,8 @@
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@iconify-json/carbon": "^1.2.14",
+    "@iconify-json/ep": "^1.2.3",
     "@openapitools/openapi-generator-cli": "^2.6.0",
     "@unocss/nuxt": "^0.59.4",
     "@vue-macros/nuxt": "^1.9.33",
