@@ -26,21 +26,28 @@ export const authService = {
      * Store auth token in localStorage
      */
     setToken(token: string): void {
-        localStorage.setItem('access_token', token)
+        if (process.client) {
+            localStorage.setItem('access_token', token)
+        }
     },
 
     /**
      * Get auth token from localStorage
      */
     getToken(): string | null {
-        return localStorage.getItem('access_token')
+        if (process.client) {
+            return localStorage.getItem('access_token')
+        }
+        return null
     },
 
     /**
      * Remove auth token from localStorage
      */
     removeToken(): void {
-        localStorage.removeItem('access_token')
+        if (process.client) {
+            localStorage.removeItem('access_token')
+        }
     },
 
     /**

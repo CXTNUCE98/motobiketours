@@ -5,12 +5,14 @@ export const useTheme = () => {
 
   const setTheme = (newTheme: 'light' | 'dark') => {
     theme.value = newTheme;
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    if (process.client) {
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('theme', newTheme);
     }
-    localStorage.setItem('theme', newTheme);
   };
 
   const toggleTheme = () => {
@@ -18,6 +20,8 @@ export const useTheme = () => {
   };
 
   onMounted(() => {
+    if (!process.client) return;
+    
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
     if (savedTheme) {
       setTheme(savedTheme);

@@ -15,8 +15,26 @@ const isScrolled = ref(false)
 const showLoginPopup = ref(false)
 
 const handleLogout = () => {
-    logout()
-    router.push('/')
+    ElMessageBox.confirm(
+        'Are you sure you want to log out?',
+        'Warning',
+        {
+            confirmButtonText: 'OK',
+            cancelButtonText: 'Cancel',
+            type: 'warning',
+            center: true,
+        }
+    )
+        .then(() => {
+            logout()
+            router.push('/')
+
+            ElMessage({
+                type: 'success',
+                message: 'Logout successfully!',
+            })
+        })
+
 }
 
 // Handle scroll event with throttling
@@ -78,11 +96,6 @@ onBeforeUnmount(() => {
 function formLogin() {
     showLoginPopup.value = true
 }
-
-watch(() => user.value, () => {
-    console.log('user', user.value);
-
-})
 </script>
 
 <template>
@@ -156,7 +169,7 @@ watch(() => user.value, () => {
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
                                         user?.userName
-                                        }}</p>
+                                    }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
 

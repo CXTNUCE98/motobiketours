@@ -46,6 +46,10 @@ export async function apiClient<T>(
 
 // Helper to add auth token to requests
 export function getAuthHeaders(): HeadersInit {
+    if (!process.client) {
+        return {}
+    }
+
     const token = localStorage.getItem('access_token')
 
     if (!token) {

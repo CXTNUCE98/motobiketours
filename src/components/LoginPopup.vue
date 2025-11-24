@@ -91,15 +91,13 @@ const {
   onSuccess: (data) => {
     // Update auth state
     setAuthState(data.access_token)
-
-    // Show success message (you can integrate a toast library here)
-    console.log('Login successful!')
+    ElMessage({
+      message: 'Login successful!',
+      type: 'success',
+    })
 
     // Close modal
     close()
-
-    // Optionally redirect or refresh user data
-    // window.location.reload()
   },
   onError: (error: ApiError) => {
     console.error('Login failed:', error)
