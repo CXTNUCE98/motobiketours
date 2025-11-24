@@ -411,7 +411,7 @@ const relatedTours = computed(() => {
                                 </h3>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour.duration
-                                    }}</span>
+                                        }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                                         {{ relatedTour.priceUsd }}
@@ -605,7 +605,7 @@ const relatedTours = computed(() => {
                                 </h3>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour.duration
-                                    }}</span>
+                                        }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                                         {{ relatedTour.priceUsd }}
@@ -620,7 +620,7 @@ const relatedTours = computed(() => {
     </div>
 
     <!-- Not Found -->
-    <div v-else
+    <!-- <div v-else
         class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-20 transition-colors duration-300">
         <div class="text-center">
             <div class="inline-block p-8 bg-red-100 dark:bg-red-900/30 rounded-full mb-6">
@@ -641,7 +641,7 @@ const relatedTours = computed(() => {
                 Quay lại danh sách tour
             </NuxtLink>
         </div>
-    </div>
+    </div> -->
 </template>
 
 <style scoped>
