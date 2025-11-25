@@ -41,14 +41,15 @@ const tourGuides = [
                     <!-- Main Title -->
                     <h1
                         class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 leading-tight">
-                        THEAN || Đại Lý Du Lịch & Đặt Tour
+                        ANDAGO || Đại Lý Du Lịch & Đặt Tour
                     </h1>
 
-                    <!-- Section 1: Giới thiệu về THEAN -->
+                    <!-- Section 1: Giới thiệu về ANDAGO -->
                     <div class="space-y-3 sm:space-y-4">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Giới thiệu về THEAN</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Giới thiệu về ANDAGO
+                        </h2>
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            THEAN là đại lý du lịch trực tuyến uy tín tại Việt Nam, chuyên cung cấp các dịch vụ du lịch
+                            ANDAGO là đại lý du lịch trực tuyến uy tín tại Việt Nam, chuyên cung cấp các dịch vụ du lịch
                             đa dạng và chất lượng cao.
                         </p>
 
@@ -67,7 +68,7 @@ const tourGuides = [
                         </ul>
 
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            Với đội ngũ nhân viên chuyên nghiệp, nhiệt tình và giàu kinh nghiệm, THEAN cam kết mang đến
+                            Với đội ngũ nhân viên chuyên nghiệp, nhiệt tình và giàu kinh nghiệm, ANDAGO cam kết mang đến
                             cho khách hàng những trải nghiệm du lịch tuyệt vời nhất.
                         </p>
                     </div>
@@ -75,7 +76,7 @@ const tourGuides = [
                     <!-- Section 2: Ưu điểm -->
                     <div class="space-y-3 sm:space-y-4">
                         <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Ưu điểm khi sử dụng dịch
-                            vụ của THEAN</h2>
+                            vụ của ANDAGO</h2>
 
                         <ul
                             class="space-y-1.5 sm:space-y-2 text-gray-700 dark:text-gray-300 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">

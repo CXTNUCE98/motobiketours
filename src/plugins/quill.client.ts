@@ -1,7 +1,12 @@
 import { defineNuxtPlugin } from '#app'
-import { QuillEditor } from '@vueup/vue-quill'
-import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
-export default defineNuxtPlugin((nuxtApp) => {
-    nuxtApp.vueApp.component('QuillEditor', QuillEditor)
+export default defineNuxtPlugin(async (nuxtApp) => {
+    // Only load on client-side
+    if (process.client) {
+        // Dynamic import for better code splitting
+        const { QuillEditor } = await import('@vueup/vue-quill')
+        await import('@vueup/vue-quill/dist/vue-quill.snow.css')
+
+        nuxtApp.vueApp.component('QuillEditor', QuillEditor)
+    }
 })
