@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+import { uploadImage, createBlog, validateBlogForm, countWords } from '~/services/blogApi'
 
+const router = useRouter()
 const fileInput = ref<HTMLInputElement | null>(null)
 const thumbnailPreview = ref<string | null>(null)
+const thumbnailImageId = ref<string>('')
+const quillEditorRef = ref<any>(null)
+
+// Loading states
+const uploadingThumbnail = ref(false)
+const publishing = ref(false)
+const savingDraft = ref(false)
 
 // Language options
 const languages = [
@@ -29,7 +39,55 @@ const editorLoaded = ref(false)
 // Lazy load editor when component mounts
 onMounted(() => {
     editorLoaded.value = true
+    // Setup Quill image handler after editor is loaded
+    setTimeout(() => {
+        setupQuillImageHandler()
+    }, 1000)
 })
+
+// Setup Quill image upload handler
+const setupQuillImageHandler = () => {
+    if (!quillEditorRef.value) return
+
+    const quill = quillEditorRef.value.getQuill?.()
+    if (!quill) return
+
+    const toolbar = quill.getModule('toolbar')
+    if (toolbar) {
+        toolbar.addHandler('image', handleQuillImageUpload)
+    }
+}
+
+// Handle image upload in Quill editor
+const handleQuillImageUpload = () => {
+    const input = globalThis.document.createElement('input')
+    input.setAttribute('type', 'file')
+    input.setAttribute('accept', 'image/*')
+    input.click()
+
+    input.onchange = async () => {
+        const file = input.files?.[0]
+        if (!file) return
+
+        try {
+            ElMessage.info('Uploading image...')
+            const result = await uploadImage(file)
+
+            // Insert image into editor using secureUrl for preview
+            const quill = quillEditorRef.value?.getQuill?.()
+            if (quill) {
+                const range = quill.getSelection(true)
+                quill.insertEmbed(range.index, 'image', result.secureUrl)
+                quill.setSelection(range.index + 1)
+            }
+
+            ElMessage.success('Image uploaded successfully!')
+        } catch (error: any) {
+            console.error('Image upload failed:', error)
+            ElMessage.error(error.message || 'Failed to upload image')
+        }
+    }
+}
 
 const togglePreview = () => {
     isPreview.value = !isPreview.value
@@ -39,17 +97,17 @@ const triggerFileInput = () => {
     fileInput.value?.click()
 }
 
-const handleFileChange = (event: Event) => {
+const handleFileChange = async (event: Event) => {
     const input = event.target as HTMLInputElement
     if (input.files && input.files[0]) {
-        processFile(input.files[0])
+        await processFile(input.files[0])
     }
 }
 
-const handleDrop = (event: DragEvent) => {
+const handleDrop = async (event: DragEvent) => {
     event.preventDefault()
     if (event.dataTransfer?.files && event.dataTransfer.files[0]) {
-        processFile(event.dataTransfer.files[0])
+        await processFile(event.dataTransfer.files[0])
     }
 }
 
@@ -57,61 +115,117 @@ const handleDragOver = (event: DragEvent) => {
     event.preventDefault()
 }
 
-const processFile = (file: File) => {
+const processFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
         ElMessage.error('Please upload an image file')
         return
     }
 
-    post.thumbnail = file
-    const reader = new FileReader()
-    reader.onload = (e) => {
-        thumbnailPreview.value = e.target?.result as string
+    // Upload thumbnail to server
+    uploadingThumbnail.value = true
+    try {
+        const result = await uploadImage(file)
+
+        // Save imageId for blog creation
+        thumbnailImageId.value = result.imageId
+
+        // Show preview using secureUrl
+        thumbnailPreview.value = result.secureUrl
+        post.thumbnail = file
+
+        ElMessage.success('Thumbnail uploaded successfully!')
+    } catch (error: any) {
+        console.error('Thumbnail upload failed:', error)
+        ElMessage.error(error.message || 'Failed to upload thumbnail')
+        thumbnailImageId.value = ''
+        thumbnailPreview.value = null
+        post.thumbnail = null
+    } finally {
+        uploadingThumbnail.value = false
     }
-    reader.readAsDataURL(file)
 }
 
 const removeThumbnail = () => {
     post.thumbnail = null
     thumbnailPreview.value = null
+    thumbnailImageId.value = ''
     if (fileInput.value) {
         fileInput.value.value = ''
     }
 }
 
-const saveDraft = () => {
-    ElMessage.success('Draft saved successfully! (Mock)')
+const saveDraft = async () => {
+    await submitBlog('draft')
 }
 
-const publishPost = () => {
-    if (!post.title.trim()) {
-        ElMessage.warning('Please enter post name')
-        return
-    }
-    if (!post.language) {
-        ElMessage.warning('Please select a language')
-        return
-    }
-    if (!post.shortDescription.trim()) {
-        ElMessage.warning('Please enter short description')
-        return
-    }
-    if (!post.content || post.content === '<p><br></p>') {
-        ElMessage.warning('Please write some content')
-        return
-    }
+const publishPost = async () => {
+    await submitBlog('waiting')
+}
 
-    // Mock API call
-    console.log('Publishing post:', {
+const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
+    // Prepare form data
+    const formData = {
         title: post.title,
         language: post.language,
-        tags: post.tags,
+        thumbnailImageId: thumbnailImageId.value,
         shortDescription: post.shortDescription,
         content: post.content,
-        thumbnail: post.thumbnail ? 'File present' : 'No thumbnail'
-    })
+        tags: post.tags,
+        status: status
+    }
 
-    ElMessage.success('Post published successfully! (Mock)')
+    // Validate form
+    const errors = validateBlogForm(formData)
+    if (errors.length > 0) {
+        ElMessage.warning(errors[0])
+        return
+    }
+
+    // Set loading state
+    if (status === 'draft') {
+        savingDraft.value = true
+    } else {
+        publishing.value = true
+    }
+
+    try {
+        // Count words
+        const numWords = countWords(post.content)
+
+        // Prepare blog data
+        const blogData = {
+            name: post.title,
+            lang: post.language,
+            thumbnail: thumbnailImageId.value,
+            shortDescription: post.shortDescription,
+            content: post.content,
+            tags: post.tags,
+            numWords: numWords,
+            status: status
+        }
+
+        // Create blog
+        const result = await createBlog(blogData)
+
+        // Show success message
+        if (status === 'draft') {
+            ElMessage.success('Draft saved successfully!')
+        } else {
+            ElMessage.success('Post published successfully!')
+        }
+
+        // Redirect to blog detail page
+        setTimeout(() => {
+            router.push(`/blog/${result.slug}`)
+        }, 1000)
+
+    } catch (error: any) {
+        console.error('Failed to create blog:', error)
+        ElMessage.error(error.message || 'Failed to create blog post')
+    } finally {
+        savingDraft.value = false
+        publishing.value = false
+    }
 }
 </script>
 
@@ -135,10 +249,12 @@ const publishPost = () => {
                     <el-button class="dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600" @click="togglePreview">
                         {{ isPreview ? 'Back to Edit' : 'Preview' }}
                     </el-button>
-                    <el-button class="dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600" @click="saveDraft">
+                    <el-button class="dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600" @click="saveDraft"
+                        :loading="savingDraft" :disabled="publishing">
                         Save as draft
                     </el-button>
-                    <el-button color="#FF6B35" class="bg-#FF6B35 text-white hover:bg-#FF5722" @click="publishPost">
+                    <el-button color="#FF6B35" class="bg-#FF6B35 text-white hover:bg-#FF5722" @click="publishPost"
+                        :loading="publishing" :disabled="savingDraft">
                         Create
                     </el-button>
                 </div>
@@ -151,8 +267,9 @@ const publishPost = () => {
                     class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
                     <div class="prose dark:prose-invert max-w-none editor-container">
                         <ClientOnly>
-                            <QuillEditor v-if="editorLoaded" v-model:content="post.content" contentType="html"
-                                theme="snow" toolbar="full" class="min-h-[500px] text-lg dark:text-gray-100"
+                            <QuillEditor v-if="editorLoaded" ref="quillEditorRef" v-model:content="post.content"
+                                contentType="html" theme="snow" toolbar="full"
+                                class="min-h-[500px] text-lg dark:text-gray-100"
                                 placeholder="Type or paste your content here!" />
                             <div v-else
                                 class="min-h-[500px] flex items-center dark:bg-slate-900 justify-center text-gray-400">
@@ -220,10 +337,13 @@ const publishPost = () => {
                         </label>
                         <div v-if="!thumbnailPreview" @click="triggerFileInput" @drop="handleDrop"
                             @dragover="handleDragOver"
-                            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors">
-                            <i class='bx bx-cloud-upload text-4xl text-gray-400 dark:text-gray-500 mb-2'></i>
+                            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
+                            :class="{ 'opacity-50 pointer-events-none': uploadingThumbnail }">
+                            <i class='bx text-4xl text-gray-400 dark:text-gray-500 mb-2'
+                                :class="uploadingThumbnail ? 'bx-loader-alt bx-spin' : 'bx-cloud-upload'"></i>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                <span class="text-blue-500 font-medium">Upload</span> or drag drop
+                                <span class="text-blue-500 font-medium">{{ uploadingThumbnail ? 'Uploading...' :
+                                    'Upload' }}</span> {{ uploadingThumbnail ? '' : 'or drag drop' }}
                             </p>
                             <p class="text-xs text-gray-500 dark:text-gray-500">
                                 Recommend size is 1280 × 720 pixels (≤ 2MB)
