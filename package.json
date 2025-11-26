@@ -8,8 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "openapi": "rm -rf src/api && openapi-generator-cli generate -i http://localhost:9000/docs -g typescript-axios -o src/api --additional-properties withSeparateModelsAndApi=true,supportsES6=true,useSingleRequestParameter=true,apiPackage=api,modelPackage=models --skip-validate-spec",
-    "openapi:playout": "pnpm tsx ../../s-openapi.ts https://dev-streaming.gviet.vn:8783/api/playout/api-docs-json ./src/schemas/playoutApi.json"
+    "openapi:motobikertours": "pnpm tsx ./s-openapi.ts https://motobikertours-api.vercel.app/api-docs-json ./src/schemas/motobikertoursApi.json"
   },
   "dependencies": {
     "@antfu/utils": "^0.7.7",
@@ -36,6 +35,9 @@
     "@vueuse/core": "^10.9.0",
     "@vueuse/nuxt": "^10.9.0",
     "autoprefixer": "^10.4.19",
+    "citty": "^0.1.6",
+    "nuxt-api-party": "^3.4.2",
+    "ofetch": "^1.5.1",
     "openapi-typescript": "^6.7.5",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",

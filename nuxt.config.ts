@@ -1,13 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { createResolver } from '@nuxt/kit';
+const { resolve } = createResolver(import.meta.url);
+
 export default defineNuxtConfig({
   ssr: true,
   srcDir: 'src/',
 
   imports: {
-    dirs: [
-      'constants',
-      'composables',
-    ],
+    dirs: ['constants', 'composables'],
   },
 
   app: {
@@ -27,7 +27,24 @@ export default defineNuxtConfig({
   },
 
   devtools: { enabled: true },
-  modules: ['@vueuse/nuxt', "@nuxtjs/tailwindcss", '@element-plus/nuxt', '@unocss/nuxt', '@vue-macros/nuxt', '@nuxtjs/sitemap'],
+  modules: [
+    '@vueuse/nuxt',
+    '@nuxtjs/tailwindcss',
+    '@element-plus/nuxt',
+    '@unocss/nuxt',
+    '@vue-macros/nuxt',
+    '@nuxtjs/sitemap',
+    'nuxt-api-party',
+  ],
+
+  apiParty: {
+    endpoints: {
+      motobikertoursApi: {
+        url: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000',
+        schema: resolve('./src/schemas/motobikertoursApi.json'),
+      },
+    },
+  },
 
   sitemap: {
     siteUrl: 'https://motobiketours.vercel.app/',
@@ -40,9 +57,13 @@ export default defineNuxtConfig({
     },
   },
 
-  css: [
-    'boxicons/css/boxicons.min.css'
-  ],
+  css: ['boxicons/css/boxicons.min.css'],
 
   compatibilityDate: '2025-04-15',
-})
+  runtimeConfig: {
+    // client
+    public: {
+      apiBase: process.env.NUXT_PUBLIC_API_BASE,
+    },
+  },
+});

@@ -1,62 +1,60 @@
 // API Configuration
-export const API_BASE_URL = 'http://localhost:3001'
+export const API_BASE_URL = 'http://localhost:3001';
+// export const API_BASE_URL = 'https://motobikertours-api.vercel.app';
 
 // API Client with error handling
-export async function apiClient<T>(
-    endpoint: string,
-    options: RequestInit = {}
-): Promise<T> {
-    const url = `${API_BASE_URL}${endpoint}`
+export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const url = `${API_BASE_URL}${endpoint}`;
 
-    const config: RequestInit = {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            ...options.headers,
-        },
+  const config: RequestInit = {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  };
+
+  try {
+    const response = await fetch(url, config);
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw {
+        statusCode: response.status,
+        message: error.message || 'An error occurred',
+        error: error.error,
+      };
     }
 
-    try {
-        const response = await fetch(url, config)
-
-        if (!response.ok) {
-            const error = await response.json()
-            throw {
-                statusCode: response.status,
-                message: error.message || 'An error occurred',
-                error: error.error,
-            }
-        }
-
-        return await response.json()
-    } catch (error: any) {
-        // Re-throw API errors
-        if (error.statusCode) {
-            throw error
-        }
-
-        // Handle network errors
-        throw {
-            statusCode: 0,
-            message: 'Network error. Please check your connection.',
-            error: 'NETWORK_ERROR',
-        }
+    return await response.json();
+  } catch (error: any) {
+    // Re-throw API errors
+    if (error.statusCode) {
+      throw error;
     }
+
+    // Handle network errors
+    throw {
+      statusCode: 0,
+      message: 'Network error. Please check your connection.',
+      error: 'NETWORK_ERROR',
+    };
+  }
 }
 
 // Helper to add auth token to requests
 export function getAuthHeaders(): HeadersInit {
-    if (!process.client) {
-        return {}
-    }
+  if (!process.client) {
+    return {};
+  }
 
-    const token = localStorage.getItem('access_token')
+  const token = localStorage.getItem('access_token');
 
-    if (!token) {
-        return {}
-    }
+  if (!token) {
+    return {};
+  }
 
-    return {
-        Authorization: `Bearer ${token}`,
-    }
+  return {
+    Authorization: `Bearer ${token}`,
+  };
 }

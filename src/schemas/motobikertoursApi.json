@@ -1,0 +1,715 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "summary": "Get hello message",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return hello message"
+          }
+        },
+        "tags": [
+          "app"
+        ]
+      }
+    },
+    "/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "summary": "Register a new user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email already exists"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "summary": "Login user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials"
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/users": {
+      "get": {
+        "operationId": "UsersController_findAll",
+        "summary": "Get all users",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_create",
+        "summary": "Create user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The user has been successfully created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UsersController_findOne",
+        "summary": "Get user by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return user by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "summary": "Update user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The user has been successfully updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "summary": "Delete user",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The user has been successfully deleted."
+          }
+        },
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/tours": {
+      "get": {
+        "operationId": "ToursController_findAll",
+        "summary": "Get all tours",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all tours"
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      },
+      "post": {
+        "operationId": "ToursController_create",
+        "summary": "Create a new tour",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Tour data with thumbnail image",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTourDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The tour has been successfully created."
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      }
+    },
+    "/tours/{id}": {
+      "get": {
+        "operationId": "ToursController_findOne",
+        "summary": "Get tour by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return tour by id"
+          },
+          "404": {
+            "description": "Tour not found"
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      }
+    },
+    "/services": {
+      "get": {
+        "operationId": "ServicesController_findAll",
+        "summary": "Get all services",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all services"
+          }
+        },
+        "tags": [
+          "services"
+        ]
+      }
+    },
+    "/services/{id}": {
+      "get": {
+        "operationId": "ServicesController_findOne",
+        "summary": "Get service by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return service by id"
+          },
+          "404": {
+            "description": "Service not found"
+          }
+        },
+        "tags": [
+          "services"
+        ]
+      }
+    },
+    "/blog": {
+      "post": {
+        "operationId": "BlogController_create",
+        "summary": "Create a new blog post",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blog post created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "409": {
+            "description": "Blog with this name already exists"
+          }
+        },
+        "tags": [
+          "blog"
+        ]
+      },
+      "get": {
+        "operationId": "BlogController_findAll",
+        "summary": "Get all blog posts",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return all blog posts"
+          }
+        },
+        "tags": [
+          "blog"
+        ]
+      }
+    },
+    "/blog/upload-image": {
+      "post": {
+        "operationId": "BlogController_uploadImage",
+        "summary": "Upload image for blog content",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Image uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadImageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No file uploaded or invalid file"
+          }
+        },
+        "tags": [
+          "blog"
+        ]
+      }
+    },
+    "/blog/{id}": {
+      "get": {
+        "operationId": "BlogController_findOne",
+        "summary": "Get blog post by id",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return blog post by id"
+          },
+          "404": {
+            "description": "Blog post not found"
+          }
+        },
+        "tags": [
+          "blog"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Motobike Tours API",
+    "description": "The Motobike Tours API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local Development"
+    },
+    {
+      "url": "https://motobikertours-api.vercel.app",
+      "description": "Production"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "P@ssw0rd",
+            "description": "User password (min 6 chars)"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe",
+            "description": "Full name of the user"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "name"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "JWT Access Token",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "access_token"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com",
+            "description": "User email address"
+          },
+          "password": {
+            "type": "string",
+            "example": "password123",
+            "description": "User password (min 6 chars)"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {}
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreateTourDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Amazing Vietnam Tour",
+            "description": "Tour title"
+          },
+          "slug": {
+            "type": "string",
+            "example": "amazing-vietnam-tour",
+            "description": "URL‑friendly slug"
+          },
+          "thumbnail": {
+            "type": "string",
+            "format": "binary",
+            "description": "Thumbnail image file"
+          },
+          "images": {
+            "example": [
+              "https://res.cloudinary.com/.../img1.jpg",
+              "https://res.cloudinary.com/.../img2.jpg"
+            ],
+            "description": "Array of image URLs (comma‑separated for SQLite)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Explore the hidden gems of Vietnam...",
+            "description": "Short description"
+          },
+          "content": {
+            "type": "string",
+            "example": "<p>Full HTML content of the tour...</p>",
+            "description": "Detailed content (HTML)"
+          },
+          "price_usd": {
+            "type": "number",
+            "example": 199.99,
+            "description": "Price in USD"
+          },
+          "duration": {
+            "type": "string",
+            "example": "5 days",
+            "description": "Duration of the tour"
+          },
+          "depart_from": {
+            "type": "string",
+            "example": "Hanoi",
+            "description": "Starting city"
+          },
+          "routes": {
+            "type": "string",
+            "example": "Hanoi → Ha Long → Hue → Hoi An",
+            "description": "Route description"
+          },
+          "type": {
+            "type": "string",
+            "example": "Adventure",
+            "description": "Tour type/category"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "example": true,
+            "description": "Featured tour flag"
+          }
+        },
+        "required": [
+          "title",
+          "slug",
+          "description",
+          "content",
+          "price_usd",
+          "duration",
+          "depart_from",
+          "routes",
+          "type",
+          "is_featured"
+        ]
+      },
+      "CreateBlogDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Digital right managements"
+          },
+          "lang": {
+            "type": "string",
+            "example": "vi"
+          },
+          "thumbnail": {
+            "type": "string",
+            "example": "image-j_muyWVa"
+          },
+          "shortDescription": {
+            "type": "string",
+            "example": "21421412421"
+          },
+          "content": {
+            "type": "string",
+            "example": "<p>Content here...</p><figure class=\"image\"><img src=\"image-BIZu3Aad\"></figure>"
+          },
+          "tags": {
+            "example": [
+              "2412421"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numWords": {
+            "type": "number",
+            "example": 9
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "waiting",
+              "published",
+              "draft"
+            ],
+            "example": "waiting"
+          }
+        },
+        "required": [
+          "name",
+          "lang",
+          "thumbnail",
+          "shortDescription",
+          "content",
+          "tags",
+          "numWords",
+          "status"
+        ]
+      },
+      "UploadImageResponseDto": {
+        "type": "object",
+        "properties": {
+          "imageId": {
+            "type": "string",
+            "example": "image-j_muyWVa"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/..."
+          },
+          "secureUrl": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/..."
+          }
+        },
+        "required": [
+          "imageId",
+          "url",
+          "secureUrl"
+        ]
+      }
+    }
+  }
+}

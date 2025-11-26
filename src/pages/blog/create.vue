@@ -3,8 +3,11 @@ import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { uploadImage, createBlog, validateBlogForm, countWords } from '~/services/blogApi'
+import { useAuth } from '~/composables/useAuth'
 
 const router = useRouter()
+const { user } = useAuth()
+
 const fileInput = ref<HTMLInputElement | null>(null)
 const thumbnailPreview = ref<string | null>(null)
 const thumbnailImageId = ref<string>('')
@@ -24,13 +27,28 @@ const languages = [
     { label: '한국어', value: 'ko' },
 ]
 
+// Category options
+const categories = [
+    { label: 'Technology', value: 'technology' },
+    { label: 'Travel', value: 'travel' },
+    { label: 'Food', value: 'food' },
+    { label: 'Fashion', value: 'fashion' },
+    { label: 'Health', value: 'health' },
+]
+
 const post = reactive({
     title: '',
     language: '',
     tags: [] as string[],
     shortDescription: '',
     content: '',
-    thumbnail: null as File | null
+    category: '',
+    thumbnail: null as File | null,
+    author: {
+        authId: user.value?.id || '',
+        userName: user.value?.username || '',
+        avatar: user.value?.avatar || '',
+    }
 })
 
 const isPreview = ref(false)
@@ -170,9 +188,12 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
         thumbnailImageId: thumbnailImageId.value,
         shortDescription: post.shortDescription,
         content: post.content,
+        category: post.category,
         tags: post.tags,
-        status: status
+        status: status,
+        author: post.author
     }
+
 
     // Validate form
     const errors = validateBlogForm(formData)
@@ -199,9 +220,11 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
             thumbnail: thumbnailImageId.value,
             shortDescription: post.shortDescription,
             content: post.content,
+            category: post.category,
             tags: post.tags,
             numWords: numWords,
-            status: status
+            status: status,
+            author: post.author
         }
 
         // Create blog
@@ -285,9 +308,9 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                 </div>
 
                 <!-- Right Column: Metadata (1/3 width) -->
-                <div class="space-y-6">
+                <div class="space-y-2 bg-white dark:bg-gray-800">
                     <!-- Post Name -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
+                    <div class="p-2 transition-colors duration-300">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Post name <span class="text-red-500">*</span>
                         </label>
@@ -296,7 +319,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                     </div>
 
                     <!-- Language -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
+                    <div class="p-2 transition-colors duration-300">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Language <span class="text-red-500">*</span>
                         </label>
@@ -306,9 +329,20 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                                 :value="lang.value" />
                         </el-select>
                     </div>
+                    <!-- Category -->
+                    <div class="p-2 transition-colors duration-300">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Category <span class="text-red-500">*</span>
+                        </label>
+                        <el-select v-model="post.category" placeholder="Select category"
+                            class="w-full [&_.el-select\_\_wrapper]:dark:!bg-gray-800">
+                            <el-option v-for="category in categories" :key="category.value" :label="category.label"
+                                :value="category.value" />
+                        </el-select>
+                    </div>
 
                     <!-- Tags -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
+                    <div class="p-2 transition-colors duration-300">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Tags <i class='bx bx-info-circle text-gray-400 cursor-help'
                                 title="Add relevant tags to help readers find your post"></i>
@@ -321,7 +355,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                     </div>
 
                     <!-- Short Description -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
+                    <div class="p-2 transition-colors duration-300">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Short description <span class="text-red-500">*</span>
                         </label>
@@ -331,7 +365,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                     </div>
 
                     <!-- Thumbnail -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
+                    <div class="p-2 transition-colors duration-300">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Thumbnail
                         </label>

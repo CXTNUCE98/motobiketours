@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { blogPosts } from '../../data/blogPosts'
+import { useQuery } from '@tanstack/vue-query'
 
 // Active category filter
 const router = useRouter()
@@ -82,6 +83,30 @@ const formatDate = (dateString) => {
 
 function createNewBlog() {
   router.push('/blog/create')
+}
+
+const { data } = useQuery({
+  queryKey: ['/blog'],
+  queryFn: async () => {
+    return await $motobikertoursApi('/blog')
+  },
+  refetchOnWindowFocus: true,
+})
+
+watch(data, (newData) => {
+  if (newData) {
+    console.log('data', newData);
+  }
+})
+
+const featuredPostApi = computed(() => {
+  return data.value?.[0]
+})
+
+function calculateReadTime(text, wordsPerMinute = 180) {
+  const wordCount = text?.trim()?.split(/\s+/)?.length;
+  const minutes = Math.ceil(wordCount / wordsPerMinute);
+  return minutes; // số phút đọc
 }
 </script>
 
@@ -171,6 +196,43 @@ function createNewBlog() {
             </router-link>
           </section>
 
+          <!-- Featured Post API -->
+          <section class="relative group">
+            <router-link :to="`/blog/${featuredPostApi?.id}`" class="block">
+              <div class="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+                <img
+                  :src="`https://res.cloudinary.com/daok0blh9/image/upload/v1764131273/${featuredPostApi?.thumbnail}.jpg`"
+                  :alt="featuredPostApi?.thumbnail"
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+
+                <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10">
+                  <span
+                    class="inline-block px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold rounded-full uppercase tracking-wider mb-4 shadow-lg">
+                    Featured
+                  </span>
+                  <h2
+                    class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-orange-200 transition-colors">
+                    {{ featuredPostApi?.name }}
+                  </h2>
+                  <p class="text-gray-300 text-lg mb-6 line-clamp-2 max-w-2xl">
+                    {{ featuredPostApi?.shortDescription }}
+                  </p>
+
+                  <div class="flex items-center gap-4">
+                    <img :src="featuredPostApi?.author?.avatar" :alt="featuredPostApi?.author?.name"
+                      class="w-12 h-12 rounded-full border-2 border-white/50" />
+                    <div>
+                      <div class="text-white font-bold">{{ featuredPostApi?.author?.userName }}</div>
+                      <div class="text-gray-400 text-sm">{{ formatDate(featuredPostApi?.created_at) }} • {{
+                        calculateReadTime(featuredPostApi?.content)
+                      }} min read</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </router-link>
+          </section>
           <!-- Regular Posts Grid -->
           <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <router-link v-for="post in regularPosts" :key="post.id" :to="`/blog/${post.id}`"
