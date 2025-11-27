@@ -32,11 +32,10 @@ const durationOptions = [
 ];
 
 const tourTypeOptions = [
-    { value: 'adventure', label: 'Phiêu lưu' },
-    { value: 'cultural', label: 'Văn hóa' },
-    { value: 'beach', label: 'Biển' },
-    { value: 'mountain', label: 'Núi' },
-    { value: 'city', label: 'Thành phố' }
+    { value: 'Adventure', label: 'Phiêu lưu' },
+    { value: 'Culture', label: 'Văn hóa' },
+    { value: 'Nature', label: 'Thiên nhiên' },
+    { value: 'Food', label: 'Ẩm thực' }
 ];
 
 const departFromOptions = [

@@ -1,13 +1,18 @@
-<script setup>
+<script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
-import { useQuery, keepPreviousData } from '@tanstack/vue-query';
-import { fetchTours } from '../../services/tour.service';
+import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
+import { fetchTours } from '@/services/tourApi';
 import TourFilter from '../../components/TourFilter.vue';
+import CreateTourDialog from '@/components/CreateTourDialog.vue';
+import { Plus } from '@element-plus/icons-vue';
 
 const searchQuery = ref('');
 const showFilters = ref(false);
 const viewMode = ref('grid'); // 'grid' or 'list'
 const sortBy = ref('default'); // 'default', 'price-low', 'price-high', 'duration'
+const showCreateDialog = ref(false);
+
+const queryClient = useQueryClient();
 
 // Pagination state
 const currentPage = ref(1);
@@ -112,6 +117,14 @@ const handleClearFilters = () => {
     };
     searchQuery.value = '';
     currentPage.value = 1;
+};
+
+const handleCreateTour = () => {
+    showCreateDialog.value = true;
+};
+
+const handleCreateSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ['tours'] });
 };
 </script>
 
@@ -240,7 +253,13 @@ const handleClearFilters = () => {
                                     </svg>
                                 </button>
                             </div>
-                            <el-button type="primary">Create tour</el-button>
+                            <el-button type="primary" @click="handleCreateTour"
+                                class="!rounded-lg !px-6 !py-2 !font-bold !bg-gradient-to-r !from-blue-600 !to-cyan-600 !border-none hover:!scale-105 transition-transform duration-300 shadow-lg">
+                                <el-icon class="mr-2">
+                                    <Plus />
+                                </el-icon>
+                                Create tour
+                            </el-button>
                         </div>
                     </div>
 
@@ -450,6 +469,9 @@ const handleClearFilters = () => {
                 </div>
             </div>
         </div>
+
+        <!-- Create Tour Dialog -->
+        <CreateTourDialog v-model:visible="showCreateDialog" @success="handleCreateSuccess" />
     </div>
 </template>
 

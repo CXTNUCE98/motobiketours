@@ -18,7 +18,11 @@ const handleCallNow = () => {
 
 const handleConsultation = () => {
     // Có thể mở modal hoặc chuyển đến trang liên hệ
-    alert('Chức năng liên hệ tư vấn sẽ được triển khai');
+    ElNotification({
+        title: 'Error',
+        message: 'Chức năng liên hệ tư vấn sẽ được triển khai',
+        type: 'error',
+    })
 };
 </script>
 

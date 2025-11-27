@@ -66,7 +66,11 @@ const createCommentMutation = useMutation({
   },
   onError: (error) => {
     console.error('Error creating comment:', error)
-    alert('Failed to post comment. Please try again.')
+    ElNotification({
+      title: 'Error',
+      message: 'Failed to post comment. Please try again.',
+      type: 'error',
+    })
   }
 })
 
@@ -117,7 +121,11 @@ const shareOnTwitter = () => {
 
 const copyLink = () => {
   navigator.clipboard.writeText(window.location.href)
-  alert('Link copied to clipboard!')
+  ElNotification({
+    title: 'Success',
+    message: 'Link copied to clipboard!',
+    type: 'success',
+  })
 }
 
 const formatDate = (dateString) => {

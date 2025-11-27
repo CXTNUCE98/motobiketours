@@ -55,8 +55,11 @@ const createReplyMutation = useMutation({
         emit('refresh')
     },
     onError: (error) => {
-        console.error('Error creating reply:', error)
-        alert('Failed to post reply. Please try again.')
+        ElNotification({
+            title: 'Error',
+            message: 'Failed to post reply. Please try again.',
+            type: 'error',
+        })
     }
 })
 
@@ -87,7 +90,11 @@ const deleteMutation = useMutation({
     },
     onError: (error) => {
         console.error('Error deleting comment:', error)
-        alert('Failed to delete comment. You can only delete your own comments.')
+        ElNotification({
+            title: 'Error',
+            message: 'Failed to delete comment. You can only delete your own comments.',
+            type: 'error',
+        })
     }
 })
 
@@ -108,7 +115,11 @@ const handleReply = () => {
 
 const handleLike = () => {
     if (!user.value) {
-        alert('Please login to like comments')
+        ElNotification({
+            title: 'Error',
+            message: 'Please login to like comments',
+            type: 'error',
+        })
         return
     }
     likeMutation.mutate({ commentId: props.comment.id, type: 'like' })
@@ -116,7 +127,11 @@ const handleLike = () => {
 
 const handleDislike = () => {
     if (!user.value) {
-        alert('Please login to dislike comments')
+        ElNotification({
+            title: 'Error',
+            message: 'Please login to dislike comments',
+            type: 'error',
+        })
         return
     }
     likeMutation.mutate({ commentId: props.comment.id, type: 'dislike' })
