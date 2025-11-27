@@ -22,18 +22,19 @@ const savingDraft = ref(false)
 const languages = [
     { label: 'English', value: 'en' },
     { label: 'Tiếng Việt', value: 'vi' },
-    { label: '中文', value: 'zh' },
-    { label: '日本語', value: 'ja' },
-    { label: '한국어', value: 'ko' },
+    // { label: '中文', value: 'zh' },
+    // { label: '日本語', value: 'ja' },
+    // { label: '한국어', value: 'ko' },
 ]
 
 // Category options
 const categories = [
-    { label: 'Technology', value: 'technology' },
-    { label: 'Travel', value: 'travel' },
+    { label: 'Travel Tips', value: 'travel-tips' },
+    { label: 'Destination', value: 'destination' },
+    { label: 'Culture', value: 'culture' },
     { label: 'Food', value: 'food' },
-    { label: 'Fashion', value: 'fashion' },
-    { label: 'Health', value: 'health' },
+    { label: 'Adventure', value: 'adventure' },
+    { label: 'Guides', value: 'guides' },
 ]
 
 const post = reactive({
@@ -46,7 +47,7 @@ const post = reactive({
     thumbnail: null as File | null,
     author: {
         authId: user.value?.id || '',
-        userName: user.value?.username || '',
+        userName: user.value?.userName || '',
         avatar: user.value?.avatar || '',
     }
 })
@@ -239,7 +240,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
 
         // Redirect to blog detail page
         setTimeout(() => {
-            router.push(`/blog/${result.slug}`)
+            router.push(`/blog/${result.id}`)
         }, 1000)
 
     } catch (error: any) {
@@ -301,9 +302,9 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                         </ClientOnly>
                     </div>
                     <div class="mt-4 text-sm text-gray-500 dark:text-gray-400 flex justify-between">
-                        <span>Words: {{post.content ? post.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w =>
+                        <span>Words: {{post?.content ? post?.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w =>
                             w).length : 0}}</span>
-                        <span>Characters: {{ post.content ? post.content.replace(/<[^>]*>/g, '').length : 0 }}</span>
+                        <span>Characters: {{ post?.content ? post?.content.replace(/<[^>]*>/g, '').length : 0 }}</span>
                     </div>
                 </div>
 
@@ -404,24 +405,24 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
 
                 <div class="max-w-4xl mx-auto">
                     <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                        {{ post.title || 'Untitled Post' }}
+                        {{ post?.title || 'Untitled Post' }}
                     </h1>
 
                     <div class="flex items-center gap-4 mb-6 text-sm text-gray-600 dark:text-gray-400">
-                        <span v-if="post.language">
-                            <i class='bx bx-world'></i> {{languages.find(l => l.value === post.language)?.label}}
+                        <span v-if="post?.language">
+                            <i class='bx bx-world'></i> {{languages.find(l => l.value === post?.language)?.label}}
                         </span>
-                        <span v-if="post.tags.length">
-                            <i class='bx bx-purchase-tag'></i> {{ post.tags.join(', ') }}
+                        <span v-if="post?.tags?.length">
+                            <i class='bx bx-purchase-tag'></i> {{ post?.tags.join(', ') }}
                         </span>
                     </div>
 
-                    <p v-if="post.shortDescription" class="text-lg text-gray-600 dark:text-gray-300 mb-8 italic">
-                        {{ post.shortDescription }}
+                    <p v-if="post?.shortDescription" class="text-lg text-gray-600 dark:text-gray-300 mb-8 italic">
+                        {{ post?.shortDescription }}
                     </p>
 
                     <div class="prose dark:prose-invert max-w-none"
-                        v-html="post.content || '<p class=\'text-gray-400 italic\'>No content yet...</p>'"></div>
+                        v-html="post?.content || '<p class=\'text-gray-400 italic\'>No content yet...</p>'"></div>
                 </div>
             </div>
         </div>

@@ -13,7 +13,6 @@ const { theme, toggleTheme } = useTheme()
 const { isAuthenticated, user, logout } = useAuth()
 const isScrolled = ref(false)
 const showLoginPopup = ref(false)
-console.log(user.value)
 const handleLogout = () => {
     ElMessageBox.confirm(
         'Are you sure you want to log out?',
@@ -152,11 +151,11 @@ function formLogin() {
                                 class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                                 <div
                                     class="w-8 h-8 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-sky-600 dark:text-cyan-400 font-bold text-sm">
-                                    <img class="w-full h-full object-cover rounded-full" :src="user?.avatar"
-                                        alt="avatar">
+                                    <img class="w-full h-full rounded-full object-cover border border-gray-200 [image-rendering:-webkit-optimize-contrast] image-crisp"
+                                        :src="user?.avatar" alt="avatar">
                                 </div>
                                 <span class="hidden md:block font-medium text-sm max-w-[100px] truncate">
-                                    {{ user?.username || 'User' }}
+                                    {{ user?.userName || 'User' }}
                                 </span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -169,7 +168,7 @@ function formLogin() {
                                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
-                                        user?.username
+                                        user?.userName
                                         }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
@@ -279,5 +278,11 @@ select::-webkit-scrollbar-thumb {
 
 select::-webkit-scrollbar-thumb:hover {
     background: #C2185B;
+}
+
+.image-crisp {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    image-rendering: high-quality;
 }
 </style>

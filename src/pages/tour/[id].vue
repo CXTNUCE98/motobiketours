@@ -115,7 +115,7 @@ const contactHtml = `
 `;
 
 const tourCode = computed(() => {
-    const head = (tour && tour.title ? tour.title.split(':')[0] : '') || '';
+    const head = (tour && tour?.title ? tour?.title?.split(':')[0] : '') || '';
     const parts = head.split(' ');
     return parts[1] || '';
 });
@@ -171,14 +171,14 @@ const relatedTours = computed(() => {
                     class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-6">
                         <div class="md:col-span-4">
-                            <img :src="item.thumbnail" :alt="item.title"
+                            <img :src="item?.thumbnail" :alt="item?.title"
                                 class="w-full h-48 md:h-full object-cover rounded-xl" />
                         </div>
                         <div class="md:col-span-8 flex flex-col justify-between">
                             <div>
-                                <NuxtLink :to="`/tour/${item.id}`"
+                                <NuxtLink :to="`/tour/${item?.id}`"
                                     class="text-2xl font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 block mb-4">
-                                    {{ item.title }}
+                                    {{ item?.title }}
                                 </NuxtLink>
                                 <div class="space-y-2 text-gray-700 dark:text-gray-300 mb-4">
                                     <div class="flex items-center gap-2">
@@ -188,7 +188,7 @@ const relatedTours = computed(() => {
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>Thời gian:</strong> {{ item.duration }}</span>
+                                        <span><strong>Thời gian:</strong> {{ item?.duration }}</span>
                                     </div>
                                     <div class="flex items-start gap-2">
                                         <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5"
@@ -197,7 +197,7 @@ const relatedTours = computed(() => {
                                                 d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>Lộ trình:</strong> {{ item.routes }}</span>
+                                        <span><strong>Lộ trình:</strong> {{ item?.routes }}</span>
                                     </div>
                                     <div class="flex items-start gap-2">
                                         <svg class="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5"
@@ -207,7 +207,7 @@ const relatedTours = computed(() => {
                                                 d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>Loại tour:</strong> {{ item.type }}</span>
+                                        <span><strong>Loại tour:</strong> {{ item?.type }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -215,10 +215,10 @@ const relatedTours = computed(() => {
                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                 <div
                                     class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                    {{ item.priceUsd }}
+                                    {{ item?.priceUsd }}
                                 </div>
                                 <div class="flex gap-3">
-                                    <NuxtLink :to="`/tour/${item.id}`"
+                                    <NuxtLink :to="`/tour/${item?.id}`"
                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
                                         Chi tiết
                                     </NuxtLink>
@@ -250,12 +250,12 @@ const relatedTours = computed(() => {
                     Tất cả tours
                 </NuxtLink>
                 <span class="text-gray-400">/</span>
-                <span class="text-gray-700 dark:text-gray-300 font-medium">{{ tour.title.substring(0, 50) }}...</span>
+                <span class="text-gray-700 dark:text-gray-300 font-medium">{{ tour?.title?.substring(0, 50) }}...</span>
             </nav>
 
             <!-- Title Section -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 transition-colors duration-300">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ tour.title }}</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ tour?.title }}</h1>
                 <div class="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-300">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="currentColor"
@@ -264,7 +264,7 @@ const relatedTours = computed(() => {
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Khởi hành từ:</strong> {{ tour.departFrom }}</span>
+                        <span><strong>Khởi hành từ:</strong> {{ tour?.departFrom }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -272,7 +272,7 @@ const relatedTours = computed(() => {
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Thời gian:</strong> {{ tour.duration }}</span>
+                        <span><strong>Thời gian:</strong> {{ tour?.duration }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex">
@@ -293,7 +293,7 @@ const relatedTours = computed(() => {
                 <div class="lg:col-span-8 space-y-8">
                     <!-- Gallery -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-colors duration-300">
-                        <TourGallery :images="gallery" :title="tour.title" />
+                        <TourGallery :images="gallery" :title="tour?.title" />
                     </div>
 
                     <!-- Tour Info -->
@@ -308,7 +308,7 @@ const relatedTours = computed(() => {
                                         clip-rule="evenodd" />
                                 </svg>
                                 <div class="text-sm text-gray-600 dark:text-gray-400">Thời gian</div>
-                                <div class="font-bold text-gray-800 dark:text-white">{{ tour.duration }}</div>
+                                <div class="font-bold text-gray-800 dark:text-white">{{ tour?.duration }}</div>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl p-4 text-center">
@@ -329,8 +329,9 @@ const relatedTours = computed(() => {
                                         clip-rule="evenodd" />
                                 </svg>
                                 <div class="text-sm text-gray-600 dark:text-gray-400">Lộ trình</div>
-                                <div class="font-bold text-gray-800 dark:text-white text-xs">{{ tour.routes.substring(0,
-                                    15) }}...</div>
+                                <div class="font-bold text-gray-800 dark:text-white text-xs">{{
+                                    tour?.routes?.substring(0,
+                                        15) }}...</div>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 rounded-xl p-4 text-center">
@@ -393,12 +394,12 @@ const relatedTours = computed(() => {
                     </span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour.id" :to="`/tour/${relatedTour.id}`"
-                        class="block group">
+                    <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour?.id"
+                        :to="`/tour/${relatedTour?.id}`" class="block group">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                             <div class="relative h-48 overflow-hidden">
-                                <img :src="relatedTour.thumbnail" :alt="relatedTour.title"
+                                <img :src="relatedTour?.thumbnail" :alt="relatedTour?.title"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500">
@@ -407,14 +408,14 @@ const relatedTours = computed(() => {
                             <div class="p-5">
                                 <h3
                                     class="text-lg font-bold text-gray-800 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                                    {{ relatedTour.title }}
+                                    {{ relatedTour?.title }}
                                 </h3>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour.duration
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour?.duration
                                         }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                        {{ relatedTour.priceUsd }}
+                                        {{ relatedTour?.priceUsd }}
                                     </span>
                                 </div>
                             </div>
@@ -449,7 +450,7 @@ const relatedTours = computed(() => {
 
             <!-- Title Section -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 transition-colors duration-300">
-                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ tour.title }}</h1>
+                <h1 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white mb-4">{{ tour?.title }}</h1>
                 <div class="flex flex-wrap items-center gap-6 text-gray-600 dark:text-gray-300">
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="currentColor"
@@ -458,7 +459,7 @@ const relatedTours = computed(() => {
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Khởi hành từ:</strong> {{ tour.departFrom }}</span>
+                        <span><strong>Khởi hành từ:</strong> {{ tour?.departFrom }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -466,7 +467,7 @@ const relatedTours = computed(() => {
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Thời gian:</strong> {{ tour.duration }}</span>
+                        <span><strong>Thời gian:</strong> {{ tour?.duration }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex">
@@ -487,7 +488,7 @@ const relatedTours = computed(() => {
                 <div class="lg:col-span-8 space-y-8">
                     <!-- Gallery -->
                     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 transition-colors duration-300">
-                        <TourGallery :images="gallery" :title="tour.title" />
+                        <TourGallery :images="gallery" :title="tour?.title" />
                     </div>
 
                     <!-- Tour Info -->
@@ -502,7 +503,7 @@ const relatedTours = computed(() => {
                                         clip-rule="evenodd" />
                                 </svg>
                                 <div class="text-sm text-gray-600 dark:text-gray-400">Thời gian</div>
-                                <div class="font-bold text-gray-800 dark:text-white">{{ tour.duration }}</div>
+                                <div class="font-bold text-gray-800 dark:text-white">{{ tour?.duration }}</div>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 rounded-xl p-4 text-center">
@@ -523,8 +524,9 @@ const relatedTours = computed(() => {
                                         clip-rule="evenodd" />
                                 </svg>
                                 <div class="text-sm text-gray-600 dark:text-gray-400">Lộ trình</div>
-                                <div class="font-bold text-gray-800 dark:text-white text-xs">{{ tour.routes.substring(0,
-                                    15) }}...</div>
+                                <div class="font-bold text-gray-800 dark:text-white text-xs">{{
+                                    tour?.routes?.substring(0,
+                                        15) }}...</div>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/30 dark:to-red-900/30 rounded-xl p-4 text-center">
@@ -574,8 +576,8 @@ const relatedTours = computed(() => {
 
                 <!-- Right Column - Booking Card -->
                 <div class="lg:col-span-4">
-                    <BookingCard :price="tour.priceUsd || 'Liên hệ'" :duration="tour.duration" groupSize="2-10 người"
-                        difficulty="Trung bình" :tourId="tour.id" />
+                    <BookingCard :price="tour?.priceUsd || 'Liên hệ'" :duration="tour?.duration" groupSize="2-10 người"
+                        difficulty="Trung bình" :tourId="tour?.id" />
                 </div>
             </div>
 
@@ -587,12 +589,12 @@ const relatedTours = computed(() => {
                     </span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour.id" :to="`/tour/${relatedTour.id}`"
-                        class="block group">
+                    <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour?.id"
+                        :to="`/tour/${relatedTour?.id}`" class="block group">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                             <div class="relative h-48 overflow-hidden">
-                                <img :src="relatedTour.thumbnail" :alt="relatedTour.title"
+                                <img :src="relatedTour?.thumbnail" :alt="relatedTour?.title"
                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                 <div
                                     class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500">
@@ -601,14 +603,14 @@ const relatedTours = computed(() => {
                             <div class="p-5">
                                 <h3
                                     class="text-lg font-bold text-gray-800 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                                    {{ relatedTour.title }}
+                                    {{ relatedTour?.title }}
                                 </h3>
                                 <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour.duration
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour?.duration
                                         }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                        {{ relatedTour.priceUsd }}
+                                        {{ relatedTour?.priceUsd }}
                                     </span>
                                 </div>
                             </div>
@@ -618,30 +620,6 @@ const relatedTours = computed(() => {
             </div>
         </div>
     </div>
-
-    <!-- Not Found -->
-    <!-- <div v-else
-        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-20 transition-colors duration-300">
-        <div class="text-center">
-            <div class="inline-block p-8 bg-red-100 dark:bg-red-900/30 rounded-full mb-6">
-                <svg class="w-24 h-24 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Không tìm thấy tour</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-8">Tour bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
-            <NuxtLink to="/tour"
-                class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Quay lại danh sách tour
-            </NuxtLink>
-        </div>
-    </div> -->
 </template>
 
 <style scoped>

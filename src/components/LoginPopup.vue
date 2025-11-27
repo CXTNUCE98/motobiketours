@@ -36,7 +36,7 @@ const loginForm = reactive<LoginDto>({
 const registerForm = reactive<RegisterDto>({
   email: '',
   password: '',
-  username: '',
+  userName: '',
   avatar: '',
 })
 
@@ -56,7 +56,7 @@ const loginValidationRules: ValidationRules = {
 }
 
 const registerValidationRules: ValidationRules = {
-  username: [
+  userName: [
     validationRules.required('Username is required'),
     validationRules.minLength(2, 'Username must be at least 2 characters'),
   ],
@@ -76,7 +76,7 @@ const resetForms = () => {
   loginForm.password = ''
   registerForm.email = ''
   registerForm.password = ''
-  registerForm.username = ''
+  registerForm.userName = ''
   loginErrors.value = {}
   registerErrors.value = {}
 }
@@ -295,12 +295,12 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                         <div class="i-carbon-user text-slate-400 group-focus-within:text-[#1A71C7] transition-colors">
                         </div>
                       </div>
-                      <input v-model="registerForm.username" type="text" placeholder="Name" :class="[
+                      <input v-model="registerForm.userName" type="text" placeholder="Name" :class="[
                         'w-full bg-slate-50 dark:bg-slate-800 border py-3.5 pl-11 pr-4 rounded-lg text-slate-700 dark:text-slate-200 placeholder:text-slate-400 focus:ring-2 focus:ring-[#1A71C7] outline-none transition-all',
-                        registerErrors.username ? 'border-red-500' : 'border-transparent'
+                        registerErrors.userName ? 'border-red-500' : 'border-transparent'
                       ]" />
-                      <p v-if="registerErrors.username" class="mt-1 text-xs text-red-500 text-left">
-                        {{ registerErrors.username }}
+                      <p v-if="registerErrors.userName" class="mt-1 text-xs text-red-500 text-left">
+                        {{ registerErrors.userName }}
                       </p>
                     </div>
 

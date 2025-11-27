@@ -31,57 +31,61 @@ const isAuthenticated = ref(authService.isAuthenticated());
 const accessToken = ref(authService.getToken());
 const user = ref<User | null>(null);
 
+/**
+ * Get auth headers for API requests
+ */
+const getAuthHeaders = (): HeadersInit => {
+  if (!accessToken.value) {
+    return {};
+  }
+
+  return {
+    Authorization: `Bearer ${accessToken.value}`,
+  };
+};
+
+/**
+ * Fetch full user profile from API
+ */
+const fetchUserProfile = async () => {
+  if (!accessToken.value) return;
+
+  try {
+    const decoded = parseJwt(accessToken.value);
+    const userId = decoded?.sub || decoded?.id;
+
+    if (userId) {
+      const userData = await apiClient<User>(`/users/${userId}`, {
+        headers: getAuthHeaders(),
+      });
+      user.value = userData;
+    }
+  } catch (error) {
+    console.error('Failed to fetch user profile', error);
+  }
+};
+
 // Initialize user from token if available
 if (process.client && accessToken.value) {
   const decoded = parseJwt(accessToken.value);
   if (decoded) {
+    // Set initial state from token (fast, but maybe stale)
     user.value = {
       id: decoded.sub || decoded.id,
       email: decoded.email,
-      name: decoded.name || 'User',
-      userName: decoded.username || 'User',
+      userName: decoded.userName || 'User',
       role: decoded.role || 'USER',
       provider: null,
-      createdAt: '',
-    };
+      avatar: decoded.avatar,
+      created_at: '', // Placeholder until fetch
+    } as User;
+
+    // Fetch fresh data from API to update avatar and other details
+    fetchUserProfile();
   }
 }
 
 export function useAuth() {
-  /**
-   * Get auth headers for API requests
-   */
-  const getAuthHeaders = (): HeadersInit => {
-    if (!accessToken.value) {
-      return {};
-    }
-
-    return {
-      Authorization: `Bearer ${accessToken.value}`,
-    };
-  };
-
-  /**
-   * Fetch full user profile from API
-   */
-  const fetchUserProfile = async () => {
-    if (!accessToken.value) return;
-
-    try {
-      const decoded = parseJwt(accessToken.value);
-      const userId = decoded?.sub || decoded?.id;
-
-      if (userId) {
-        const userData = await apiClient<User>(`/users/${userId}`, {
-          headers: getAuthHeaders(),
-        });
-        user.value = userData;
-      }
-    } catch (error) {
-      console.error('Failed to fetch user profile', error);
-    }
-  };
-
   /**
    * Login user and update auth state
    */
@@ -89,20 +93,6 @@ export function useAuth() {
     authService.setToken(token);
     accessToken.value = token;
     isAuthenticated.value = true;
-
-    // Decode token to get user info immediately
-    // const decoded = parseJwt(token);
-    // if (decoded) {
-    //   user.value = {
-    //     id: decoded.sub || decoded.id,
-    //     email: decoded.email,
-    //     name: decoded.name || 'User',
-    //     username: decoded.username || 'User',
-    //     role: decoded.role || 'USER',
-    //     provider: null,
-    //     createdAt: '',
-    //   };
-    // }
 
     // Fetch full profile
     fetchUserProfile();

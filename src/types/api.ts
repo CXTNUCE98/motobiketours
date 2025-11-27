@@ -7,6 +7,7 @@ export interface User {
   role: 'USER' | 'ADMIN';
   provider: string | null;
   created_at: string;
+  avatar: string;
 }
 
 export interface Tour {
@@ -55,7 +56,7 @@ export interface Service {
 export interface RegisterDto {
   email: string;
   password: string;
-  username: string;
+  userName: string;
   avatar: string;
 }
 
@@ -69,10 +70,54 @@ export interface AuthResponse {
 }
 
 export interface UpdateUserDto {
-  username?: string;
+  userName?: string;
   email?: string;
   password?: string;
   avatar?: string;
+}
+
+// Comments
+export interface CommentAuthor {
+  authId: string;
+  avatar: string;
+  userName: string;
+}
+
+export interface Comment {
+  id: string;
+  blogId: string;
+  content: string;
+  author: CommentAuthor;
+  parentId: string | null;
+  likeCount: number;
+  dislikeCount: number;
+  replyCount: number;
+  created_at: string;
+  updated_at: string;
+  replies?: Comment[];
+}
+
+export interface CreateCommentDto {
+  blogId: string;
+  content: string;
+  author: CommentAuthor;
+  parentId?: string;
+}
+
+export interface LikeCommentDto {
+  userId: string;
+  type: 'like' | 'dislike';
+}
+
+export interface LikeStatusResponse {
+  hasLiked: boolean;
+  hasDisliked: boolean;
+  type: 'like' | 'dislike' | null;
+}
+
+export interface LikeActionResponse {
+  message: string;
+  action: 'added' | 'removed' | 'updated';
 }
 
 // API Error Response

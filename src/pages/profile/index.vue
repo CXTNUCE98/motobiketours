@@ -76,7 +76,7 @@ const removeAvatar = () => {
 
 // Form Data
 const infoForm = reactive({
-    username: '',
+    userName: '',
     email: '',
 })
 
@@ -89,10 +89,10 @@ const passwordForm = reactive({
 // Initialize form when data is loaded
 watchEffect(() => {
     if (userData.value) {
-        infoForm.username = userData.value.username
+        infoForm.userName = userData.value.userName
         infoForm.email = userData.value.email
     } else if (authUser.value) {
-        infoForm.username = authUser.value.username
+        infoForm.userName = authUser.value.userName
         infoForm.email = authUser.value.email
     }
 })
@@ -102,7 +102,7 @@ const infoErrors = ref<ValidationErrors>({})
 const passwordErrors = ref<ValidationErrors>({})
 
 const infoRules = {
-    username: [validationRules.required('Username is required')],
+    userName: [validationRules.required('Username is required')],
 }
 
 const passwordRules = {
@@ -214,15 +214,15 @@ const handleUpdateInfo = async () => {
             if (avatarFile.value) {
                 // Upload avatar và lấy URL
                 const avatarUrl = await uploadAvatarAsync(avatarFile.value)
-                // Sau khi upload thành công, update profile với URL và username
+                // Sau khi upload thành công, update profile với URL và userName
                 // avatarUrl là string URL từ server, không phải base64
                 await updateProfile({
-                    username: infoForm.username,
+                    userName: infoForm.userName,
                     avatar: avatarUrl // Chỉ gửi URL, không phải base64
                 })
             } else {
-                // Just update username
-                await updateProfile({ username: infoForm.username })
+                // Just update userName
+                await updateProfile({ userName: infoForm.userName })
             }
         } catch (error) {
             // Error đã được xử lý trong mutation onError
@@ -511,19 +511,19 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
                                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                                     </svg>
                                                 </div>
-                                                <input v-model="infoForm.username" type="text"
-                                                    placeholder="Enter your username"
+                                                <input v-model="infoForm.userName" type="text"
+                                                    placeholder="Enter your userName"
                                                     class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
-                                                    :class="{ 'border-red-500 focus:ring-red-500': infoErrors.username }" />
+                                                    :class="{ 'border-red-500 focus:ring-red-500': infoErrors.userName }" />
                                             </div>
-                                            <p v-if="infoErrors.username"
+                                            <p v-if="infoErrors.userName"
                                                 class="mt-2 text-sm text-red-500 flex items-center gap-1">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                                     <path fill-rule="evenodd"
                                                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
                                                         clip-rule="evenodd" />
                                                 </svg>
-                                                {{ infoErrors.username }}
+                                                {{ infoErrors?.userName }}
                                             </p>
                                         </div>
 
