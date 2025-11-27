@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { tours } from '../../composables/mockup';
+import { ref, computed, watch } from 'vue';
+import { useQuery, keepPreviousData } from '@tanstack/vue-query';
+import { fetchTours } from '../../services/tour.service';
 import TourFilter from '../../components/TourFilter.vue';
 
 const searchQuery = ref('');
@@ -20,7 +21,42 @@ const activeFilters = ref({
     departFrom: ''
 });
 
-// Helper to parse duration
+// Construct API filters
+const apiFilters = computed(() => {
+    const filters = {
+        p: currentPage.value,
+        r: itemsPerPage,
+        q: searchQuery.value,
+        price_min: activeFilters.value.priceRange.min,
+        price_max: activeFilters.value.priceRange.max,
+    };
+
+    if (activeFilters.value.duration.length > 0) {
+        filters.duration_range = activeFilters.value.duration.join(',');
+    }
+
+    if (activeFilters.value.tourTypes.length > 0) {
+        filters.type = activeFilters.value.tourTypes.join(',');
+    }
+
+    if (activeFilters.value.departFrom) {
+        const depart = activeFilters.value.departFrom.replace(/-/g, ' ');
+        filters.q = filters.q ? `${filters.q} ${depart}` : depart;
+    }
+
+    return filters;
+});
+
+// Query
+const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['tours', apiFilters],
+    queryFn: () => fetchTours(apiFilters.value),
+    placeholderData: keepPreviousData
+});
+
+const tours = computed(() => data.value?.data || []);
+const totalPages = computed(() => data.value?.totalPages || 1);
+
 const getDurationDays = (durationStr) => {
     if (!durationStr) return 0;
     if (durationStr.includes('1/2')) return 0.5;
@@ -28,100 +64,31 @@ const getDurationDays = (durationStr) => {
     return match ? parseInt(match[1]) : 0;
 };
 
-// Helper to check tour type
-const checkTourType = (tourTypeStr, selectedTypes) => {
-    if (selectedTypes.length === 0) return true;
-    const lowerType = tourTypeStr.toLowerCase();
-    return selectedTypes.some(type => {
-        if (type === 'adventure') return lowerType.includes('adventure') || lowerType.includes('trekking') || lowerType.includes('easy rider') || lowerType.includes('mountain pass');
-        if (type === 'cultural') return lowerType.includes('culture') || lowerType.includes('heritage') || lowerType.includes('history') || lowerType.includes('food');
-        if (type === 'beach') return lowerType.includes('beach') || lowerType.includes('island') || lowerType.includes('coastal') || lowerType.includes('sand dune');
-        if (type === 'mountain') return lowerType.includes('mountain') || lowerType.includes('highland') || lowerType.includes('dalat') || lowerType.includes('sapa') || lowerType.includes('ha giang');
-        if (type === 'city') return lowerType.includes('city') || lowerType.includes('saigon') || lowerType.includes('hanoi') || lowerType.includes('danang') || lowerType.includes('hue');
-        return lowerType.includes(type);
-    });
-};
-
-// Filtered and sorted tours
-const filteredTours = computed(() => {
-    let result = [...tours];
-
-    // Search filter
-    if (searchQuery.value) {
-        const query = searchQuery.value.toLowerCase();
-        result = result.filter(tour =>
-            tour.title.toLowerCase().includes(query) ||
-            tour.routes.toLowerCase().includes(query) ||
-            tour.type.toLowerCase().includes(query)
-        );
-    }
-
-    // Depart from filter
-    if (activeFilters.value.departFrom) {
-        const filterDepart = activeFilters.value.departFrom.replace(/-/g, ' ').toLowerCase();
-        result = result.filter(tour =>
-            tour.departFrom.toLowerCase().includes(filterDepart)
-        );
-    }
-
-    // Duration filter
-    if (activeFilters.value.duration.length > 0) {
-        result = result.filter(tour => {
-            const days = getDurationDays(tour.duration);
-            return activeFilters.value.duration.some(range => {
-                if (range === '1-3') return days >= 0 && days <= 3;
-                if (range === '4-7') return days >= 4 && days <= 7;
-                if (range === '8+') return days >= 8;
-                return false;
-            });
-        });
-    }
-
-    // Price filter
-    if (activeFilters.value.priceRange) {
-        const { min, max } = activeFilters.value.priceRange;
-        result = result.filter(tour => {
-            const price = typeof tour.priceUsd === 'number' ? tour.priceUsd : 0;
-            return price >= min && price <= max;
-        });
-    }
-
-    // Tour Type filter
-    if (activeFilters.value.tourTypes.length > 0) {
-        result = result.filter(tour => checkTourType(tour.type, activeFilters.value.tourTypes));
-    }
+const processedTours = computed(() => {
+    let result = [...tours.value];
 
     // Sort
     if (sortBy.value === 'price-low') {
         result.sort((a, b) => {
-            const priceA = typeof a.priceUsd === 'number' ? a.priceUsd : 0;
-            const priceB = typeof b.priceUsd === 'number' ? b.priceUsd : 0;
+            const priceA = typeof a.price_usd === 'number' ? a.price_usd : 0;
+            const priceB = typeof b.price_usd === 'number' ? b.price_usd : 0;
             return priceA - priceB;
         });
     } else if (sortBy.value === 'price-high') {
         result.sort((a, b) => {
-            const priceA = typeof a.priceUsd === 'number' ? a.priceUsd : 0;
-            const priceB = typeof b.priceUsd === 'number' ? b.priceUsd : 0;
+            const priceA = typeof a.price_usd === 'number' ? a.price_usd : 0;
+            const priceB = typeof b.price_usd === 'number' ? b.price_usd : 0;
             return priceB - priceA;
         });
     } else if (sortBy.value === 'duration') {
         result.sort((a, b) => {
-            const daysA = getDurationDays(a.duration);
-            const daysB = getDurationDays(b.duration);
+            const daysA = a.duration_days || getDurationDays(a.duration);
+            const daysB = b.duration_days || getDurationDays(b.duration);
             return daysA - daysB;
         });
     }
 
     return result;
-});
-
-// Pagination
-const totalPages = computed(() => Math.ceil(filteredTours.value.length / itemsPerPage));
-
-const paginatedTours = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredTours.value.slice(start, end);
 });
 
 const changePage = (page) => {
@@ -192,7 +159,7 @@ const handleClearFilters = () => {
                     <!-- Quick Stats -->
                     <div class="grid grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
                         <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-                            <div class="text-3xl font-bold">{{ tours.length }}+</div>
+                            <div class="text-3xl font-bold">{{ data?.total || 0 }}+</div>
                             <div class="text-sm text-blue-100">Tours</div>
                         </div>
                         <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
@@ -232,7 +199,7 @@ const handleClearFilters = () => {
                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-8 flex flex-wrap items-center justify-between gap-4 transition-colors duration-300">
                         <div class="flex items-center gap-3">
                             <span class="text-gray-700 dark:text-gray-300 font-semibold">
-                                {{ filteredTours.length }} tours
+                                {{ data?.total || 0 }} tours
                             </span>
                             <span class="text-gray-400">|</span>
                             <button @click="showFilters = !showFilters"
@@ -273,14 +240,15 @@ const handleClearFilters = () => {
                                     </svg>
                                 </button>
                             </div>
+                            <el-button type="primary">Create tour</el-button>
                         </div>
                     </div>
 
                     <!-- Tours Grid/List -->
-                    <div v-if="filteredTours.length > 0">
+                    <div v-if="processedTours.length > 0">
                         <div
                             :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'space-y-6'">
-                            <div v-for="(tour, index) in paginatedTours" :key="tour.id" class="animate-fade-in"
+                            <div v-for="(tour, index) in processedTours" :key="tour.id" class="animate-fade-in"
                                 :style="{ animationDelay: `${index * 0.1}s` }">
                                 <!-- Grid View -->
                                 <NuxtLink v-if="viewMode === 'grid'" :to="`/tour/${tour.id}`" class="block group">
@@ -321,7 +289,7 @@ const handleClearFilters = () => {
                                                             d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                                             clip-rule="evenodd" />
                                                     </svg>
-                                                    <span class="line-clamp-1">{{ tour.departFrom }}</span>
+                                                    <span class="line-clamp-1">{{ tour.depart_from }}</span>
                                                 </div>
                                                 <div class="flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-green-500" fill="currentColor"
@@ -337,7 +305,7 @@ const handleClearFilters = () => {
                                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                 <div
                                                     class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                                    ${{ tour.priceUsd }}
+                                                    ${{ tour.price_usd }}
                                                 </div>
                                                 <button
                                                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
@@ -385,7 +353,7 @@ const handleClearFilters = () => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>Khởi hành:</strong> {{ tour.departFrom
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -406,7 +374,7 @@ const handleClearFilters = () => {
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>Loại:</strong> {{
                                                                 tour.type
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -415,7 +383,7 @@ const handleClearFilters = () => {
                                                     class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                     <div
                                                         class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                                        ${{ tour.priceUsd }}
+                                                        ${{ tour.price_usd }}
                                                     </div>
                                                     <button
                                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:scale-105 transition-transform duration-300 shadow-lg flex items-center gap-2">

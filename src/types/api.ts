@@ -20,11 +20,30 @@ export interface Tour {
   content: string;
   price_usd: number;
   duration: string;
+  duration_days: number;
   depart_from: string;
   routes: string;
   type: string;
   is_featured: boolean;
   created_at: string;
+}
+
+export interface ToursResponse {
+  data: Tour[];
+  total: number;
+  page: number;
+  perPage: number;
+  totalPages: number;
+}
+
+export interface TourFilter {
+  q?: string;
+  price_min?: number;
+  price_max?: number;
+  duration_range?: string;
+  type?: string;
+  p?: number;
+  r?: number;
 }
 
 export interface BlogPost {

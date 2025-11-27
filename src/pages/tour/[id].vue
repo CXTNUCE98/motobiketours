@@ -215,7 +215,7 @@ const relatedTours = computed(() => {
                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                 <div
                                     class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                    {{ item?.priceUsd }}
+                                    {{ item?.price_usd }}
                                 </div>
                                 <div class="flex gap-3">
                                     <NuxtLink :to="`/tour/${item?.id}`"
@@ -264,7 +264,7 @@ const relatedTours = computed(() => {
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Khởi hành từ:</strong> {{ tour?.departFrom }}</span>
+                        <span><strong>Khởi hành từ:</strong> {{ tour?.depart_from }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -415,7 +415,7 @@ const relatedTours = computed(() => {
                                         }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                        {{ relatedTour?.priceUsd }}
+                                        {{ relatedTour?.price_usd }}
                                     </span>
                                 </div>
                             </div>
@@ -427,7 +427,7 @@ const relatedTours = computed(() => {
     </div>
 
     <!-- Not Found -->
-    <div v-else
+    <div
         class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-20 transition-colors duration-300">
         <div class="text-center">
             <div class="inline-block p-8 bg-red-100 dark:bg-red-900/30 rounded-full mb-6">
@@ -459,7 +459,7 @@ const relatedTours = computed(() => {
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Khởi hành từ:</strong> {{ tour?.departFrom }}</span>
+                        <span><strong>Khởi hành từ:</strong> {{ tour?.depart_from }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -571,51 +571,42 @@ const relatedTours = computed(() => {
                             <div v-else v-html="contactHtml" class="leading-relaxed text-gray-700 dark:text-gray-300">
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Right Column - Booking Card -->
-                <div class="lg:col-span-4">
-                    <BookingCard :price="tour?.priceUsd || 'Liên hệ'" :duration="tour?.duration" groupSize="2-10 người"
-                        difficulty="Trung bình" :tourId="tour?.id" />
-                </div>
-            </div>
-
-            <!-- Related Tours -->
-            <div v-if="relatedTours.length > 0" class="mt-12">
-                <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 text-center">
-                    <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                        Tour liên quan
-                    </span>
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour?.id"
-                        :to="`/tour/${relatedTour?.id}`" class="block group">
-                        <div
-                            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
-                            <div class="relative h-48 overflow-hidden">
-                                <img :src="relatedTour?.thumbnail" :alt="relatedTour?.title"
-                                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                        <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 text-center">
+                            <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                                Tour liên quan
+                            </span>
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour?.id"
+                                :to="`/tour/${relatedTour?.id}`" class="block group">
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500">
+                                    class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
+                                    <div class="relative h-48 overflow-hidden">
+                                        <img :src="relatedTour?.thumbnail" :alt="relatedTour?.title"
+                                            class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500">
+                                        </div>
+                                    </div>
+                                    <div class="p-5">
+                                        <h3
+                                            class="text-lg font-bold text-gray-800 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                                            {{ relatedTour?.title }}
+                                        </h3>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-600 dark:text-gray-400">{{
+                                                relatedTour?.duration
+                                            }}</span>
+                                            <span
+                                                class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
+                                                {{ relatedTour?.price_usd }}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="p-5">
-                                <h3
-                                    class="text-lg font-bold text-gray-800 dark:text-white mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                                    {{ relatedTour?.title }}
-                                </h3>
-                                <div class="flex items-center justify-between">
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour?.duration
-                                        }}</span>
-                                    <span
-                                        class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                        {{ relatedTour?.priceUsd }}
-                                    </span>
-                                </div>
-                            </div>
+                            </NuxtLink>
                         </div>
-                    </NuxtLink>
+                    </div>
                 </div>
             </div>
         </div>
