@@ -40,7 +40,7 @@ export default defineNuxtConfig({
   apiParty: {
     endpoints: {
       motobikertoursApi: {
-        url: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000',
+        url: 'http://localhost:3001', // process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
         schema: resolve('./src/schemas/motobikertoursApi.json'),
       },
     },

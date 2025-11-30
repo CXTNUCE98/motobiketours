@@ -11,7 +11,7 @@ export interface CreateTourDto {
     type: string;
     price_usd: number;
     duration: string;
-    duration_days: number;
+    duration_range: number;
     depart_from: string;
     routes: string;
     description: string;
@@ -26,14 +26,13 @@ export interface UpdateTourDto extends Partial<CreateTourDto> { }
 export interface Tour {
     id: string;
     title: string;
-    slug: string;
     thumbnail: string;
     images: string[];
     description: string;
     content: string;
     price_usd: number;
     duration: string;
-    duration_days: number;
+    duration_range: number;
     depart_from: string;
     routes: string;
     type: string;
@@ -57,6 +56,7 @@ export interface TourFilter {
     type?: string;
     p?: number;
     r?: number;
+    depart_from?: string;
 }
 
 // ============================================================================
@@ -74,6 +74,7 @@ export async function fetchTours(filters: TourFilter = {}): Promise<ToursRespons
     if (filters.price_max !== undefined) params.append('price_max', filters.price_max.toString());
     if (filters.duration_range) params.append('duration_range', filters.duration_range);
     if (filters.type) params.append('type', filters.type);
+    if (filters.depart_from) params.append('depart_from', filters.depart_from);
     if (filters.p) params.append('p', filters.p.toString());
     if (filters.r) params.append('r', filters.r.toString());
 
@@ -98,7 +99,10 @@ export async function fetchTourById(id: string): Promise<Tour> {
  * Create a new tour (POST /tours)
  * Supports JSON or FormData (for image uploads)
  */
-export async function createTour(data: CreateTourDto | FormData, onUploadProgress?: (progressEvent: any) => void): Promise<Tour> {
+export async function createTour(
+    data: CreateTourDto | FormData, 
+    onUploadProgress?: (progressEvent: { loaded: number; total?: number }) => void
+): Promise<Tour> {
     const isFormData = data instanceof FormData;
 
     if (!isFormData) {
@@ -108,7 +112,7 @@ export async function createTour(data: CreateTourDto | FormData, onUploadProgres
         }
     }
 
-    const headers: any = { ...getAuthHeaders() };
+    const headers: Record<string, string> = { ...getAuthHeaders() };
 
     try {
         const response = await axios.post(`${API_BASE_URL}/tours`, data, {
@@ -116,11 +120,14 @@ export async function createTour(data: CreateTourDto | FormData, onUploadProgres
             onUploadProgress
         });
         return response.data;
-    } catch (error: any) {
-        if (error.response) {
-            const apiError = error.response.data;
-            const message = apiError.message || 'Failed to create tour';
-            throw new Error(Array.isArray(message) ? message.join(', ') : message);
+    } catch (error: unknown) {
+        if (error && typeof error === 'object' && 'response' in error) {
+            const axiosError = error as { response?: { data?: { message?: string | string[] } } };
+            if (axiosError.response?.data) {
+                const apiError = axiosError.response.data;
+                const message = apiError.message || 'Failed to create tour';
+                throw new Error(Array.isArray(message) ? message.join(', ') : String(message));
+            }
         }
         throw error;
     }
@@ -129,8 +136,12 @@ export async function createTour(data: CreateTourDto | FormData, onUploadProgres
 /**
  * Update an existing tour (PATCH /tours/:id)
  */
-export async function updateTour(id: string, data: UpdateTourDto | FormData, onUploadProgress?: (progressEvent: any) => void): Promise<Tour> {
-    const headers: any = { ...getAuthHeaders() };
+export async function updateTour(
+    id: string, 
+    data: UpdateTourDto | FormData, 
+    onUploadProgress?: (progressEvent: { loaded: number; total?: number }) => void
+): Promise<Tour> {
+    const headers: Record<string, string> = { ...getAuthHeaders() };
 
     try {
         const response = await axios.patch(`${API_BASE_URL}/tours/${id}`, data, {
@@ -138,11 +149,14 @@ export async function updateTour(id: string, data: UpdateTourDto | FormData, onU
             onUploadProgress
         });
         return response.data;
-    } catch (error: any) {
-        if (error.response) {
-            const apiError = error.response.data;
-            const message = apiError.message || 'Failed to update tour';
-            throw new Error(Array.isArray(message) ? message.join(', ') : message);
+    } catch (error: unknown) {
+        if (error && typeof error === 'object' && 'response' in error) {
+            const axiosError = error as { response?: { data?: { message?: string | string[] } } };
+            if (axiosError.response?.data) {
+                const apiError = axiosError.response.data;
+                const message = apiError.message || 'Failed to update tour';
+                throw new Error(Array.isArray(message) ? message.join(', ') : String(message));
+            }
         }
         throw error;
     }

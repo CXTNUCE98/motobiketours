@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "openapi:motobikertours": "pnpm tsx ./s-openapi.ts https://motobikertours-api.vercel.app/api-docs-json ./src/schemas/motobikertoursApi.json"
+    "openapi:motobikertours": "pnpm tsx ./s-openapi.ts http://localhost:3001/api-docs-json ./src/schemas/motobikertoursApi.json"
   },
   "dependencies": {
     "@antfu/utils": "^0.7.7",
@@ -21,15 +21,18 @@
     "axios": "^1.6.8",
     "boxicons": "^2.1.4",
     "dayjs": "^1.11.19",
+    "dompurify": "^3.3.0",
     "nodemailer": "^6.9.13",
     "nuxt": "^3.11.1",
     "vue": "^3.4.21",
+    "vue-advanced-cropper": "^2.8.9",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@iconify-json/carbon": "^1.2.14",
     "@iconify-json/ep": "^1.2.3",
     "@openapitools/openapi-generator-cli": "^2.6.0",
+    "@types/dompurify": "^3.2.0",
     "@unocss/nuxt": "^66.5.9",
     "@vue-macros/nuxt": "^1.9.33",
     "@vueuse/core": "^10.9.0",

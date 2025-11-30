@@ -4,6 +4,8 @@ import { useRoute } from 'vue-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useAuth } from '~/composables/useAuth'
 import CommentItem from '~/components/CommentItem.vue'
+import { logger } from '~/utils/logger'
+import { sanitizeHtml } from '~/utils/sanitize'
 
 const route = useRoute()
 const id = computed(() => String(route?.params?.id))
@@ -65,7 +67,7 @@ const createCommentMutation = useMutation({
     refetchComments()
   },
   onError: (error) => {
-    console.error('Error creating comment:', error)
+    logger.error('Error creating comment:', error)
     ElNotification({
       title: 'Error',
       message: 'Failed to post comment. Please try again.',
@@ -214,7 +216,7 @@ const getImageUrl = (thumbnail) => {
               <!-- Content Body -->
               <div
                 class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-orange-600 hover:prose-a:text-orange-700 prose-img:rounded-2xl"
-                v-html="post?.content"></div>
+                v-html="sanitizeHtml(post?.content)"></div>
 
               <!-- Tags -->
               <div class="mt-12 pt-8 border-t border-gray-100 dark:border-gray-700"

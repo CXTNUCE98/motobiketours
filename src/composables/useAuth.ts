@@ -2,6 +2,7 @@ import { ref, computed } from 'vue';
 import { authService } from '~/services/auth.service';
 import { apiClient } from '~/services/api';
 import type { User } from '~/types/api';
+import { logger } from '~/utils/logger';
 
 // Helper to decode JWT
 function parseJwt(token: string) {
@@ -61,7 +62,7 @@ const fetchUserProfile = async () => {
       user.value = userData;
     }
   } catch (error) {
-    console.error('Failed to fetch user profile', error);
+    logger.error('Failed to fetch user profile', error);
   }
 };
 

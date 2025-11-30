@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { logger } from '~/utils/logger';
 
 const newsletterEmail = ref('');
 const handleNewsletter = () => {
-    console.log('Newsletter signup:', newsletterEmail.value);
+    logger.log('Newsletter signup:', newsletterEmail.value);
+    // TODO: Implement newsletter signup functionality
 };
 </script>
 

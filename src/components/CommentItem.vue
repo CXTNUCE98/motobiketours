@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import { useAuth } from '~/composables/useAuth'
+import { logger } from '~/utils/logger'
 
 const props = defineProps({
     comment: {
@@ -89,7 +90,7 @@ const deleteMutation = useMutation({
         emit('refresh')
     },
     onError: (error) => {
-        console.error('Error deleting comment:', error)
+        logger.error('Error deleting comment:', error)
         ElNotification({
             title: 'Error',
             message: 'Failed to delete comment. You can only delete your own comments.',

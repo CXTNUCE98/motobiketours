@@ -1,6 +1,10 @@
 // API Configuration
-export const API_BASE_URL = 'http://localhost:3001';
-// export const API_BASE_URL = 'https://motobikertours-api.vercel.app';
+// Use environment variable with fallback to localhost for development
+export const API_BASE_URL = 
+  process.env.NUXT_PUBLIC_API_BASE || 
+  (process.env.NODE_ENV === 'production' 
+    ? 'https://motobikertours-api.vercel.app' 
+    : 'http://localhost:3001');
 
 // API Client with error handling
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -27,9 +31,9 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
     }
 
     return await response.json();
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Re-throw API errors
-    if (error.statusCode) {
+    if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error;
     }
 

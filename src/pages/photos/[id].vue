@@ -42,7 +42,7 @@ onBeforeUnmount(() => {
 })
 
 function like() {
-    console.log('like')
+    // TODO: Implement like functionality
 }
 
 function share() {

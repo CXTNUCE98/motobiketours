@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watchEffect } from 'vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElDialog, ElButton } from 'element-plus'
 import { useAuth } from '~/composables/useAuth'
 import { apiClient } from '~/services/api'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
 import type { User, UpdateUserDto } from '~/types/api'
 import { validateForm, validationRules, type ValidationErrors } from '~/utils/validation'
+import { Cropper, CircleStencil } from 'vue-advanced-cropper'
+import 'vue-advanced-cropper/dist/style.css'
+import { logger } from '~/utils/logger'
 
 const { isAuthenticated, user: authUser, getAuthHeaders, fetchUserProfile } = useAuth()
 const queryClient = useQueryClient()
@@ -34,6 +37,11 @@ const avatarPreview = ref<string | null>(null)
 const avatarFile = ref<File | null>(null)
 const fileInputRef = ref<any>(null)
 
+// Cropper State
+const showCropper = ref(false)
+const cropperImage = ref<string | null>(null)
+const cropperRef = ref<any>(null)
+
 const handleAvatarChange = (event: Event) => {
     const target = event.target as any
     const file = target.files?.[0]
@@ -51,14 +59,30 @@ const handleAvatarChange = (event: Event) => {
             return
         }
 
-        avatarFile.value = file
-
-        // Create preview
+        // Create preview for cropper
         const reader = new FileReader()
         reader.onload = (e) => {
-            avatarPreview.value = e.target?.result as string
+            cropperImage.value = e.target?.result as string
+            showCropper.value = true
         }
         reader.readAsDataURL(file)
+
+        // Reset input so same file can be selected again
+        target.value = ''
+    }
+}
+
+const onCrop = () => {
+    const { canvas } = cropperRef.value.getResult()
+    if (canvas) {
+        canvas.toBlob((blob: Blob) => {
+            if (blob) {
+                const file = new File([blob], 'avatar.png', { type: 'image/png' })
+                avatarFile.value = file
+                avatarPreview.value = URL.createObjectURL(blob)
+                showCropper.value = false
+            }
+        }, 'image/png')
     }
 }
 
@@ -141,8 +165,9 @@ const { mutate: uploadAvatar, mutateAsync: uploadAvatarAsync, isPending: isUploa
         // API trả về { url, secureUrl, imageId } - sử dụng secureUrl nếu có, nếu không dùng url
         return result.secureUrl || result.url
     },
-    onError: (error: any) => {
-        ElMessage.error(error.message || 'Failed to upload avatar')
+    onError: (error: unknown) => {
+        const message = error instanceof Error ? error.message : 'Failed to upload avatar';
+        ElMessage.error(message)
     }
 })
 
@@ -174,8 +199,9 @@ const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
         removeAvatar() // Clear avatar preview after successful update
         ElMessage.success('Profile updated successfully!')
     },
-    onError: (error: any) => {
-        ElMessage.error(error.message || 'Failed to update profile')
+    onError: (error: unknown) => {
+        const message = error instanceof Error ? error.message : 'Failed to update profile';
+        ElMessage.error(message)
     }
 })
 
@@ -199,8 +225,9 @@ const { mutate: changePassword, isPending: isChangingPassword } = useMutation({
         passwordErrors.value = {}
         ElMessage.success('Password changed successfully!')
     },
-    onError: (error: any) => {
-        ElMessage.error(error.message || 'Failed to change password')
+    onError: (error: unknown) => {
+        const message = error instanceof Error ? error.message : 'Failed to change password';
+        ElMessage.error(message)
     }
 })
 
@@ -226,7 +253,7 @@ const handleUpdateInfo = async () => {
             }
         } catch (error) {
             // Error đã được xử lý trong mutation onError
-            console.error('Failed to update profile:', error)
+            logger.error('Failed to update profile:', error)
         }
     }
 }
@@ -737,5 +764,23 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
                 </div>
             </div>
         </div>
+
+        <!-- Image Cropper Modal -->
+        <el-dialog v-model="showCropper" title="Crop Image" width="500px" :close-on-click-modal="false"
+            destroy-on-close>
+            <div
+                class="h-96 w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden rounded-lg">
+                <cropper ref="cropperRef" class="h-full w-full" :src="cropperImage" :stencil-component="CircleStencil"
+                    :stencil-props="{
+                        aspectRatio: 1 / 1
+                    }" />
+            </div>
+            <template #footer>
+                <div class="flex justify-end gap-3">
+                    <el-button @click="showCropper = false">Cancel</el-button>
+                    <el-button type="primary" @click="onCrop">Crop & Save</el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>

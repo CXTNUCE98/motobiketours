@@ -229,10 +229,10 @@ const getImageUrl = (thumbnail) => {
                       :alt="post?.author?.userName"
                       class="w-8 h-8 rounded-full object-cover border border-gray-200 image-crisp" />
                     <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ post?.author?.userName
-                      }}</span>
+                    }}</span>
                   </div>
                   <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{ calculateReadTime(post?.content)
-                    }} min read</span>
+                  }} min read</span>
                 </div>
               </div>
             </router-link>

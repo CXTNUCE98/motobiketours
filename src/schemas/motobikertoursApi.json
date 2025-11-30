@@ -90,7 +90,37 @@
       "get": {
         "operationId": "UsersController_findAll",
         "summary": "Get all users",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "r",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Return all users",
@@ -189,10 +219,46 @@
         ],
         "requestBody": {
           "required": true,
+          "description": "User update data",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateUserDto"
+              },
+              "examples": {
+                "Update userName and email": {
+                  "value": {
+                    "userName": "john_doe",
+                    "email": "john.doe@example.com"
+                  }
+                },
+                "Update password": {
+                  "value": {
+                    "password": "NewP@ssw0rd123"
+                  }
+                },
+                "Update admin status": {
+                  "value": {
+                    "isAdmin": true
+                  }
+                },
+                "Update profile": {
+                  "value": {
+                    "userName": "john_doe",
+                    "timezone": "America/New_York",
+                    "avatar": "https://res.cloudinary.com/demo/image/upload/avatar.jpg"
+                  }
+                },
+                "Full update": {
+                  "value": {
+                    "userName": "john_doe",
+                    "email": "john.doe@example.com",
+                    "password": "NewP@ssw0rd123",
+                    "isAdmin": true,
+                    "timezone": "America/New_York",
+                    "avatar": "https://res.cloudinary.com/demo/image/upload/avatar.jpg"
+                  }
+                }
               }
             }
           }
@@ -207,6 +273,12 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "404": {
+            "description": "User not found"
           }
         },
         "tags": [
@@ -240,7 +312,93 @@
       "get": {
         "operationId": "ToursController_findAll",
         "summary": "Get all tours",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "r",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "price_min",
+            "required": false,
+            "in": "query",
+            "description": "Minimum price",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "price_max",
+            "required": false,
+            "in": "query",
+            "description": "Maximum price",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "duration_range",
+            "required": false,
+            "in": "query",
+            "description": "Duration range (1-3, 4-7, 8+)",
+            "schema": {
+              "enum": [
+                "1-3",
+                "4-7",
+                "8+"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": false,
+            "in": "query",
+            "description": "Filter by tour types (comma separated)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "depart_from",
+            "required": false,
+            "in": "query",
+            "description": "Filter by departure city (comma separated)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Return all tours"
@@ -256,7 +414,7 @@
         "parameters": [],
         "requestBody": {
           "required": true,
-          "description": "Tour data with thumbnail image",
+          "description": "Tour data with thumbnail and images",
           "content": {
             "multipart/form-data": {
               "schema": {
@@ -300,13 +458,103 @@
         "tags": [
           "tours"
         ]
+      },
+      "patch": {
+        "operationId": "ToursController_update",
+        "summary": "Update a tour (supports both JSON and multipart/form-data)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Tour data to update (JSON or form-data)",
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTourDto"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTourDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The tour has been successfully updated."
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      },
+      "delete": {
+        "operationId": "ToursController_remove",
+        "summary": "Delete a tour",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The tour has been successfully deleted."
+          }
+        },
+        "tags": [
+          "tours"
+        ]
       }
     },
     "/services": {
       "get": {
         "operationId": "ServicesController_findAll",
         "summary": "Get all services",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "r",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Return all services"
@@ -377,7 +625,64 @@
       "get": {
         "operationId": "BlogController_findAll",
         "summary": "Get all blog posts",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "r",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "description": "Filter by category",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tags",
+            "required": false,
+            "in": "query",
+            "description": "Filter by tags (comma separated)",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "required": false,
+            "in": "query",
+            "description": "Filter by specific name",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Return all blog posts"
@@ -455,6 +760,272 @@
           "blog"
         ]
       }
+    },
+    "/comments": {
+      "post": {
+        "operationId": "CommentsController_create",
+        "summary": "Create a new comment or reply",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created successfully"
+          },
+          "400": {
+            "description": "Bad request"
+          },
+          "404": {
+            "description": "Parent comment not found"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      },
+      "get": {
+        "operationId": "CommentsController_findAll",
+        "summary": "Get comments with pagination",
+        "parameters": [
+          {
+            "name": "blogId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by blog ID",
+            "schema": {
+              "example": "uuid-blog-123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "parentId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by parent comment ID (for replies)",
+            "schema": {
+              "example": "uuid-comment-123",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return paginated comments"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/comments/tree/{blogId}": {
+      "get": {
+        "operationId": "CommentsController_getCommentsTree",
+        "summary": "Get comments tree for a blog (nested structure)",
+        "parameters": [
+          {
+            "name": "blogId",
+            "required": true,
+            "in": "path",
+            "description": "Blog ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return comments with nested replies"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/comments/{id}": {
+      "get": {
+        "operationId": "CommentsController_findOne",
+        "summary": "Get a single comment by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Comment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return comment"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      },
+      "delete": {
+        "operationId": "CommentsController_remove",
+        "summary": "Delete a comment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Comment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "query",
+            "description": "User ID (for authorization)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment deleted successfully"
+          },
+          "400": {
+            "description": "You can only delete your own comments"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/comments/{id}/like": {
+      "post": {
+        "operationId": "CommentsController_likeComment",
+        "summary": "Like or dislike a comment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Comment ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LikeCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Like/dislike processed"
+          },
+          "404": {
+            "description": "Comment not found"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      }
+    },
+    "/comments/{id}/like-status/{userId}": {
+      "get": {
+        "operationId": "CommentsController_getUserLikeStatus",
+        "summary": "Get user's like status for a comment",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Comment ID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "User ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return like status"
+          }
+        },
+        "tags": [
+          "comments"
+        ]
+      }
     }
   },
   "info": {
@@ -486,9 +1057,14 @@
       "CreateUserDto": {
         "type": "object",
         "properties": {
+          "userName": {
+            "type": "string",
+            "example": "admin",
+            "description": "Username"
+          },
           "email": {
             "type": "string",
-            "example": "john.doe@example.com",
+            "example": "admin@gmail.com",
             "description": "User email address"
           },
           "password": {
@@ -496,16 +1072,32 @@
             "example": "P@ssw0rd",
             "description": "User password (min 6 chars)"
           },
-          "name": {
+          "isAdmin": {
+            "type": "boolean",
+            "example": false,
+            "description": "Is user an admin",
+            "default": false
+          },
+          "timezone": {
             "type": "string",
-            "example": "John Doe",
-            "description": "Full name of the user"
+            "example": "Asia/Ho_Chi_Minh",
+            "description": "User timezone",
+            "default": "Asia/Ho_Chi_Minh"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "",
+            "description": "User avatar URL",
+            "default": ""
           }
         },
         "required": [
+          "userName",
           "email",
           "password",
-          "name"
+          "isAdmin",
+          "timezone",
+          "avatar"
         ]
       },
       "AuthResponseDto": {
@@ -514,7 +1106,7 @@
           "access_token": {
             "type": "string",
             "description": "JWT Access Token",
-            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDM2MDB9.signature"
           }
         },
         "required": [
@@ -546,7 +1138,38 @@
       },
       "UpdateUserDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "userName": {
+            "type": "string",
+            "example": "john_doe",
+            "description": "Username for the user"
+          },
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com",
+            "description": "Email address of the user"
+          },
+          "password": {
+            "type": "string",
+            "example": "NewP@ssw0rd123",
+            "description": "New password (minimum 6 characters)"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "example": true,
+            "description": "Admin status of the user"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "America/New_York",
+            "description": "Timezone of the user"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/demo/image/upload/avatar.jpg",
+            "description": "Avatar URL of the user"
+          }
+        }
       },
       "CreateTourDto": {
         "type": "object",
@@ -597,6 +1220,16 @@
             "example": "5 days",
             "description": "Duration of the tour"
           },
+          "duration_range": {
+            "type": "string",
+            "enum": [
+              "1-3",
+              "4-7",
+              "8+"
+            ],
+            "example": "4-7",
+            "description": "Duration range for filtering (1-3, 4-7, 8+)"
+          },
           "depart_from": {
             "type": "string",
             "example": "Hanoi",
@@ -625,11 +1258,93 @@
           "content",
           "price_usd",
           "duration",
+          "duration_range",
           "depart_from",
           "routes",
           "type",
           "is_featured"
         ]
+      },
+      "UpdateTourDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Amazing Vietnam Tour",
+            "description": "Tour title"
+          },
+          "slug": {
+            "type": "string",
+            "example": "amazing-vietnam-tour",
+            "description": "URL‑friendly slug"
+          },
+          "thumbnail": {
+            "type": "string",
+            "format": "binary",
+            "description": "Thumbnail image file"
+          },
+          "images": {
+            "example": [
+              "https://res.cloudinary.com/.../img1.jpg",
+              "https://res.cloudinary.com/.../img2.jpg"
+            ],
+            "description": "Array of image URLs (comma‑separated for SQLite)",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "Explore the hidden gems of Vietnam...",
+            "description": "Short description"
+          },
+          "content": {
+            "type": "string",
+            "example": "<p>Full HTML content of the tour...</p>",
+            "description": "Detailed content (HTML)"
+          },
+          "price_usd": {
+            "type": "number",
+            "example": 199.99,
+            "description": "Price in USD"
+          },
+          "duration": {
+            "type": "string",
+            "example": "5 days",
+            "description": "Duration of the tour"
+          },
+          "duration_range": {
+            "type": "string",
+            "enum": [
+              "1-3",
+              "4-7",
+              "8+"
+            ],
+            "example": "4-7",
+            "description": "Duration range for filtering (1-3, 4-7, 8+)"
+          },
+          "depart_from": {
+            "type": "string",
+            "example": "Hanoi",
+            "description": "Starting city"
+          },
+          "routes": {
+            "type": "string",
+            "example": "Hanoi → Ha Long → Hue → Hoi An",
+            "description": "Route description"
+          },
+          "type": {
+            "type": "string",
+            "example": "Adventure",
+            "description": "Tour type/category"
+          },
+          "is_featured": {
+            "type": "boolean",
+            "example": true,
+            "description": "Featured tour flag"
+          }
+        }
       },
       "CreateBlogDto": {
         "type": "object",
@@ -667,6 +1382,10 @@
             "type": "number",
             "example": 9
           },
+          "category": {
+            "type": "string",
+            "example": "Technology"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -675,6 +1394,14 @@
               "draft"
             ],
             "example": "waiting"
+          },
+          "author": {
+            "type": "object",
+            "example": {
+              "authId": "uuid-123",
+              "avatar": "image-url",
+              "userName": "admin"
+            }
           }
         },
         "required": [
@@ -685,7 +1412,9 @@
           "content",
           "tags",
           "numWords",
-          "status"
+          "category",
+          "status",
+          "author"
         ]
       },
       "UploadImageResponseDto": {
@@ -708,6 +1437,58 @@
           "imageId",
           "url",
           "secureUrl"
+        ]
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "blogId": {
+            "type": "string",
+            "example": "uuid-blog-123"
+          },
+          "content": {
+            "type": "string",
+            "example": "This is a great article! Thanks for sharing."
+          },
+          "author": {
+            "type": "object",
+            "example": {
+              "authId": "uuid-123",
+              "avatar": "https://example.com/avatar.jpg",
+              "userName": "john_doe"
+            }
+          },
+          "parentId": {
+            "type": "string",
+            "example": null,
+            "description": "Parent comment ID for nested replies"
+          }
+        },
+        "required": [
+          "blogId",
+          "content",
+          "author"
+        ]
+      },
+      "LikeCommentDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "example": "uuid-user-123"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "like",
+              "dislike"
+            ],
+            "example": "like"
+          }
+        },
+        "required": [
+          "userId",
+          "type"
         ]
       }
     }

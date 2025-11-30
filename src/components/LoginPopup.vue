@@ -5,6 +5,7 @@ import { authService } from '~/services/auth.service'
 import { useAuth } from '~/composables/useAuth'
 import type { LoginDto, RegisterDto, ApiError } from '~/types/api'
 import { validateForm, validationRules, type ValidationRules, type ValidationErrors } from '~/utils/validation'
+import { logger } from '~/utils/logger'
 
 const props = defineProps<{
   modelValue: boolean
@@ -101,7 +102,7 @@ const {
     close()
   },
   onError: (error: ApiError) => {
-    console.error('Login failed:', error)
+    logger.error('Login failed:', error)
   },
 })
 
@@ -118,7 +119,7 @@ const {
     setAuthState(data.access_token)
 
     // Show success message
-    console.log('Registration successful!')
+    logger.log('Registration successful!')
 
     // Close modal
     close()
@@ -127,7 +128,7 @@ const {
     // window.location.reload()
   },
   onError: (error: ApiError) => {
-    console.error('Registration failed:', error)
+    logger.error('Registration failed:', error)
   },
 })
 

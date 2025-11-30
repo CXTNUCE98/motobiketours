@@ -3,6 +3,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { news } from '../../composables/mockup'
+import { sanitizeHtml } from '~/utils/sanitize'
 
 const route = useRoute()
 const id = computed(() => String(route.params.id))
@@ -40,7 +41,7 @@ const detailHtml = computed(() => {
     <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 py-8 px-4">
         <div class="max-w-4xl mx-auto">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8 border border-transparent dark:border-gray-700"
-                v-html="detailHtml">
+                v-html="sanitizeHtml(detailHtml)">
             </div>
 
             <div class="mt-8">

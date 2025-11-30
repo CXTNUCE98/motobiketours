@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, nextTick } from 'vue';
+import { ref, reactive, computed, watch, nextTick, onBeforeUnmount } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check } from '@element-plus/icons-vue';
-import { useMutation, useQueryClient } from '@tanstack/vue-query';
-
-import { createTour, updateTour, type CreateTourDto, type Tour, validateTourForm } from '@/services/tourApi';
+import { type CreateTourDto, type Tour, validateTourForm } from '@/services/tourApi';
+import { useUpdateTour, useCreateTour } from '~/composables/useTourQuery';
 
 const props = defineProps<{
     visible: boolean;
@@ -19,15 +18,43 @@ const emit = defineEmits<{
 // State
 const dialogVisible = computed({
     get: () => props.visible,
-    set: (val) => emit('update:visible', val)
+    set: (val: boolean) => emit('update:visible', val)
 });
-
-const queryClient = useQueryClient();
 
 const isEditMode = computed(() => !!props.tourData);
 const currentStep = ref(0);
 const uploadProgress = ref(0);
 const formRef = ref();
+
+const durationOptions = [
+    {
+        label: '2 days 1 night',
+        value: '2 days 1 night'
+    },
+    {
+        label: '3 days 2 nights',
+        value: '3 days 2 nights'
+    },
+    {
+        label: '4 days 3 nights',
+        value: '4 days 3 nights'
+    },
+    {
+        label: '5 days 4 nights',
+        value: '5 days 4 nights'
+    },
+    {
+        label: '6 days 5 nights',
+        value: '6 days 5 nights'
+    }
+]
+const mapDurationRange: Record<string, string> = {
+    '2 days 1 night': '1-3',
+    '3 days 2 nights': '1-3',
+    '4 days 3 nights': '4-7',
+    '5 days 4 nights': '4-7',
+    '6 days 5 nights': '4-7'
+} as const;
 
 // Form Data
 const formData = reactive<CreateTourDto>({
@@ -35,7 +62,7 @@ const formData = reactive<CreateTourDto>({
     type: '',
     price_usd: 0,
     duration: '',
-    duration_days: 0,
+    duration_range: 0,
     depart_from: '',
     routes: '',
     description: '',
@@ -50,8 +77,8 @@ const thumbnailFile = ref<File | null>(null);
 const thumbnailPreview = ref<string>('');
 const galleryFiles = ref<File[]>([]);
 const galleryPreviews = ref<string[]>([]);
-const thumbnailInput = ref<HTMLInputElement | null>(null);
-const galleryInput = ref<HTMLInputElement | null>(null);
+const thumbnailInput = ref<any>(null);
+const galleryInput = ref<any>(null);
 
 // Validation Rules
 const rules = {
@@ -64,10 +91,10 @@ const rules = {
     ],
     price_usd: [
         { required: true, message: 'Vui lòng nhập giá', trigger: 'blur' },
-        { 
-            type: 'number', 
-            min: 1, 
-            message: 'Giá phải lớn hơn 0', 
+        {
+            type: 'number',
+            min: 1,
+            message: 'Giá phải lớn hơn 0',
             trigger: 'blur'
         }
     ],
@@ -89,14 +116,37 @@ const rules = {
     ]
 };
 
+// Helper function to check if URL is a blob URL
+const isBlobURL = (url: string): boolean => {
+    return url.startsWith('blob:');
+};
+
+// Cleanup function to revoke all object URLs
+const cleanupObjectURLs = () => {
+    // Cleanup thumbnail preview
+    if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
+        URL.revokeObjectURL(thumbnailPreview.value);
+    }
+    
+    // Cleanup gallery previews
+    galleryPreviews.value.forEach((url: string) => {
+        if (url && isBlobURL(url)) {
+            URL.revokeObjectURL(url);
+        }
+    });
+};
+
 // Methods
 const resetForm = () => {
+    // Cleanup object URLs before resetting
+    cleanupObjectURLs();
+    
     Object.assign(formData, {
         title: '',
         type: '',
         price_usd: 0,
         duration: '',
-        duration_days: 0,
+        duration_range: 0,
         depart_from: '',
         routes: '',
         description: '',
@@ -114,9 +164,11 @@ const resetForm = () => {
 };
 
 // Watchers
-watch(() => props.tourData, (newVal) => {
+watch(() => props.tourData, (newVal: Tour | null | undefined) => {
     if (newVal) {
-        Object.assign(formData, newVal);
+        // Exclude id and created_at from formData
+        const { id, created_at, ...tourDataWithoutMeta } = newVal;
+        Object.assign(formData, tourDataWithoutMeta);
         thumbnailPreview.value = newVal.thumbnail;
         galleryPreviews.value = [...newVal.images];
     } else {
@@ -132,12 +184,23 @@ const handleThumbnailChange = (event: Event) => {
             ElMessage.error('Ảnh không được quá 5MB');
             return;
         }
+        
+        // Cleanup previous blob URL if exists
+        if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
+            URL.revokeObjectURL(thumbnailPreview.value);
+        }
+        
         thumbnailFile.value = file;
         thumbnailPreview.value = URL.createObjectURL(file);
     }
 };
 
 const removeThumbnail = () => {
+    // Cleanup blob URL before removing
+    if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
+        URL.revokeObjectURL(thumbnailPreview.value);
+    }
+    
     thumbnailFile.value = null;
     thumbnailPreview.value = '';
     if (thumbnailInput.value) thumbnailInput.value.value = '';
@@ -161,39 +224,21 @@ const handleGalleryChange = (event: Event) => {
 };
 
 const removeGalleryImage = (index: number) => {
-    // Check if it's a new file or existing URL
-    // Logic: If index < existing images length, it's existing. But wait, previews mix them?
-    // Actually, let's simplify: galleryPreviews contains ALL images (existing + new).
-    // But galleryFiles only contains NEW files.
-    // This mixing logic is tricky.
-    // Better approach: Keep previews separate or track them carefully.
-
-    // For simplicity in this version:
-    // If we remove an image, we need to know if it's from formData.images (string) or galleryFiles (File).
-
-    // Let's assume galleryPreviews is purely for display and we rebuild it.
-    // But wait, we need to remove from the source arrays.
-
-    // Let's change strategy:
-    // galleryPreviews will hold objects: { type: 'url' | 'file', url: string, file?: File }
-    // But that requires changing state structure.
-
-    // Simple fix:
-    // We have formData.images (URLs) and galleryFiles (Files).
-    // We can display them in two separate lists or one combined list.
-    // In the template, I used one loop over galleryPreviews.
-
-    // Let's just remove from the specific array.
-    // If index < formData.images.length, remove from formData.images.
-    // Else remove from galleryFiles (index - formData.images.length).
-
-    // But wait, galleryPreviews was constructed by pushing new files.
-    // So: existing URLs first, then new files.
-
+    // Get the URL to remove for cleanup
+    const urlToRemove = galleryPreviews.value[index];
+    
+    // Cleanup blob URL if it's a blob URL
+    if (urlToRemove && isBlobURL(urlToRemove)) {
+        URL.revokeObjectURL(urlToRemove);
+    }
+    
+    // Remove from appropriate array
     if (index < formData.images.length) {
+        // Removing existing image (URL from server)
         formData.images.splice(index, 1);
         galleryPreviews.value.splice(index, 1);
     } else {
+        // Removing new file (blob URL)
         const fileIndex = index - formData.images.length;
         galleryFiles.value.splice(fileIndex, 1);
         galleryPreviews.value.splice(index, 1);
@@ -228,40 +273,10 @@ const prevStep = () => {
 };
 
 // Create Tour Mutation
-const { mutate: createTourMutation, isPending: isCreating } = useMutation({
-    mutationFn: async ({ formData, onProgress }: { formData: FormData; onProgress?: (event: any) => void }) => {
-        return createTour(formData, onProgress);
-    },
-    onSuccess: () => {
-        ElMessage.success('Tạo tour thành công!');
-        queryClient.invalidateQueries({ queryKey: ['tours'] });
-        emit('success');
-        dialogVisible.value = false;
-        resetForm();
-    },
-    onError: (error: any) => {
-        console.error('Error creating tour:', error);
-        ElMessage.error(error.message || 'Có lỗi xảy ra khi tạo tour');
-    }
-});
+const { mutate: createTourMutation, isPending: isCreating } = useCreateTour();
 
 // Update Tour Mutation
-const { mutate: updateTourMutation, isPending: isUpdating } = useMutation({
-    mutationFn: async ({ id, formData, onProgress }: { id: string; formData: FormData; onProgress?: (event: any) => void }) => {
-        return updateTour(id, formData, onProgress);
-    },
-    onSuccess: () => {
-        ElMessage.success('Cập nhật tour thành công!');
-        queryClient.invalidateQueries({ queryKey: ['tours'] });
-        emit('success');
-        dialogVisible.value = false;
-        resetForm();
-    },
-    onError: (error: any) => {
-        console.error('Error updating tour:', error);
-        ElMessage.error(error.message || 'Có lỗi xảy ra khi cập nhật tour');
-    }
-});
+const { mutate: updateTourMutation, isPending: isUpdating } = useUpdateTour();
 
 const isSubmitting = computed(() => isCreating.value || isUpdating.value);
 
@@ -281,9 +296,11 @@ const handleSubmit = async () => {
 
     const submitData = new FormData();
 
-    // Append basic fields
+    // Append basic fields (exclude id and created_at)
     Object.keys(formData).forEach(key => {
-        if (key === 'images' || key === 'thumbnail') return; // Handle separately
+        // Skip these fields
+        if (key === 'images' || key === 'thumbnail' || key === 'id' || key === 'created_at') return;
+
         const value = formData[key as keyof CreateTourDto];
         if (value !== undefined && value !== null) {
             submitData.append(key, value.toString());
@@ -299,26 +316,55 @@ const handleSubmit = async () => {
 
     // Append images
     // Existing images (URLs)
-    formData.images.forEach(url => {
+    formData.images.forEach((url: string) => {
         submitData.append('images', url);
     });
     // New images (Files)
-    galleryFiles.value.forEach(file => {
+    galleryFiles.value.forEach((file: File) => {
         submitData.append('images', file);
     });
 
-    const onProgress = (event: any) => {
+    const onProgress = (event: { loaded: number; total?: number }) => {
         if (event.total) {
             uploadProgress.value = Math.round((event.loaded * 100) / event.total);
         }
     };
 
     if (isEditMode.value && props.tourData?.id) {
-        updateTourMutation({ id: props.tourData.id, formData: submitData, onProgress });
+        updateTourMutation({ id: props.tourData.id, data: submitData }, {
+            onSuccess: () => {
+                ElMessage.success('Cập nhật tour thành công!');
+                emit('success');
+                dialogVisible.value = false;
+                resetForm();
+            },
+            onError: (error: any) => {
+                ElMessage.error(error.message || 'Có lỗi xảy ra khi cập nhật tour');
+            }
+        });
     } else {
-        createTourMutation({ formData: submitData, onProgress });
+        createTourMutation(submitData, {
+            onSuccess: () => {
+                ElMessage.success('Tạo tour thành công!');
+                emit('success');
+                dialogVisible.value = false;
+                resetForm();
+            },
+            onError: (error: any) => {
+                ElMessage.error(error.message || 'Có lỗi xảy ra khi tạo tour');
+            }
+        });
     }
 };
+
+function handleUpdateDuration(value: string) {
+    formData.duration_range = mapDurationRange[value] || 0;
+}
+
+// Cleanup on component unmount
+onBeforeUnmount(() => {
+    cleanupObjectURLs();
+});
 </script>
 
 
@@ -364,8 +410,14 @@ const handleSubmit = async () => {
                             </el-form-item>
 
                             <el-form-item label="Thời gian" prop="duration">
-                                <el-input v-model="formData.duration" placeholder="Ví dụ: 3 days 2 nights"
-                                    size="large" />
+                                <!-- <el-input v-model="formData.duration" placeholder="Ví dụ: 3 days 2 nights"
+                                    size="large" /> -->
+
+                                <el-select v-model="formData.duration" placeholder="Chọn thời gian" size="large"
+                                    class="w-full" @change="handleUpdateDuration">
+                                    <el-option v-for="option in durationOptions" :key="option.value"
+                                        :label="option.label" :value="option.value" />
+                                </el-select>
                             </el-form-item>
 
                             <el-form-item label="Điểm khởi hành" prop="depart_from">
@@ -461,10 +513,26 @@ const handleSubmit = async () => {
                                 <div><span class="font-semibold">Thời gian:</span> {{ formData.duration }}</div>
                                 <div><span class="font-semibold">Loại:</span> {{ formData.type }}</div>
                                 <div><span class="font-semibold">Khởi hành:</span> {{ formData.depart_from }}</div>
-                                <div><span class="font-semibold">Ảnh thumbnail:</span> {{ thumbnailFile ?
-                                    thumbnailFile.name : (formData.thumbnail ? 'Đã có' : 'Chưa chọn') }}</div>
-                                <div><span class="font-semibold">Ảnh gallery:</span> {{ galleryFiles.length }} ảnh mới,
-                                    {{ formData.images.length }} ảnh cũ</div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold block mb-2">Ảnh thumbnail:</span>
+                                    <div v-if="thumbnailPreview"
+                                        class="w-40 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                                        <img :src="thumbnailPreview" class="w-full h-full object-cover" />
+                                    </div>
+                                    <span v-else class="text-gray-400 italic">Chưa chọn ảnh</span>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold block mb-2">Ảnh gallery ({{ galleryPreviews.length }}
+                                        ảnh):</span>
+                                    <div class="flex flex-wrap gap-3">
+                                        <div v-for="(url, idx) in galleryPreviews" :key="idx"
+                                            class="w-24 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                                            <img :src="url" class="w-full h-full object-cover" />
+                                        </div>
+                                        <span v-if="galleryPreviews.length === 0" class="text-gray-400 italic">Chưa có
+                                            ảnh nào</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

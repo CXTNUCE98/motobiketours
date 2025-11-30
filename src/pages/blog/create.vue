@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { uploadImage, createBlog, validateBlogForm, countWords } from '~/services/blogApi'
 import { useAuth } from '~/composables/useAuth'
+import { logger } from '~/utils/logger'
 
 const router = useRouter()
 const { user } = useAuth()
@@ -55,6 +56,12 @@ const post = reactive({
 const isPreview = ref(false)
 const editorLoaded = ref(false)
 
+// Sanitized content for safe rendering
+const sanitizedContent = computed(() => {
+    const content = post?.content || '<p class=\'text-gray-400 italic\'>No content yet...</p>';
+    return sanitizeHtmlForPreview(content);
+})
+
 // Lazy load editor when component mounts
 onMounted(() => {
     editorLoaded.value = true
@@ -101,9 +108,10 @@ const handleQuillImageUpload = () => {
             }
 
             ElMessage.success('Image uploaded successfully!')
-        } catch (error: any) {
-            console.error('Image upload failed:', error)
-            ElMessage.error(error.message || 'Failed to upload image')
+        } catch (error: unknown) {
+            logger.error('Image upload failed:', error)
+            const message = error instanceof Error ? error.message : 'Failed to upload image';
+            ElMessage.error(message)
         }
     }
 }
@@ -153,9 +161,10 @@ const processFile = async (file: File) => {
         post.thumbnail = file
 
         ElMessage.success('Thumbnail uploaded successfully!')
-    } catch (error: any) {
-        console.error('Thumbnail upload failed:', error)
-        ElMessage.error(error.message || 'Failed to upload thumbnail')
+    } catch (error: unknown) {
+        logger.error('Thumbnail upload failed:', error)
+        const message = error instanceof Error ? error.message : 'Failed to upload thumbnail';
+        ElMessage.error(message)
         thumbnailImageId.value = ''
         thumbnailPreview.value = null
         post.thumbnail = null
@@ -243,9 +252,10 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
             router.push(`/blog/${result.id}`)
         }, 1000)
 
-    } catch (error: any) {
-        console.error('Failed to create blog:', error)
-        ElMessage.error(error.message || 'Failed to create blog post')
+    } catch (error: unknown) {
+        logger.error('Failed to create blog:', error)
+        const message = error instanceof Error ? error.message : 'Failed to create blog post';
+        ElMessage.error(message)
     } finally {
         savingDraft.value = false
         publishing.value = false
@@ -422,7 +432,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                     </p>
 
                     <div class="prose dark:prose-invert max-w-none"
-                        v-html="post?.content || '<p class=\'text-gray-400 italic\'>No content yet...</p>'"></div>
+                        v-html="sanitizedContent"></div>
                 </div>
             </div>
         </div>

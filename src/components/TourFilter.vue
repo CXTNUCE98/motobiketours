@@ -2,7 +2,7 @@
 import { ref, computed } from 'vue';
 
 type FilterOptions = {
-    duration: string[];
+    duration: string;
     priceRange: { min: number; max: number };
     tourTypes: string[];
     departFrom: string;
@@ -18,44 +18,44 @@ const props = defineProps<{
 }>();
 
 // Filter state
-const selectedDuration = ref<string[]>([]);
+const selectedDuration = ref<string>('');
 const priceMin = ref(0);
 const priceMax = ref(2000);
 const selectedTypes = ref<string[]>([]);
-const selectedDepartFrom = ref('');
+const selectedDepartFrom = ref('all');
 
 // Options
 const durationOptions = [
     { value: '1-3', label: '1-3 ngày' },
     { value: '4-7', label: '4-7 ngày' },
-    { value: '8+', label: '8+ ngày' }
+    { value: '8+', label: '8+ ngày' },
 ];
 
 const tourTypeOptions = [
-    { value: 'Adventure', label: 'Phiêu lưu' },
-    { value: 'Culture', label: 'Văn hóa' },
-    { value: 'Nature', label: 'Thiên nhiên' },
-    { value: 'Food', label: 'Ẩm thực' }
+    { value: 'Adventure', label: 'Adventure' },
+    { value: 'Culture', label: 'Culture' },
+    { value: 'Nature', label: 'Nature' },
+    { value: 'Food', label: 'Food' },
 ];
 
 const departFromOptions = [
-    { value: '', label: 'Tất cả' },
-    { value: 'sai-gon', label: 'Sài Gòn' },
-    { value: 'ha-noi', label: 'Hà Nội' },
-    { value: 'da-nang', label: 'Đà Nẵng' },
-    { value: 'hue', label: 'Huế' },
-    { value: 'hoi-an', label: 'Hội An' },
-    { value: 'da-lat', label: 'Đà Lạt' },
-    { value: 'nha-trang', label: 'Nha Trang' },
-    { value: 'mui-ne', label: 'Mũi Né' },
-    { value: 'ha-giang', label: 'Hà Giang' },
-    { value: 'sapa', label: 'Sapa' },
-    { value: 'phu-quoc', label: 'Phú Quốc' }
+    { value: 'all', label: 'Tất cả' },
+    { value: 'Sài Gòn', label: 'Sài Gòn' },
+    { value: 'Hà Nội', label: 'Hà Nội' },
+    { value: 'Đà Nẵng', label: 'Đà Nẵng' },
+    { value: 'Huế', label: 'Huế' },
+    { value: 'Hội An', label: 'Hội An' },
+    { value: 'Đà Lạt', label: 'Đà Lạt' },
+    { value: 'Nha Trang', label: 'Nha Trang' },
+    { value: 'Mũi Né', label: 'Mũi Né' },
+    { value: 'Hà Giang', label: 'Hà Giang' },
+    { value: 'Sapa', label: 'Sapa' },
+    { value: 'Phú Quốc', label: 'Phú Quốc' },
 ];
 
 const activeFilterCount = computed(() => {
     let count = 0;
-    if (selectedDuration.value.length > 0) count++;
+    if (selectedDuration.value) count++;
     if (priceMin.value > 0 || priceMax.value < 2000) count++;
     if (selectedTypes.value.length > 0) count++;
     if (selectedDepartFrom.value) count++;
@@ -63,21 +63,14 @@ const activeFilterCount = computed(() => {
 });
 
 const toggleDuration = (value: string) => {
-    const index = selectedDuration.value.indexOf(value);
-    if (index > -1) {
-        selectedDuration.value.splice(index, 1);
+    // Toggle: nếu đã chọn thì bỏ chọn, nếu chưa thì chọn
+    if (selectedDuration.value === value) {
+        selectedDuration.value = '';
     } else {
-        selectedDuration.value.push(value);
+        selectedDuration.value = value;
     }
-};
-
-const toggleType = (value: string) => {
-    const index = selectedTypes.value.indexOf(value);
-    if (index > -1) {
-        selectedTypes.value.splice(index, 1);
-    } else {
-        selectedTypes.value.push(value);
-    }
+    // Tự động apply filters khi duration thay đổi
+    applyFilters();
 };
 
 const applyFilters = () => {
@@ -85,20 +78,18 @@ const applyFilters = () => {
         duration: selectedDuration.value,
         priceRange: { min: priceMin.value, max: priceMax.value },
         tourTypes: selectedTypes.value,
-        departFrom: selectedDepartFrom.value
+        departFrom: selectedDepartFrom.value !== 'all' ? selectedDepartFrom.value : '',
     });
 };
 
 const clearFilters = () => {
-    selectedDuration.value = [];
+    selectedDuration.value = '';
     priceMin.value = 0;
     priceMax.value = 2000;
     selectedTypes.value = [];
     selectedDepartFrom.value = '';
     emit('clear');
 };
-
-
 </script>
 
 <template>
@@ -124,11 +115,12 @@ const clearFilters = () => {
             <div class="space-y-2">
                 <button v-for="option in durationOptions" :key="option.value" @click="toggleDuration(option.value)"
                     class="w-full px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-300 flex items-center justify-between"
-                    :class="selectedDuration.includes(option.value)
+                    :class="selectedDuration === option.value
                         ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md'
-                        : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'">
+                        : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'
+                        ">
                     <span>{{ option.label }}</span>
-                    <svg v-if="selectedDuration.includes(option.value)" class="w-5 h-5" fill="currentColor"
+                    <svg v-if="selectedDuration === option.value" class="w-5 h-5" fill="currentColor"
                         viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -173,12 +165,11 @@ const clearFilters = () => {
         <!-- Depart From Filter -->
         <div class="mb-6">
             <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Khởi hành từ</label>
-            <select v-model="selectedDepartFrom"
-                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 text-sm font-medium cursor-pointer">
-                <option v-for="option in departFromOptions" :key="option.value" :value="option.value">
-                    {{ option.label }}
-                </option>
-            </select>
+            <el-select v-model="selectedDepartFrom" placeholder="Select">
+                <el-option v-for="item in departFromOptions" :key="item.value" :label="item.label"
+                    :value="item.value" />
+            </el-select>
+
         </div>
 
         <!-- Action Buttons -->
@@ -203,7 +194,7 @@ const clearFilters = () => {
 
 <style scoped>
 /* Custom range slider styling */
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
     appearance: none;
     width: 20px;
     height: 20px;
@@ -214,12 +205,12 @@ input[type="range"]::-webkit-slider-thumb {
     transition: all 0.3s ease;
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
+input[type='range']::-webkit-slider-thumb:hover {
     transform: scale(1.2);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
 }
 
-input[type="range"]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -230,7 +221,7 @@ input[type="range"]::-moz-range-thumb {
     border: none;
 }
 
-input[type="range"]::-moz-range-thumb:hover {
+input[type='range']::-moz-range-thumb:hover {
     transform: scale(1.2);
     box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
 }

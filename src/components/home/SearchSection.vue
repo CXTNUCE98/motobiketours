@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { locations, brands } from '@/data/homeData';
+import { logger } from '~/utils/logger';
 
 const searchForm = ref({
     keyword: '',
@@ -9,7 +10,8 @@ const searchForm = ref({
 });
 
 const handleSearch = () => {
-    console.log('Search:', searchForm.value);
+    logger.log('Search:', searchForm.value);
+    // TODO: Implement search functionality
 };
 </script>
 

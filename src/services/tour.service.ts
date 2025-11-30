@@ -1,6 +1,6 @@
 import { Tour, ToursResponse, TourFilter } from '@/types/api';
 
-const API_BASE_URL = 'http://localhost:3001';
+import { API_BASE_URL } from './api';
 
 export const fetchTours = async (filter: TourFilter): Promise<ToursResponse> => {
   const params = new URLSearchParams();

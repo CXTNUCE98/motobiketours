@@ -1,5 +1,5 @@
 // Blog API Service
-const API_BASE_URL = 'http://localhost:3001'
+import { API_BASE_URL } from './api'
 
 // API Types
 export interface UploadImageResponse {

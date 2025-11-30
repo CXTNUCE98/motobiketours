@@ -1,18 +1,27 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
-import { fetchTours } from '@/services/tourApi';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import { fetchTours, type Tour } from '@/services/tourApi';
 import TourFilter from '../../components/TourFilter.vue';
 import CreateTourDialog from '@/components/CreateTourDialog.vue';
 import { Plus } from '@element-plus/icons-vue';
+import { useDeleteTour } from '~/composables/useTourQuery';
+import { useAuth } from '~/composables/useAuth';
+import { logger } from '~/utils/logger';
 
 const searchQuery = ref('');
 const showFilters = ref(false);
 const viewMode = ref('grid'); // 'grid' or 'list'
 const sortBy = ref('default'); // 'default', 'price-low', 'price-high', 'duration'
 const showCreateDialog = ref(false);
+const selectedTour = ref<Tour | null>(null);
 
 const queryClient = useQueryClient();
+
+// Auth
+const { user } = useAuth();
+const isAdmin = computed(() => user.value?.isAdmin );
 
 // Pagination state
 const currentPage = ref(1);
@@ -20,7 +29,7 @@ const itemsPerPage = 6;
 
 // Filter state
 const activeFilters = ref({
-    duration: [],
+    duration: '',
     priceRange: { min: 0, max: 2000 },
     tourTypes: [],
     departFrom: ''
@@ -32,21 +41,17 @@ const apiFilters = computed(() => {
         p: currentPage.value,
         r: itemsPerPage,
         q: searchQuery.value,
+        depart_from: activeFilters.value.departFrom,
         price_min: activeFilters.value.priceRange.min,
         price_max: activeFilters.value.priceRange.max,
     };
 
-    if (activeFilters.value.duration.length > 0) {
-        filters.duration_range = activeFilters.value.duration.join(',');
+    if (activeFilters.value.duration) {
+        filters.duration_range = activeFilters.value.duration;
     }
 
     if (activeFilters.value.tourTypes.length > 0) {
         filters.type = activeFilters.value.tourTypes.join(',');
-    }
-
-    if (activeFilters.value.departFrom) {
-        const depart = activeFilters.value.departFrom.replace(/-/g, ' ');
-        filters.q = filters.q ? `${filters.q} ${depart}` : depart;
     }
 
     return filters;
@@ -62,11 +67,11 @@ const { data, isLoading, isError, error } = useQuery({
 const tours = computed(() => data.value?.data || []);
 const totalPages = computed(() => data.value?.totalPages || 1);
 
-const getDurationDays = (durationStr) => {
+const getDurationDays = (durationStr: string): number => {
     if (!durationStr) return 0;
     if (durationStr.includes('1/2')) return 0.5;
     const match = durationStr.match(/(\d+)\s*day/);
-    return match ? parseInt(match[1]) : 0;
+    return match ? parseInt(match[1], 10) : 0;
 };
 
 const processedTours = computed(() => {
@@ -110,7 +115,7 @@ const handleApplyFilters = (filters) => {
 
 const handleClearFilters = () => {
     activeFilters.value = {
-        duration: [],
+        duration: '',
         priceRange: { min: 0, max: 2000 },
         tourTypes: [],
         departFrom: ''
@@ -120,11 +125,58 @@ const handleClearFilters = () => {
 };
 
 const handleCreateTour = () => {
+    selectedTour.value = null;
     showCreateDialog.value = true;
+};
+
+const editTour = (tourId: string) => {
+    const tour = tours.value.find(t => t.id === tourId);
+    if (tour) {
+        selectedTour.value = tour;
+        showCreateDialog.value = true;
+    }
 };
 
 const handleCreateSuccess = () => {
     queryClient.invalidateQueries({ queryKey: ['tours'] });
+    selectedTour.value = null;
+};
+
+
+const { mutate: deleteTourMutation, isPending: isDeleting } = useDeleteTour();
+
+const deleteTour = (tourId: string) => {
+    const tour = tours.value.find(t => t.id === tourId);
+    const tourTitle = tour?.title || 'tour này';
+
+    ElMessageBox.confirm(
+        `Bạn có chắc chắn muốn xóa "${tourTitle}"? Hành động này không thể hoàn tác.`,
+        'Xác nhận xóa tour',
+        {
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+            type: 'warning',
+            confirmButtonClass: 'el-button--danger'
+        }
+    ).then(() => {
+        deleteTourMutation(tourId, {
+            onSuccess: () => {
+                ElMessage.success('Xóa tour thành công!');
+                queryClient.invalidateQueries({ queryKey: ['tours'] });
+            },
+            onError: (error: unknown) => {
+                logger.error('Error deleting tour:', error);
+                let errorMessage = 'Có lỗi xảy ra khi xóa tour';
+                if (error && typeof error === 'object') {
+                    const apiError = error as { message?: string; response?: { data?: { message?: string } } };
+                    errorMessage = apiError?.message || apiError?.response?.data?.message || errorMessage;
+                }
+                ElMessage.error(errorMessage);
+            }
+        });
+    }).catch(() => {
+        // User cancelled, do nothing
+    });
 };
 </script>
 
@@ -253,7 +305,7 @@ const handleCreateSuccess = () => {
                                     </svg>
                                 </button>
                             </div>
-                            <el-button type="primary" @click="handleCreateTour"
+                            <el-button v-if="isAdmin" type="primary" @click="handleCreateTour"
                                 class="!rounded-lg !px-6 !py-2 !font-bold !bg-gradient-to-r !from-blue-600 !to-cyan-600 !border-none hover:!scale-105 transition-transform duration-300 shadow-lg">
                                 <el-icon class="mr-2">
                                     <Plus />
@@ -290,6 +342,11 @@ const handleCreateSuccess = () => {
                                                         clip-rule="evenodd" />
                                                 </svg>
                                                 {{ tour.duration }}
+                                            </div>
+
+                                            <div v-if="isAdmin" @click.prevent="deleteTour(tour.id)"
+                                                class="absolute top-4 right-4 px-3 py-1.5 rounded-full text-xs font-bold bg-red-500 text-white shadow-lg flex items-center gap-2 cursor-pointer">
+                                                x
                                             </div>
                                         </div>
 
@@ -330,6 +387,10 @@ const handleCreateSuccess = () => {
                                                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
                                                     Xem chi tiết
                                                 </button>
+                                                <button v-if="isAdmin" @click.prevent="editTour(tour.id)"
+                                                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
+                                                    Sửa
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -353,6 +414,11 @@ const handleCreateSuccess = () => {
                                                     </svg>
                                                     {{ tour.duration }}
                                                 </div>
+
+                                                <div v-if="isAdmin" @click.prevent="deleteTour(tour.id)"
+                                                    class="absolute top-4 right-4 px-3 py-1.5 rounded-full text-xs font-bold bg-red-500 text-white shadow-lg flex items-center gap-2 cursor-pointer">
+                                                    x
+                                                </div>
                                             </div>
 
                                             <!-- Content -->
@@ -372,7 +438,7 @@ const handleCreateSuccess = () => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>Khởi hành:</strong> {{ tour.departFrom
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -393,7 +459,7 @@ const handleCreateSuccess = () => {
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>Loại:</strong> {{
                                                                 tour.type
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -471,7 +537,7 @@ const handleCreateSuccess = () => {
         </div>
 
         <!-- Create Tour Dialog -->
-        <CreateTourDialog v-model:visible="showCreateDialog" @success="handleCreateSuccess" />
+        <CreateTourDialog v-model:visible="showCreateDialog" :tour-data="selectedTour" @success="handleCreateSuccess" />
     </div>
 </template>
 

@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/vue-query';
 import { fetchTourById, fetchTours, type Tour } from '@/services/tourApi';
 import TourGallery from '@/components/TourGallery.vue';
 import BookingCard from '@/components/BookingCard.vue';
+import { sanitizeHtml } from '~/utils/sanitize';
 
 const route = useRoute();
 const id = computed(() => String(route.params.id || ''));
@@ -31,8 +32,8 @@ const { data: cityTours, isLoading: isLoadingCityTours } = useQuery({
     retry: false
 });
 
-const isDepartFrom = computed(() => !!tourError.value && cityTours.value && cityTours.value.length > 0);
-const isNotFound = computed(() => !!tourError.value && (!cityTours.value || cityTours.value.length === 0) && !isLoadingCityTours.value);
+const isDepartFrom = computed(() => !!tourError.value && cityTours.value?.data && cityTours.value.data.length > 0);
+const isNotFound = computed(() => !!tourError.value && (!cityTours.value?.data || cityTours.value.data.length === 0) && !isLoadingCityTours.value);
 
 const activeTab = ref('overview');
 
@@ -77,8 +78,8 @@ const { data: relatedToursData } = useQuery({
 });
 
 const relatedTours = computed(() => {
-    if (!relatedToursData.value || !tour.value) return [];
-    return relatedToursData.value
+    if (!relatedToursData.value?.data || !tour.value) return [];
+    return (relatedToursData.value.data || [])
         .filter((t: Tour) => t.id !== tour.value?.id)
         .slice(0, 3);
 });
@@ -90,7 +91,6 @@ const relatedTours = computed(() => {
         class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600"></div>
     </div>
-
     <!-- Depart From List View -->
     <div class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300 py-8"
         v-else-if="isDepartFrom">
@@ -124,7 +124,7 @@ const relatedTours = computed(() => {
 
             <!-- Tours List -->
             <div class="space-y-6">
-                <div v-for="item in cityTours" :key="item.id"
+                <div v-for="item in cityTours?.data" :key="item.id"
                     class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-6">
                         <div class="md:col-span-4">
@@ -328,9 +328,9 @@ const relatedTours = computed(() => {
 
                         <!-- Tab Content -->
                         <div class="prose dark:prose-invert max-w-none">
-                            <div v-if="activeTab === 'overview'" v-html="overviewHtml"
+                            <div v-if="activeTab === 'overview'" v-html="sanitizeHtml(overviewHtml)"
                                 class="leading-relaxed text-gray-700 dark:text-gray-300"></div>
-                            <div v-else v-html="contactHtml" class="leading-relaxed text-gray-700 dark:text-gray-300">
+                            <div v-else v-html="sanitizeHtml(contactHtml)" class="leading-relaxed text-gray-700 dark:text-gray-300">
                             </div>
                         </div>
                     </div>
