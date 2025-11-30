@@ -49,7 +49,7 @@ onMounted(() => {
         <HomeHeroSection />
         <HomeSearchSection />
         <HomePopularTours />
-        <HomeDaNangTours />
+        <!-- <HomeDaNangTours /> -->
         <HomeHotTours />
         <HomeTestimonials />
         <HomeNewsletter />

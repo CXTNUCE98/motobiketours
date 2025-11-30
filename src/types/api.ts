@@ -13,7 +13,6 @@ export interface User {
 export interface Tour {
   id: string;
   title: string;
-  slug: string;
   thumbnail: string;
   images: string[];
   description: string;

@@ -5,7 +5,6 @@ import { apiClient, getAuthHeaders, API_BASE_URL } from './api';
 // ============================================================================
 // TYPES & INTERFACES
 // ============================================================================
-
 export interface CreateTourDto {
     title: string;
     type: string;
@@ -100,7 +99,7 @@ export async function fetchTourById(id: string): Promise<Tour> {
  * Supports JSON or FormData (for image uploads)
  */
 export async function createTour(
-    data: CreateTourDto | FormData, 
+    data: CreateTourDto | FormData,
     onUploadProgress?: (progressEvent: { loaded: number; total?: number }) => void
 ): Promise<Tour> {
     const isFormData = data instanceof FormData;
@@ -137,8 +136,8 @@ export async function createTour(
  * Update an existing tour (PATCH /tours/:id)
  */
 export async function updateTour(
-    id: string, 
-    data: UpdateTourDto | FormData, 
+    id: string,
+    data: UpdateTourDto | FormData,
     onUploadProgress?: (progressEvent: { loaded: number; total?: number }) => void
 ): Promise<Tour> {
     const headers: Record<string, string> = { ...getAuthHeaders() };

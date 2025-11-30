@@ -127,7 +127,7 @@ const cleanupObjectURLs = () => {
     if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
         URL.revokeObjectURL(thumbnailPreview.value);
     }
-    
+
     // Cleanup gallery previews
     galleryPreviews.value.forEach((url: string) => {
         if (url && isBlobURL(url)) {
@@ -136,11 +136,11 @@ const cleanupObjectURLs = () => {
     });
 };
 
-// Methods
+// Reset Form
 const resetForm = () => {
-    // Cleanup object URLs before resetting
+    // Cleanup blob URLs
     cleanupObjectURLs();
-    
+
     Object.assign(formData, {
         title: '',
         type: '',
@@ -160,13 +160,16 @@ const resetForm = () => {
     galleryFiles.value = [];
     galleryPreviews.value = [];
     currentStep.value = 0;
-    uploadProgress.value = 0;
+    if (thumbnailInput.value) thumbnailInput.value.value = '';
+    if (galleryInput.value) galleryInput.value.value = '';
 };
 
-// Watchers
-watch(() => props.tourData, (newVal: Tour | null | undefined) => {
-    if (newVal) {
-        // Exclude id and created_at from formData
+// Watch for edit mode
+watch(() => props.tourData, (newVal) => {
+    if (isEditMode.value && newVal) {
+        // Cleanup blob URLs before setting new data
+        cleanupObjectURLs();
+
         const { id, created_at, ...tourDataWithoutMeta } = newVal;
         Object.assign(formData, tourDataWithoutMeta);
         thumbnailPreview.value = newVal.thumbnail;
@@ -184,12 +187,12 @@ const handleThumbnailChange = (event: Event) => {
             ElMessage.error('Ảnh không được quá 5MB');
             return;
         }
-        
+
         // Cleanup previous blob URL if exists
         if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
             URL.revokeObjectURL(thumbnailPreview.value);
         }
-        
+
         thumbnailFile.value = file;
         thumbnailPreview.value = URL.createObjectURL(file);
     }
@@ -200,7 +203,7 @@ const removeThumbnail = () => {
     if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
         URL.revokeObjectURL(thumbnailPreview.value);
     }
-    
+
     thumbnailFile.value = null;
     thumbnailPreview.value = '';
     if (thumbnailInput.value) thumbnailInput.value.value = '';
@@ -212,7 +215,7 @@ const handleGalleryChange = (event: Event) => {
         const newFiles = Array.from(input.files);
         const validFiles = newFiles.filter(file => file.size <= 5 * 1024 * 1024);
 
-        if (validFiles.length < newFiles.length) {
+        if (validFiles?.length < newFiles?.length) {
             ElMessage.warning('Một số ảnh bị bỏ qua do lớn hơn 5MB');
         }
 
@@ -226,23 +229,49 @@ const handleGalleryChange = (event: Event) => {
 const removeGalleryImage = (index: number) => {
     // Get the URL to remove for cleanup
     const urlToRemove = galleryPreviews.value[index];
+    if (!urlToRemove) return;
+    
+    // Check if it's a blob URL (new file) or server URL (existing image)
+    const isNewFile = isBlobURL(urlToRemove);
     
     // Cleanup blob URL if it's a blob URL
-    if (urlToRemove && isBlobURL(urlToRemove)) {
+    if (isNewFile) {
         URL.revokeObjectURL(urlToRemove);
     }
-    
-    // Remove from appropriate array
-    if (index < formData.images.length) {
-        // Removing existing image (URL from server)
-        formData.images.splice(index, 1);
-        galleryPreviews.value.splice(index, 1);
+
+    // Determine which array to remove from based on whether it's a new file or existing image
+    if (isNewFile) {
+        // Removing new file (blob URL) - find the corresponding file index
+        // Count how many blob URLs (new files) are before this index
+        let blobUrlsBeforeIndex = 0;
+        for (let i = 0; i < index; i++) {
+            if (isBlobURL(galleryPreviews.value[i])) {
+                blobUrlsBeforeIndex++;
+            }
+        }
+        // The fileIndex is the number of blob URLs before this index
+        const fileIndex = blobUrlsBeforeIndex;
+        if (fileIndex >= 0 && fileIndex < galleryFiles.value.length) {
+            galleryFiles.value.splice(fileIndex, 1);
+        }
     } else {
-        // Removing new file (blob URL)
-        const fileIndex = index - formData.images.length;
-        galleryFiles.value.splice(fileIndex, 1);
-        galleryPreviews.value.splice(index, 1);
+        // Removing existing image (URL from server) - find and remove from formData.images by URL
+        if (formData.images && Array.isArray(formData.images)) {            
+            // Find the index of the URL to remove
+            const imageIndex = formData.images.findIndex((url: string) => url === urlToRemove);
+            console.log('Found imageIndex:', imageIndex);
+            
+            if (imageIndex !== -1) {
+                // Create a new array without the removed item to ensure reactivity
+                formData.images = formData.images.filter((url: string, idx: number) => idx !== imageIndex);
+            } else {
+                console.warn('URL not found in formData.images');
+            }
+        }
     }
+    
+    // Always remove from galleryPreviews (it contains both types)
+    galleryPreviews.value.splice(index, 1);
 };
 
 const nextStep = async () => {
@@ -294,6 +323,51 @@ const handleClose = () => {
 const handleSubmit = async () => {
     uploadProgress.value = 0;
 
+    // Check if we have any files to upload
+    const hasFiles = !!thumbnailFile.value || galleryFiles.value.length > 0;
+
+    if (!hasFiles) {
+        // Use JSON for update if no files are involved
+        // This ensures that empty arrays (e.g. cleared images) are sent correctly
+        const submitData = {
+            ...formData,
+            // Explicitly include images array (even if empty)
+            images: formData.images
+        };
+        console.log('formData: ', formData);
+        // Remove id and created_at if they exist in formData
+        delete (submitData as any).id;
+        delete (submitData as any).created_at;
+
+        if (isEditMode.value && props.tourData?.id) {
+            updateTourMutation({ id: props.tourData.id, data: submitData }, {
+                onSuccess: () => {
+                    ElMessage.success('Cập nhật tour thành công!');
+                    emit('success');
+                    dialogVisible.value = false;
+                    resetForm();
+                },
+                onError: (error: any) => {
+                    ElMessage.error(error.message || 'Có lỗi xảy ra khi cập nhật tour');
+                }
+            });
+        } else {
+            createTourMutation(submitData, {
+                onSuccess: () => {
+                    ElMessage.success('Tạo tour thành công!');
+                    emit('success');
+                    dialogVisible.value = false;
+                    resetForm();
+                },
+                onError: (error: any) => {
+                    ElMessage.error(error.message || 'Có lỗi xảy ra khi tạo tour');
+                }
+            });
+        }
+        return;
+    }
+
+    // Fallback to FormData if files exist
     const submitData = new FormData();
 
     // Append basic fields (exclude id and created_at)
@@ -522,14 +596,14 @@ onBeforeUnmount(() => {
                                     <span v-else class="text-gray-400 italic">Chưa chọn ảnh</span>
                                 </div>
                                 <div class="col-span-2">
-                                    <span class="font-semibold block mb-2">Ảnh gallery ({{ galleryPreviews.length }}
+                                    <span class="font-semibold block mb-2">Ảnh gallery ({{ galleryPreviews?.length }}
                                         ảnh):</span>
                                     <div class="flex flex-wrap gap-3">
                                         <div v-for="(url, idx) in galleryPreviews" :key="idx"
                                             class="w-24 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                                             <img :src="url" class="w-full h-full object-cover" />
                                         </div>
-                                        <span v-if="galleryPreviews.length === 0" class="text-gray-400 italic">Chưa có
+                                        <span v-if="galleryPreviews?.length === 0" class="text-gray-400 italic">Chưa có
                                             ảnh nào</span>
                                     </div>
                                 </div>

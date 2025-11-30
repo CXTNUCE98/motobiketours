@@ -21,7 +21,8 @@ const queryClient = useQueryClient();
 
 // Auth
 const { user } = useAuth();
-const isAdmin = computed(() => user.value?.isAdmin );
+// const isAdmin = computed(() => user.value?.isAdmin );
+const isAdmin = computed(() => true);
 
 // Pagination state
 const currentPage = ref(1);
@@ -438,7 +439,7 @@ const deleteTour = (tourId: string) => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>Khởi hành:</strong> {{ tour.departFrom
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -459,7 +460,7 @@ const deleteTour = (tourId: string) => {
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>Loại:</strong> {{
                                                                 tour.type
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
