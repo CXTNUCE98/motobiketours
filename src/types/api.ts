@@ -75,6 +75,7 @@ export interface RegisterDto {
   email: string;
   password: string;
   userName: string;
+  isAdmin: boolean;
   avatar: string;
 }
 
@@ -91,6 +92,7 @@ export interface UpdateUserDto {
   userName?: string;
   email?: string;
   password?: string;
+  isAdmin?: boolean;
   avatar?: string;
 }
 

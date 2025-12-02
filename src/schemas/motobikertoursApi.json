@@ -397,6 +397,16 @@
                 "type": "string"
               }
             }
+          },
+          {
+            "name": "is_featured",
+            "required": false,
+            "in": "query",
+            "description": "Filter by featured tours",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -1035,16 +1045,7 @@
     "contact": {}
   },
   "tags": [],
-  "servers": [
-    {
-      "url": "http://localhost:3001",
-      "description": "Local Development"
-    },
-    {
-      "url": "https://motobikertours-api.vercel.app",
-      "description": "Production"
-    }
-  ],
+  "servers": [],
   "components": {
     "securitySchemes": {
       "bearer": {
@@ -1179,11 +1180,6 @@
             "example": "Amazing Vietnam Tour",
             "description": "Tour title"
           },
-          "slug": {
-            "type": "string",
-            "example": "amazing-vietnam-tour",
-            "description": "URL‑friendly slug"
-          },
           "thumbnail": {
             "type": "string",
             "format": "binary",
@@ -1214,6 +1210,11 @@
             "type": "number",
             "example": 199.99,
             "description": "Price in USD"
+          },
+          "discount": {
+            "type": "number",
+            "example": 10,
+            "description": "Discount percentage"
           },
           "duration": {
             "type": "string",
@@ -1253,7 +1254,6 @@
         },
         "required": [
           "title",
-          "slug",
           "description",
           "content",
           "price_usd",
@@ -1272,11 +1272,6 @@
             "type": "string",
             "example": "Amazing Vietnam Tour",
             "description": "Tour title"
-          },
-          "slug": {
-            "type": "string",
-            "example": "amazing-vietnam-tour",
-            "description": "URL‑friendly slug"
           },
           "thumbnail": {
             "type": "string",
@@ -1308,6 +1303,11 @@
             "type": "number",
             "example": 199.99,
             "description": "Price in USD"
+          },
+          "discount": {
+            "type": "number",
+            "example": 10,
+            "description": "Discount percentage"
           },
           "duration": {
             "type": "string",

@@ -37,6 +37,7 @@ const loginForm = reactive<LoginDto>({
 const registerForm = reactive<RegisterDto>({
   email: '',
   password: '',
+  isAdmin: false,
   userName: '',
   avatar: '',
 })

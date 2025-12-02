@@ -146,7 +146,7 @@ const { mutate: uploadAvatar, mutateAsync: uploadAvatarAsync, isPending: isUploa
         const formData = new FormData()
         formData.append('file', file)
 
-        const API_BASE_URL = 'http://localhost:3001'
+        const API_BASE_URL = 'https://motobikertours-api.vercel.app'
         const response = await fetch(`${API_BASE_URL}/blog/upload-image`, {
             method: 'POST',
             headers: {

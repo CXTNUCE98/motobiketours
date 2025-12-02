@@ -230,10 +230,10 @@ const removeGalleryImage = (index: number) => {
     // Get the URL to remove for cleanup
     const urlToRemove = galleryPreviews.value[index];
     if (!urlToRemove) return;
-    
+
     // Check if it's a blob URL (new file) or server URL (existing image)
     const isNewFile = isBlobURL(urlToRemove);
-    
+
     // Cleanup blob URL if it's a blob URL
     if (isNewFile) {
         URL.revokeObjectURL(urlToRemove);
@@ -256,11 +256,11 @@ const removeGalleryImage = (index: number) => {
         }
     } else {
         // Removing existing image (URL from server) - find and remove from formData.images by URL
-        if (formData.images && Array.isArray(formData.images)) {            
+        if (formData.images && Array.isArray(formData.images)) {
             // Find the index of the URL to remove
             const imageIndex = formData.images.findIndex((url: string) => url === urlToRemove);
             console.log('Found imageIndex:', imageIndex);
-            
+
             if (imageIndex !== -1) {
                 // Create a new array without the removed item to ensure reactivity
                 formData.images = formData.images.filter((url: string, idx: number) => idx !== imageIndex);
@@ -269,7 +269,7 @@ const removeGalleryImage = (index: number) => {
             }
         }
     }
-    
+
     // Always remove from galleryPreviews (it contains both types)
     galleryPreviews.value.splice(index, 1);
 };
@@ -334,7 +334,6 @@ const handleSubmit = async () => {
             // Explicitly include images array (even if empty)
             images: formData.images
         };
-        console.log('formData: ', formData);
         // Remove id and created_at if they exist in formData
         delete (submitData as any).id;
         delete (submitData as any).created_at;

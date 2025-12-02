@@ -8,7 +8,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "openapi:motobikertours": "pnpm tsx ./s-openapi.ts http://localhost:3001/api-docs-json ./src/schemas/motobikertoursApi.json"
+    "openapi:motobikertours": "pnpm tsx ./s-openapi.ts https://motobikertours-api.vercel.app/api-docs-json ./src/schemas/motobikertoursApi.json"
   },
   "dependencies": {
     "@antfu/utils": "^0.7.7",
