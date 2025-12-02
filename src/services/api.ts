@@ -4,8 +4,6 @@ export const API_BASE_URL =
   process.env.NUXT_PUBLIC_API_BASE ||
   (process.env.NODE_ENV === 'production' ? 'https://motobikertours-api.vercel.app' : 'http://localhost:3001');
 
-console.log('API_BASE_URL: ', process.env.NUXT_PUBLIC_API_BASE);
-console.log('NODE_ENV: ', process.env.NODE_ENV);
 
 // API Client with error handling
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {

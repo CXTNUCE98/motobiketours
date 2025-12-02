@@ -443,10 +443,12 @@ onBeforeUnmount(() => {
 
 <template>
     <el-dialog v-model="dialogVisible" :title="isEditMode ? 'Chỉnh sửa Tour' : 'Tạo Tour Mới'" width="90%"
-        class="create-tour-dialog" :close-on-click-modal="false" destroy-on-close>
+        class="create-tour-dialog dark:bg-gray-800 [&_.el-dialog\_\_title]:dark:text-white"
+        :close-on-click-modal="false" destroy-on-close>
         <div class="flex h-[80vh]">
             <!-- Steps Sidebar -->
-            <div class="w-64 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-6">
+            <div
+                class="w-64 bg-gray-50 dark:bg-gray-800 border-r [&_.el-step\_\_title]:dark:text-white [&_.el-step\_\_description]:dark:text-white border-gray-200 dark:border-gray-700 p-6">
                 <el-steps direction="vertical" :active="currentStep" finish-status="success">
                     <el-step title="Thông tin cơ bản" description="Tên, giá, thời gian" />
                     <el-step title="Hình ảnh" description="Thumbnail & Gallery" />
@@ -462,14 +464,17 @@ onBeforeUnmount(() => {
                     <!-- Step 1: Basic Info -->
                     <div v-show="currentStep === 0" class="space-y-6 animate-fade-in">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <el-form-item label="Tên Tour" prop="title">
-                                <el-input v-model="formData.title" placeholder="Nhập tên tour hấp dẫn..."
-                                    size="large" />
+                            <el-form-item label="Tên Tour" prop="title"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
+                                <el-input v-model="formData.title"
+                                    class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                                    placeholder="Nhập tên tour hấp dẫn..." size="large" />
                             </el-form-item>
 
-                            <el-form-item label="Loại Tour" prop="type">
+                            <el-form-item label="Loại Tour" prop="type"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-select v-model="formData.type" placeholder="Chọn loại tour" size="large"
-                                    class="w-full">
+                                    class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
                                     <el-option label="Adventure" value="Adventure" />
                                     <el-option label="Culture" value="Culture" />
                                     <el-option label="Nature" value="Nature" />
@@ -477,35 +482,43 @@ onBeforeUnmount(() => {
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item label="Giá (USD)" prop="price_usd">
+                            <el-form-item label="Giá (USD)" prop="price_usd"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-input-number v-model="formData.price_usd" :min="0" :step="10" size="large"
-                                    class="w-full" />
+                                    class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
                             </el-form-item>
 
-                            <el-form-item label="Thời gian" prop="duration">
+                            <el-form-item label="Thời gian" prop="duration"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <!-- <el-input v-model="formData.duration" placeholder="Ví dụ: 3 days 2 nights"
                                     size="large" /> -->
 
                                 <el-select v-model="formData.duration" placeholder="Chọn thời gian" size="large"
-                                    class="w-full" @change="handleUpdateDuration">
+                                    class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white"
+                                    @change="handleUpdateDuration">
                                     <el-option v-for="option in durationOptions" :key="option.value"
                                         :label="option.label" :value="option.value" />
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item label="Điểm khởi hành" prop="depart_from">
-                                <el-input v-model="formData.depart_from" placeholder="Ví dụ: Ha Giang City"
-                                    size="large" />
+                            <el-form-item label="Điểm khởi hành" prop="depart_from"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
+                                <el-input v-model="formData.depart_from"
+                                    class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                                    placeholder="Ví dụ: Ha Giang City" size="large" />
                             </el-form-item>
 
-                            <el-form-item label="Lộ trình" prop="routes">
-                                <el-input v-model="formData.routes" placeholder="Ví dụ: Ha Giang - Dong Van - Meo Vac"
-                                    size="large" />
+                            <el-form-item label="Lộ trình" prop="routes"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
+                                <el-input v-model="formData.routes"
+                                    class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                                    placeholder="Ví dụ: Ha Giang - Dong Van - Meo Vac" size="large" />
                             </el-form-item>
                         </div>
 
-                        <el-form-item label="Tour nổi bật">
-                            <el-switch v-model="formData.is_featured" active-text="Có" inactive-text="Không" />
+                        <el-form-item label="Tour nổi bật" class="[&_.el-form-item\_\_label]:dark:text-white">
+                            <el-switch v-model="formData.is_featured" class="[&_.el-switch\_\_core]:dark:bg-gray-800"
+                                active-text="Có" inactive-text="Không" />
                         </el-form-item>
                     </div>
 
@@ -514,8 +527,8 @@ onBeforeUnmount(() => {
                         <!-- Thumbnail Upload -->
                         <div
                             class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
-                            <h3 class="text-lg font-semibold mb-4">Ảnh đại diện (Thumbnail)</h3>
-                            <div class="flex items-center gap-6">
+                            <h3 class="text-lg font-semibold mb-4 dark:text-white">Ảnh đại diện (Thumbnail)</h3>
+                            <div class="flex items-center gap-6 ">
                                 <div v-if="thumbnailPreview"
                                     class="relative w-48 h-32 rounded-lg overflow-hidden shadow-md group">
                                     <img :src="thumbnailPreview" class="w-full h-full object-cover" />
@@ -530,7 +543,8 @@ onBeforeUnmount(() => {
                                     <el-button type="primary" :icon="Upload" @click="$refs.thumbnailInput.click()">
                                         Chọn ảnh
                                     </el-button>
-                                    <p class="mt-2 text-sm text-gray-500">Định dạng: JPG, PNG. Tối đa 5MB.</p>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-white">Định dạng: JPG, PNG. Tối đa
+                                        5MB.</p>
                                 </div>
                             </div>
                         </div>
@@ -538,7 +552,7 @@ onBeforeUnmount(() => {
                         <!-- Gallery Upload -->
                         <div
                             class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
-                            <h3 class="text-lg font-semibold mb-4">Thư viện ảnh (Gallery)</h3>
+                            <h3 class="text-lg font-semibold mb-4 dark:text-white">Thư viện ảnh (Gallery)</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                                 <div v-for="(url, index) in galleryPreviews" :key="index"
                                     class="relative aspect-video rounded-lg overflow-hidden shadow-sm group">
@@ -561,7 +575,9 @@ onBeforeUnmount(() => {
                     <!-- Step 3: Content -->
                     <div v-show="currentStep === 2" class="space-y-6 animate-fade-in">
                         <el-form-item label="Mô tả ngắn" prop="description">
-                            <el-input v-model="formData.description" type="textarea" :rows="3"
+                            <el-input v-model="formData.description"
+                                class="[&_.el-textarea\_\_inner]:dark:bg-gray-800 [&_.el-textarea\_\_inner]:dark:text-white"
+                                type="textarea" :rows="3"
                                 placeholder="Mô tả ngắn gọn về tour để hiển thị trên thẻ..." />
                         </el-form-item>
 
