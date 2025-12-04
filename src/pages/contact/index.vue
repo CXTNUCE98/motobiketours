@@ -132,9 +132,9 @@ const toggleFaq = (index: number) => {
             <!-- Contact Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 <div v-for="(item, index) in [
-                    { icon: 'bx-phone-call', title: 'Call Us', text: '(+84) 0903.579094', sub: 'Mon-Sun, 8am-8pm', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', href: 'tel:+84903579094' },
-                    { icon: 'bx-envelope', title: 'Email Us', text: 'vietnamMotorbikeGroup@gmail.com', sub: 'Online Support', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20', href: 'mailto:vietnamMotorbikeGroup@gmail.com' },
-                    { icon: 'bx-map', title: 'Visit Us', text: '14 Nguyen Thi Thap St', sub: 'Danang, Vietnam', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20', href: null },
+                    { icon: 'bx-phone-call', title: 'Call Us', text: '0854.242.357 (Mr An)', sub: 'Mon-Sun, 8am-8pm', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', href: 'tel:+84903579094' },
+                    { icon: 'bx-envelope', title: 'Email Us', text: 'contact.andago@gmail.com', sub: 'Online Support', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20', href: 'mailto:vietnamMotorbikeGroup@gmail.com' },
+                    { icon: 'bx-map', title: 'Visit Us', text: '53 Phạm Ngọc Mậu', sub: 'Thanh Khê, Đà Nẵng', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20', href: null },
                     { icon: 'bxl-whatsapp', title: 'WhatsApp', text: 'Chat with us', sub: 'Instant Response', color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20', href: 'https://wa.me/84903579094' }
                 ]" :key="index"
                     class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl shadow-gray-200/50 dark:shadow-none hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer border border-transparent dark:border-gray-700"
@@ -274,7 +274,7 @@ const toggleFaq = (index: number) => {
                                 <button @click="toggleFaq(index)"
                                     class="w-full px-5 py-4 flex items-center justify-between text-left">
                                     <span class="font-medium text-gray-900 dark:text-white text-sm">{{ faq.question
-                                        }}</span>
+                                    }}</span>
                                     <i class="bx bx-chevron-down text-xl text-gray-400 transition-transform duration-300"
                                         :class="{ 'rotate-180 text-indigo-600 dark:text-indigo-400': activeFaq === index }"></i>
                                 </button>

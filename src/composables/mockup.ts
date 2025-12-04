@@ -190,9 +190,9 @@ export const news = [
     <strong><span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px">Welcome to Danang</span></strong><br>
     <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px">Youth tourism &amp; Service center</span><br>
     <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px">NGUYỄN VĂN QUANG'S TOUR</span><br>
-    <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px"><strong>Add:</strong> 14 Nguyễn Thị Thập St, Thanh Khê Pistris, Danang City</span><br>
-    <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px"><strong>Hand phone:</strong> 0903.579094</span><br>
-    <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px"><strong>Email:</strong>&nbsp;vietnammotorbikegroup@gmail.com</span><br>
+    <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px"><strong>Add:</strong> 53 Phạm Ngọc Mậu, Thanh Khê, Đà Nẵng</span><br>
+    <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px"><strong>Hand phone:</strong> 0854.242.357</span><br>
+    <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px"><strong>Email:</strong>&nbsp;contact.andago@gmail.com</span><br>
     <span style="color:rgb(51, 51, 53); font-family:times new roman,arial,verdana,sans-serif; font-size:17px">For further informations please call direct to me! Always at your service.</span></div>
     </div>
         <script type="text/javascript">

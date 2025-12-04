@@ -49,10 +49,10 @@ const contactHtml = `
   <div class="text-center">
     <p>Welcome to Danang</p>
     <p>Youth tourism & Service center</p>
-    <p>NGUYỄN VĂN QUANG'S TOUR</p>
-    <p><strong>Add:</strong> 14 Nguyễn Thị Thập St, Thanh Khê Pistris, Danang City</p>
-    <p><strong>Hand phone:</strong> 0903.579094</p>
-    <p><strong>Email:</strong> vietnammotorbikegroup@gmail.com</p>
+    <p>ANDAGO'S TOUR</p>
+    <p><strong>Add:</strong> 53 Phạm Ngọc Mậu, Thanh Khê, Đà Nẵng</p>
+    <p><strong>Hand phone:</strong> 0854.242.357 (Mr An)</p>
+    <p><strong>Email:</strong> contact.andago@gmail.com</p>
     <p>For further informations please call direct to me! Always at your service.</p>
   </div>
 `;
@@ -330,7 +330,8 @@ const relatedTours = computed(() => {
                         <div class="prose dark:prose-invert max-w-none">
                             <div v-if="activeTab === 'overview'" v-html="sanitizeHtml(overviewHtml)"
                                 class="leading-relaxed text-gray-700 dark:text-gray-300"></div>
-                            <div v-else v-html="sanitizeHtml(contactHtml)" class="leading-relaxed text-gray-700 dark:text-gray-300">
+                            <div v-else v-html="sanitizeHtml(contactHtml)"
+                                class="leading-relaxed text-gray-700 dark:text-gray-300">
                             </div>
                         </div>
                     </div>
@@ -369,7 +370,7 @@ const relatedTours = computed(() => {
                                 </h3>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour?.duration
-                                    }}</span>
+                                        }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                                         {{ relatedTour?.price_usd }} USD
