@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "home": "HOME",
+    "about": "ABOUT",
+    "tours": "TOURS",
+    "services": "SERVICES",
+    "news": "NEWS",
+    "blog": "BLOG",
+    "contact": "CONTACT"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Sign out",
+    "profile": "Profile Settings"
+  },
+  "common": {
+    "language": "Language"
+  },
+  "booking": {
+    "bookNow": "Book Now"
+  },
+  "home": {
+    "findYourPerfectTour": "Find Your Perfect Tour at ANDAGO",
+    "discoverTheWorld": "Discover The World",
+    "discoverVietnam": "Discover the beauty of Vietnam",
+    "completeTravel": "Complete travel",
+    "memorableJourney": "A memorable journey",
+    "unforgettableMemories": "Unforgettable memories",
+    "uniqueLocations": "Unique locations both domestically and internationally. The network offers diversity for customers to comfortably choose their own trip.",
+    "completeTravelDescription": "Experience the best destinations in Vietnam with a professional guide team.",
+    "unforgettableMemoriesDescription": "Create beautiful memories with family and friends on unforgettable trips."
+  }
+}
+

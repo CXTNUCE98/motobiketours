@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useTheme } from '@/composables/useTheme'
-
-
 import { useAuth } from '@/composables/useAuth'
 import LoginPopup from '@/components/LoginPopup.vue'
 
@@ -11,6 +9,8 @@ const route = useRoute()
 const router = useRouter()
 const { theme, toggleTheme } = useTheme()
 const { isAuthenticated, user, logout } = useAuth()
+const { locale, locales, t } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
 const isScrolled = ref(false)
 const showLoginPopup = ref(false)
 const handleLogout = () => {
@@ -53,16 +53,34 @@ const handleScroll = () => {
     }
 }
 
-// Menu items với tiếng Việt
-const menuItems = [
-    { name: 'TRANG CHỦ', path: '/', icon: '' },
-    { name: 'GIỚI THIỆU', path: '/about', icon: '' },
-    { name: 'TOUR DU LỊCH', path: '/tour', hasDropdown: true, icon: '' },
-    { name: 'DỊCH VỤ', path: '/service', hasDropdown: true, icon: '' },
-    { name: 'TIN TỨC', path: '/news', hasDropdown: true, icon: '' },
-    { name: 'BLOG', path: '/blog', hasDropdown: true, icon: '' },
-    { name: 'LIÊN HỆ', path: '/contact', icon: '' },
-]
+// Menu items với i18n
+const menuItems = computed(() => [
+    { name: t('nav.home'), path: '/', icon: '' },
+    { name: t('nav.about'), path: '/about', icon: '' },
+    { name: t('nav.tours'), path: '/tour', hasDropdown: true, icon: '' },
+    { name: t('nav.services'), path: '/service', hasDropdown: true, icon: '' },
+    { name: t('nav.news'), path: '/news', hasDropdown: true, icon: '' },
+    { name: t('nav.blog'), path: '/blog', hasDropdown: true, icon: '' },
+    { name: t('nav.contact'), path: '/contact', icon: '' },
+])
+
+// Language options
+const languageOptions = computed(() => 
+    locales.value.map((loc: any) => ({
+        code: loc.code,
+        name: loc.name,
+        flag: loc.code === 'vi' ? '🇻🇳' : '🇬🇧'
+    }))
+)
+
+const currentLanguage = computed(() => 
+    languageOptions.value.find((lang: any) => lang.code === locale.value) || languageOptions.value[0]
+)
+
+const switchLanguage = (langCode: string) => {
+    const path = switchLocalePath(langCode)
+    router.push(path)
+}
 
 const cartCount = ref(0)
 const showMobileMenu = ref(false)
@@ -175,12 +193,12 @@ function formLogin() {
 
                                 <NuxtLink to="/profile"
                                     class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                                    Profile Settings
+                                    {{ t('auth.profile') }}
                                 </NuxtLink>
 
                                 <button @click="handleLogout"
                                     class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                    Sign out
+                                    {{ t('auth.logout') }}
                                 </button>
                             </div>
                         </div>
@@ -200,13 +218,43 @@ function formLogin() {
                     </button> -->
 
                     <!-- Language Selector -->
-                    <button
-                        class="hidden md:flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                        </svg>
-                    </button>
+                    <div class="hidden md:block relative group">
+                        <button
+                            class="flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+                            </svg>
+                            <span class="text-sm font-medium">{{ currentLanguage.code }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div
+                            class="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
+                            <button
+                                v-for="lang in languageOptions"
+                                :key="lang.code"
+                                @click="switchLanguage(lang.code)"
+                                :class="[
+                                    'w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2',
+                                    locale === lang.code
+                                        ? 'text-sky-500 dark:text-cyan-400 bg-sky-50 dark:bg-slate-700 font-medium'
+                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400'
+                                ]">
+                                <span class="text-lg">{{ lang.flag }}</span>
+                                <span>{{ lang.name }}</span>
+                                <svg v-if="locale === lang.code" class="w-4 h-4 ml-auto" fill="currentColor"
+                                    viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
 
                     <!-- Dark | Light theme -->
                     <button @click="toggleTheme"

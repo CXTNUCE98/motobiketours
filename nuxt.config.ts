@@ -34,9 +34,17 @@ export default defineNuxtConfig({
     '@unocss/nuxt',
     '@vue-macros/nuxt',
     '@nuxtjs/sitemap',
+    '@nuxtjs/i18n',
     'nuxt-api-party',
   ],
-
+  i18n: {
+    defaultLocale: 'vi',
+    langDir: 'locales',
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' }
+    ]
+  },
   apiParty: {
     endpoints: {
       motobikertoursApi: {
@@ -65,5 +73,5 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
     },
-  },
+  },  
 });

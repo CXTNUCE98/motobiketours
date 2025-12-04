@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "home": "TRANG CHỦ",
+    "about": "GIỚI THIỆU",
+    "tours": "TOUR DU LỊCH",
+    "services": "DỊCH VỤ",
+    "news": "TIN TỨC",
+    "blog": "BLOG",
+    "contact": "LIÊN HỆ"
+  },
+  "auth": {
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "profile": "Cài đặt tài khoản"
+  },
+  "common": {
+    "language": "Ngôn ngữ"
+  },
+  "booking": {
+    "bookNow": "Đặt bây giờ"
+  },
+  "home": {
+    "findYourPerfectTour": "Tìm Chuyến Tham Quan Hoàn Hảo Của Bạn Tại ANDAGO",
+    "discoverTheWorld": "Khám Phá Thế Giới",
+    "discoverVietnam": "Khám Phá Vẻ Đẹp Việt Nam",
+    "completeTravel": "Du Lịch Trọn Vẹn",
+    "memorableJourney": "Hành Trình Đáng Nhớ",
+    "unforgettableMemories": "Kỷ Niệm Khó Quên",
+    "uniqueLocations": "Địa điểm độc đáo cả trong và ngoài nước. Mạng đến sự đa dạng để khách hàng thoải mái lựa chọn chuyến đi cho riêng mình.",
+    "completeTravelDescription": "Trải nghiệm những điểm đến tuyệt vời nhất tại Việt Nam cùng đội ngũ hướng dẫn viên chuyên nghiệp.",
+    "unforgettableMemoriesDescription": "Tạo nên những kỷ niệm đẹp cùng gia đình và bạn bè trong những chuyến đi khó quên."
+  }
+}
+

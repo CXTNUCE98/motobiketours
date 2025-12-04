@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import { slides } from '@/data/homeData';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { getSlides } from '@/data/homeData';
 
+const {t} = useI18n()
+
+const slides = computed(() => getSlides(t));
 const currentSlide = ref(0);
-const totalSlides = slides.length;
+const totalSlides = computed(() => slides.value.length);
 const isHovering = ref(false);
 let heroAutoPlayInterval: ReturnType<typeof setInterval> | null = null;
 
 const nextSlide = () => {
-    currentSlide.value = (currentSlide.value + 1) % totalSlides;
+    currentSlide.value = (currentSlide.value + 1) % totalSlides.value;
 };
 
 const goToSlide = (index: number) => {
@@ -61,7 +64,7 @@ onUnmounted(() => {
                                 </p>
                                 <NuxtLink to="/booking"
                                     class="inline-block bg-gradient-to-r from-sky-500 to-blue-600 dark:from-cyan-500 dark:to-blue-500 hover:from-sky-600 hover:to-blue-700 dark:hover:from-cyan-600 dark:hover:to-blue-600 text-white px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 rounded-lg font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5">
-                                    ĐẶT BÂY GIỜ
+                                    {{ t('booking.bookNow') }}
                                 </NuxtLink>
                             </div>
                         </transition>
@@ -110,7 +113,7 @@ onUnmounted(() => {
 
                 <!-- Carousel Indicators -->
                 <div class="flex justify-center items-center gap-2 mt-6 sm:mt-8 lg:mt-12">
-                    <button v-for="index in totalSlides" :key="index" @click="goToSlide(index - 1)" :class="[
+                    <button v-for="index in totalSlides.value" :key="index" @click="goToSlide(index - 1)" :class="[
                         'transition-all duration-300',
                         currentSlide === index - 1
                             ? 'w-8 h-2 bg-gradient-to-r from-sky-500 to-blue-600 dark:from-cyan-500 dark:to-blue-500 rounded-full'
