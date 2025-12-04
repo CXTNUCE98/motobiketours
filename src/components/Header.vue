@@ -244,7 +244,7 @@ function formLogin() {
                                         ? 'text-sky-500 dark:text-cyan-400 bg-sky-50 dark:bg-slate-700 font-medium'
                                         : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400'
                                 ]">
-                                <span class="text-lg">{{ lang.flag }}</span>
+                                <span class="text-lg">{{ lang.code }}</span>
                                 <span>{{ lang.name }}</span>
                                 <svg v-if="locale === lang.code" class="w-4 h-4 ml-auto" fill="currentColor"
                                     viewBox="0 0 20 20">
