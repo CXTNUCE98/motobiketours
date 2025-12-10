@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { getSlides } from '@/data/homeData';
 
-const {t} = useI18n()
+const { t } = useI18n()
 
 const slides = computed(() => getSlides(t));
 const currentSlide = ref(0);
@@ -85,14 +85,14 @@ onUnmounted(() => {
                                     <!-- Main image circle -->
                                     <div
                                         class="relative w-full h-full rounded-full overflow-hidden shadow-2xl border-4 sm:border-6 md:border-8 border-white dark:border-slate-800">
-                                        <img :src="slides[currentSlide].image" :alt="slides[currentSlide].title"
-                                            class="w-full h-full object-cover" />
+                                        <NuxtImg :src="slides[currentSlide].image" :alt="slides[currentSlide].title"
+                                            format="webp" loading="eager" class="w-full h-full object-cover" />
                                     </div>
 
                                     <!-- Video thumbnail overlay (top left) -->
                                     <div
                                         class="absolute -top-2 -left-2 sm:-top-4 sm:-left-4 md:-top-8 md:-left-8 w-24 h-18 sm:w-32 sm:h-24 md:w-48 md:h-36 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border-2 sm:border-4 border-white dark:border-slate-800 bg-white dark:bg-slate-800 transform hover:scale-105 transition-transform duration-300">
-                                        <img :src="slides[currentSlide].videoThumb" alt="Video"
+                                        <NuxtImg :src="slides[currentSlide].videoThumb" alt="Video" format="webp"
                                             class="w-full h-full object-cover" />
                                         <!-- Play button -->
                                         <div class="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -113,7 +113,7 @@ onUnmounted(() => {
 
                 <!-- Carousel Indicators -->
                 <div class="flex justify-center items-center gap-2 mt-6 sm:mt-8 lg:mt-12">
-                    <button v-for="index in totalSlides.value" :key="index" @click="goToSlide(index - 1)" :class="[
+                    <button v-for="index in totalSlides" :key="index" @click="goToSlide(index - 1)" :class="[
                         'transition-all duration-300',
                         currentSlide === index - 1
                             ? 'w-8 h-2 bg-gradient-to-r from-sky-500 to-blue-600 dark:from-cyan-500 dark:to-blue-500 rounded-full'

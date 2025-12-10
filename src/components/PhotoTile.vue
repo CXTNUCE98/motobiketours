@@ -19,7 +19,7 @@ function navigateToPhoto(id: string) {
     <div @click="navigateToPhoto(id)" 
         class="group cursor-pointer bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
         <div class="relative overflow-hidden h-56">
-            <img :src="Array.isArray(src) ? src[0] : src" :alt="title" 
+            <NuxtImg :src="Array.isArray(src) ? src[0] : src" :alt="title" format="webp"
                 class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             <div class="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">

@@ -28,7 +28,8 @@ const galleryImages = [
                 <div class="lg:col-span-3">
                     <div class="mb-6">
                         <h2 class="text-3xl font-bold">
-                            <span class="text-black dark:text-white">AN</span><span class="text-sky-500 dark:text-cyan-400">DAGO</span>
+                            <span class="text-black dark:text-white">AN</span><span
+                                class="text-sky-500 dark:text-cyan-400">DAGO</span>
                         </h2>
                     </div>
 
@@ -97,7 +98,7 @@ const galleryImages = [
                         <div v-for="(image, index) in galleryImages" :key="index"
                             class="aspect-square overflow-hidden rounded">
                             <img :src="image" :alt="`Gallery ${index + 1}`"
-                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-300">
+                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
                         </div>
                     </div>
                 </div>

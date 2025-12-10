@@ -4,7 +4,7 @@ import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query'
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { fetchTours, type Tour } from '@/services/tourApi';
 import TourFilter from '../../components/TourFilter.vue';
-import CreateTourDialog from '@/components/CreateTourDialog.vue';
+
 import { Plus } from '@element-plus/icons-vue';
 import { useDeleteTour } from '~/composables/useTourQuery';
 import { useAuth } from '~/composables/useAuth';
@@ -537,7 +537,8 @@ const deleteTour = (tourId: string) => {
         </div>
 
         <!-- Create Tour Dialog -->
-        <CreateTourDialog v-model:visible="showCreateDialog" :tour-data="selectedTour" @success="handleCreateSuccess" />
+        <LazyCreateTourDialog v-model:visible="showCreateDialog" :tour-data="selectedTour"
+            @success="handleCreateSuccess" />
     </div>
 </template>
 

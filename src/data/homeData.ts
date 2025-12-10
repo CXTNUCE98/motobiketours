@@ -1,3 +1,5 @@
+import type { Testimonial, News, Slide } from '@/types';
+
 export const locations = [
   { value: '', label: 'Địa điểm của bạn' },
   { value: 'danang', label: 'Đà Nẵng' },
@@ -8,7 +10,7 @@ export const locations = [
 
 export const brands = [{ value: '', label: 'Số ngày' }];
 
-export const testimonials = [
+export const testimonials: Testimonial[] = [
   {
     id: 1,
     name: 'Samuel Kaisinger',
@@ -29,10 +31,10 @@ export const testimonials = [
   },
 ];
 
-export const latestNews = [
+export const latestNews: News[] = [
   {
     id: 'dong-nai-destinations',
-    image: '/carousel/1.jpg',
+    image: 'https://tourdanangcity.vn/wp-content/uploads/2024/05/tour-da-nang-city.jpg',
     title: 'Những Điểm Đến Đẹp Lạ Không Nhiều Người Biết Ở Đồng Nai',
     date: '04/05/2024',
     views: 103,
@@ -42,7 +44,7 @@ export const latestNews = [
   },
   {
     id: 'bac-giang-village',
-    image: '/carousel/2.jpg',
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSageMzVtqoGflxKJv12ChBYYkfhJLfETCWhw&s',
     title: 'Làng Cổ Thuần Việt Ở Bắc Giang',
     date: '04/05/2024',
     views: 46,
@@ -52,7 +54,7 @@ export const latestNews = [
   },
   {
     id: 'thanh-hoa-tourism',
-    image: '/carousel/3.jpg',
+    image: 'https://daivietourist.vn/wp-content/uploads/2024/08/tour-phu-quoc-5-ngay-4-dem-6.jpg',
     title: 'Thanh Hóa Đón Gần 500.000 Khách Du Lịch, Gấp 9 Lần Đà Lạt',
     date: '04/05/2024',
     views: 50,
@@ -62,26 +64,29 @@ export const latestNews = [
   },
 ];
 
-export const getSlides = (t: (key: string) => string) => [
+export const getSlides = (t: (key: string) => string): Slide[] => [
   {
     title: t('home.findYourPerfectTour'),
     subtitle: t('home.discoverTheWorld'),
     description: t('home.uniqueLocations'),
-    image: '/carousel/1.jpg',
-    videoThumb: '/carousel/2.jpg',
+    image:
+      'https://danangfantasticity.com/wp-content/uploads/2023/05/da-nang-trong-top-nhung-diem-den-co-phong-canh-nui-non-dep-nhat-chau-a.jpg',
+    videoThumb: 'https://vivuvietnam.org/wp-content/uploads/2024/08/canh-dep-da-nang-9-jpg.webp',
   },
   {
     title: t('home.discoverVietnam'),
     subtitle: t('home.completeTravel'),
     description: t('home.completeTravelDescription'),
-    image: '/carousel/3.jpg',
-    videoThumb: '/carousel/4.jpg',
+    image:
+      'https://s3-ap-southeast-1.amazonaws.com/cntatr-assets-ap-southeast-1-250226768838-55a62c9399d4d8a6/2025/06/canh-dep-da-nang.jpg?tr=q-70,c-at_max,w-1000,h-600',
+    videoThumb:
+      'https://pystravel.vn/_next/image?url=https%3A%2F%2Fbooking.pystravel.vn%2Fuploads%2Fposts%2Favatar%2F1741699433.jpg&w=3840&q=75',
   },
   {
     title: t('home.memorableJourney'),
     subtitle: t('home.unforgettableMemories'),
     description: t('home.unforgettableMemoriesDescription'),
-    image: '/carousel/5.jpg',
-    videoThumb: '/carousel/6.jpg',
+    image: 'https://cdn-media.sforum.vn/storage/app/media/danh-lam-thang-canh-da-nang-7.jpg',
+    videoThumb: 'https://drt.danang.vn/content/images/size/w1024/2024/01/bai-bien-da-nang-1-1.jpg',
   },
 ];

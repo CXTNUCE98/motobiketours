@@ -17,9 +17,9 @@ import { latestNews } from '@/data/homeData';
 
             <!-- News Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <NewsCard v-for="newsItem in latestNews" :key="newsItem.id" :id="newsItem.id" :image="newsItem.image"
-                    :title="newsItem.title" :date="newsItem.date" :views="newsItem.views"
-                    :description="newsItem.description" :to="newsItem.to" />
+                <NewsCard v-for="newsItem in latestNews" :key="newsItem.id" :id="newsItem.id"
+                    :image="newsItem.image || ''" :title="newsItem.title" :date="newsItem.date"
+                    :views="newsItem.views || 0" :description="newsItem.description || ''" :to="newsItem.to || ''" />
             </div>
         </div>
     </section>

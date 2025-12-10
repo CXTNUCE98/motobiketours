@@ -1,50 +1,29 @@
-// @ts-nocheck
-import Thapco from '../public/photos/thapco.jpg';
-import Myson from '../public/photos/myson.jpg';
-import Cuchi from '../public/photos/cuchi.jpg';
-import Cuoivoi from '../public/photos/cuoivoi.jpg';
-import Dithuyen from '../public/photos/dithuyen.jpg';
-import Lehoi from '../public/photos/lehoi.jpg';
-import Suoivoi from '../public/photos/suoivoi.jpg';
-import Cungdinhhue from '../public/photos/cungdinhhue.jpg';
-import Kyniemduonghochiminh from '../public/photos/kyniemduonghochiminh.jpg';
-import Baotang from '../public/photos/baotang.jpg';
-import Taynguyen from '../public/photos/taynguyen.jpg';
-import Nhasan from '../public/photos/nhasan.jpg';
-import Rungsu1 from '../public/photos/rungsu1.jpg';
-import Rungsu2 from '../public/photos/rungsu2.jpg';
-import Rungsu3 from '../public/photos/rungsu3.jpg';
-import Mytho1 from '../public/photos/mytho1.jpg';
-import Mytho2 from '../public/photos/mytho2.jpg';
-import Mytho3 from '../public/photos/mytho3.jpg';
-import Hotel1 from '../public/photos/hotel1.jpg';
-import Hotel2 from '../public/photos/hotel2.jpg';
-import Hotel3 from '../public/photos/hotel3.jpg';
+import type { Photo, Video, News } from '@/types';
 
-export const photos = [
-  { id: 'thapco', title: 'Tháp cổ', src: Thapco },
-  { id: 'myson', title: 'Mỹ Sơn', src: Myson },
-  { id: 'cuchi', title: 'Địa đạo Củ Chi', src: Cuchi },
-  { id: 'cuoivoi', title: 'Cưỡi Voi', src: Cuoivoi },
-  { id: 'ditruyen', title: 'Đi thuyền', src: Dithuyen },
-  { id: 'lehoi', title: 'Lễ hội', src: Lehoi },
-  { id: 'suoivoi', title: 'Suối voi', src: Suoivoi },
-  { id: 'cungdinhhue', title: 'Cung Đình Huế', src: Cungdinhhue },
-  { id: 'kyniemduonghochiminh', title: 'Kỷ Niệm Đường Hồ Chí Minh', src: Kyniemduonghochiminh },
-  { id: 'baotang', title: 'Bảo tàng', src: Baotang },
-  { id: 'taynguyen', title: 'Tây nguyên', src: Taynguyen },
-  { id: 'nhasan', title: 'Nhà sàn', src: Nhasan },
-  { id: 'rungsu', title: 'Rừng su', src: [Rungsu1, Rungsu2, Rungsu3] },
-  { id: 'mytho', title: 'Mỹ Tho', src: [Mytho1, Mytho2, Mytho3] },
-  { id: 'hotel', title: 'Hotel', src: [Hotel1, Hotel2, Hotel3] },
+export const photos: Photo[] = [
+  { id: 'thapco', title: 'Tháp cổ', src: '/photos/thapco.jpg' },
+  { id: 'myson', title: 'Mỹ Sơn', src: '/photos/myson.jpg' },
+  { id: 'cuchi', title: 'Địa đạo Củ Chi', src: '/photos/cuchi.jpg' },
+  { id: 'cuoivoi', title: 'Cưỡi Voi', src: '/photos/cuoivoi.jpg' },
+  { id: 'ditruyen', title: 'Đi thuyền', src: '/photos/dithuyen.jpg' },
+  { id: 'lehoi', title: 'Lễ hội', src: '/photos/lehoi.jpg' },
+  { id: 'suoivoi', title: 'Suối voi', src: '/photos/suoivoi.jpg' },
+  { id: 'cungdinhhue', title: 'Cung Đình Huế', src: '/photos/cungdinhhue.jpg' },
+  { id: 'kyniemduonghochiminh', title: 'Kỷ Niệm Đường Hồ Chí Minh', src: '/photos/kyniemduonghochiminh.jpg' },
+  { id: 'baotang', title: 'Bảo tàng', src: '/photos/baotang.jpg' },
+  { id: 'taynguyen', title: 'Tây nguyên', src: '/photos/taynguyen.jpg' },
+  { id: 'nhasan', title: 'Nhà sàn', src: '/photos/nhasan.jpg' },
+  { id: 'rungsu', title: 'Rừng su', src: ['/photos/rungsu1.jpg', '/photos/rungsu2.jpg', '/photos/rungsu3.jpg'] },
+  { id: 'mytho', title: 'Mỹ Tho', src: ['/photos/mytho1.jpg', '/photos/mytho2.jpg', '/photos/mytho3.jpg'] },
+  { id: 'hotel', title: 'Hotel', src: ['/photos/hotel1.jpg', '/photos/hotel2.jpg', '/photos/hotel3.jpg'] },
 ];
 
 // Simple mock videos list. Thumbnails re-use existing photos assets
-export const videos = [
+export const videos: Video[] = [
   {
     id: 'riding-hue-night',
     title: 'Riding through Huế at Night',
-    thumbnail: Hotel1,
+    thumbnail: '/photos/hotel1.jpg',
     date: '07.07.2015 10:00',
     excerpt: 'Nightlife in Huế is dazzling – hop on and enjoy the cool breeze.',
     youtubeId: 'jq2pn8b6q-A',
@@ -52,7 +31,7 @@ export const videos = [
   {
     id: 'phu-quoc-island',
     title: "Phú Quốc Island - Việt Nam's Largest Island",
-    thumbnail: Mytho1,
+    thumbnail: '/photos/mytho1.jpg',
     date: '07.07.2015 10:05',
     excerpt: 'Crystal beaches, pepper farms, and sun-kissed rides along the coast.',
     youtubeId: 'YQ8DNkV4PBo',
@@ -60,7 +39,7 @@ export const videos = [
   {
     id: 'cu-chi-tunnels',
     title: 'Explore Củ Chi Tunnels by Moto',
-    thumbnail: Cuchi,
+    thumbnail: '/photos/cuchi.jpg',
     date: '27.07.2015 03:35',
     excerpt: 'A historic route into the countryside and the famous tunnel system.',
     youtubeId: 'U1usrHw-GvI',
@@ -68,7 +47,7 @@ export const videos = [
   {
     id: 'my-son-sanctuary',
     title: 'My Sơn Sanctuary Morning Ride',
-    thumbnail: Myson,
+    thumbnail: '/photos/myson.jpg',
     date: '27.07.2015 03:47',
     excerpt: 'Ancient towers, green hills, and a peaceful sunrise ride.',
     youtubeId: '9zCLK3u9V70',
@@ -76,11 +55,11 @@ export const videos = [
 ];
 
 // Simple mock news list used by the News pages
-export const news = [
+export const news: News[] = [
   {
     id: 'these-attractions-da-nang',
     title: 'These attractions, tourism in Da Nang',
-    thumbnail: Hotel2,
+    thumbnail: '/photos/hotel2.jpg',
     date: '21.07.2015 03:31',
     excerpt:
       'Referring to tourism can not forget to Da Nang since it not only natural but also by imposing the typical architecture, unique and hospitable spirit of the people of the coastal city.',
@@ -230,7 +209,7 @@ export const news = [
   {
     id: 'kawasaki-estrella-250cc',
     title: 'Motorbike Rental KAWASAKI Estrella 250cc',
-    thumbnail: Myson,
+    thumbnail: '/photos/myson.jpg',
     date: '14.07.2015 09:24',
     excerpt:
       'In Germany, the Estrella was available in two versions – and three variants – from 1994 to 1999. A charming classic with simple lines.',
@@ -424,7 +403,7 @@ On these sites I have tried to reconstruct the prehistory of the Estrella, find 
   {
     id: 'honda-steed-400',
     title: 'Motorbike Rental HONDA STEED 400',
-    thumbnail: Cuoivoi,
+    thumbnail: '/photos/cuoivoi.jpg',
     date: '14.07.2015 09:11',
     excerpt:
       'The Honda Steed VLS 400 is a motorcycle produced in 1997 which integrated multiple advanced features such as the water cooled 4‑stroke engine and the chain final drive.',
@@ -604,7 +583,7 @@ HONDA Steed VLX 400 (1997 - Present) Description &amp; History:</p>
   {
     id: 'travel-by-motorcycle-honda-rebel-250cc',
     title: 'TRAVEL BY MOTORCYCLE HONDA REBEL 250cc',
-    thumbnail: Rungsu1,
+    thumbnail: '/photos/rungsu1.jpg',
     date: '14.07.2015 09:09',
     excerpt:
       'The Honda Rebel 250 is the perfect bike for you if you prefer more of a cruiser style motorcycle instead of a sportbike – light, easy, and dependable.',
@@ -738,7 +717,7 @@ The Honda Rebel 250 is the perfect bike for you if you prefer more of a cruiser 
   {
     id: 'honda-sh-150cc',
     title: 'Motorbike Rental HONDA SH 150cc',
-    thumbnail: Nhasan,
+    thumbnail: '/photos/nhasan.jpg',
     date: '14.07.2015 09:03',
     excerpt: 'When it comes to choosing a scooter, the SH 150cc stands out for reliability and urban practicality.',
     content: [
@@ -951,7 +930,7 @@ The Honda Rebel 250 is the perfect bike for you if you prefer more of a cruiser 
   {
     id: 'exploration-of-vietnam-by-motorbike',
     title: 'A real exploration of Vietnam by motorbike',
-    thumbnail: Rungsu2,
+    thumbnail: '/photos/rungsu2.jpg',
     date: '07.07.2015 08:55',
     excerpt:
       'A spontaneous change of itinerary turned into a months‑long journey, discovering Vietnam from north to south by two wheels.',
@@ -1002,7 +981,7 @@ export const tours: Tour[] = [
     routes: 'Dai Ninh mountain pass, Hw 27, Hw 14 (Ho Chi Minh trail)',
     type: 'saigon motorbikes, saigon motorbike tours, easy rider saigon',
     priceUsd: 450,
-    thumbnail: Mytho2,
+    thumbnail: '/photos/mytho2.jpg',
     departFrom: 'Sai Gon',
   },
   {
@@ -1012,7 +991,7 @@ export const tours: Tour[] = [
     routes: 'Hw 26, Hw 27, Hw 14 (HCM trail)',
     type: 'Saigon motorbikes, saigon motorbike tours, easy rider saigon',
     priceUsd: 380,
-    thumbnail: Rungsu1,
+    thumbnail: '/photos/rungsu1.jpg',
     departFrom: 'Sai Gon',
   },
   {
@@ -1022,7 +1001,7 @@ export const tours: Tour[] = [
     routes: 'Sai Gon - Ben Tre - Can Tho - Rach Gia',
     type: 'Saigon motorbikes/ motorbike tours, easy rider saigon',
     priceUsd: 290,
-    thumbnail: Mytho1,
+    thumbnail: '/photos/mytho1.jpg',
     departFrom: 'Sai Gon',
   },
   {
@@ -1033,7 +1012,7 @@ export const tours: Tour[] = [
       'Sai Gon - Dong Xoai - Dakmil - Lak lake - Pleiku - Kon Tum - Kham Duc - Hoi An - Hue - DMZ - Phong Nha cave - Nghe An - Thanh Hoa - Hoa Binh - Ha Noi',
     type: 'Saigon motorbikes/ motorbike tours, easy rider saigon',
     priceUsd: 1500,
-    thumbnail: Rungsu3,
+    thumbnail: '/photos/rungsu3.jpg',
     departFrom: 'Sai Gon',
   },
   {
@@ -1043,7 +1022,7 @@ export const tours: Tour[] = [
     routes: 'Mui Ne - Red Sand Dunes - White Sand Dunes - Phan Thiet - Mui Ne',
     type: 'Mui Ne day trips, sand dunes, coastal ride',
     priceUsd: 150,
-    thumbnail: Mytho3,
+    thumbnail: '/photos/mytho3.jpg',
     departFrom: 'Mui Ne',
   },
   {
@@ -1053,7 +1032,7 @@ export const tours: Tour[] = [
     routes: 'Marble Mountains - Son Tra Peninsula - Dragon Bridge',
     type: 'City tour, sightseeing',
     priceUsd: 65,
-    thumbnail: Hotel1,
+    thumbnail: '/photos/hotel1.jpg',
     departFrom: 'Da Nang',
   },
   {
@@ -1063,7 +1042,7 @@ export const tours: Tour[] = [
     routes: 'Da Nang - Hai Van Pass - Hue - Hoi An',
     type: 'Heritage tour, coastal ride',
     priceUsd: 320,
-    thumbnail: Cungdinhhue,
+    thumbnail: '/photos/cungdinhhue.jpg',
     departFrom: 'Da Nang',
   },
   {
@@ -1073,7 +1052,7 @@ export const tours: Tour[] = [
     routes: 'Hoi An - Tra Que Village - Cam Thanh Coconut Forest',
     type: 'Eco tour, culture',
     priceUsd: 55,
-    thumbnail: Lehoi,
+    thumbnail: '/photos/lehoi.jpg',
     departFrom: 'Hoi An',
   },
   {
@@ -1083,7 +1062,7 @@ export const tours: Tour[] = [
     routes: 'Hoi An - My Son - Hoi An',
     type: 'History, culture',
     priceUsd: 70,
-    thumbnail: Myson,
+    thumbnail: '/photos/myson.jpg',
     departFrom: 'Hoi An',
   },
   {
@@ -1093,7 +1072,7 @@ export const tours: Tour[] = [
     routes: 'Da Lat - Elephant Waterfall - Pongour Waterfall',
     type: 'Nature, adventure',
     priceUsd: 180,
-    thumbnail: Suoivoi,
+    thumbnail: '/photos/suoivoi.jpg',
     departFrom: 'Da Lat',
   },
   {
@@ -1103,7 +1082,7 @@ export const tours: Tour[] = [
     routes: 'Da Lat - Khanh Vinh Pass - Nha Trang',
     type: 'Mountain pass, coastal',
     priceUsd: 250,
-    thumbnail: Taynguyen,
+    thumbnail: '/photos/taynguyen.jpg',
     departFrom: 'Da Lat',
   },
   {
@@ -1113,7 +1092,7 @@ export const tours: Tour[] = [
     routes: 'Old Quarter - Ho Chi Minh Mausoleum - West Lake',
     type: 'City tour, food tour',
     priceUsd: 60,
-    thumbnail: Baotang,
+    thumbnail: '/photos/baotang.jpg',
     departFrom: 'Ha Noi',
   },
   {
@@ -1123,7 +1102,7 @@ export const tours: Tour[] = [
     routes: 'Ha Noi - Hoa Binh - Mai Chau',
     type: 'Valley, homestay, culture',
     priceUsd: 190,
-    thumbnail: Nhasan,
+    thumbnail: '/photos/nhasan.jpg',
     departFrom: 'Ha Noi',
   },
   {
@@ -1133,7 +1112,7 @@ export const tours: Tour[] = [
     routes: 'Ha Giang - Dong Van - Meo Vac - Ma Pi Leng Pass',
     type: 'Adventure, mountain pass, scenery',
     priceUsd: 420,
-    thumbnail: Thapco,
+    thumbnail: '/photos/thapco.jpg',
     departFrom: 'Ha Giang',
   },
   {
@@ -1143,7 +1122,7 @@ export const tours: Tour[] = [
     routes: 'Sapa - Cat Cat - Lao Chai - Ta Van',
     type: 'Trekking, culture, homestay',
     priceUsd: 280,
-    thumbnail: Taynguyen,
+    thumbnail: '/photos/taynguyen.jpg',
     departFrom: 'Sapa',
   },
   {
@@ -1153,7 +1132,7 @@ export const tours: Tour[] = [
     routes: 'Ninh Binh - Trang An - Bai Dinh Pagoda',
     type: 'Nature, culture, boat trip',
     priceUsd: 160,
-    thumbnail: Dithuyen,
+    thumbnail: '/photos/dithuyen.jpg',
     departFrom: 'Ha Noi',
   },
   {
@@ -1163,7 +1142,7 @@ export const tours: Tour[] = [
     routes: 'Duong Dong - An Thoi - Bai Sao - Ham Ninh',
     type: 'Island, beach, relaxation',
     priceUsd: 350,
-    thumbnail: Hotel2,
+    thumbnail: '/photos/hotel2.jpg',
     departFrom: 'Phu Quoc',
   },
   {
@@ -1173,7 +1152,7 @@ export const tours: Tour[] = [
     routes: 'Sai Gon - Can Tho - Cai Rang',
     type: 'Culture, river life',
     priceUsd: 140,
-    thumbnail: Mytho2,
+    thumbnail: '/photos/mytho2.jpg',
     departFrom: 'Sai Gon',
   },
   {
@@ -1183,7 +1162,7 @@ export const tours: Tour[] = [
     routes: 'Sai Gon - Vung Tau - Sai Gon',
     type: 'Beach, short trip',
     priceUsd: 80,
-    thumbnail: Hotel3,
+    thumbnail: '/photos/hotel3.jpg',
     departFrom: 'Sai Gon',
   },
   {
@@ -1193,7 +1172,7 @@ export const tours: Tour[] = [
     routes: 'Sai Gon - Cu Chi - Sai Gon',
     type: 'History, war remnants',
     priceUsd: 45,
-    thumbnail: Cuchi,
+    thumbnail: '/photos/cuchi.jpg',
     departFrom: 'Sai Gon',
   },
 ];

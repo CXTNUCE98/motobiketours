@@ -34,7 +34,7 @@ const handleCardClick = () => {
         @click="handleCardClick">
         <!-- Image Container -->
         <div class="relative h-64 overflow-hidden">
-            <img :src="image" :alt="title" loading="lazy"
+            <NuxtImg :src="image" :alt="title" loading="lazy" format="webp"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
         </div>
 

@@ -65,7 +65,7 @@ const menuItems = computed(() => [
 ])
 
 // Language options
-const languageOptions = computed(() => 
+const languageOptions = computed(() =>
     locales.value.map((loc: any) => ({
         code: loc.code,
         name: loc.name,
@@ -73,7 +73,7 @@ const languageOptions = computed(() =>
     }))
 )
 
-const currentLanguage = computed(() => 
+const currentLanguage = computed(() =>
     languageOptions.value.find((lang: any) => lang.code === locale.value) || languageOptions.value[0]
 )
 
@@ -169,8 +169,9 @@ function formLogin() {
                                 class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                                 <div
                                     class="w-8 h-8 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-sky-600 dark:text-cyan-400 font-bold text-sm">
-                                    <img class="w-full h-full rounded-full object-cover border border-gray-200 [image-rendering:-webkit-optimize-contrast] image-crisp"
-                                        :src="user?.avatar" alt="avatar">
+                                    <NuxtImg
+                                        class="w-full h-full rounded-full object-cover border border-gray-200 [image-rendering:-webkit-optimize-contrast] image-crisp"
+                                        :src="user?.avatar" format="webp" alt="avatar" />
                                 </div>
                                 <span class="hidden md:block font-medium text-sm max-w-[100px] truncate">
                                     {{ user?.userName || 'User' }}
@@ -187,7 +188,7 @@ function formLogin() {
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
                                         user?.userName
-                                        }}</p>
+                                    }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
 
@@ -234,10 +235,7 @@ function formLogin() {
                         <!-- Dropdown Menu -->
                         <div
                             class="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
-                            <button
-                                v-for="lang in languageOptions"
-                                :key="lang.code"
-                                @click="switchLanguage(lang.code)"
+                            <button v-for="lang in languageOptions" :key="lang.code" @click="switchLanguage(lang.code)"
                                 :class="[
                                     'w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2',
                                     locale === lang.code

@@ -153,7 +153,7 @@ const isOwnComment = computed(() => {
     <div class="comment-item">
         <div class="flex gap-4">
             <!-- Avatar -->
-            <img :src="comment?.author?.avatar" :alt="comment?.author?.userName"
+            <NuxtImg :src="comment?.author?.avatar" :alt="comment?.author?.userName"
                 class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-gray-200 dark:border-gray-600" />
 
             <div class="flex-1">

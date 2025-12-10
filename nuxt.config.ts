@@ -29,21 +29,21 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: [
     '@vueuse/nuxt',
-    '@nuxtjs/tailwindcss',
     '@element-plus/nuxt',
     '@unocss/nuxt',
     '@vue-macros/nuxt',
     '@nuxtjs/sitemap',
     '@nuxtjs/i18n',
     'nuxt-api-party',
+    '@nuxt/image',
   ],
   i18n: {
     defaultLocale: 'vi',
     langDir: 'locales',
     locales: [
       { code: 'en', name: 'English', file: 'en.json' },
-      { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' }
-    ]
+      { code: 'vi', name: 'Tiếng Việt', file: 'vi.json' },
+    ],
   },
   apiParty: {
     endpoints: {
@@ -58,14 +58,7 @@ export default defineNuxtConfig({
     siteUrl: 'https://motobiketours.vercel.app/',
   },
 
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
-
-  css: ['boxicons/css/boxicons.min.css'],
+  css: ['@unocss/reset/tailwind.css', 'boxicons/css/boxicons.min.css'],
 
   compatibilityDate: '2025-04-15',
   runtimeConfig: {
@@ -73,5 +66,5 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
     },
-  },  
+  },
 });
