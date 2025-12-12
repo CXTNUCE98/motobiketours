@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 
 type FilterOptions = {
     duration: string;
@@ -15,14 +15,26 @@ const emit = defineEmits<{
 
 const props = defineProps<{
     showMobile?: boolean;
+    initialFilters?: FilterOptions;
 }>();
 
 // Filter state
-const selectedDuration = ref<string>('');
-const priceMin = ref(0);
-const priceMax = ref(2000);
-const selectedTypes = ref<string[]>([]);
-const selectedDepartFrom = ref('all');
+const selectedDuration = ref<string>(props.initialFilters?.duration || '');
+const priceMin = ref(props.initialFilters?.priceRange?.min || 0);
+const priceMax = ref(props.initialFilters?.priceRange?.max || 2000);
+const selectedTypes = ref<string[]>(props.initialFilters?.tourTypes || []);
+const selectedDepartFrom = ref(props.initialFilters?.departFrom || 'all');
+
+watch(() => props.initialFilters, (newFilters) => {
+    if (newFilters) {
+        selectedDuration.value = newFilters.duration || '';
+        priceMin.value = newFilters.priceRange?.min || 0;
+        priceMax.value = newFilters.priceRange?.max || 2000;
+        selectedTypes.value = newFilters.tourTypes || [];
+        selectedDepartFrom.value = newFilters.departFrom || 'all';
+    }
+}, { deep: true });
+
 
 // Options
 const durationOptions = [

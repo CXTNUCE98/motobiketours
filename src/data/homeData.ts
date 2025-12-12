@@ -1,11 +1,18 @@
 import type { Testimonial, News, Slide } from '@/types';
 
 export const locations = [
-  { value: '', label: 'Địa điểm của bạn' },
-  { value: 'danang', label: 'Đà Nẵng' },
-  { value: 'hue', label: 'Huế' },
-  { value: 'hoian', label: 'Hội An' },
-  { value: 'quangnam', label: 'Quảng Nam' },
+  { value: 'all', label: 'Tất cả' },
+  { value: 'Sài Gòn', label: 'Sài Gòn' },
+  { value: 'Hà Nội', label: 'Hà Nội' },
+  { value: 'Đà Nẵng', label: 'Đà Nẵng' },
+  { value: 'Huế', label: 'Huế' },
+  { value: 'Hội An', label: 'Hội An' },
+  { value: 'Đà Lạt', label: 'Đà Lạt' },
+  { value: 'Nha Trang', label: 'Nha Trang' },
+  { value: 'Mũi Né', label: 'Mũi Né' },
+  { value: 'Hà Giang', label: 'Hà Giang' },
+  { value: 'Sapa', label: 'Sapa' },
+  { value: 'Phú Quốc', label: 'Phú Quốc' },
 ];
 
 export const brands = [{ value: '', label: 'Số ngày' }];

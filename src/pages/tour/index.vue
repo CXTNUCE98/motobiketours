@@ -10,6 +10,8 @@ import { useDeleteTour } from '~/composables/useTourQuery';
 import { useAuth } from '~/composables/useAuth';
 import { logger } from '~/utils/logger';
 
+const route = useRoute();
+
 const searchQuery = ref('');
 const showFilters = ref(false);
 const viewMode = ref('grid'); // 'grid' or 'list'
@@ -32,7 +34,7 @@ const activeFilters = ref({
     duration: '',
     priceRange: { min: 0, max: 2000 },
     tourTypes: [],
-    departFrom: ''
+    departFrom: '',
 });
 
 // Construct API filters
@@ -58,7 +60,7 @@ const apiFilters = computed(() => {
 });
 
 // Query
-const { data, isLoading, isError, error } = useQuery({
+const { data, isLoading, isError, error, isFetching } = useQuery({
     queryKey: ['tours', apiFilters],
     queryFn: () => fetchTours(apiFilters.value),
     placeholderData: keepPreviousData
@@ -178,6 +180,21 @@ const deleteTour = (tourId: string) => {
         // User cancelled, do nothing
     });
 };
+
+onMounted(() => {
+    if (route.query.keyword) {
+        searchQuery.value = route.query.keyword as string;
+    }
+    if (route.query.location && route.query.location !== 'all') {
+        activeFilters.value.departFrom = route.query.location as string;
+    }
+    if (route.query.duration) {
+        activeFilters.value.duration = route.query.duration as string;
+    } else if (route.query.brand) {
+        // Fallback for old link if any, though we changed SearchSection
+        activeFilters.value.duration = route.query.brand as string;
+    }
+});
 </script>
 
 <template>
@@ -254,7 +271,8 @@ const deleteTour = (tourId: string) => {
             <div class="flex flex-col lg:flex-row gap-8">
                 <!-- Sidebar Filter (Desktop) -->
                 <div class="hidden lg:block lg:w-80 flex-shrink-0">
-                    <TourFilter @apply="handleApplyFilters" @clear="handleClearFilters" />
+                    <TourFilter :initial-filters="activeFilters" @apply="handleApplyFilters"
+                        @clear="handleClearFilters" />
                 </div>
 
                 <!-- Tours Content -->
@@ -316,7 +334,7 @@ const deleteTour = (tourId: string) => {
                     </div>
 
                     <!-- Tours Grid/List -->
-                    <div v-if="processedTours.length > 0">
+                    <div v-loading="isFetching" v-if="processedTours.length > 0">
                         <div
                             :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'space-y-6'">
                             <div v-for="(tour, index) in processedTours" :key="tour.id" class="animate-fade-in"
@@ -438,7 +456,7 @@ const deleteTour = (tourId: string) => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>Khởi hành:</strong> {{ tour.departFrom
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -459,7 +477,7 @@ const deleteTour = (tourId: string) => {
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>Loại:</strong> {{
                                                                 tour.type
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                     </div>
                                                 </div>

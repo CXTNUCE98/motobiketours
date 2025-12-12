@@ -1,17 +1,25 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { locations, brands } from '@/data/homeData';
+import { locations } from '@/data/homeData';
 import { logger } from '~/utils/logger';
 
+const router = useRouter();
 const searchForm = ref({
     keyword: '',
-    location: '',
-    brand: ''
+    location: 'all',
+    duration: '' // Renamed from brand
 });
+
+const durationOptions = [
+    { value: '', label: 'Số ngày' },
+    { value: '1-3', label: '1-3 ngày' },
+    { value: '4-7', label: '4-7 ngày' },
+    { value: '8+', label: '8+ ngày' },
+];
 
 const handleSearch = () => {
     logger.log('Search:', searchForm.value);
-    // TODO: Implement search functionality
+    router.push(`/tour?keyword=${searchForm.value.keyword}&location=${searchForm.value.location}&duration=${searchForm.value.duration}`);
 };
 </script>
 
@@ -52,12 +60,12 @@ const handleSearch = () => {
                     </div>
                 </div>
 
-                <!-- Brand Dropdown -->
+                <!-- Duration Dropdown -->
                 <div class="flex-1 relative">
-                    <select v-model="searchForm.brand"
+                    <select v-model="searchForm.duration" placeholder="Chọn số ngày"
                         class="w-full h-12 md:h-14 px-4 md:px-6 rounded-full md:rounded-none border border-gray-200 dark:border-gray-700 border-l-0  focus:outline-none appearance-none bg-white dark:bg-gray-800 text-sm md:text-base cursor-pointer dark:text-white">
-                        <option v-for="brand in brands" :key="brand.value" :value="brand.value">
-                            {{ brand.label }}
+                        <option v-for="option in durationOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}
                         </option>
                     </select>
                     <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
