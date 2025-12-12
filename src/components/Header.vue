@@ -188,7 +188,7 @@ function formLogin() {
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
                                         user?.userName
-                                    }}</p>
+                                        }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
 
@@ -273,30 +273,63 @@ function formLogin() {
 
                     <!-- Mobile Menu Toggle -->
                     <button @click="showMobileMenu = !showMobileMenu"
-                        class="lg:hidden text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
+                        class="lg:hidden relative z-50 p-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 focus:outline-none transition-colors"
+                        aria-label="Toggle Menu">
+                        <div class="w-6 h-6 flex flex-col justify-center gap-[5px]">
+                            <span
+                                class="block w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-out origin-center"
+                                :class="{ 'rotate-45 translate-y-[7px]': showMobileMenu }"></span>
+                            <span
+                                class="block w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-out"
+                                :class="{ 'opacity-0 translate-x-4': showMobileMenu }"></span>
+                            <span
+                                class="block w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-out origin-center"
+                                :class="{ '-rotate-45 -translate-y-[7px]': showMobileMenu }"></span>
+                        </div>
                     </button>
                 </div>
             </div>
 
             <!-- Mobile Menu -->
-            <div v-if="showMobileMenu" class="lg:hidden pb-4 bg-white dark:bg-slate-900">
-                <nav class="flex flex-col space-y-2">
-                    <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" @click="showMobileMenu = false"
-                        :class="[
-                            'px-4 py-2 text-sm font-medium transition-colors duration-200',
-                            isActive(item.path)
+            <Transition enter-active-class="animate-fade-in-down" leave-active-class="transition duration-200 ease-in"
+                leave-from-class="transform translate-y-0 opacity-100"
+                leave-to-class="transform -translate-y-5 opacity-0">
+                <div v-if="showMobileMenu"
+                    class="lg:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-t border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden">
+                    <nav class="flex flex-col p-4 space-y-2 max-h-[80vh] overflow-y-auto">
+                        <NuxtLink v-for="(item, index) in menuItems" :key="item.path" :to="item.path"
+                            @click="showMobileMenu = false" :style="{ transitionDelay: `${index * 50}ms` }"
+                            class="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                            :class="[
+                                isActive(item.path)
+                                    ? 'bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400'
+                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-sky-500 dark:hover:text-sky-400'
+                            ]">
+                            <span class="text-base">{{ item.name }}</span>
+                            <svg class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </NuxtLink>
 
-                                ? 'text-sky-500 dark:text-cyan-400 bg-sky-50 dark:bg-slate-800'
-                                : 'text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 hover:bg-slate-50 dark:hover:bg-slate-800'
-                        ]">
-                        {{ item.name }}
-                    </NuxtLink>
-                </nav>
-            </div>
+                        <!-- Mobile Language Switcher -->
+                        <div
+                            class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between px-2">
+                            <div class="flex items-center gap-2">
+                                <button v-for="lang in languageOptions" :key="lang.code"
+                                    @click="switchLanguage(lang.code)"
+                                    class="w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-200"
+                                    :class="locale === lang.code
+                                        ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400'
+                                        : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-sky-500'">
+                                    <span class="text-sm font-bold uppercase">{{ lang.code }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </Transition>
         </div>
         <LoginPopup v-model="showLoginPopup" />
     </header>
