@@ -2,14 +2,18 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
+import { watchDebounced } from '@vueuse/core'
 
 const router = useRouter()
+const { user } = useAuth();
+const isUser = computed(() => !!user.value?.email);
 
 // Active category filter
 const activeCategory = ref('All')
 
 // Search query
 const searchQuery = ref('')
+const showMobileFilter = ref(false)
 
 // Categories
 const categories = [
@@ -113,40 +117,100 @@ const getImageUrl = (thumbnail) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div
+    class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300 font-sans selection:bg-indigo-500 selection:text-white">
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500 py-20 px-4 overflow-hidden">
-      <!-- Background Pattern -->
-      <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+    <section class="relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+      <!-- Animated Background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900">
+        <div
+          class="absolute inset-0 opacity-30 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] animate-pulse">
+        </div>
+        <!-- Orbs -->
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-blob"></div>
+        <div
+          class="absolute bottom-0 right-1/4 w-96 h-96 bg-indigo-500/30 rounded-full blur-3xl animate-blob animation-delay-2000">
+        </div>
+        <div
+          class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-blob animation-delay-4000">
+        </div>
+      </div>
 
-      <div class="relative z-10 max-w-4xl mx-auto text-center">
-        <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 tracking-tight leading-tight">
-          Explore Our <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">Travel
-            Stories</span>
+      <!-- Content -->
+      <div class="relative z-10 container mx-auto px-4 text-center">
+        <span
+          class="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-indigo-300 text-sm font-semibold mb-6 animate-fade-in-up">
+          Explore the Unseen
+        </span>
+        <h1
+          class="text-5xl md:text-7xl font-black text-white mb-8 tracking-tight leading-tight animate-fade-in-up animation-delay-100">
+          Stories from the <br />
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400">Open
+            Road</span>
         </h1>
-        <p class="text-xl text-indigo-100 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Discover hidden gems, expert tips, and unforgettable adventures from our motorbike tours across Vietnam.
+        <p
+          class="text-xl md:text-2xl text-indigo-100/80 mb-12 max-w-2xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
+          Immerse yourself in tales of adventure, culture, and the breathtaking landscapes of Vietnam.
         </p>
 
+        <!-- Scroll Indicator -->
+        <div class="animate-bounce absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50">
+          <i class='bx bx-chevron-down text-4xl'></i>
+        </div>
       </div>
     </section>
 
-    <div class="container mx-auto px-4 py-12 max-w-7xl">
-      <!-- Category Filter -->
-      <div class="flex justify-between items-center">
-        <div class="flex overflow-x-auto pt-2 pb-4 gap-3 no-scrollbar">
-          <button v-for="category in categories" :key="category.value" @click="setCategory(category.value)"
-            class="px-6 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border"
-            :class="activeCategory === category.value
-              ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white border-transparent shadow-lg shadow-indigo-200 transform -translate-y-1'
-              : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md'">
-            {{ category?.label }}
+    <div class="container mx-auto px-4 py-12 max-w-7xl relative z-20 -mt-20">
+      <!-- Category Filter & Actions -->
+      <div class="mb-12 sticky top-4 z-30">
+        <div
+          class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-full p-2 shadow-2xl shadow-indigo-500/10 flex justify-between items-center gap-4 transition-all duration-300 hover:shadow-indigo-500/20">
+
+          <!-- Mobile Filter Button -->
+          <button @click="showMobileFilter = true"
+            class="lg:hidden flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold shadow-lg border border-gray-100 dark:border-gray-600 active:scale-95 transition-transform">
+            <i class='bx bx-filter-alt text-xl text-indigo-500'></i>
+            <span>Filter</span>
           </button>
+
+          <!-- Desktop Categories -->
+          <div class="hidden lg:block w-full md:w-auto overflow-x-auto no-scrollbar">
+            <div class="flex items-center gap-2 p-1">
+              <button v-for="category in categories" :key="category.value" @click="setCategory(category.value)"
+                class="relative px-6 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 overflow-hidden group"
+                :class="activeCategory === category.value
+                  ? 'text-white shadow-lg shadow-indigo-500/30 scale-105'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white'">
+
+                <!-- Active Background Gradient -->
+                <div v-if="activeCategory === category.value"
+                  class="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 animate-gradient-x">
+                </div>
+
+                <!-- Content -->
+                <span class="relative z-10 flex items-center gap-2">
+                  <i v-if="activeCategory === category.value" class='bx bx-check text-lg'></i>
+                  {{ category.label }}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div v-if="isUser" class="flex items-center gap-3 ml-auto lg:ml-0 px-2">
+            <div class="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden md:block mx-2"></div>
+            <button @click="createNewBlog"
+              class="group relative flex-1 md:flex-none flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 md:px-8 py-3 rounded-full font-bold text-sm shadow-xl shadow-gray-900/20 dark:shadow-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
+              <div
+                class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              </div>
+              <span class="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors">
+                <i class='bx bx-plus-circle text-xl'></i>
+                <span>Create Story</span>
+              </span>
+            </button>
+          </div>
         </div>
-        <button @click="createNewBlog"
-          class="bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-indigo-300 hover:text-indigo-600 dark:hover:text-indigo-400 hover:shadow-md px-6 py-2.5 rounded-full font-semibold text-sm whitespace-nowrap transition-all duration-300 border">
-          Create New Post
-        </button>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
@@ -154,75 +218,118 @@ const getImageUrl = (thumbnail) => {
         <div class="lg:col-span-8 space-y-12">
 
           <!-- Featured Post -->
-          <section v-if="featuredPost" class="relative group">
-            <router-link :to="`/blog/${featuredPost?.id}`" class="block">
-              <div class="relative h-[500px] rounded-3xl overflow-hidden shadow-2xl">
+          <section v-if="featuredPost" class="relative group perspective-1000">
+            <router-link :to="`/blog/${featuredPost?.id}`"
+              class="block transform transition-transform duration-500 hover:scale-[1.01]">
+              <div class="relative h-[600px] rounded-[2rem] overflow-hidden shadow-2xl ring-1 ring-white/10">
                 <img :src="getImageUrl(featuredPost?.thumbnail)" :alt="featuredPost?.name"
-                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                  class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" />
 
-                <div class="absolute bottom-0 left-0 right-0 p-8 md:p-10">
-                  <span
-                    class="inline-block px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold rounded-full uppercase tracking-wider mb-4 shadow-lg">
-                    Featured
-                  </span>
+                <!-- Gradient Overlay -->
+                <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent opacity-90">
+                </div>
+
+                <!-- Content -->
+                <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 lg:p-16">
+                  <div class="flex items-center gap-3 mb-6">
+                    <span
+                      class="px-4 py-1.5 bg-orange-500/90 backdrop-blur-sm text-white text-xs font-bold rounded-full uppercase tracking-wider shadow-lg shadow-orange-500/20">
+                      Featured Story
+                    </span>
+                    <span
+                      class="px-4 py-1.5 bg-white/10 backdrop-blur-sm text-white text-xs font-bold rounded-full uppercase tracking-wider border border-white/20">
+                      {{ featuredPost?.category || 'Adventure' }}
+                    </span>
+                  </div>
+
                   <h2
-                    class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight group-hover:text-orange-200 transition-colors">
+                    class="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-tight group-hover:text-orange-200 transition-colors drop-shadow-lg">
                     {{ featuredPost?.name }}
                   </h2>
-                  <p class="text-gray-300 text-lg mb-6 line-clamp-2 max-w-2xl">
+
+                  <p class="text-gray-300 text-lg md:text-xl mb-8 line-clamp-2 max-w-3xl leading-relaxed font-light">
                     {{ featuredPost?.shortDescription }}
                   </p>
 
-                  <div class="flex items-center gap-4">
-                    <img
-                      :src="featuredPost?.author?.avatar || 'https://ui-avatars.com/api/?name=' + featuredPost?.author?.userName"
-                      :alt="featuredPost?.author?.userName"
-                      class="w-12 h-12 object-cover rounded-full border-2 border-white/50 [image-rendering:-webkit-optimize-contrast] image-crisp" />
-                    <div>
-                      <div class="text-white font-bold">{{ featuredPost?.author?.userName }}</div>
-                      <div class="text-gray-400 text-sm">{{ formatDate(featuredPost?.created_at) }} • {{
-                        calculateReadTime(featuredPost?.content)
-                      }} min read</div>
+                  <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-4">
+                      <div class="relative">
+                        <div
+                          class="absolute inset-0 bg-orange-500 rounded-full blur opacity-50 group-hover:opacity-100 transition-opacity">
+                        </div>
+                        <img
+                          :src="featuredPost?.author?.avatar || 'https://ui-avatars.com/api/?name=' + featuredPost?.author?.userName"
+                          :alt="featuredPost?.author?.userName"
+                          class="relative w-14 h-14 object-cover rounded-full border-2 border-white/50 image-crisp" />
+                      </div>
+                      <div>
+                        <div class="text-white font-bold text-lg">{{ featuredPost?.author?.userName }}</div>
+                        <div class="text-gray-400 text-sm flex items-center gap-2">
+                          <span>{{ formatDate(featuredPost?.created_at) }}</span>
+                          <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
+                          <span>{{ calculateReadTime(featuredPost?.content) }} min read</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="hidden md:flex items-center gap-2 text-white/80 text-sm font-medium ml-auto group-hover:translate-x-2 transition-transform">
+                      Read Article <i class='bx bx-right-arrow-alt text-2xl'></i>
                     </div>
                   </div>
                 </div>
               </div>
             </router-link>
           </section>
+
           <!-- Regular Posts Grid -->
           <section v-loading="isFetching" v-if="posts?.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <router-link v-for="post in posts" :key="post.id" :to="`/blog/${post.id}`"
-              class="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full border border-transparent dark:border-gray-700">
-              <div class="relative h-56 overflow-hidden">
+            <router-link v-for="(post, index) in posts" :key="post.id" :to="`/blog/${post.id}`"
+              class="group bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col h-full border border-gray-100 dark:border-gray-700/50 hover:border-indigo-500/30 dark:hover:border-indigo-500/30 relative isolate">
+
+              <!-- Hover Glow -->
+              <div
+                class="absolute inset-0 -z-10 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+              </div>
+
+              <div class="relative h-64 overflow-hidden">
                 <img :src="getImageUrl(post?.thumbnail)" :alt="post?.name"
-                  class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                <div class="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500"></div>
+
                 <span
-                  class="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-sm text-indigo-600 text-xs font-bold rounded-full shadow-md">
+                  class="absolute top-4 right-4 px-3 py-1 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md text-indigo-600 dark:text-indigo-400 text-xs font-bold rounded-full shadow-lg border border-white/20 dark:border-gray-700">
                   {{ post?.category || 'Travel' }}
                 </span>
               </div>
 
-              <div class="p-6 flex flex-col flex-grow">
+              <div class="p-8 flex flex-col flex-grow">
+                <div class="mb-4 flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                  <i class='bx bx-calendar text-indigo-500'></i>
+                  <span>{{ formatDate(post?.created_at) }}</span>
+                </div>
+
                 <h3
-                  class="text-xl font-bold text-gray-800 dark:text-white mb-3 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
+                  class="text-2xl font-bold text-gray-800 dark:text-white mb-4 leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors line-clamp-2">
                   {{ post?.name }}
                 </h3>
-                <p class="text-gray-600 dark:text-gray-300 text-sm mb-6 line-clamp-3 flex-grow">
+
+                <p class="text-gray-600 dark:text-gray-300 text-sm mb-6 line-clamp-3 flex-grow leading-relaxed">
                   {{ post?.shortDescription }}
                 </p>
 
                 <div
-                  class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 mt-auto">
+                  class="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-700/50 mt-auto">
                   <div class="flex items-center gap-3">
                     <img :src="post?.author?.avatar || 'https://ui-avatars.com/api/?name=' + post?.author?.userName"
                       :alt="post?.author?.userName"
-                      class="w-8 h-8 rounded-full object-cover border border-gray-200 image-crisp" />
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ post?.author?.userName
-                    }}</span>
+                      class="w-8 h-8 rounded-full object-cover border border-gray-200 dark:border-gray-600 image-crisp" />
+                    <span class="text-sm font-bold text-gray-700 dark:text-gray-200">{{ post?.author?.userName }}</span>
                   </div>
-                  <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{ calculateReadTime(post?.content)
-                  }} min read</span>
+                  <span
+                    class="text-xs font-semibold text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
+                    {{ calculateReadTime(post?.content) }} min read
+                  </span>
                 </div>
               </div>
             </router-link>
@@ -231,7 +338,7 @@ const getImageUrl = (thumbnail) => {
           <!-- Pagination -->
           <div class="flex justify-center items-center gap-4 pt-8" v-if="meta?.totalPages > 1">
             <button @click="setPage(params.p - 1)" :disabled="params.p <= 1"
-              class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-indigo-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+              class="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-indigo-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
               <i class='bx bx-chevron-left text-2xl'></i>
             </button>
 
@@ -240,16 +347,17 @@ const getImageUrl = (thumbnail) => {
                 v-if="page === params.p || page === 1 || page === meta?.totalPages || (page >= params.p - 1 && page <= params.p + 1)"
                 @click="setPage(page)"
                 :class="page === params.p
-                  ? 'bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-200'
-                  : 'border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-500 hover:text-indigo-500 dark:hover:text-indigo-400'"
-                class="w-10 h-10 rounded-full flex items-center justify-center transition-all">
+                  ? 'bg-indigo-600 text-white font-bold shadow-lg shadow-indigo-500/30 scale-110'
+                  : 'border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-indigo-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20'"
+                class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300">
                 {{ page }}
               </button>
-              <span v-else-if="page === params.p - 2 || page === params.p + 2" class="text-gray-400">...</span>
+              <span v-else-if="page === params.p - 2 || page === params.p + 2"
+                class="text-gray-400 font-bold">...</span>
             </template>
 
             <button @click="setPage(params.p + 1)" :disabled="params.p >= meta?.totalPages"
-              class="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-indigo-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+              class="w-12 h-12 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:border-indigo-500 hover:text-indigo-500 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
               <i class='bx bx-chevron-right text-2xl'></i>
             </button>
           </div>
@@ -258,48 +366,62 @@ const getImageUrl = (thumbnail) => {
         <!-- Sidebar (4 cols) -->
         <aside class="lg:col-span-4 space-y-8">
           <!-- Search Widget -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div
+            class="hidden lg:block bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 border border-gray-100 dark:border-gray-700/50">
             <h3
-              class="text-lg font-bold text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
-              Search</h3>
+              class="text-xl font-black text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
+              Search Stories
+            </h3>
             <div class="relative group">
               <div
-                class="absolute inset-0 bg-indigo-500/10 rounded-full blur-md group-hover:bg-indigo-500/20 transition-all">
+                class="absolute inset-0 bg-indigo-500/20 rounded-2xl blur-md group-hover:bg-indigo-500/30 transition-all duration-500">
               </div>
               <div
-                class="relative flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full p-2 shadow-sm transition-all focus-within:bg-white dark:focus-within:bg-gray-600 focus-within:ring-2 focus-within:ring-indigo-500/30">
-                <i class='bx bx-search text-2xl text-gray-400 dark:text-gray-300 ml-4'></i>
-                <input v-model="searchQuery" type="text" placeholder="Search title blog"
-                  class="w-full bg-transparent border-none outline-none text-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2 text-lg" />
+                class="relative flex items-center bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-2xl p-3 shadow-sm transition-all focus-within:bg-white dark:focus-within:bg-gray-700 focus-within:ring-2 focus-within:ring-indigo-500/30">
+                <i class='bx bx-search text-2xl text-gray-400 dark:text-gray-300 ml-3'></i>
+                <input v-model="searchQuery" type="text" placeholder="What are you looking for?"
+                  class="w-full bg-transparent border-none outline-none text-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2 text-base font-medium" />
               </div>
             </div>
           </div>
 
           <!-- Categories Widget -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div
+            class="hidden lg:block bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 border border-gray-100 dark:border-gray-700/50">
             <h3
-              class="text-lg font-bold text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
-              Categories</h3>
-            <div class="space-y-2">
+              class="text-xl font-black text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
+              Categories
+            </h3>
+            <div class="space-y-3">
               <button v-for="category in categories" :key="category?.value" @click="setCategory(category?.value)"
-                class="w-full flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group">
+                class="w-full flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-300 group border border-transparent hover:border-gray-200 dark:hover:border-gray-600"
+                :class="activeCategory === category.value
+                  ? 'text-white shadow-lg shadow-indigo-500/30 scale-105'
+                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-900 dark:hover:text-white'">
                 <span
-                  class="text-gray-600 dark:text-gray-300 font-medium group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                  class="text-gray-600 dark:text-gray-300 font-bold group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors flex items-center gap-3">
+                  <span class="w-2 h-2 rounded-full bg-gray-300 group-hover:bg-indigo-500 transition-colors"></span>
                   {{ category?.label }}
                 </span>
+                <i
+                  class='bx bx-chevron-right text-gray-400 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all'></i>
               </button>
             </div>
           </div>
 
           <!-- Tags Widget -->
-          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <div
+            class="hidden lg:block bg-white dark:bg-gray-800 rounded-3xl shadow-lg p-8 border border-gray-100 dark:border-gray-700/50">
             <h3
-              class="text-lg font-bold text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
-              Popular Tags</h3>
-            <div class="flex flex-wrap gap-2">
+              class="text-xl font-black text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
+              Trending Tags
+            </h3>
+            <div class="flex flex-wrap gap-3">
               <span v-for="tag in tags" :key="tag" @click="toggleTag(tag)"
-                :class="activeTags.includes(tag) ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'"
-                class="px-3 py-1.5 text-xs font-bold rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer select-none">
+                :class="activeTags.includes(tag)
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                  : 'bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'"
+                class="px-4 py-2 text-sm font-bold rounded-xl transition-all duration-300 cursor-pointer select-none border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800">
                 #{{ tag }}
               </span>
             </div>
@@ -307,24 +429,125 @@ const getImageUrl = (thumbnail) => {
 
           <!-- Newsletter Widget -->
           <div
-            class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-xl p-8 text-center text-white relative overflow-hidden">
+            class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-3xl shadow-xl p-8 text-center text-white relative overflow-hidden group">
             <div
               class="absolute top-0 left-0 w-full h-full opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]">
             </div>
+
+            <!-- Glow Effect -->
+            <div
+              class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-700">
+            </div>
+            <div
+              class="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-500 rounded-full blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-700">
+            </div>
+
             <div class="relative z-10">
-              <i class='bx bx-paper-plane text-4xl mb-4 text-indigo-400'></i>
-              <h3 class="text-xl font-bold mb-2">Travel Inspiration</h3>
-              <p class="text-gray-400 text-sm mb-6">Join 10,000+ travelers and get exclusive guides.</p>
-              <input type="email" placeholder="Your email address"
-                class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-400 mb-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white/20 transition-all" />
-              <button
-                class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-colors shadow-lg shadow-indigo-900/50">Subscribe
-                Now</button>
+              <div
+                class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md border border-white/10">
+                <i class='bx bx-paper-plane text-3xl text-indigo-400'></i>
+              </div>
+              <h3 class="text-2xl font-black mb-3">Travel Inspiration</h3>
+              <p class="text-gray-400 text-sm mb-8 leading-relaxed">Join 10,000+ travelers and get exclusive guides,
+                tips, and
+                hidden gems delivered to your inbox.</p>
+
+              <div class="space-y-3">
+                <input type="email" placeholder="Your email address"
+                  class="w-full px-4 py-3.5 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white/10 transition-all text-sm font-medium" />
+                <button
+                  class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-indigo-900/50 hover:shadow-indigo-600/50 hover:-translate-y-0.5">
+                  Subscribe Now
+                </button>
+              </div>
             </div>
           </div>
         </aside>
       </div>
     </div>
+
+    <!-- Mobile Filter Dialog -->
+    <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="translate-y-full opacity-0"
+      enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-200 ease-in"
+      leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-full opacity-0">
+      <div v-if="showMobileFilter" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6">
+        <!-- Backdrop -->
+        <div @click="showMobileFilter = false" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity">
+        </div>
+
+        <!-- Content -->
+        <div
+          class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+
+          <!-- Header -->
+          <div
+            class="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl z-10">
+            <h3 class="text-xl font-black text-gray-900 dark:text-white">Filters</h3>
+            <button @click="showMobileFilter = false"
+              class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+              <i class='bx bx-x text-2xl text-gray-500'></i>
+            </button>
+          </div>
+
+          <!-- Scrollable Body -->
+          <div class="p-6 overflow-y-auto space-y-8">
+            <!-- Search -->
+            <div>
+              <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <i class='bx bx-search text-indigo-500'></i> Search
+              </h4>
+              <div
+                class="relative flex items-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/30">
+                <input v-model="searchQuery" type="text" placeholder="Search stories..."
+                  class="w-full bg-transparent border-none outline-none text-gray-700 dark:text-white placeholder-gray-400 text-base font-medium" />
+              </div>
+            </div>
+
+            <!-- Categories -->
+            <div>
+              <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <i class='bx bx-category text-indigo-500'></i> Categories
+              </h4>
+              <div class="grid grid-cols-2 gap-3">
+                <button v-for="category in categories" :key="category.value" @click="setCategory(category.value)"
+                  class="px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 border text-left flex items-center justify-between group"
+                  :class="activeCategory === category.value
+                    ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                    : 'bg-gray-50 dark:bg-gray-800 border-transparent hover:border-gray-200 dark:hover:border-gray-700 text-gray-600 dark:text-gray-300'">
+                  {{ category.label }}
+                  <i v-if="activeCategory === category.value" class='bx bx-check text-lg'></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tags -->
+            <div>
+              <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <i class='bx bx-hash text-indigo-500'></i> Trending Tags
+              </h4>
+              <div class="flex flex-wrap gap-2">
+                <span v-for="tag in tags" :key="tag" @click="toggleTag(tag)"
+                  :class="activeTags.includes(tag)
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                  class="px-3 py-1.5 text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer select-none">
+                  #{{ tag }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
+            <button @click="showMobileFilter = false"
+              class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 active:scale-95 transition-transform flex items-center justify-center gap-2">
+              <span>Show Results</span>
+              <i class='bx bx-right-arrow-alt text-xl'></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -346,5 +569,65 @@ const getImageUrl = (thumbnail) => {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
   image-rendering: high-quality;
+}
+
+/* Custom Animations */
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
 }
 </style>
