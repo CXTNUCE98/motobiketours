@@ -121,6 +121,7 @@ const handleApplyFilters = (filters) => {
         searchQuery.value = filters.searchQuery;
     }
     currentPage.value = 1; // Reset to first page on filter change
+    showFilters.value = false;
 };
 
 const handleClearFilters = () => {
@@ -189,6 +190,26 @@ const deleteTour = (tourId: string) => {
     });
 };
 
+const optionFilterPrice = [
+    {
+        label: 'Mặc định',
+        value: 'default',
+    },
+    {
+        label: 'Giá thấp nhất',
+        value: 'price-low',
+    },
+    {
+        label: 'Giá cao nhất',
+        value: 'price-high',
+    },
+    {
+        label: 'Thời gian',
+        value: 'duration',
+    },
+
+]
+
 onMounted(() => {
     if (route.query.keyword) {
         searchQuery.value = route.query.keyword as string;
@@ -207,7 +228,7 @@ onMounted(() => {
 
 <template>
     <div
-        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
         <!-- Hero Section -->
         <div
             class="relative bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 dark:from-blue-900 dark:via-cyan-900 dark:to-blue-900 text-white py-20 overflow-hidden">
@@ -231,7 +252,7 @@ onMounted(() => {
                     </p>
 
                     <!-- Quick Stats -->
-                    <div class="grid grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
                         <div class="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
                             <div class="text-3xl font-bold">{{ data?.total || 0 }}+</div>
                             <div class="text-sm text-blue-100">Tours</div>
@@ -271,57 +292,72 @@ onMounted(() => {
                 <div class="flex-1">
                     <!-- Toolbar -->
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-8 flex flex-wrap items-center justify-between gap-4 transition-colors duration-300">
-                        <div class="flex items-center gap-3">
-                            <span class="text-gray-700 dark:text-gray-300 font-semibold">
-                                {{ data?.total || 0 }} tours
-                            </span>
-                            <span class="text-gray-400">|</span>
-                            <button @click="showFilters = !showFilters"
-                                class="lg:hidden flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-300 font-medium">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                </svg>
-                                Bộ lọc
-                            </button>
-                        </div>
+                        class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 mb-8 transition-all duration-300 sticky top-20 z-30 border border-gray-100 dark:border-gray-700">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <!-- Left: Count & Mobile Filter -->
+                            <div class="flex items-center justify-between md:justify-start gap-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-gray-700 dark:text-gray-300 font-bold text-lg">
+                                        {{ data?.total || 0 }} tours
+                                    </span>
+                                    <span class="hidden md:inline text-gray-300 dark:text-gray-600">|</span>
+                                </div>
 
-                        <div class="flex items-center gap-3">
-                            <!-- Sort Dropdown -->
-                            <select v-model="sortBy"
-                                class="px-4 py-2 border-2 border-gray-200 dark:border-gray-700 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900 transition-all duration-300 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 cursor-pointer">
-                                <option value="default">Mặc định</option>
-                                <option value="price-low">Giá thấp đến cao</option>
-                                <option value="price-high">Giá cao đến thấp</option>
-                                <option value="duration">Thời gian</option>
-                            </select>
-
-                            <!-- View Mode Toggle -->
-                            <div class="flex bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-                                <button @click="viewMode = 'grid'" class="p-2 rounded transition-all duration-300"
-                                    :class="viewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-md text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                <button @click="showFilters = !showFilters"
+                                    class="lg:hidden flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-300 font-medium">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                                     </svg>
-                                </button>
-                                <button @click="viewMode = 'list'" class="p-2 rounded transition-all duration-300"
-                                    :class="viewMode === 'list' ? 'bg-white dark:bg-gray-600 shadow-md text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
-                                            clip-rule="evenodd" />
-                                    </svg>
+                                    Bộ lọc
                                 </button>
                             </div>
-                            <el-button v-if="isAdmin" type="primary" @click="handleCreateTour"
-                                class="!rounded-lg !px-6 !py-2 !font-bold !bg-gradient-to-r !from-blue-600 !to-cyan-600 !border-none hover:!scale-105 transition-transform duration-300 shadow-lg">
-                                <el-icon class="mr-2">
-                                    <Plus />
-                                </el-icon>
-                                Create tour
-                            </el-button>
+
+                            <!-- Right: Actions -->
+                            <div class="flex items-center justify-end gap-3 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
+                                <!-- Sort Dropdown -->
+                                <el-select v-model="sortBy" placeholder="Sắp xếp" size="large"
+                                    class="!w-40 md:!w-48 [&_.el-select\_\_wrapper]:!rounded-xl [&_.el-select\_\_wrapper]:!shadow-none [&_.el-select\_\_wrapper]:bg-gray-50 [&_.el-select\_\_wrapper]:dark:bg-gray-700 [&_.el-select\_\_wrapper]:border-0">
+                                    <template #prefix>
+                                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"></path>
+                                        </svg>
+                                    </template>
+                                    <el-option v-for="item in optionFilterPrice" :key="item.value" :label="item.label"
+                                        :value="item.value" />
+                                </el-select>
+
+                                <!-- View Mode Toggle -->
+                                <div class="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1 shrink-0">
+                                    <button @click="viewMode = 'grid'"
+                                        class="p-2 rounded-lg transition-all duration-300"
+                                        :class="viewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                        </svg>
+                                    </button>
+                                    <button @click="viewMode = 'list'"
+                                        class="p-2 rounded-lg transition-all duration-300"
+                                        :class="viewMode === 'list' ? 'bg-white dark:bg-gray-600 shadow-sm text-blue-600 dark:text-blue-400' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'">
+                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <el-button v-if="isAdmin" type="primary" @click="handleCreateTour"
+                                    class="!rounded-xl !px-4 !py-2 !h-[40px] !font-bold !bg-gradient-to-r !from-blue-600 !to-cyan-600 !border-none hover:opacity-80 transition-transform duration-300 shadow-lg shrink-0">
+                                    <el-icon class="mr-2">
+                                        <Plus />
+                                    </el-icon>
+                                    <span class="hidden sm:inline">Create tour</span>
+                                    <span class="sm:hidden">Tạo</span>
+                                </el-button>
+                            </div>
                         </div>
                     </div>
 
@@ -550,6 +586,39 @@ onMounted(() => {
         <LazyCreateTourDialog v-model:visible="showCreateDialog" :tour-data="selectedTour"
             @success="handleCreateSuccess" />
     </div>
+    <!-- Mobile Filter Dialog -->
+    <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="translate-y-full opacity-0"
+        enter-to-class="translate-y-0 opacity-100" leave-active-class="transition duration-200 ease-in"
+        leave-from-class="translate-y-0 opacity-100" leave-to-class="translate-y-full opacity-0">
+        <div v-if="showFilters" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6">
+            <!-- Backdrop -->
+            <div @click="showFilters = false" class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity">
+            </div>
+
+            <!-- Content -->
+            <div
+                class="relative w-full top--30px md:top-6 max-w-lg bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+
+                <!-- Header -->
+                <div
+                    class="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl z-10">
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white">Bộ lọc</h3>
+                    <button @click="showFilters = false"
+                        class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- TourFilter Component -->
+                <TourFilter :initial-filters="activeFilters" :show-mobile="true" @apply="handleApplyFilters"
+                    @clear="handleClearFilters" />
+
+            </div>
+        </div>
+    </Transition>
 </template>
 
 <style scoped>
