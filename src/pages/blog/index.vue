@@ -128,16 +128,6 @@ const getImageUrl = (thumbnail) => {
           Discover hidden gems, expert tips, and unforgettable adventures from our motorbike tours across Vietnam.
         </p>
 
-        <!-- Search Bar -->
-        <div class="max-w-2xl mx-auto relative group">
-          <div class="absolute inset-0 bg-white/20 rounded-full blur-md group-hover:bg-white/30 transition-all"></div>
-          <div
-            class="relative flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-2 shadow-2xl transition-all focus-within:bg-white/20 focus-within:scale-[1.02]">
-            <i class='bx bx-search text-2xl text-white/70 ml-4'></i>
-            <input v-model="searchQuery" type="text" placeholder="Search title blog"
-              class="w-full bg-transparent border-none outline-none text-white placeholder-white/60 px-4 py-3 text-lg" />
-          </div>
-        </div>
       </div>
     </section>
 
@@ -267,8 +257,23 @@ const getImageUrl = (thumbnail) => {
 
         <!-- Sidebar (4 cols) -->
         <aside class="lg:col-span-4 space-y-8">
-          <!-- Popular Posts Widget -->
-
+          <!-- Search Widget -->
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+            <h3
+              class="text-lg font-bold text-gray-800 dark:text-white mb-6 pb-2 border-b-2 border-indigo-500 inline-block">
+              Search</h3>
+            <div class="relative group">
+              <div
+                class="absolute inset-0 bg-indigo-500/10 rounded-full blur-md group-hover:bg-indigo-500/20 transition-all">
+              </div>
+              <div
+                class="relative flex items-center bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full p-2 shadow-sm transition-all focus-within:bg-white dark:focus-within:bg-gray-600 focus-within:ring-2 focus-within:ring-indigo-500/30">
+                <i class='bx bx-search text-2xl text-gray-400 dark:text-gray-300 ml-4'></i>
+                <input v-model="searchQuery" type="text" placeholder="Search title blog"
+                  class="w-full bg-transparent border-none outline-none text-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 px-4 py-2 text-lg" />
+              </div>
+            </div>
+          </div>
 
           <!-- Categories Widget -->
           <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
