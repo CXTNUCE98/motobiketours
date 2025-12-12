@@ -36,7 +36,13 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     'nuxt-api-party',
     '@nuxt/image',
+    '@nuxtjs/color-mode',
   ],
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light',
+  },
   i18n: {
     defaultLocale: 'vi',
     langDir: 'locales',
@@ -54,9 +60,10 @@ export default defineNuxtConfig({
     },
   },
 
-  sitemap: {
-    siteUrl: 'https://motobiketours.vercel.app/',
+  site: {
+    url: 'https://motobiketours.vercel.app/',
   },
+  sitemap: {},
 
   css: ['@unocss/reset/tailwind.css', 'boxicons/css/boxicons.min.css'],
 

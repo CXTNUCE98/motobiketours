@@ -364,4 +364,10 @@ select::-webkit-scrollbar-thumb:hover {
     image-rendering: crisp-edges;
     image-rendering: high-quality;
 }
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
 </style>
