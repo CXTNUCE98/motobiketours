@@ -351,45 +351,51 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
             </div>
 
             <!-- Simplified Forms for Mobile -->
-            <form v-if="isSignUp" @submit.prevent="handleRegister" class="space-y-4">
-              <input v-model="registerForm.userName" type="text" placeholder="Name"
-                class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-              <input v-model="registerForm.email" type="email" placeholder="Email"
-                class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-              <div class="relative">
-                <input v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
-                  placeholder="Password"
-                  class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                <button type="button" @click="showRegisterPassword = !showRegisterPassword"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <div :class="showRegisterPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
-                </button>
-              </div>
-              <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Sign Up</button>
-              <p class="text-center text-sm text-slate-500 mt-4">
-                Already have an account? <a href="#" @click.prevent="toggleMode" class="text-indigo-600 font-bold">Sign
-                  In</a>
-              </p>
-            </form>
+            <Transition mode="out-in" enter-active-class="transition duration-300 ease-out"
+              enter-from-class="opacity-0 translate-y-8" enter-to-class="opacity-100 translate-y-0"
+              leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
+              leave-to-class="opacity-0 -translate-y-8">
+              <form v-if="isSignUp" key="mobile-signup" @submit.prevent="handleRegister" class="space-y-4">
+                <input v-model="registerForm.userName" type="text" placeholder="Name"
+                  class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
+                <input v-model="registerForm.email" type="email" placeholder="Email"
+                  class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
+                <div class="relative">
+                  <input v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
+                    placeholder="Password"
+                    class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
+                  <button type="button" @click="showRegisterPassword = !showRegisterPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <div :class="showRegisterPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
+                  </button>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Sign Up</button>
+                <p class="text-center text-sm text-slate-500 mt-4">
+                  Already have an account? <a href="#" @click.prevent="toggleMode"
+                    class="text-indigo-600 font-bold">Sign
+                    In</a>
+                </p>
+              </form>
 
-            <form v-else @submit.prevent="handleLogin" class="space-y-4">
-              <input v-model="loginForm.email" type="email" placeholder="Email"
-                class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-              <div class="relative">
-                <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
-                  placeholder="Password"
-                  class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                <button type="button" @click="showLoginPassword = !showLoginPassword"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <div :class="showLoginPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
-                </button>
-              </div>
-              <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Sign In</button>
-              <p class="text-center text-sm text-slate-500 mt-4">
-                Don't have an account? <a href="#" @click.prevent="toggleMode" class="text-indigo-600 font-bold">Sign
-                  Up</a>
-              </p>
-            </form>
+              <form v-else key="mobile-signin" @submit.prevent="handleLogin" class="space-y-4">
+                <input v-model="loginForm.email" type="email" placeholder="Email"
+                  class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
+                <div class="relative">
+                  <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
+                    placeholder="Password"
+                    class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
+                  <button type="button" @click="showLoginPassword = !showLoginPassword"
+                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
+                    <div :class="showLoginPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
+                  </button>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Sign In</button>
+                <p class="text-center text-sm text-slate-500 mt-4">
+                  Don't have an account? <a href="#" @click.prevent="toggleMode" class="text-indigo-600 font-bold">Sign
+                    Up</a>
+                </p>
+              </form>
+            </Transition>
           </div>
         </div>
 
