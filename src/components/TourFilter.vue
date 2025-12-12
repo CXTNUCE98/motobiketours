@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue';
 
 type FilterOptions = {
+    searchQuery?: string;
     duration: string;
     priceRange: { min: number; max: number };
     tourTypes: string[];
@@ -19,6 +20,7 @@ const props = defineProps<{
 }>();
 
 // Filter state
+const searchQuery = ref(props.initialFilters?.searchQuery || '');
 const selectedDuration = ref<string>(props.initialFilters?.duration || '');
 const priceMin = ref(props.initialFilters?.priceRange?.min || 0);
 const priceMax = ref(props.initialFilters?.priceRange?.max || 2000);
@@ -27,6 +29,7 @@ const selectedDepartFrom = ref(props.initialFilters?.departFrom || 'all');
 
 watch(() => props.initialFilters, (newFilters) => {
     if (newFilters) {
+        searchQuery.value = newFilters.searchQuery || '';
         selectedDuration.value = newFilters.duration || '';
         priceMin.value = newFilters.priceRange?.min || 0;
         priceMax.value = newFilters.priceRange?.max || 2000;
@@ -87,6 +90,7 @@ const toggleDuration = (value: string) => {
 
 const applyFilters = () => {
     emit('apply', {
+        searchQuery: searchQuery.value,
         duration: selectedDuration.value,
         priceRange: { min: priceMin.value, max: priceMax.value },
         tourTypes: selectedTypes.value,
@@ -95,6 +99,7 @@ const applyFilters = () => {
 };
 
 const clearFilters = () => {
+    searchQuery.value = '';
     selectedDuration.value = '';
     priceMin.value = 0;
     priceMax.value = 2000;
@@ -119,6 +124,21 @@ const clearFilters = () => {
                 class="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold rounded-full">
                 {{ activeFilterCount }}
             </span>
+        </div>
+
+        <!-- Search -->
+        <div class="mb-6">
+            <div class="relative">
+                <input v-model="searchQuery" type="text" placeholder="Tìm kiếm tour theo tên, địa điểm, loại hình..."
+                    class="w-full px-4 py-3 pr-12 rounded-xl text-gray-800 dark:text-white bg-gray-50 dark:bg-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-400" />
+                <button @click="applyFilters"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-lg hover:scale-105 transition-transform duration-300 shadow-md">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
         <!-- Duration Filter -->
@@ -176,8 +196,10 @@ const clearFilters = () => {
 
         <!-- Depart From Filter -->
         <div class="mb-6">
-            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Khởi hành từ</label>
-            <el-select v-model="selectedDepartFrom" placeholder="Select">
+            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 ">Khởi
+                hành từ</label>
+            <el-select v-model="selectedDepartFrom" placeholder="Select"
+                class="[&_.el-select\_\_wrapper]:dark:bg-gray-800 ">
                 <el-option v-for="item in departFromOptions" :key="item.value" :label="item.label"
                     :value="item.value" />
             </el-select>

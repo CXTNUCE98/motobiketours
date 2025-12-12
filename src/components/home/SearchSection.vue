@@ -62,7 +62,7 @@ const handleSearch = () => {
                                 <i class="i-carbon-search text-xl"></i>
                             </div>
                             <input v-model="searchForm.keyword" type="text" placeholder="Bạn muốn đi đâu?"
-                                class="w-full h-10 pl-10 pr-4 bg-transparent border-none text-gray-900 dark:text-white placeholder-gray-400 font-medium"
+                                class="w-full h-10 pl-10 pr-4 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                                 @keyup.enter="handleSearch" />
                         </div>
                     </div>
@@ -76,7 +76,7 @@ const handleSearch = () => {
                                 <i class="i-carbon-map text-xl"></i>
                             </div>
                             <select v-model="searchForm.location"
-                                class="w-full h-10 pl-10 pr-8 bg-transparent border-none text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
+                                class="w-full h-10 pl-10 pr-8 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
                                 <option v-for="loc in locations" :key="loc.value" :value="loc.value"
                                     class="dark:bg-gray-800">
                                     {{ loc.label }}
@@ -97,7 +97,7 @@ const handleSearch = () => {
                                 <i class="i-carbon-calendar text-xl"></i>
                             </div>
                             <select v-model="searchForm.duration"
-                                class="w-full h-10 pl-10 pr-8 bg-transparent border-none text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
+                                class="w-full h-10 pl-10 pr-8 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
                                 <option v-for="option in durationOptions" :key="option.value" :value="option.value"
                                     class="dark:bg-gray-800">
                                     {{ option.label }}
