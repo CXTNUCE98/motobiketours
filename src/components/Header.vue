@@ -124,8 +124,8 @@ function formLogin() {
             <div class="flex items-center justify-between h-16 md:h-20">
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
-                    <img :src="theme === 'dark' ? '/logo_dark.png' : '/logo.png'" class="h-80px object-cover "
-                        alt="logo">
+                    <img src="/logo.png" class="h-80px object-cover dark:hidden" alt="logo">
+                    <img src="/logo_dark.png" class="h-80px object-cover hidden dark:block" alt="logo">
                 </NuxtLink>
 
                 <!-- Desktop Navigation -->
