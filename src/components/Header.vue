@@ -124,10 +124,8 @@ function formLogin() {
             <div class="flex items-center justify-between h-16 md:h-20">
                 <!-- Logo -->
                 <NuxtLink to="/" class="flex items-center">
-                    <div class="text-2xl md:text-3xl font-bold">
-                        <span class="text-slate-800 dark:text-white">AN</span><span
-                            class="text-sky-500 dark:text-cyan-400">DAGO</span>
-                    </div>
+                    <img :src="theme === 'dark' ? '/logo_dark.png' : '/logo.png'" class="h-80px object-cover "
+                        alt="logo">
                 </NuxtLink>
 
                 <!-- Desktop Navigation -->
@@ -188,7 +186,7 @@ function formLogin() {
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
                                         user?.userName
-                                    }}</p>
+                                        }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
 
