@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
+
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { fetchTours, type Tour } from '@/services/tourApi';
@@ -11,6 +12,8 @@ import { useAuth } from '~/composables/useAuth';
 import { logger } from '~/utils/logger';
 
 const route = useRoute();
+const { formatPrice } = useCurrency();
+const localePath = useLocalePath();
 
 const searchQuery = ref('');
 const showFilters = ref(false);
@@ -403,7 +406,8 @@ onMounted(() => {
                             <div v-for="(tour, index) in processedTours" :key="tour.id" class="animate-fade-in"
                                 :style="{ animationDelay: `${index * 0.1}s` }">
                                 <!-- Grid View -->
-                                <NuxtLink v-if="viewMode === 'grid'" :to="`/tour/${tour.id}`" class="block group">
+                                <NuxtLink v-if="viewMode === 'grid'" :to="localePath(`/tour/${tour.id}`)"
+                                    class="block group">
                                     <div
                                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                                         <!-- Image -->
@@ -462,7 +466,7 @@ onMounted(() => {
                                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                 <div
                                                     class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                                    ${{ tour.price_usd }}
+                                                    {{ formatPrice(tour.price_usd) }}
                                                 </div>
                                                 <button
                                                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
@@ -478,7 +482,7 @@ onMounted(() => {
                                 </NuxtLink>
 
                                 <!-- List View -->
-                                <NuxtLink v-else :to="`/tour/${tour.id}`" class="block group">
+                                <NuxtLink v-else :to="localePath(`/tour/${tour.id}`)" class="block group">
                                     <div
                                         class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl border border-gray-100 dark:border-gray-700">
                                         <div class="flex flex-col md:flex-row">
@@ -519,7 +523,7 @@ onMounted(() => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>Khởi hành:</strong> {{ tour.departFrom
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -548,7 +552,7 @@ onMounted(() => {
                                                     class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                     <div
                                                         class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                                        ${{ tour.price_usd }}
+                                                        {{ formatPrice(tour.price_usd) }}
                                                     </div>
                                                     <button
                                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:scale-105 transition-transform duration-300 shadow-lg flex items-center gap-2">

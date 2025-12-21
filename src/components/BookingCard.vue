@@ -16,9 +16,14 @@ const toggleWishlist = () => {
     isWishlisted.value = !isWishlisted.value;
 };
 
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const localePath = useLocalePath();
+
 const handleBookNow = () => {
     // Navigate to contact or booking page
-    window.location.href = '/contact';
+    router.push(localePath('/contact'));
 };
 
 const shareOn = (platform: string) => {
@@ -36,9 +41,10 @@ const shareOn = (platform: string) => {
     }
 };
 
+const { formatPrice: formatCurrency } = useCurrency();
+
 const formatPrice = (price: number | string) => {
-    if (typeof price === 'string') return price;
-    return new Intl.NumberFormat('vi-VN').format(price);
+    return formatCurrency(price);
 };
 </script>
 
@@ -50,10 +56,10 @@ const formatPrice = (price: number | string) => {
             <div class="flex items-baseline gap-3 mb-2">
                 <span
                     class="text-4xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                    {{ formatPrice(price) }}<span v-if="typeof price === 'number'"> ₫</span>
+                    {{ formatPrice(price) }}
                 </span>
                 <span v-if="originalPrice" class="text-lg text-gray-400 line-through">
-                    {{ formatPrice(originalPrice) }} ₫
+                    {{ formatPrice(originalPrice) }}
                 </span>
             </div>
             <p class="text-sm text-gray-500 dark:text-gray-400">Giá cho mỗi người</p>

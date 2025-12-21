@@ -44,7 +44,7 @@ export const transformTourToCardProps = (tour: Tour) => {
     id: tour.id,
     image: getTourImageUrl(tour.thumbnail),
     title: tour.title,
-    price: convertUsdToVnd(tour.price_usd),
+    price: tour.price_usd, // Pass USD price directly
     rating: 5, // Default rating, can be enhanced later
     duration: tour.duration || '',
     people: getPeopleCount(tour.routes),
@@ -66,7 +66,7 @@ export const transformTourToCardPropsWithDiscount = (
   const baseProps = transformTourToCardProps(tour);
   return {
     ...baseProps,
-    originalPrice: originalPrice ? convertUsdToVnd(originalPrice) : undefined,
+    originalPrice: originalPrice, // Pass USD price directly
     discount,
   };
 };

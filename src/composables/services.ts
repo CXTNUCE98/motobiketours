@@ -19,6 +19,8 @@ export const services: Service[] = [
       'Hỗ trợ ghế ngồi an toàn cho trẻ nhỏ',
     ],
     priceRange: 'Từ 1.500.000 VNĐ/ngày',
+    priceUsd: 63,
+    priceUnit: 'day',
     duration: 'Linh hoạt từ 1-7 ngày',
     highlights: [
       'Khám phá các điểm đến thân thiện với gia đình',
@@ -82,6 +84,8 @@ export const services: Service[] = [
       'Chương trình gắn kết đội nhóm',
     ],
     priceRange: 'Từ 2.500.000 VNĐ/người',
+    priceUsd: 105,
+    priceUnit: 'person',
     duration: 'Linh hoạt từ 1-5 ngày',
     highlights: [
       'Hoạt động team building sáng tạo',
@@ -146,6 +150,8 @@ export const services: Service[] = [
       'Photographer riêng (tùy chọn)',
     ],
     priceRange: 'Liên hệ để báo giá',
+    priceUsd: 0,
+    priceUnit: 'contact',
     duration: 'Tùy chỉnh theo yêu cầu',
     highlights: [
       'Lộ trình độc quyền, không trùng lặp',
@@ -209,6 +215,8 @@ export const services: Service[] = [
       'Hỗ trợ hành lý lớn',
     ],
     priceRange: 'Từ 150.000 VNĐ',
+    priceUsd: 7,
+    priceUnit: 'trip',
     duration: 'Theo chuyến',
     highlights: [
       'Đón tận nơi, đúng giờ',

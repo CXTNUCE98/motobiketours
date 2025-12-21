@@ -53,15 +53,17 @@ const handleScroll = () => {
     }
 }
 
+const localePath = useLocalePath()
+
 // Menu items với i18n
 const menuItems = computed(() => [
-    { name: t('nav.home'), path: '/', icon: '' },
-    { name: t('nav.about'), path: '/about', icon: '' },
-    { name: t('nav.tours'), path: '/tour', hasDropdown: true, icon: '' },
-    { name: t('nav.services'), path: '/service', hasDropdown: true, icon: '' },
-    { name: t('nav.news'), path: '/news', hasDropdown: true, icon: '' },
-    { name: t('nav.blog'), path: '/blog', hasDropdown: true, icon: '' },
-    { name: t('nav.contact'), path: '/contact', icon: '' },
+    { name: t('nav.home'), path: localePath('/'), icon: '' },
+    { name: t('nav.about'), path: localePath('/about'), icon: '' },
+    { name: t('nav.tours'), path: localePath('/tour'), hasDropdown: true, icon: '' },
+    { name: t('nav.services'), path: localePath('/service'), hasDropdown: true, icon: '' },
+    { name: t('nav.news'), path: localePath('/news'), hasDropdown: true, icon: '' },
+    { name: t('nav.blog'), path: localePath('/blog'), hasDropdown: true, icon: '' },
+    { name: t('nav.contact'), path: localePath('/contact'), icon: '' },
 ])
 
 // Language options
@@ -86,8 +88,9 @@ const cartCount = ref(0)
 const showMobileMenu = ref(false)
 
 const isActive = (path: string) => {
-    if (path === '/') {
-        return route.path === '/'
+    const homePath = localePath('/')
+    if (path === homePath) {
+        return route.path === homePath
     }
     return route.path.startsWith(path)
 }

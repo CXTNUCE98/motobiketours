@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
+
 import { ref, computed, watch } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import { fetchTourById, fetchTours, type Tour } from '@/services/tourApi';
@@ -8,6 +9,8 @@ import BookingCard from '@/components/BookingCard.vue';
 import { sanitizeHtml } from '~/utils/sanitize';
 
 const route = useRoute();
+const { formatPrice } = useCurrency();
+const localePath = useLocalePath();
 const id = computed(() => String(route.params.id || ''));
 
 // Fetch Tour Detail
@@ -97,7 +100,7 @@ const relatedTours = computed(() => {
         <div class="container mx-auto px-4">
             <!-- Breadcrumb -->
             <nav class="mb-6 flex items-center gap-2 text-sm">
-                <NuxtLink to="/tour"
+                <NuxtLink :to="localePath('/tour')"
                     class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -133,7 +136,7 @@ const relatedTours = computed(() => {
                         </div>
                         <div class="md:col-span-8 flex flex-col justify-between">
                             <div>
-                                <NuxtLink :to="`/tour/${item?.id}`"
+                                <NuxtLink :to="localePath(`/tour/${item?.id}`)"
                                     class="text-2xl font-bold text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 block mb-4">
                                     {{ item?.title }}
                                 </NuxtLink>
@@ -172,14 +175,14 @@ const relatedTours = computed(() => {
                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                 <div
                                     class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                    {{ item?.price_usd }} USD
+                                    {{ formatPrice(item?.price_usd) }}
                                 </div>
                                 <div class="flex gap-3">
-                                    <NuxtLink :to="`/tour/${item?.id}`"
+                                    <NuxtLink :to="localePath(`/tour/${item?.id}`)"
                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
                                         Chi tiết
                                     </NuxtLink>
-                                    <NuxtLink to="/contact"
+                                    <NuxtLink :to="localePath('/contact')"
                                         class="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
                                         Đặt ngay
                                     </NuxtLink>
@@ -198,7 +201,7 @@ const relatedTours = computed(() => {
         <div class="container mx-auto px-4">
             <!-- Breadcrumb -->
             <nav class="mb-6 flex items-center gap-2 text-sm">
-                <NuxtLink to="/tour"
+                <NuxtLink :to="localePath('/tour')"
                     class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -353,7 +356,7 @@ const relatedTours = computed(() => {
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <NuxtLink v-for="relatedTour in relatedTours" :key="relatedTour?.id"
-                        :to="`/tour/${relatedTour?.id}`" class="block group">
+                        :to="localePath(`/tour/${relatedTour?.id}`)" class="block group">
                         <div
                             class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700">
                             <div class="relative h-48 overflow-hidden">
@@ -370,10 +373,10 @@ const relatedTours = computed(() => {
                                 </h3>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-600 dark:text-gray-400">{{ relatedTour?.duration
-                                        }}</span>
+                                    }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                        {{ relatedTour?.price_usd }} USD
+                                        {{ formatPrice(relatedTour?.price_usd) }}
                                     </span>
                                 </div>
                             </div>
@@ -397,7 +400,7 @@ const relatedTours = computed(() => {
             </div>
             <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Không tìm thấy tour</h2>
             <p class="text-gray-600 dark:text-gray-400 mb-8">Tour bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
-            <NuxtLink to="/tour"
+            <NuxtLink :to="localePath('/tour')"
                 class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

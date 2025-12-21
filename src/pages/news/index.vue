@@ -5,6 +5,7 @@ import { news } from '../../composables/mockup'
 
 const selectedCategory = ref('all')
 const searchQuery = ref('')
+const localePath = useLocalePath()
 
 const categories = [
   { id: 'all', name: 'All News', icon: 'bx-news' },
@@ -149,7 +150,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
             {{ featuredNews.excerpt }}
           </p>
 
-          <router-link :to="`/news/${featuredNews.id}`"
+          <router-link :to="localePath(`/news/${featuredNews.id}`)"
             class="inline-flex items-center gap-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl hover:bg-orange-500 dark:hover:bg-orange-500 hover:text-white transition-all duration-300 transform hover:scale-105 group/btn">
             <span>Read Full Story</span>
             <i class="bx bx-right-arrow-alt text-2xl group-hover/btn:translate-x-1 transition-transform"></i>
@@ -184,7 +185,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
             class="relative h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 transform hover:-translate-y-2 border border-transparent dark:border-gray-700">
             <!-- Image Section -->
             <div class="relative h-56 overflow-hidden">
-              <router-link :to="`/news/${n.id}`">
+              <router-link :to="localePath(`/news/${n.id}`)">
                 <img :src="n.thumbnail" :alt="n.title"
                   class="w-full h-full object-cover transform group-hover:scale-110 group-hover:rotate-2 transition-all duration-700" />
               </router-link>
@@ -212,7 +213,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
               </div>
 
               <!-- Title -->
-              <router-link :to="`/news/${n.id}`">
+              <router-link :to="localePath(`/news/${n.id}`)">
                 <h3
                   class="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-orange-500 transition-colors duration-300">
                   {{ n.title }}
@@ -225,7 +226,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
               </p>
 
               <!-- Read More Button -->
-              <router-link :to="`/news/${n.id}`"
+              <router-link :to="localePath(`/news/${n.id}`)"
                 class="inline-flex items-center gap-2 text-orange-500 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                 <span>Read More</span>
                 <i class="bx bx-right-arrow-alt text-xl"></i>

@@ -60,6 +60,8 @@ export interface Service {
   icon: string;
   features: string[];
   priceRange: string;
+  priceUsd: number;
+  priceUnit: 'day' | 'person' | 'trip' | 'contact';
   duration?: string;
   highlights: string[];
   included: string[];

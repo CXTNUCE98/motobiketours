@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 
+
+const { currencySymbol, convertToVnd, locale } = useCurrency();
+
 type FilterOptions = {
     searchQuery?: string;
     duration: string;
@@ -171,19 +174,25 @@ const clearFilters = () => {
             <!-- Price Range Filter -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Khoảng giá
-                    (USD)</label>
+                    ({{ locale === 'vi' ? 'VND' : 'USD' }})</label>
                 <div class="space-y-4">
                     <div>
                         <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Từ</label>
                         <input v-model.number="priceMin" type="range" min="0" max="2000" step="50"
                             class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                        <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">${{ priceMin }}</div>
+                        <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
+                            {{ locale === 'vi' ? new Intl.NumberFormat('vi-VN').format(convertToVnd(priceMin)) + ' ₫' :
+                                '$' + priceMin }}
+                        </div>
                     </div>
                     <div>
                         <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Đến</label>
                         <input v-model.number="priceMax" type="range" min="0" max="2000" step="50"
                             class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                        <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">${{ priceMax }}</div>
+                        <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
+                            {{ locale === 'vi' ? new Intl.NumberFormat('vi-VN').format(convertToVnd(priceMax)) + ' ₫' :
+                                '$' + priceMax }}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -30,29 +30,32 @@ const props = withDefaults(defineProps<Props>(), {
 const router = useRouter();
 const isWishlisted = ref(false);
 
+const { formatPrice } = useCurrency();
+
 const formattedPrice = computed(() => {
-    if (typeof props.price === 'string') return props.price;
-    return new Intl.NumberFormat('vi-VN').format(props.price);
+    return formatPrice(props.price);
 });
 
 const formattedOriginalPrice = computed(() => {
     if (!props.originalPrice) return '';
-    return new Intl.NumberFormat('vi-VN').format(props.originalPrice);
+    return formatPrice(props.originalPrice);
 });
+
+const localePath = useLocalePath();
 
 const handleBookTour = () => {
     if (props.to) {
-        router.push(props.to);
+        router.push(localePath(props.to));
     } else {
-        router.push(`/tour/${props.id}`);
+        router.push(localePath(`/tour/${props.id}`));
     }
 };
 
 const handleCardClick = () => {
     if (props.to) {
-        router.push(props.to);
+        router.push(localePath(props.to));
     } else {
-        router.push(`/tour/${props.id}`);
+        router.push(localePath(`/tour/${props.id}`));
     }
 };
 
@@ -130,10 +133,10 @@ const toggleWishlist = (e: Event) => {
             <div class="flex items-center gap-2 mb-3">
                 <span
                     class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                    {{ formattedPrice }}<span v-if="typeof price === 'number'"> ₫</span>
+                    {{ formattedPrice }}
                 </span>
                 <span v-if="originalPrice" class="text-sm text-gray-400 line-through">
-                    {{ formattedOriginalPrice }} ₫
+                    {{ formattedOriginalPrice }}
                 </span>
             </div>
 
