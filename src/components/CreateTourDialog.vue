@@ -364,7 +364,7 @@ onBeforeUnmount(() => {
 
                             <el-form-item label="Loại Tour" prop="type"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
-                                <el-select v-model="formData.type" placeholder="Chọn loại tour" size="large"
+                                <el-select v-model="formData.type" multiple placeholder="Chọn loại tour" size="large"
                                     class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
                                     <el-option label="Adventure" value="Adventure" />
                                     <el-option label="Culture" value="Culture" />
