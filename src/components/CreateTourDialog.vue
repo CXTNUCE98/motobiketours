@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick, onBeforeUnmount } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check } from '@element-plus/icons-vue';
+import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check, Loading } from '@element-plus/icons-vue';
 import { type CreateTourDto, type Tour, validateTourForm } from '@/services/tourApi';
-import { useUpdateTour, useCreateTour } from '~/composables/useTourQuery';
+import { useUpdateTour, useCreateTour, useUploadImage } from '~/composables/useTourQuery';
 
 const props = defineProps<{
     visible: boolean;
@@ -23,7 +23,6 @@ const dialogVisible = computed({
 
 const isEditMode = computed(() => !!props.tourData);
 const currentStep = ref(0);
-const uploadProgress = ref(0);
 const formRef = ref();
 
 const durationOptions = [
@@ -73,12 +72,11 @@ const formData = reactive<CreateTourDto>({
 });
 
 // File Handling
-const thumbnailFile = ref<File | null>(null);
 const thumbnailPreview = ref<string>('');
-const galleryFiles = ref<File[]>([]);
 const galleryPreviews = ref<string[]>([]);
 const thumbnailInput = ref<any>(null);
 const galleryInput = ref<any>(null);
+const isUploading = ref(false);
 
 // Validation Rules
 const rules = {
@@ -155,9 +153,7 @@ const resetForm = () => {
         images: [],
         is_featured: false
     });
-    thumbnailFile.value = null;
     thumbnailPreview.value = '';
-    galleryFiles.value = [];
     galleryPreviews.value = [];
     currentStep.value = 0;
     if (thumbnailInput.value) thumbnailInput.value.value = '';
@@ -179,7 +175,9 @@ watch(() => props.tourData, (newVal) => {
     }
 }, { immediate: true });
 
-const handleThumbnailChange = (event: Event) => {
+const { mutateAsync: uploadImageMutation } = useUploadImage();
+
+const handleThumbnailChange = async (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
         const file = input.files[0];
@@ -188,28 +186,27 @@ const handleThumbnailChange = (event: Event) => {
             return;
         }
 
-        // Cleanup previous blob URL if exists
-        if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
-            URL.revokeObjectURL(thumbnailPreview.value);
+        try {
+            isUploading.value = true;
+            const res = await uploadImageMutation(file);
+            formData.thumbnail = res.url;
+            thumbnailPreview.value = res.url;
+            ElMessage.success('Tải ảnh đại diện thành công');
+        } catch (error) {
+            ElMessage.error('Lỗi khi tải ảnh lên');
+        } finally {
+            isUploading.value = false;
         }
-
-        thumbnailFile.value = file;
-        thumbnailPreview.value = URL.createObjectURL(file);
     }
 };
 
 const removeThumbnail = () => {
-    // Cleanup blob URL before removing
-    if (thumbnailPreview.value && isBlobURL(thumbnailPreview.value)) {
-        URL.revokeObjectURL(thumbnailPreview.value);
-    }
-
-    thumbnailFile.value = null;
+    formData.thumbnail = '';
     thumbnailPreview.value = '';
     if (thumbnailInput.value) thumbnailInput.value.value = '';
 };
 
-const handleGalleryChange = (event: Event) => {
+const handleGalleryChange = async (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (input.files) {
         const newFiles = Array.from(input.files);
@@ -219,58 +216,24 @@ const handleGalleryChange = (event: Event) => {
             ElMessage.warning('Một số ảnh bị bỏ qua do lớn hơn 5MB');
         }
 
-        galleryFiles.value = [...galleryFiles.value, ...validFiles];
-        validFiles.forEach(file => {
-            galleryPreviews.value.push(URL.createObjectURL(file));
-        });
+        try {
+            isUploading.value = true;
+            for (const file of validFiles) {
+                const res = await uploadImageMutation(file);
+                formData.images.push(res.url);
+                galleryPreviews.value.push(res.url);
+            }
+            ElMessage.success(`Đã tải lên ${validFiles.length} ảnh`);
+        } catch (error) {
+            ElMessage.error('Lỗi khi tải ảnh lên');
+        } finally {
+            isUploading.value = false;
+        }
     }
 };
 
 const removeGalleryImage = (index: number) => {
-    // Get the URL to remove for cleanup
-    const urlToRemove = galleryPreviews.value[index];
-    if (!urlToRemove) return;
-
-    // Check if it's a blob URL (new file) or server URL (existing image)
-    const isNewFile = isBlobURL(urlToRemove);
-
-    // Cleanup blob URL if it's a blob URL
-    if (isNewFile) {
-        URL.revokeObjectURL(urlToRemove);
-    }
-
-    // Determine which array to remove from based on whether it's a new file or existing image
-    if (isNewFile) {
-        // Removing new file (blob URL) - find the corresponding file index
-        // Count how many blob URLs (new files) are before this index
-        let blobUrlsBeforeIndex = 0;
-        for (let i = 0; i < index; i++) {
-            if (isBlobURL(galleryPreviews.value[i])) {
-                blobUrlsBeforeIndex++;
-            }
-        }
-        // The fileIndex is the number of blob URLs before this index
-        const fileIndex = blobUrlsBeforeIndex;
-        if (fileIndex >= 0 && fileIndex < galleryFiles.value.length) {
-            galleryFiles.value.splice(fileIndex, 1);
-        }
-    } else {
-        // Removing existing image (URL from server) - find and remove from formData.images by URL
-        if (formData.images && Array.isArray(formData.images)) {
-            // Find the index of the URL to remove
-            const imageIndex = formData.images.findIndex((url: string) => url === urlToRemove);
-            console.log('Found imageIndex:', imageIndex);
-
-            if (imageIndex !== -1) {
-                // Create a new array without the removed item to ensure reactivity
-                formData.images = formData.images.filter((url: string, idx: number) => idx !== imageIndex);
-            } else {
-                console.warn('URL not found in formData.images');
-            }
-        }
-    }
-
-    // Always remove from galleryPreviews (it contains both types)
+    formData.images.splice(index, 1);
     galleryPreviews.value.splice(index, 1);
 };
 
@@ -307,7 +270,7 @@ const { mutate: createTourMutation, isPending: isCreating } = useCreateTour();
 // Update Tour Mutation
 const { mutate: updateTourMutation, isPending: isUpdating } = useUpdateTour();
 
-const isSubmitting = computed(() => isCreating.value || isUpdating.value);
+const isSubmitting = computed(() => isCreating.value || isUpdating.value || isUploading.value);
 
 const handleClose = () => {
     ElMessageBox.confirm('Bạn có chắc chắn muốn hủy? Các thay đổi sẽ không được lưu.', 'Cảnh báo', {
@@ -321,87 +284,15 @@ const handleClose = () => {
 };
 
 const handleSubmit = async () => {
-    uploadProgress.value = 0;
-
-    // Check if we have any files to upload
-    const hasFiles = !!thumbnailFile.value || galleryFiles.value.length > 0;
-
-    if (!hasFiles) {
-        // Use JSON for update if no files are involved
-        // This ensures that empty arrays (e.g. cleared images) are sent correctly
-        const submitData = {
-            ...formData,
-            // Explicitly include images array (even if empty)
-            images: formData.images
-        };
-        // Remove id and created_at if they exist in formData
-        delete (submitData as any).id;
-        delete (submitData as any).created_at;
-
-        if (isEditMode.value && props.tourData?.id) {
-            updateTourMutation({ id: props.tourData.id, data: submitData }, {
-                onSuccess: () => {
-                    ElMessage.success('Cập nhật tour thành công!');
-                    emit('success');
-                    dialogVisible.value = false;
-                    resetForm();
-                },
-                onError: (error: any) => {
-                    ElMessage.error(error.message || 'Có lỗi xảy ra khi cập nhật tour');
-                }
-            });
-        } else {
-            createTourMutation(submitData, {
-                onSuccess: () => {
-                    ElMessage.success('Tạo tour thành công!');
-                    emit('success');
-                    dialogVisible.value = false;
-                    resetForm();
-                },
-                onError: (error: any) => {
-                    ElMessage.error(error.message || 'Có lỗi xảy ra khi tạo tour');
-                }
-            });
-        }
-        return;
-    }
-
-    // Fallback to FormData if files exist
-    const submitData = new FormData();
-
-    // Append basic fields (exclude id and created_at)
-    Object.keys(formData).forEach(key => {
-        // Skip these fields
-        if (key === 'images' || key === 'thumbnail' || key === 'id' || key === 'created_at') return;
-
-        const value = formData[key as keyof CreateTourDto];
-        if (value !== undefined && value !== null) {
-            submitData.append(key, value.toString());
-        }
-    });
-
-    // Append thumbnail
-    if (thumbnailFile.value) {
-        submitData.append('thumbnail', thumbnailFile.value);
-    } else if (formData.thumbnail) {
-        submitData.append('thumbnail', formData.thumbnail);
-    }
-
-    // Append images
-    // Existing images (URLs)
-    formData.images.forEach((url: string) => {
-        submitData.append('images', url);
-    });
-    // New images (Files)
-    galleryFiles.value.forEach((file: File) => {
-        submitData.append('images', file);
-    });
-
-    const onProgress = (event: { loaded: number; total?: number }) => {
-        if (event.total) {
-            uploadProgress.value = Math.round((event.loaded * 100) / event.total);
-        }
+    // Use JSON for update/create
+    const submitData = {
+        ...formData,
+        // Explicitly include images array (even if empty)
+        images: formData.images
     };
+    // Remove id and created_at if they exist in formData
+    delete (submitData as any).id;
+    delete (submitData as any).created_at;
 
     if (isEditMode.value && props.tourData?.id) {
         updateTourMutation({ id: props.tourData.id, data: submitData }, {
@@ -529,10 +420,16 @@ onBeforeUnmount(() => {
                             class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
                             <h3 class="text-lg font-semibold mb-4 dark:text-white">Ảnh đại diện (Thumbnail)</h3>
                             <div class="flex items-center gap-6 ">
-                                <div v-if="thumbnailPreview"
-                                    class="relative w-48 h-32 rounded-lg overflow-hidden shadow-md group">
-                                    <img :src="thumbnailPreview" class="w-full h-full object-cover" />
-                                    <div
+                                <div v-if="thumbnailPreview || isUploading"
+                                    class="relative w-48 h-32 rounded-lg overflow-hidden shadow-md group bg-gray-100 dark:bg-gray-700">
+                                    <img v-if="thumbnailPreview" :src="thumbnailPreview"
+                                        class="w-full h-full object-cover" :class="{ 'opacity-50': isUploading }" />
+                                    <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center">
+                                        <el-icon class="is-loading text-3xl text-primary">
+                                            <Loading />
+                                        </el-icon>
+                                    </div>
+                                    <div v-if="thumbnailPreview && !isUploading"
                                         class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                         <el-button type="danger" circle :icon="Delete" @click="removeThumbnail" />
                                     </div>
@@ -540,7 +437,8 @@ onBeforeUnmount(() => {
                                 <div class="flex-1">
                                     <input type="file" ref="thumbnailInput" accept="image/*" class="hidden"
                                         @change="handleThumbnailChange" />
-                                    <el-button type="primary" :icon="Upload" @click="$refs.thumbnailInput.click()">
+                                    <el-button type="primary" :icon="Upload" @click="$refs.thumbnailInput.click()"
+                                        :loading="isUploading">
                                         Chọn ảnh
                                     </el-button>
                                     <p class="mt-2 text-sm text-gray-500 dark:text-white">Định dạng: JPG, PNG. Tối đa
@@ -563,10 +461,19 @@ onBeforeUnmount(() => {
                                             @click="removeGalleryImage(index)" />
                                     </div>
                                 </div>
+                                <!-- Loading Card -->
+                                <div v-if="isUploading"
+                                    class="relative aspect-video rounded-lg overflow-hidden shadow-sm bg-gray-100 dark:bg-gray-700 flex flex-col items-center justify-center border border-dashed border-primary/30">
+                                    <el-icon class="is-loading text-2xl text-primary mb-2">
+                                        <Loading />
+                                    </el-icon>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">Đang tải ảnh...</span>
+                                </div>
                             </div>
                             <input type="file" ref="galleryInput" accept="image/*" multiple class="hidden"
                                 @change="handleGalleryChange" />
-                            <el-button type="primary" plain :icon="Picture" @click="$refs.galleryInput.click()">
+                            <el-button type="primary" plain :icon="Picture" @click="$refs.galleryInput.click()"
+                                :loading="isUploading">
                                 Thêm ảnh vào thư viện
                             </el-button>
                         </div>
@@ -629,10 +536,9 @@ onBeforeUnmount(() => {
                         <div v-if="isSubmitting" class="mt-6">
                             <div class="flex justify-between mb-2 text-sm font-medium">
                                 <span>Đang xử lý...</span>
-                                <span>{{ uploadProgress }}%</span>
                             </div>
-                            <el-progress :percentage="uploadProgress" :status="uploadProgress === 100 ? 'success' : ''"
-                                :stroke-width="10" striped striped-flow />
+                            <el-progress :percentage="100" status="success" :stroke-width="10" indeterminate striped
+                                striped-flow />
                         </div>
                     </div>
                 </el-form>

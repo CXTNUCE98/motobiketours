@@ -93,3 +93,17 @@ export const useDeleteTour = () => {
         },
     });
 };
+
+export const useUploadImage = () => {
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            return await $motobikertoursApi('/blog/upload-image', {
+                method: 'POST',
+                body: formData,
+            });
+        },
+    });
+};
+
