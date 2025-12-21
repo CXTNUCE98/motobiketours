@@ -48,12 +48,7 @@ const submit = async () => {
     }
     try {
         isSubmitting.value = true
-        // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1500))
-
-        // Actual API call would go here
-        // const res = await fetch('/api/contact', { ... })
-
         notify('success', 'Đã gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại sớm nhất.')
         Object.assign(form, { fullName: '', email: '', phone: '', country: '', title: '', content: '' })
         for (const k of Object.keys(errors) as (keyof ContactForm)[]) delete errors[k]
@@ -90,67 +85,119 @@ const toggleFaq = (index: number) => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900 font-sans transition-colors duration-300">
+    <div
+        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
         <!-- Hero Section -->
-        <div class="relative h-[500px] bg-gray-900 overflow-hidden">
-            <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900 opacity-90">
-            </div>
-            <div
-                class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center mix-blend-overlay opacity-40">
-            </div>
-
-            <!-- Animated Shapes -->
-            <div
-                class="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
-            </div>
-            <div
-                class="absolute top-20 right-20 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
-            </div>
-            <div
-                class="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000">
-            </div>
-
-            <div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
-                <div
-                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white/90 text-sm font-medium mb-6 animate-fade-in-down">
-                    <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
-                    Available 24/7 for Support
+        <div class="relative py-24 md:py-32 overflow-hidden">
+            <!-- Background with Mesh Gradient -->
+            <div class="absolute inset-0 bg-[#0f172a]">
+                <!-- Animated Mesh Gradient -->
+                <div class="absolute inset-0 opacity-40">
+                    <div
+                        class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600 blur-[120px] animate-pulse">
+                    </div>
+                    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600 blur-[120px] animate-pulse"
+                        style="animation-delay: 2s"></div>
+                    <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-cyan-500 blur-[100px] animate-pulse"
+                        style="animation-delay: 4s"></div>
                 </div>
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight animate-fade-in-up">
-                    Let's Start Your <br />
-                    <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">Adventure</span>
-                </h1>
-                <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto animate-fade-in-up animation-delay-200">
-                    Have questions about our tours or want to plan a custom trip? We're here to help you create
-                    unforgettable memories in Vietnam.
-                </p>
+                <!-- Grid Pattern -->
+                <div class="absolute inset-0 opacity-10"
+                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 40px 40px;">
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-4xl mx-auto text-center">
+                    <!-- Badge -->
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-blue-300 text-sm font-bold mb-8 animate-fade-in">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                        </span>
+                        LIÊN HỆ VỚI CHÚNG TÔI
+                    </div>
+
+                    <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
+                        style="animation-delay: 0.2s">
+                        <span class="block text-white">Kết Nối</span>
+                        <span
+                            class="block bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent filter drop-shadow-sm">
+                            Hành Trình Của Bạn
+                        </span>
+                    </h1>
+
+                    <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
+                        style="animation-delay: 0.4s">
+                        Bạn có câu hỏi hay muốn lên kế hoạch cho chuyến đi sắp tới? Đừng ngần ngại liên hệ, chúng tôi
+                        luôn sẵn sàng hỗ trợ bạn.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Decorative Bottom Wave -->
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
+                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+                    <path
+                        d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+                        class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
+                </svg>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 relative z-20 pb-20">
-            <!-- Contact Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                <div v-for="(item, index) in [
-                    { icon: 'bx-phone-call', title: 'Call Us', text: '0854.242.357 (Mr An)', sub: 'Mon-Sun, 8am-8pm', color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20', href: 'tel:+0854242357' },
-                    { icon: 'bx-envelope', title: 'Email Us', text: 'contact.andago@gmail.com', sub: 'Online Support', color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20', href: 'mailto:vietnamMotorbikeGroup@gmail.com' },
-                    { icon: 'bx-map', title: 'Visit Us', text: '53 Phạm Ngọc Mậu', sub: 'Thanh Khê, Đà Nẵng', color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20', href: null },
-                    { icon: 'bxl-whatsapp', title: 'WhatsApp', text: 'Chat with us', sub: 'Instant Response', color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20', href: 'https://wa.me/84854242357' }
-                ]" :key="index"
-                    class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl shadow-gray-200/50 dark:shadow-none hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group cursor-pointer border border-transparent dark:border-gray-700"
-                    @click="item.href ? null : null">
-                    <component :is="item.href ? 'a' : 'div'" :href="item.href"
-                        :target="item.href?.startsWith('http') ? '_blank' : undefined" class="block h-full">
-                        <div
-                            :class="['w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-4 transition-colors duration-300', item.bg, item.color, 'group-hover:scale-110 group-hover:rotate-3 transition-transform']">
-                            <i :class="['bx', item.icon]"></i>
-                        </div>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-1">{{ item.title }}</h3>
-                        <p class="text-gray-600 dark:text-gray-300 font-medium mb-1 truncate" :title="item.text">{{
-                            item.text }}</p>
-                        <p class="text-sm text-gray-400">{{ item.sub }}</p>
-                    </component>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20 pb-20">
+            <!-- Contact Quick Info Cards (Restored from image) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <!-- Call Us -->
+                <a href="tel:0854242357"
+                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-blue-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <i class="bx bx-phone-call text-2xl text-blue-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Call Us</h3>
+                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">0854.242.357 (Mr An)</p>
+                    <p class="text-sm text-gray-400">Mon-Sun, 8am-8pm</p>
+                </a>
+
+                <!-- Email Us -->
+                <a href="mailto:contact.andago@gmail.com"
+                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-purple-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <i class="bx bx-envelope text-2xl text-pink-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Email Us</h3>
+                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">contact.andago@gmail.com</p>
+                    <p class="text-sm text-gray-400">Online Support</p>
+                </a>
+
+                <!-- Visit Us -->
+                <div
+                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-indigo-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <i class="bx bx-map text-2xl text-purple-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Visit Us</h3>
+                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">53 Phạm Ngọc Mậu</p>
+                    <p class="text-sm text-gray-400">Thanh Khê, Đà Nẵng</p>
                 </div>
+
+                <!-- WhatsApp -->
+                <a href="https://wa.me/84854242357" target="_blank"
+                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-green-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                    <div
+                        class="w-14 h-14 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                        <i class="bx bxl-whatsapp text-2xl text-green-500"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">WhatsApp</h3>
+                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">Chat with us</p>
+                    <p class="text-sm text-gray-400">Instant Response</p>
+                </a>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
@@ -302,59 +349,20 @@ const toggleFaq = (index: number) => {
 </template>
 
 <style scoped>
-.animate-blob {
-    animation: blob 7s infinite;
-}
-
-.animation-delay-2000 {
-    animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-    animation-delay: 4s;
-}
-
-@keyframes blob {
-    0% {
-        transform: translate(0px, 0px) scale(1);
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
 
-    33% {
-        transform: translate(30px, -50px) scale(1.1);
-    }
-
-    66% {
-        transform: translate(-20px, 20px) scale(0.9);
-    }
-
-    100% {
-        transform: translate(0px, 0px) scale(1);
-    }
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 0.8s ease-out forwards;
-    opacity: 0;
-    transform: translateY(20px);
-}
-
-.animate-fade-in-down {
-    animation: fadeInDown 0.8s ease-out forwards;
-    opacity: 0;
-    transform: translateY(-20px);
-}
-
-@keyframes fadeInUp {
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-@keyframes fadeInDown {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
+    opacity: 0;
 }
 </style>

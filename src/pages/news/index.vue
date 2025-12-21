@@ -32,64 +32,95 @@ const regularNews = computed(() => filteredNews.value.slice(1))
 
 <template>
   <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-    <!-- Hero Section with Gradient -->
-    <div class="relative overflow-hidden mb-16">
-      <!-- Animated Background -->
-      <div
-        class="absolute inset-0 bg-gradient-to-br from-[#FF6B35] via-[#FFA726] to-[#1A71C7] opacity-10 dark:opacity-5">
-        <div
-          class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDAiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHs0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHs0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30">
+    <!-- Hero Section -->
+    <div class="relative py-24 md:py-32 overflow-hidden mb-16">
+      <!-- Background Elements -->
+      <div class="absolute inset-0 bg-[#0f172a]">
+        <!-- Animated Mesh Gradient -->
+        <div class="absolute inset-0 opacity-40">
+          <div
+            class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-orange-600 blur-[120px] animate-pulse">
+          </div>
+          <div
+            class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600 blur-[120px] animate-pulse"
+            style="animation-delay: 2s"></div>
+          <div
+            class="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-yellow-500 blur-[100px] animate-pulse"
+            style="animation-delay: 4s"></div>
         </div>
+        <!-- Grid Pattern -->
+        <div class="absolute inset-0 opacity-10"
+          style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 40px 40px;"></div>
       </div>
 
-      <div class="relative z-10 text-center py-20 px-4">
-        <!-- Animated Title -->
-        <div class="mb-6 animate-fade-in-down">
-          <h1
-            class="text-6xl md:text-7xl font-black mb-4 bg-gradient-to-r from-[#FF6B35] via-[#FFA726] to-[#1A71C7] bg-clip-text text-transparent drop-shadow-lg">
-            Latest News & Stories
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+          <div
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-orange-300 text-sm font-bold mb-8 animate-fade-in">
+            <span class="relative flex h-2 w-2">
+              <span
+                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+            </span>
+            TIN TỨC & SỰ KIỆN
+          </div>
+
+          <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in" style="animation-delay: 0.2s">
+            <span class="block text-white">Khám Phá</span>
+            <span
+              class="block bg-gradient-to-r from-orange-400 via-yellow-300 to-blue-400 bg-clip-text text-transparent filter drop-shadow-sm">
+              Những Câu Chuyện Mới
+            </span>
           </h1>
-          <div class="flex items-center justify-center gap-3 text-gray-600 dark:text-gray-300 text-lg">
-            <i class="bx bx-map-pin text-[#FF6B35] text-2xl animate-bounce"></i>
-            <p class="font-medium">Discover amazing motorcycle adventures across Vietnam</p>
-          </div>
-        </div>
 
-        <!-- Search Bar -->
-        <div class="max-w-2xl mx-auto mt-8 animate-fade-in-up">
-          <div class="relative group">
-            <i
-              class="bx bx-search absolute left-5 top-1/2 -translate-y-1/2 text-2xl text-gray-400 group-focus-within:text-[#FF6B35] transition-colors"></i>
-            <input v-model="searchQuery" type="text" placeholder="Search for news, destinations, bikes..."
-              class="w-full pl-14 pr-6 py-4 rounded-full border-2 border-gray-200 dark:border-gray-700 focus:border-[#FF6B35] focus:ring-4 focus:ring-[#FF6B35]/20 outline-none transition-all duration-300 text-lg shadow-lg backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" />
-          </div>
-        </div>
+          <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
+            style="animation-delay: 0.4s">
+            Cập nhật những tin tức mới nhất về các cung đường, kinh nghiệm đi phượt và những câu chuyện truyền cảm hứng.
+          </p>
 
-        <!-- Category Filters -->
-        <div class="flex flex-wrap items-center justify-center gap-3 mt-8 animate-fade-in-up animation-delay-200">
-          <button v-for="category in categories" :key="category.id" @click="selectedCategory = category.id" :class="[
-            'group flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-md',
-            selectedCategory === category.id
-              ? 'bg-gradient-to-r from-[#FF6B35] to-[#FFA726] text-white shadow-lg shadow-[#FF6B35]/30'
-              : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:shadow-lg'
-          ]">
-            <i :class="['bx', category.icon, 'text-xl', selectedCategory === category.id ? 'animate-pulse' : '']"></i>
-            <span>{{ category.name }}</span>
-          </button>
+          <!-- Category Filters (Moved into Hero) -->
+          <div class="flex flex-wrap items-center justify-center gap-3 mt-8 animate-fade-in"
+            style="animation-delay: 0.6s">
+            <button v-for="category in categories" :key="category.id" @click="selectedCategory = category.id" :class="[
+              'group flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-105 shadow-md',
+              selectedCategory === category.id
+                ? 'bg-gradient-to-r from-orange-500 to-yellow-500 text-white shadow-lg shadow-orange-500/30'
+                : 'bg-white/10 backdrop-blur-md text-white border border-white/20 hover:bg-white/20'
+            ]">
+              <i :class="['bx', category.icon, 'text-xl', selectedCategory === category.id ? 'animate-pulse' : '']"></i>
+              <span>{{ category.name }}</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Decorative Elements -->
-      <div class="absolute top-10 left-10 w-20 h-20 bg-[#FF6B35] rounded-full opacity-20 blur-3xl animate-pulse"></div>
-      <div
-        class="absolute bottom-10 right-10 w-32 h-32 bg-[#1A71C7] rounded-full opacity-20 blur-3xl animate-pulse animation-delay-1000">
+      <!-- Decorative Bottom Wave -->
+      <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
+        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+          <path
+            d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+            class="fill-white dark:fill-gray-900 transition-colors duration-300" />
+        </svg>
+      </div>
+    </div>
+
+    <!-- Search Bar (Moved below Hero) -->
+    <div class="max-w-2xl mx-auto mb-16 -mt-24 relative z-20 px-4">
+      <div class="relative group">
+        <div
+          class="absolute inset-0 bg-orange-500/20 rounded-full blur-xl group-focus-within:bg-orange-500/30 transition-all duration-500">
+        </div>
+        <i
+          class="bx bx-search absolute left-6 top-1/2 -translate-y-1/2 text-2xl text-gray-400 group-focus-within:text-orange-500 transition-colors"></i>
+        <input v-model="searchQuery" type="text" placeholder="Tìm kiếm tin tức, điểm đến..."
+          class="w-full pl-16 pr-6 py-5 rounded-full border border-white/20 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl focus:ring-2 focus:ring-orange-500/50 outline-none transition-all duration-300 text-lg shadow-2xl text-gray-900 dark:text-white" />
       </div>
     </div>
 
     <!-- Featured News (First Item) -->
     <div v-if="featuredNews" class="max-w-7xl mx-auto px-4 mb-16 animate-fade-in">
       <div
-        class="relative group overflow-hidden rounded-3xl shadow-2xl hover:shadow-[#FF6B35]/20 transition-all duration-500">
+        class="relative group overflow-hidden rounded-3xl shadow-2xl hover:shadow-orange-500/20 transition-all duration-500">
         <!-- Background Image with Overlay -->
         <div class="relative h-[500px] overflow-hidden">
           <img :src="featuredNews.thumbnail" :alt="featuredNews.title"
@@ -101,7 +132,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
         <div class="absolute bottom-0 left-0 right-0 p-8 md:p-12 text-white">
           <div class="flex items-center gap-3 mb-4">
             <span
-              class="px-4 py-2 bg-gradient-to-r from-[#FF6B35] to-[#FFA726] rounded-full text-sm font-bold shadow-lg">
+              class="px-4 py-2 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full text-sm font-bold shadow-lg">
               <i class="bx bx-star mr-1"></i>Featured Story
             </span>
             <span class="flex items-center gap-2 text-sm bg-white/20 backdrop-blur-md px-4 py-2 rounded-full">
@@ -119,7 +150,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
           </p>
 
           <router-link :to="`/news/${featuredNews.id}`"
-            class="inline-flex items-center gap-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl hover:bg-[#FF6B35] dark:hover:bg-[#FF6B35] hover:text-white transition-all duration-300 transform hover:scale-105 group/btn">
+            class="inline-flex items-center gap-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:shadow-2xl hover:bg-orange-500 dark:hover:bg-orange-500 hover:text-white transition-all duration-300 transform hover:scale-105 group/btn">
             <span>Read Full Story</span>
             <i class="bx bx-right-arrow-alt text-2xl group-hover/btn:translate-x-1 transition-transform"></i>
           </router-link>
@@ -127,7 +158,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
 
         <!-- Decorative Corner -->
         <div
-          class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#FFA726] to-transparent opacity-30 blur-2xl">
+          class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500 to-transparent opacity-30 blur-2xl">
         </div>
       </div>
     </div>
@@ -136,7 +167,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
     <div class="max-w-7xl mx-auto px-4 mb-16">
       <div class="flex items-center justify-between mb-8">
         <h2 class="text-3xl font-black text-gray-800 dark:text-white">
-          <span class="bg-gradient-to-r from-[#FF6B35] to-[#1A71C7] bg-clip-text text-transparent">
+          <span class="bg-gradient-to-r from-orange-500 to-blue-600 bg-clip-text text-transparent">
             More Stories
           </span>
         </h2>
@@ -150,7 +181,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
           :style="{ animationDelay: `${index * 100}ms` }">
           <!-- Card Container -->
           <div
-            class="relative h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-[#FF6B35]/10 transition-all duration-500 transform hover:-translate-y-2 border border-transparent dark:border-gray-700">
+            class="relative h-full bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-orange-500/10 transition-all duration-500 transform hover:-translate-y-2 border border-transparent dark:border-gray-700">
             <!-- Image Section -->
             <div class="relative h-56 overflow-hidden">
               <router-link :to="`/news/${n.id}`">
@@ -166,7 +197,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
               <!-- Category Badge -->
               <div class="absolute top-4 left-4">
                 <span
-                  class="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-bold text-[#FF6B35] shadow-lg">
+                  class="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-bold text-orange-500 shadow-lg">
                   <i class="bx bx-news mr-1"></i>News
                 </span>
               </div>
@@ -176,14 +207,14 @@ const regularNews = computed(() => filteredNews.value.slice(1))
             <div class="p-6">
               <!-- Date -->
               <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-3">
-                <i class="bx bx-time-five text-[#FFA726]"></i>
+                <i class="bx bx-time-five text-yellow-500"></i>
                 <span>{{ n.date }}</span>
               </div>
 
               <!-- Title -->
               <router-link :to="`/news/${n.id}`">
                 <h3
-                  class="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-[#FF6B35] transition-colors duration-300">
+                  class="text-xl font-bold text-gray-800 dark:text-white mb-3 line-clamp-2 group-hover:text-orange-500 transition-colors duration-300">
                   {{ n.title }}
                 </h3>
               </router-link>
@@ -195,7 +226,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
 
               <!-- Read More Button -->
               <router-link :to="`/news/${n.id}`"
-                class="inline-flex items-center gap-2 text-[#FF6B35] font-bold text-sm group-hover:gap-3 transition-all duration-300">
+                class="inline-flex items-center gap-2 text-orange-500 font-bold text-sm group-hover:gap-3 transition-all duration-300">
                 <span>Read More</span>
                 <i class="bx bx-right-arrow-alt text-xl"></i>
               </router-link>
@@ -203,7 +234,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
 
             <!-- Decorative Bottom Border -->
             <div
-              class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#FF6B35] via-[#FFA726] to-[#1A71C7] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
+              class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-yellow-500 to-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left">
             </div>
           </div>
         </div>
@@ -220,11 +251,11 @@ const regularNews = computed(() => filteredNews.value.slice(1))
     <!-- Newsletter Section -->
     <div class="max-w-7xl mx-auto px-4 mb-16">
       <div
-        class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#FF6B35] via-[#FFA726] to-[#1A71C7] p-12 text-white shadow-2xl">
+        class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-yellow-500 to-blue-600 p-12 text-white shadow-2xl">
         <!-- Background Pattern -->
         <div class="absolute inset-0 opacity-10">
           <div
-            class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4zIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6bTAgMjBjMC0yLjIxIDEuNzktNCA0LTRzNCAxLjc5IDQgNC0xLjc5IDQtNCA0LTQtMS43OS00LTR6TTEyIDM0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDIwYzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSAzIDQtMS43OSA0LTQgNC00LTEuNzktNC00eiIvPjwvZz48L2c+PC9zdmc+')] animate-pulse">
+            class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] animate-pulse">
           </div>
         </div>
 
@@ -237,7 +268,7 @@ const regularNews = computed(() => filteredNews.value.slice(1))
             <input type="email" placeholder="Enter your email address"
               class="flex-1 px-6 py-4 rounded-full text-gray-800 outline-none focus:ring-4 focus:ring-white/50 transition-all" />
             <button
-              class="px-8 py-4 bg-white text-[#FF6B35] rounded-full font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
+              class="px-8 py-4 bg-white text-orange-500 rounded-full font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
               Subscribe Now
             </button>
           </div>
@@ -252,16 +283,21 @@ const regularNews = computed(() => filteredNews.value.slice(1))
 </template>
 
 <style scoped>
-@keyframes fade-in-down {
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(20px);
   }
 
   to {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+  opacity: 0;
 }
 
 @keyframes fade-in-up {
@@ -276,57 +312,8 @@ const regularNews = computed(() => filteredNews.value.slice(1))
   }
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.animate-fade-in-down {
-  animation: fade-in-down 0.6s ease-out;
-}
-
 .animate-fade-in-up {
   animation: fade-in-up 0.6s ease-out;
   animation-fill-mode: both;
-}
-
-.animate-fade-in {
-  animation: fade-in 0.8s ease-out;
-}
-
-.animation-delay-200 {
-  animation-delay: 200ms;
-}
-
-.animation-delay-1000 {
-  animation-delay: 1000ms;
-}
-
-/* Smooth scroll behavior */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(to bottom, #FF6B35, #1A71C7);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(to bottom, #1A71C7, #FF6B35);
 }
 </style>

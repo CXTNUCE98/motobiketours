@@ -20,63 +20,83 @@ const filteredServices = computed(() => {
     <div
         class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
         <!-- Hero Section -->
-        <div
-            class="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white py-24 overflow-hidden">
-            <!-- Background Pattern -->
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute inset-0"
-                    style="background-image: url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');">
+        <div class="relative py-24 md:py-32 overflow-hidden">
+            <!-- Background Elements -->
+            <div class="absolute inset-0 bg-[#0f172a]">
+                <!-- Animated Mesh Gradient -->
+                <div class="absolute inset-0 opacity-40">
+                    <div
+                        class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600 blur-[120px] animate-pulse">
+                    </div>
+                    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600 blur-[120px] animate-pulse"
+                        style="animation-delay: 2s"></div>
+                    <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-indigo-500 blur-[100px] animate-pulse"
+                        style="animation-delay: 4s"></div>
+                </div>
+                <!-- Grid Pattern -->
+                <div class="absolute inset-0 opacity-10"
+                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 40px 40px;">
                 </div>
             </div>
 
             <div class="container mx-auto px-4 relative z-10">
                 <div class="max-w-4xl mx-auto text-center">
-                    <h1 class="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">
-                        <span class="block">Dịch Vụ</span>
-                        <span class="block bg-gradient-to-r from-yellow-300 to-pink-300 bg-clip-text text-transparent">
-                            Du Lịch Xe Máy
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-indigo-300 text-sm font-bold mb-8 animate-fade-in">
+                        <span class="relative flex h-2 w-2">
+                            <span
+                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                         </span>
-                    </h1>
-                    <p class="text-xl md:text-2xl mb-8 text-blue-100">
-                        Trải nghiệm đa dạng - Phục vụ chuyên nghiệp - Giá cả hợp lý
-                    </p>
-
-                    <!-- Search Bar -->
-                    <div class="max-w-2xl mx-auto">
-                        <div class="relative">
-                            <input v-model="searchQuery" type="text" placeholder="Tìm kiếm dịch vụ..."
-                                class="w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 dark:text-white bg-white dark:bg-gray-800 text-lg shadow-2xl focus:outline-none focus:ring-4 focus:ring-white/50 dark:focus:ring-gray-600 transition-all duration-300 placeholder-gray-400 dark:placeholder-gray-500" />
-                            <button
-                                class="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3 rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-                        </div>
+                        DỊCH VỤ CHUYÊN NGHIỆP
                     </div>
 
+                    <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
+                        style="animation-delay: 0.2s">
+                        <span class="block text-white">Giải Pháp</span>
+                        <span
+                            class="block bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent filter drop-shadow-sm">
+                            Trải Nghiệm Hoàn Hảo
+                        </span>
+                    </h1>
+
+                    <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
+                        style="animation-delay: 0.4s">
+                        Chúng tôi cung cấp các dịch vụ hỗ trợ du lịch xe máy toàn diện, từ cho thuê xe đến cứu hộ và
+                        hướng dẫn viên.
+                    </p>
+
                     <!-- Quick Stats -->
-                    <div class="grid grid-cols-3 gap-6 mt-12 max-w-2xl mx-auto">
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
-                            <div class="text-3xl font-bold">{{ services.length }}</div>
-                            <div class="text-sm text-blue-100">Dịch vụ</div>
+                    <div class="grid grid-cols-3 gap-6 mt-16 max-w-2xl mx-auto animate-fade-in"
+                        style="animation-delay: 0.6s">
+                        <div
+                            class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
+                            <div
+                                class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-indigo-400 transition-colors">
+                                {{ services.length }}</div>
+                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">Dịch Vụ</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
-                            <div class="text-3xl font-bold">24/7</div>
-                            <div class="text-sm text-blue-100">Hỗ trợ</div>
+                        <div
+                            class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
+                            <div
+                                class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-purple-400 transition-colors">
+                                24/7</div>
+                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">Hỗ Trợ</div>
                         </div>
-                        <div class="bg-white/10 backdrop-blur-md rounded-xl p-4">
-                            <div class="text-3xl font-bold">5.0</div>
-                            <div class="text-sm text-blue-100">Đánh giá</div>
+                        <div
+                            class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
+                            <div
+                                class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-pink-400 transition-colors">
+                                5.0</div>
+                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">Uy Tín</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Wave Divider -->
-            <div class="absolute bottom-0 left-0 right-0">
-                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+            <!-- Decorative Bottom Wave -->
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
+                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
                     <path
                         d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
                         class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
@@ -86,6 +106,24 @@ const filteredServices = computed(() => {
 
         <!-- Services Grid -->
         <div class="container mx-auto px-4 py-16">
+            <!-- Search Bar (Moved below Hero) -->
+            <div class="max-w-2xl mx-auto mb-16 -mt-8 relative z-20">
+                <div class="relative group">
+                    <div
+                        class="absolute inset-0 bg-indigo-500/20 rounded-2xl blur-xl group-hover:bg-indigo-500/30 transition-all duration-500">
+                    </div>
+                    <input v-model="searchQuery" type="text" placeholder="Tìm kiếm dịch vụ..."
+                        class="relative w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 dark:text-white bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl text-lg shadow-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-300 placeholder-gray-400 border border-white/20 dark:border-gray-700" />
+                    <button
+                        class="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
             <div v-if="filteredServices.length > 0"
                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                 <NuxtLink v-for="(service, index) in filteredServices" :key="service.id" :to="`/service/${service.id}`"
@@ -175,7 +213,7 @@ const filteredServices = computed(() => {
         </div>
 
         <!-- Why Choose Us Section -->
-        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-20">
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
             <div class="container mx-auto px-4">
                 <h2 class="text-4xl font-bold text-center mb-12">Tại Sao Chọn Chúng Tôi?</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -230,6 +268,7 @@ const filteredServices = computed(() => {
 .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -237,6 +276,7 @@ const filteredServices = computed(() => {
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
