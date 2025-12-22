@@ -27,6 +27,14 @@ const formRef = ref();
 
 const durationOptions = [
     {
+        label: '1 day',
+        value: '1 day'
+    },
+    {
+        label: '1 day 1 night',
+        value: '1 day 1 night'
+    },
+    {
         label: '2 days 1 night',
         value: '2 days 1 night'
     },
@@ -48,6 +56,8 @@ const durationOptions = [
     }
 ]
 const mapDurationRange: Record<string, string> = {
+    '1 day': '1-3',
+    '1 day 1 night': '1-3',
     '2 days 1 night': '1-3',
     '3 days 2 nights': '1-3',
     '4 days 3 nights': '4-7',
