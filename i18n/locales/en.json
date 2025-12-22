@@ -8,13 +8,142 @@
     "blog": "BLOG",
     "contact": "CONTACT"
   },
+  "about": {
+    "title": "Travel Agency & Tour Booking",
+    "introTitle": "About ANDAGO",
+    "introDesc1": "ANDAGO is a reputable online travel agency in Vietnam, specializing in providing diverse and high-quality travel services.",
+    "introDesc2": "Our main services include:",
+    "services": {
+      "flights": "Flight, Train, and Bus tickets",
+      "hotels": "Hotel and Resort bookings",
+      "tours": "Domestic and International tours",
+      "visa": "Tourist visa services",
+      "rentals": "Car rental services",
+      "insurance": "Travel insurance services"
+    },
+    "introDesc3": "With a professional, enthusiastic, and experienced team, ANDAGO is committed to bringing customers the best travel experiences.",
+    "advantagesTitle": "Advantages of using ANDAGO services",
+    "advantages": {
+      "price": "Competitive prices",
+      "quality": "Reputable service quality",
+      "diversity": "Diverse travel products",
+      "speed": "Fast and easy booking",
+      "support": "24/7 consulting support",
+      "promotions": "Many attractive promotions"
+    },
+    "guidesSub": "TOUR GUIDES",
+    "guidesTitle": "Meet Our Excellent Tour Guides",
+    "guidesDesc": "Tour guides play an important role in Vietnam's tourism industry, contributing to introducing the image of the country and people of Vietnam to international friends. With many years of experience and extensive knowledge of culture and history, our guides are committed to bringing memorable experiences to visitors."
+  },
+  "contact": {
+    "heroBadge": "CONTACT US",
+    "heroTitleLine1": "Connect",
+    "heroTitleLine2": "Your Journey",
+    "heroDesc": "Have questions or want to plan your next trip? Don't hesitate to contact us, we are always ready to support you.",
+    "quickInfo": {
+      "call": "Call Us",
+      "email": "Email Us",
+      "visit": "Visit Us"
+    },
+    "form": {
+      "title": "Send us a Message",
+      "desc": "Fill out the form below and our team will get back to you within 24 hours.",
+      "fullName": "Full Name",
+      "email": "Email Address",
+      "phone": "Phone Number",
+      "country": "Country",
+      "subject": "Subject",
+      "message": "Message",
+      "submit": "Send Message",
+      "submitting": "Sending Message...",
+      "success": "Request sent successfully! We will contact you as soon as possible.",
+      "error": "Submission failed, please try again",
+      "validation": {
+        "fullName": "Please enter your full name",
+        "emailRequired": "Please enter your email",
+        "emailInvalid": "Invalid email format",
+        "subject": "Please enter a subject",
+        "message": "Please enter a message"
+      },
+      "hours": "Mon-Sun, 8am-8pm",
+      "support": "Online Support",
+      "chat": "Chat with us",
+      "instant": "Instant Response",
+      "placeholders": {
+        "fullName": "John Doe",
+        "phone": "+84 123 456 789",
+        "country": "Your Country",
+        "subject": "How can we help you?",
+        "message": "Tell us about your trip plans..."
+      }
+    },
+    "faq": "Common Questions",
+    "faqItems": [
+      {
+        "question": "How do I book a tour?",
+        "answer": "You can book a tour directly through our website by selecting your preferred tour and filling out the booking form. Alternatively, you can contact us via email or phone for personalized assistance."
+      },
+      {
+        "question": "What is included in the tour price?",
+        "answer": "Our tour prices typically include motorbike rental, fuel, guide fees, accommodation, and selected meals. Specific inclusions are detailed on each tour's page."
+      },
+      {
+        "question": "Do I need a driving license?",
+        "answer": "Yes, a valid international driving permit (IDP) or a Vietnamese driving license is required to operate a motorbike legally in Vietnam."
+      },
+      {
+        "question": "Can I customize my tour?",
+        "answer": "Absolutely! We specialize in tailor-made tours. Contact us with your preferences, and we'll design a unique itinerary just for you."
+      }
+    ]
+  },
   "auth": {
     "login": "Login",
     "logout": "Sign out",
-    "profile": "Profile Settings"
+    "profile": "Profile Settings",
+    "welcomeBack": "Welcome Back!",
+    "startJourney": "Start Your Journey",
+    "keepConnected": "To keep connected with us please login with your personal info",
+    "enterDetails": "Enter your personal details and start your adventure with us today",
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "createAccount": "Create Account",
+    "signInToAndago": "Sign in to ANDAGO",
+    "orUseEmail": "or use your email for registration",
+    "orUseEmailAccount": "or use your email account",
+    "forgotPassword": "Forgot your password?",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "processing": "Processing...",
+    "logoutConfirm": "Are you sure you want to log out?",
+    "logoutSuccess": "Logout successfully!",
+    "loginSuccess": "Welcome back!",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "usernameRequired": "Username is required",
+    "usernameMin": "Username must be at least 2 characters",
+    "passwordMin": "Password must be at least 6 characters"
   },
   "common": {
-    "language": "Language"
+    "language": "Language",
+    "warning": "Warning",
+    "confirm": "OK",
+    "cancel": "Cancel",
+    "yes": "Yes",
+    "no": "No",
+    "chooseImage": "Choose Image",
+    "uploading": "Uploading...",
+    "processing": "Processing...",
+    "cancelBtn": "Cancel",
+    "prevStep": "Back",
+    "nextStep": "Next",
+    "apply": "Apply",
+    "clear": "Clear",
+    "viewDetails": "View Details",
+    "bookNow": "Book Now",
+    "searchPlaceholder": "Search...",
+    "create": "Create"
   },
   "booking": {
     "bookNow": "Book Now"
@@ -28,7 +157,247 @@
     "unforgettableMemories": "Unforgettable memories",
     "uniqueLocations": "Unique locations both domestically and internationally. The network offers diversity for customers to comfortably choose their own trip.",
     "completeTravelDescription": "Experience the best destinations in Vietnam with a professional guide team.",
-    "unforgettableMemoriesDescription": "Create beautiful memories with family and friends on unforgettable trips."
+    "unforgettableMemoriesDescription": "Create beautiful memories with family and friends on unforgettable trips.",
+    "hotTours": "HOT TOURS",
+    "hotToursDescription": "Tours most selected by customers",
+    "noHotTours": "No hot tours available",
+    "discoverVN": "Discover Vietnam !!",
+    "searchBestTrip": "Search Your Best Trip",
+    "best": "Best",
+    "searchKeyword": "Keyword",
+    "searchDest": "Destination",
+    "searchPlaceholder": "Where do you want to go?",
+    "searchExp": "Experience exciting and memorable journeys with us",
+    "topDestSubtitle": "Top Destinations",
+    "topDestTitle": "Our Featured Tours",
+    "topDestDesc": "Unique locations both domestically and internationally. Offering variety for customers to comfortably choose their own trip.",
+    "popularSubtitle": "Travel Categories",
+    "popularTitle": "Our Popular Tours",
+    "testimonialsSubtitle": "#SATISFIED CUSTOMERS",
+    "testimonialsTitle": "What Our Customers Say",
+    "latestNewsSubtitle": "News",
+    "latestNewsTitle": "Latest Posts",
+    "newsletterSubtitle": "Get Offers",
+    "newsletterTitle": "Subscribe To Us",
+    "newsletterEmailPlaceholder": "Email address......",
+    "newsletterSubscribe": "Subscribe",
+    "daNangTourTitle": "DA NANG TOUR",
+    "daNangTourDesc": "Daily budget group tours departing from Da Nang City",
+    "categories": {
+      "north": "North Vietnam Tours",
+      "central": "Central Vietnam Tours",
+      "south": "South Vietnam Tours",
+      "asia": "Asia Tours",
+      "europe": "Europe Tours"
+    }
+  },
+  "tour": {
+    "editTour": "Edit Tour",
+    "createNewTour": "Create New Tour",
+    "updateBtn": "Update Tour",
+    "createBtn": "Create Tour",
+    "edit": "Edit",
+    "filterBtn": "Filters",
+    "thisTour": "this tour",
+    "applyFilter": "Apply Filter",
+    "clearFilter": "Clear Filter",
+    "journeyOfDiscovery": "JOURNEY OF DISCOVERY",
+    "experience": "Experience",
+    "peakTour": "Peak Tour",
+    "peakTourDesc": "Conquer legendary routes and discover the hidden beauty of Vietnam with our professional team.",
+    "readyTour": "Available Tours",
+    "customers": "Customers",
+    "evaluate": "Evaluate",
+    "filter": {
+      "title": "Filters",
+      "searchPlaceholder": "Search tours by name, location, type...",
+      "apply": "Apply filters",
+      "clear": "Clear filters",
+      "sortBy": "Sort by",
+      "sortOptions": {
+        "default": "Default",
+        "priceLow": "Price: Low to High",
+        "priceHigh": "Price: High to Low",
+        "duration": "Duration"
+      }
+    },
+    "duration": "Duration",
+    "durationOptions": {
+      "1day": "1 day",
+      "1day1night": "1 day 1 night",
+      "2days1night": "2 days 1 night",
+      "3days2nights": "3 days 2 nights",
+      "4days3nights": "4 days 3 nights",
+      "5days4nights": "5 days 4 nights",
+      "6days5nights": "6 days 5 nights"
+    },
+    "types": {
+      "Adventure": "Adventure",
+      "Culture": "Culture",
+      "Nature": "Nature",
+      "Food": "Food"
+    },
+    "priceRange": "Price Range",
+    "tourType": "Tour Type",
+    "departFrom": "Depart From",
+    "all": "All",
+    "from": "From",
+    "to": "To",
+    "steps": {
+      "basicInfo": "Basic Info",
+      "basicInfoDesc": "Name, price, duration",
+      "images": "Images",
+      "imagesDesc": "Thumbnail & Gallery",
+      "details": "Details",
+      "detailsDesc": "Description, itinerary",
+      "confirm": "Confirm",
+      "confirmDesc": "Review information",
+      "confirmTitle": "Confirm Information"
+    },
+    "form": {
+      "title": "Tour Title",
+      "titlePlaceholder": "Enter catchy tour title...",
+      "type": "Tour Type",
+      "typePlaceholder": "Select tour types",
+      "price": "Price (USD)",
+      "duration": "Duration",
+      "durationPlaceholder": "Select duration",
+      "departFrom": "Depart From",
+      "departFromPlaceholder": "Example: Ha Giang City",
+      "routes": "Routes",
+      "routesPlaceholder": "Example: Ha Giang - Dong Van - Meo Vac",
+      "featured": "Featured Tour",
+      "thumbnail": "Thumbnail Image",
+      "imageRule": "Formats: JPG, PNG. Max 5MB.",
+      "gallery": "Gallery Images",
+      "addToGallery": "Add to Gallery",
+      "description": "Short Description",
+      "descriptionPlaceholder": "A brief description for the tour card...",
+      "content": "Detailed Content",
+      "priceLabel": "Price:",
+      "departFromLabel": "Depart:",
+      "thumbnailLabel": "Thumbnail:",
+      "noImage": "No image selected",
+      "galleryLabel": "Gallery images ({count} images):",
+      "noGallery": "No gallery images"
+    },
+    "validation": {
+      "titleRequired": "Title is required",
+      "titleMin": "Title must be at least 3 characters",
+      "typeRequired": "Tour type is required",
+      "priceRequired": "Price is required",
+      "priceMin": "Price must be greater than 0",
+      "durationRequired": "Duration is required",
+      "departFromRequired": "Departure point is required",
+      "routesRequired": "Routes are required",
+      "descriptionRequired": "Short description is required",
+      "descriptionMin": "Description must be at least 10 characters",
+      "contentRequired": "Detailed content is required",
+      "imageSize": "Image size exceeds 5MB"
+    },
+    "message": {
+      "thumbnailSuccess": "Thumbnail uploaded successfully",
+      "uploadError": "Error uploading image",
+      "imageLimitWarning": "Some images were skipped due to size (max 5MB)",
+      "gallerySuccess": "Uploaded {count} images",
+      "cancelConfirm": "Are you sure you want to cancel? Changes will not be saved.",
+      "updateSuccess": "Tour updated successfully!",
+      "updateError": "An error occurred while updating the tour",
+      "createSuccess": "Tour created successfully!",
+      "createError": "An error occurred while creating the tour",
+      "deleteSuccess": "Tour deleted successfully!",
+      "deleteError": "An error occurred while deleting the tour",
+      "deleteConfirm": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+      "deleteTitle": "Confirm Delete",
+      "deleteBtn": "Delete"
+    },
+    "people": "Capacity",
+    "bookNowBtn": "Book Tour Now",
+    "peopleCount": "{count} people",
+    "durationUnit": "days",
+    "details": "Details",
+    "listHeroBadge": "EXPLORATION JOURNEY",
+    "listHeroTitleLine1": "Experience",
+    "listHeroTitleLine2": "Ultimate Motorbike Tours",
+    "listHeroDesc": "Conquer legendary roads, discover the hidden beauty of Vietnam with a professional team.",
+    "stats": {
+      "available": "Available Tours",
+      "customers": "Customers",
+      "reviews": "Top Rated"
+    },
+    "list": {
+      "details": "View details",
+      "departure": "Departure",
+      "route": "Route",
+      "type": "Type",
+      "emptyTitle": "No tours found",
+      "emptyDesc": "Try adjusting your filters or search",
+      "clearFilters": "Clear filters"
+    },
+    "confirm": {
+      "deleteTitle": "Confirm tour deletion",
+      "deleteMessage": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
+      "deleteButton": "Delete",
+      "cancelButton": "Cancel"
+    }
+  },
+  "footer": {
+    "address": "Address",
+    "email": "Email",
+    "phone": "Phone",
+    "featuredTours": "Featured Tours",
+    "tourGallery": "Tour Gallery",
+    "tourCategories": {
+      "north": "North Vietnam Tours",
+      "central": "Central Vietnam Tours",
+      "south": "South Vietnam Tours",
+      "domestic": "Domestic Tours",
+      "asia": "Asia Tours"
+    }
+  },
+  "service": {
+    "professionalService": "PROFESSIONAL SERVICE",
+    "solution": "Solution",
+    "perfectExperience": "The Perfect Experience",
+    "professionalServiceDesc": "We offer comprehensive motorcycle touring support services, from rentals to roadside assistance and tour guides.",
+    "service": "Service",
+    "support": "Support",
+    "reputation": "Reputation",
+    "filter": "Search for services...",
+    "whyChooseUs": "Why Choose Us?",
+    "safetyInsurance": "Safety & Insurance",
+    "safetyInsuranceDesc": "Comprehensive insurance, full safety equipment",
+    "professional": "Professional",
+    "professionalDesc": "Experienced team of tour guides",
+    "support247": "Support 24/7",
+    "support247Desc": "We are always ready to assist you anytime, anywhere"
+  },
+  "blog": {
+    "blog": "BLOG & STORIES",
+    "discover": "Discover",
+    "epicJourneys": "Epic Journeys",
+    "epicJourneysDesc": "Dive into captivating stories of adventure, culture, and the hidden gems of Vietnam's most breathtaking landscapes.",
+    "stories": "Stories",
+    "readers": "Readers",
+    "followers": "Followers",
+    "writers": "Writers",
+    "create": "Create Story",
+    "filter": {
+      "title": "Filters",
+      "search": "Search",
+      "filterDes": "Search stories ...",
+      "categories": "Categories",
+      "tags": "Tags"
+    },
+    "showResults": "Show Results",
+    "type": {
+      "all": "All",
+      "travelTips": "Travel Tips",
+      "destination": "Destination",
+      "culture": "Culture",
+      "food": "Food",
+      "adventure": "Adventure",
+      "guides": "Guides"
+    }
   }
 }
-
