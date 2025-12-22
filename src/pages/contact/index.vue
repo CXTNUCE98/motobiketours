@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import { useNotifications } from '@/composables/notifications'
+import { useI18n } from 'vue-i18n'
 
+const { t } = useI18n()
 type ContactForm = {
     fullName: string
     email: string
@@ -61,20 +63,20 @@ const submit = async () => {
 
 const faqItems = [
     {
-        question: "How do I book a tour?",
-        answer: "You can book a tour directly through our website by selecting your preferred tour and filling out the booking form. Alternatively, you can contact us via email or phone for personalized assistance."
+        question: t('contact.faqItems.howBook'),
+        answer: t('contact.faqItems.answerHowBook')
     },
     {
-        question: "What is included in the tour price?",
-        answer: "Our tour prices typically include motorbike rental, fuel, guide fees, accommodation, and selected meals. Specific inclusions are detailed on each tour's page."
+        question: t('contact.faqItems.tourPrice'),
+        answer: t('contact.faqItems.answerTourPrice')
     },
     {
-        question: "Do I need a driving license?",
-        answer: "Yes, a valid international driving permit (IDP) or a Vietnamese driving license is required to operate a motorbike legally in Vietnam."
+        question: t('contact.faqItems.drivingLicense'),
+        answer: t('contact.faqItems.answerDrivingLicense')
     },
     {
-        question: "Can I customize my tour?",
-        answer: "Absolutely! We specialize in tailor-made tours. Contact us with your preferences, and we'll design a unique itinerary just for you."
+        question: t('contact.faqItems.customTour'),
+        answer: t('contact.faqItems.answerCustomTour')
     }
 ]
 
@@ -118,22 +120,21 @@ const toggleFaq = (index: number) => {
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                         </span>
-                        LIÊN HỆ VỚI CHÚNG TÔI
+                        {{ t('contact.contactUs') }}
                     </div>
 
                     <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
                         style="animation-delay: 0.2s">
-                        <span class="block text-white">Kết Nối</span>
+                        <span class="block text-white">{{ t('contact.connect') }}</span>
                         <span
                             class="block bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent filter drop-shadow-sm">
-                            Hành Trình Của Bạn
+                            {{ t('contact.yourJourney') }}
                         </span>
                     </h1>
 
                     <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
                         style="animation-delay: 0.4s">
-                        Bạn có câu hỏi hay muốn lên kế hoạch cho chuyến đi sắp tới? Đừng ngần ngại liên hệ, chúng tôi
-                        luôn sẵn sàng hỗ trợ bạn.
+                        {{ t('contact.desc') }}
                     </p>
                 </div>
             </div>
@@ -158,7 +159,8 @@ const toggleFaq = (index: number) => {
                         class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         <i class="bx bx-phone-call text-2xl text-blue-500"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Call Us</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.call') }}
+                    </h3>
                     <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">0854.242.357 (Mr An)</p>
                     <p class="text-sm text-gray-400">Mon-Sun, 8am-8pm</p>
                 </a>
@@ -170,7 +172,8 @@ const toggleFaq = (index: number) => {
                         class="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         <i class="bx bx-envelope text-2xl text-pink-500"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Email Us</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.email') }}
+                    </h3>
                     <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">contact.andago@gmail.com</p>
                     <p class="text-sm text-gray-400">Online Support</p>
                 </a>
@@ -182,7 +185,8 @@ const toggleFaq = (index: number) => {
                         class="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         <i class="bx bx-map text-2xl text-purple-500"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Visit Us</h3>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.visit') }}
+                    </h3>
                     <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">53 Phạm Ngọc Mậu</p>
                     <p class="text-sm text-gray-400">Thanh Khê, Đà Nẵng</p>
                 </div>
@@ -194,8 +198,9 @@ const toggleFaq = (index: number) => {
                         class="w-14 h-14 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                         <i class="bx bxl-whatsapp text-2xl text-green-500"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">WhatsApp</h3>
-                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">Chat with us</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.whatsapp')
+                        }}</h3>
+                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">{{ t('contact.chatWithUs') }}</p>
                     <p class="text-sm text-gray-400">Instant Response</p>
                 </a>
             </div>
@@ -206,16 +211,16 @@ const toggleFaq = (index: number) => {
                     <div
                         class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none p-8 md:p-10 border border-transparent dark:border-gray-700">
                         <div class="mb-10">
-                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Send us a Message</h2>
-                            <p class="text-gray-600 dark:text-gray-300">Fill out the form below and our team will get
-                                back to you within 24 hours.</p>
+                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">{{
+                                t('contact.sendUsAMessage') }}</h2>
+                            <p class="text-gray-600 dark:text-gray-300">{{ t('contact.fillOut') }}</p>
                         </div>
 
                         <form @submit.prevent="submit" class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="space-y-2">
-                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Full
-                                        Name</label>
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
+                                        t('contact.fullName') }}</label>
                                     <div class="relative">
                                         <i
                                             class="bx bx-user absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
@@ -229,8 +234,8 @@ const toggleFaq = (index: number) => {
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Email
-                                        Address</label>
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
+                                        t('contact.email') }}</label>
                                     <div class="relative">
                                         <i
                                             class="bx bx-envelope absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
@@ -243,8 +248,8 @@ const toggleFaq = (index: number) => {
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Phone
-                                        Number</label>
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
+                                        t('contact.phone') }}</label>
                                     <div class="relative">
                                         <i
                                             class="bx bx-phone absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
@@ -255,8 +260,8 @@ const toggleFaq = (index: number) => {
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label
-                                        class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Country</label>
+                                    <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
+                                        t('contact.country') }}</label>
                                     <div class="relative">
                                         <i
                                             class="bx bx-world absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
@@ -268,27 +273,27 @@ const toggleFaq = (index: number) => {
                             </div>
 
                             <div class="space-y-2">
-                                <label
-                                    class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Subject</label>
+                                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
+                                    t('contact.subject') }}</label>
                                 <div class="relative">
                                     <i
                                         class="bx bx-tag absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
                                     <input v-model="form.title" @input="clearError('title')" type="text"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400"
-                                        placeholder="How can we help you?"
+                                        :placeholder="t('contact.howCanHelp')"
                                         :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.title }">
                                 </div>
                                 <p v-if="errors.title" class="text-red-500 text-xs ml-1">{{ errors.title }}</p>
                             </div>
 
                             <div class="space-y-2">
-                                <label
-                                    class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">Message</label>
+                                <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
+                                    t('contact.message') }}</label>
                                 <div class="relative">
                                     <i class="bx bx-message-detail absolute left-4 top-6 text-xl text-gray-400"></i>
                                     <textarea v-model="form.content" @input="clearError('content')" rows="5"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all resize-none text-gray-900 dark:text-white placeholder-gray-400"
-                                        placeholder="Tell us about your trip plans..."
+                                        :placeholder="t('contact.tellUsAboutYourTrip')"
                                         :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.content }"></textarea>
                                 </div>
                                 <p v-if="errors.content" class="text-red-500 text-xs ml-1">{{ errors.content }}</p>
@@ -297,7 +302,7 @@ const toggleFaq = (index: number) => {
                             <button type="submit" :disabled="isSubmitting"
                                 class="w-full py-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transform hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                                 <i v-if="isSubmitting" class="bx bx-loader-alt animate-spin text-xl"></i>
-                                <span>{{ isSubmitting ? 'Sending Message...' : 'Send Message' }}</span>
+                                <span>{{ isSubmitting ? t('contact.sendingMessage') : t('contact.sendMessage') }}</span>
                                 <i v-if="!isSubmitting" class="bx bx-send text-xl"></i>
                             </button>
                         </form>
@@ -310,9 +315,7 @@ const toggleFaq = (index: number) => {
                     <div
                         class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none p-8 border border-transparent dark:border-gray-700">
                         <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                            <i
-                                class="bx bx-question-mark bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 p-1.5 rounded-lg"></i>
-                            Common Questions
+                            {{ t('contact.faq') }}
                         </h3>
                         <div class="space-y-4">
                             <div v-for="(faq, index) in faqItems" :key="index"
@@ -337,10 +340,9 @@ const toggleFaq = (index: number) => {
                     <div
                         class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none p-2 h-80 border border-transparent dark:border-gray-700">
                         <iframe
-                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.110435403624!2d108.2414633759036!3d16.05975803969183!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142177f2ced6d8b%3A0xeac35f2960ca74a4!2zOTkgVMO0IEhp4bq_biBUaMOgbmgsIFBo4bqvYyBN4bu5LCBTxqFuIFRyw6AsIMSQw6AgTuG6tW5nIDU1MDAwMCwgVmlldG5hbQ!5e0!3m2!1sen!2s!4v1709955244444!5m2!1sen!2s"
-                            class="w-full h-full rounded-2xl" style="border:0;" allowfullscreen="" loading="lazy"
-                            referrerpolicy="no-referrer-when-downgrade">
-                        </iframe>
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.4275425111296!2d108.18603187583106!3d16.04328864013049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142197539244d27%3A0x98059ce4eb00cc95!2zNTMgxJAuIFBo4bqhbSBOZ-G7jWMgTeG6rXUsIEFuIEtow6osIFRoYW5oIEtow6osIMSQw6AgTuG6tW5nLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1766401819853!5m2!1svi!2s"
+                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
             </div>

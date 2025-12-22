@@ -36,6 +36,10 @@
     "guidesDesc": "Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách."
   },
   "contact": {
+    "contactUs": "Liên hệ với chúng tôi",
+    "connect": "Kết nối",
+    "yourJourney": "Hành trình của bạn",
+    "desc": "Bạn có câu hỏi hay muốn lên kế hoạch cho chuyến đi sắp tới? Đừng ngần ngại liên hệ, chúng tôi luôn sẵn sàng hỗ trợ bạn.",
     "heroBadge": "LIÊN HỆ VỚI CHÚNG TÔI",
     "heroTitleLine1": "Kết Nối",
     "heroTitleLine2": "Hành Trình Của Bạn",
@@ -43,8 +47,24 @@
     "quickInfo": {
       "call": "Gọi cho chúng tôi",
       "email": "Gửi email",
-      "visit": "Ghé thăm"
+      "visit": "Ghé thăm",
+      "whatsapp": "WhatsApp"
     },
+    "chatWithUs": "Chat với chúng tôi",
+    "sendUsAMessage": "Gửi tin nhắn cho chúng tôi",
+    "fillOut": "Hãy điền vào mẫu bên dưới và nhóm của chúng tôi sẽ liên hệ lại với bạn trong vòng 24 giờ.",
+    "howCanHelp": "Chúng tôi có thể giúp gì cho bạn?",
+    "yourCountry": "Quốc gia của bạn",
+    "tellUsAboutYourTrip": "Hãy cho chúng tôi biết về kế hoạch chuyến đi của bạn...",
+    "address": "Địa chỉ",
+    "country": "Quốc gia",
+    "subject": "Tiêu đề",
+    "message": "Tin nhắn",
+    "fullName": "Họ và tên",
+    "email": "Địa chỉ Email",
+    "phone": "Số điện thoại",
+    "sendMessage": "Gửi tin nhắn",
+    "sendingMessage": "Đang gửi tin nhắn...",
     "form": {
       "title": "Gửi tin nhắn cho chúng tôi",
       "desc": "Điền vào biểu mẫu bên dưới và nhóm của chúng tôi sẽ liên hệ lại với bạn trong vòng 24 giờ.",
@@ -78,24 +98,16 @@
       }
     },
     "faq": "Câu hỏi thường gặp",
-    "faqItems": [
-      {
-        "question": "Làm thế nào để tôi đặt tour?",
-        "answer": "Bạn có thể đặt tour trực tiếp qua trang web của chúng tôi bằng cách chọn tour bạn thích và điền vào mẫu đăng ký. Ngoài ra, bạn có thể liên hệ với chúng tôi qua email hoặc điện thoại để được hỗ trợ cá nhân."
-      },
-      {
-        "question": "Giá tour bao gồm những gì?",
-        "answer": "Giá tour của chúng tôi thường bao gồm thuê xe máy, nhiên liệu, phí hướng dẫn viên, chỗ ở và một số bữa ăn được chọn. Các chi tiết cụ thể được liệt kê trên trang của mỗi tour."
-      },
-      {
-        "question": "Tôi có cần giấy phép lái xe không?",
-        "answer": "Có, bạn cần có bằng lái xe quốc tế (IDP) hợp lệ hoặc bằng lái xe Việt Nam để vận hành xe máy hợp pháp tại Việt Nam."
-      },
-      {
-        "question": "Tôi có thể tùy chỉnh tour của mình không?",
-        "answer": "Chắc chắn rồi! Chúng tôi chuyên cung cấp các tour thiết kế riêng. Hãy liên hệ với chúng tôi với sở thích của bạn và chúng tôi sẽ thiết kế một hành trình độc đáo chỉ dành cho bạn."
-      }
-    ]
+    "faqItems": {
+      "howBook": "Tôi đặt tour bằng cách nào?",
+      "answerHowBook": "Bạn có thể đặt tour trực tiếp thông qua website của chúng tôi bằng cách chọn tour yêu thích và điền thông tin vào form đặt tour. Hoặc bạn có thể liên hệ với chúng tôi qua email hoặc điện thoại để được hỗ trợ tư vấn.",
+      "tourPrice": "Giá tour bao gồm gì?",
+      "answerTourPrice": "Giá tour của chúng tôi bao gồm thuê xe máy, nhiên liệu, phí hướng dẫn, chỗ ở và các bữa ăn được chọn. Các bao gồm cụ thể được chi tiết trên mỗi trang tour.",
+      "drivingLicense": "Tôi có cần bằng lái xe không?",
+      "answerDrivingLicense": "Có, bạn cần có giấy phép lái xe hợp lệ để lái xe máy hợp pháp tại Việt Nam.",
+      "customTour": "Tôi có thể tùy chỉnh tour không?",
+      "answerCustomTour": "Chắc chắn! Chúng tôi chuyên cung cấp các tour du lịch tùy chỉnh. Hãy liên hệ với chúng tôi để thiết kế một chương trình du lịch độc đáo cho bạn."
+    }
   },
   "auth": {
     "login": "Đăng nhập",

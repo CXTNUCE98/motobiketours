@@ -36,6 +36,10 @@
     "guidesDesc": "Tour guides play an important role in Vietnam's tourism industry, contributing to introducing the image of the country and people of Vietnam to international friends. With many years of experience and extensive knowledge of culture and history, our guides are committed to bringing memorable experiences to visitors."
   },
   "contact": {
+    "contactUs": "CONTACT US",
+    "connect": "Connect",
+    "yourJourney": "Your Journey",
+    "desc": "Do you have questions or want to plan your next trip? Don't hesitate to contact us; we're always ready to assist you.",
     "heroBadge": "CONTACT US",
     "heroTitleLine1": "Connect",
     "heroTitleLine2": "Your Journey",
@@ -43,8 +47,24 @@
     "quickInfo": {
       "call": "Call Us",
       "email": "Email Us",
-      "visit": "Visit Us"
+      "visit": "Visit Us",
+      "whatsapp": "WhatsApp"
     },
+    "chatWithUs": "Chat with us",
+    "sendUsAMessage": "Send Us a Message",
+    "fillOut": "Fill out the form below and our team will get back to you within 24 hours.",
+    "howCanHelp": "How can we help you?",
+    "yourCountry": "Your Country",
+    "tellUsAboutYourTrip": "Tell us about your trip plans...",
+    "address": "Address",
+    "country": "Country",
+    "subject": "Subject",
+    "message": "Message",
+    "fullName": "Full name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "sendMessage": "Send Message",
+    "sendingMessage": "Sending Message...",
     "form": {
       "title": "Send us a Message",
       "desc": "Fill out the form below and our team will get back to you within 24 hours.",
@@ -78,24 +98,16 @@
       }
     },
     "faq": "Common Questions",
-    "faqItems": [
-      {
-        "question": "How do I book a tour?",
-        "answer": "You can book a tour directly through our website by selecting your preferred tour and filling out the booking form. Alternatively, you can contact us via email or phone for personalized assistance."
-      },
-      {
-        "question": "What is included in the tour price?",
-        "answer": "Our tour prices typically include motorbike rental, fuel, guide fees, accommodation, and selected meals. Specific inclusions are detailed on each tour's page."
-      },
-      {
-        "question": "Do I need a driving license?",
-        "answer": "Yes, a valid international driving permit (IDP) or a Vietnamese driving license is required to operate a motorbike legally in Vietnam."
-      },
-      {
-        "question": "Can I customize my tour?",
-        "answer": "Absolutely! We specialize in tailor-made tours. Contact us with your preferences, and we'll design a unique itinerary just for you."
-      }
-    ]
+    "faqItems": {
+      "howBook": "How do I book a tour?",
+      "answerHowBook": "You can book a tour directly through our website by selecting your preferred tour and filling out the booking form. Alternatively, you can contact us via email or phone for personalized assistance.",
+      "tourPrice": "What is included in the tour price?",
+      "answerTourPrice": "Our tour prices typically include motorbike rental, fuel, guide fees, accommodation, and selected meals. Specific inclusions are detailed on each tour's page.",
+      "drivingLicense": "Do I need a driving license?",
+      "answerDrivingLicense": "Yes, a valid international driving permit (IDP) or a Vietnamese driving license is required to operate a motorbike legally in Vietnam.",
+      "customTour": "Can I customize my tour?",
+      "answerCustomTour": "Absolutely! We specialize in tailor-made tours. Contact us with your preferences, and we'll design a unique itinerary just for you."
+    }
   },
   "auth": {
     "login": "Login",
