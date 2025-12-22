@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/vue-query';
 import type { Tour } from '@/types/api';
 import { transformTourToCardProps } from '@/utils/tourHelpers';
 
+const { t } = useI18n();
+
 // Fetch featured tours (hot tours)
 const { data, isLoading } = useQuery({
   queryKey: ['tours', 'featured'],
@@ -32,10 +34,10 @@ const featuredTours = computed(() => {
     <div class="max-w-7xl mx-auto px-4 md:px-6">
       <div class="text-center mb-8 md:mb-12">
         <h2 class="text-3xl md:text-4xl font-bold mb-2">
-          <span class="text-gray-800 dark:text-white">TOUR </span>
+          <span class="text-gray-800 dark:text-white uppercase">{{ t('nav.tours') }} </span>
           <span class="text-[#1A71C7] dark:text-blue-400">HOT</span>
         </h2>
-        <p class="text-gray-600 dark:text-gray-300 text-lg">Tour được nhiều khách lựa chọn nhất</p>
+        <p class="text-gray-600 dark:text-gray-300 text-lg">{{ t('home.hotToursDescription') }}</p>
       </div>
 
       <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -47,7 +49,7 @@ const featuredTours = computed(() => {
       </div>
 
       <div v-else class="text-center py-12">
-        <p class="text-gray-600 dark:text-gray-400">Chưa có tour hot nào</p>
+        <p class="text-gray-600 dark:text-gray-400">{{ t('home.noHotTours') }}</p>
       </div>
     </div>
   </section>

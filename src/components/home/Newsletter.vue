@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n();
 import { ref } from 'vue';
 import { logger } from '~/utils/logger';
 
@@ -15,17 +16,19 @@ const handleNewsletter = () => {
             <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
                 <!-- Form Side -->
                 <div>
-                    <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-2">Nhận Ưu Đãi</p>
+                    <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-2">{{ t('home.newsletterSubtitle')
+                    }}</p>
                     <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-[#094174] dark:text-blue-400 mb-8">
-                        Đăng Ký Cho Chúng Tôi
+                        {{ t('home.newsletterTitle') }}
                     </h2>
 
                     <div class="space-y-4">
-                        <input v-model="newsletterEmail" type="email" placeholder="Địa chỉ email......"
+                        <input v-model="newsletterEmail" type="email"
+                            :placeholder="t('home.newsletterEmailPlaceholder')"
                             class="w-full px-6 py-4 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-white placeholder-gray-400 focus:border-red-500 focus:ring-2 focus:ring-red-200 dark:focus:ring-red-900 focus:outline-none transition-all" />
                         <button @click="handleNewsletter"
                             class="bg-[#1A71C7] hover:bg-[#C2185B] text-white font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300">
-                            Đăng Ký
+                            {{ t('home.newsletterSubscribe') }}
                         </button>
                     </div>
                 </div>

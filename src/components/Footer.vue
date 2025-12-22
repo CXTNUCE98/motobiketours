@@ -1,13 +1,14 @@
 <script setup>
-const tourLinks = [
-    { title: 'Tour Miền Bắc 2', url: '/tour/city/mien-bac' },
-    { title: 'Tour Miền Bắc 1', url: '/tour/city/mien-bac' },
-    { title: 'Tour Miền Bắc', url: '/tour/city/mien-bac' },
-    { title: 'Tour Miền Trung', url: '/tour/city/mien-trung' },
-    { title: 'Tour Miền Nam', url: '/tour/city/mien-nam' },
-    { title: 'Tour Trong Nước', url: '/tour' },
-    { title: 'Tour Châu Á', url: '/tour' }
-];
+const { t } = useI18n();
+const localePath = useLocalePath();
+
+const tourLinks = computed(() => [
+    { title: t('footer.tourCategories.north'), url: localePath('/tour/city/mien-bac') },
+    { title: t('footer.tourCategories.central'), url: localePath('/tour/city/mien-trung') },
+    { title: t('footer.tourCategories.south'), url: localePath('/tour/city/mien-nam') },
+    { title: t('footer.tourCategories.domestic'), url: localePath('/tour') },
+    { title: t('footer.tourCategories.asia'), url: localePath('/tour') }
+]);
 
 const galleryImages = [
     '/carousel/1.jpg',
@@ -27,22 +28,22 @@ const galleryImages = [
                 <!-- Logo and Contact Info -->
                 <div class="lg:col-span-3">
                     <div class="mb-6">
-                        <h2 class="text-3xl font-bold">
+                        <NuxtLink :to="localePath('/')" class="text-3xl font-bold">
                             <span class="text-black dark:text-white">AN</span><span
                                 class="text-sky-500 dark:text-cyan-400">DAGO</span>
-                        </h2>
+                        </NuxtLink>
                     </div>
 
                     <div class="space-y-4 text-sm">
                         <div>
-                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">Địa chỉ</h3>
+                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">{{ t('footer.address') }}</h3>
                             <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
                                 53 Phạm Ngọc Mậu, Thanh Khê, Đà Nẵng
                             </p>
                         </div>
 
                         <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
-                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">Nhận email</h3>
+                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">{{ t('footer.email') }}</h3>
                             <a href="mailto:contact.andago@gmail.com"
                                 class="text-sky-600 dark:text-cyan-400 hover:text-sky-800 dark:hover:text-cyan-300 transition-colors">
                                 contact.andago@gmail.com
@@ -50,7 +51,7 @@ const galleryImages = [
                         </div>
 
                         <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
-                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">Số điện thoại</h3>
+                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">{{ t('footer.phone') }}</h3>
                             <a href="tel:0854242357"
                                 class="text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">
                                 0854.242.357 (Mr An)
@@ -64,7 +65,9 @@ const galleryImages = [
                     <div class="space-y-6">
                         <!-- Tour Nội Bật -->
                         <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white mb-4 text-lg">Tour Nội Bật</h3>
+                            <h3 class="font-bold text-slate-800 dark:text-white mb-4 text-lg">{{
+                                t('footer.featuredTours')
+                                }}</h3>
                             <ul class="space-y-2">
                                 <li v-for="(link, index) in tourLinks.slice(0, 3)" :key="index">
                                     <NuxtLink :to="link.url"
@@ -78,7 +81,9 @@ const galleryImages = [
 
                         <!-- Thư Viện Ảnh -->
                         <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white mb-4 text-lg">Thư Viện Ảnh</h3>
+                            <h3 class="font-bold text-slate-800 dark:text-white mb-4 text-lg">{{ t('footer.tourGallery')
+                                }}
+                            </h3>
                             <ul class="space-y-2">
                                 <li v-for="(link, index) in tourLinks.slice(3)" :key="index">
                                     <NuxtLink :to="link.url"

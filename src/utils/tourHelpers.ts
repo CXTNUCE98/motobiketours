@@ -33,7 +33,7 @@ export const formatDuration = (duration: string): string => {
 export const getPeopleCount = (routes?: string): string => {
   // You can extract from routes or use default
   // For now, using a default value
-  return '2-4 người';
+  return '2-4';
 };
 
 /**
@@ -51,18 +51,14 @@ export const transformTourToCardProps = (tour: Tour) => {
     to: `/tour/${tour.id}`,
     badge: tour.type ? tour.type : undefined,
     showPeulisLabel: false,
-    tags: tour.routes ? tour.routes.split(',').map(r => r.trim()) : [],
+    tags: tour.routes ? tour.routes.split(',').map((r) => r.trim()) : [],
   };
 };
 
 /**
  * Transform API Tour to TourCard props with optional discount
  */
-export const transformTourToCardPropsWithDiscount = (
-  tour: Tour,
-  originalPrice?: number,
-  discount?: number
-) => {
+export const transformTourToCardPropsWithDiscount = (tour: Tour, originalPrice?: number, discount?: number) => {
   const baseProps = transformTourToCardProps(tour);
   return {
     ...baseProps,
@@ -70,4 +66,3 @@ export const transformTourToCardPropsWithDiscount = (
     discount,
   };
 };
-

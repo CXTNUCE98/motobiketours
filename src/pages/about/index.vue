@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n';
+const { t } = useI18n();
 
 // Tour guides data
 const tourGuides = [
@@ -6,27 +8,46 @@ const tourGuides = [
         id: 1,
         name: 'Jane Cooper',
         image: 'https://tte.edu.vn/public/upload/2025/01/avatar-cho39.webp',
-        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+        description: t('about.guidesDesc')
     },
     {
         id: 2,
         name: 'Wade Warren',
         image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH7wZvz7hnx8d5vw-S4y-jQNTAzrHICXvM8A&s',
-        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+        description: t('about.guidesDesc')
     },
     {
         id: 3,
         name: 'Jenny Wilson',
         image: 'https://maunailxinh.com/wp-content/uploads/2025/06/avatar-meo-ngau%E2%80%8B-2.jpg',
-        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+        description: t('about.guidesDesc')
     },
     {
         id: 4,
         name: 'Mamnun Khan',
         image: 'https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-7.jpg',
-        description: 'Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.'
+        description: t('about.guidesDesc')
     }
 ]
+
+const serviceList = {
+    services: [
+        t('about.services.flights'),
+        t('about.services.hotels'),
+        t('about.services.tours'),
+        t('about.services.visa'),
+        t('about.services.rentals'),
+        t('about.services.insurance')
+    ],
+    advantages: [
+        t('about.advantages.price'),
+        t('about.advantages.quality'),
+        t('about.advantages.diversity'),
+        t('about.advantages.speed'),
+        t('about.advantages.support'),
+        t('about.advantages.promotions')
+    ]
+}
 </script>
 
 <template>
@@ -41,51 +62,43 @@ const tourGuides = [
                     <!-- Main Title -->
                     <h1
                         class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 leading-tight">
-                        ANDAGO || Đại Lý Du Lịch & Đặt Tour
+                        ANDAGO || {{ t('about.title') }}
                     </h1>
 
                     <!-- Section 1: Giới thiệu về ANDAGO -->
                     <div class="space-y-3 sm:space-y-4">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Giới thiệu về ANDAGO
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{{ t('about.introTitle')
+                        }}
                         </h2>
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            ANDAGO là đại lý du lịch trực tuyến uy tín tại Việt Nam, chuyên cung cấp các dịch vụ du lịch
-                            đa dạng và chất lượng cao.
+                            {{ t('about.introDesc1') }}
                         </p>
 
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            Các dịch vụ chính của chúng tôi bao gồm:
+                            {{ t('about.introDesc2') }}
                         </p>
 
                         <ul
                             class="space-y-1.5 sm:space-y-2 text-gray-700 dark:text-gray-300 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">
-                            <li>Đặt vé máy bay, tàu hỏa, xe khách</li>
-                            <li>Đặt phòng khách sạn, resort</li>
-                            <li>Đặt tour du lịch trong nước và quốc tế</li>
-                            <li>Dịch vụ visa du lịch</li>
-                            <li>Dịch vụ thuê xe du lịch</li>
-                            <li>Dịch vụ bảo hiểm du lịch</li>
+                            <li v-for="(val, key) in serviceList.services" :key="key">
+                                {{ val
+                                }}</li>
                         </ul>
 
                         <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            Với đội ngũ nhân viên chuyên nghiệp, nhiệt tình và giàu kinh nghiệm, ANDAGO cam kết mang đến
-                            cho khách hàng những trải nghiệm du lịch tuyệt vời nhất.
+                            {{ t('about.introDesc3') }}
                         </p>
                     </div>
 
                     <!-- Section 2: Ưu điểm -->
                     <div class="space-y-3 sm:space-y-4">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">Ưu điểm khi sử dụng dịch
-                            vụ của ANDAGO</h2>
+                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{{
+                            t('about.advantagesTitle') }}</h2>
 
                         <ul
                             class="space-y-1.5 sm:space-y-2 text-gray-700 dark:text-gray-300 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">
-                            <li>Giá cả cạnh tranh</li>
-                            <li>Chất lượng dịch vụ uy tín</li>
-                            <li>Sản phẩm du lịch đa dạng</li>
-                            <li>Đặt tour và vé máy bay nhanh chóng, dễ dàng</li>
-                            <li>Hỗ trợ tư vấn 24/7</li>
-                            <li>Nhiều chương trình khuyến mãi hấp dẫn</li>
+                            <li v-for="(val, key) in serviceList.advantages" :key="key">{{
+                                val }}</li>
                         </ul>
                     </div>
                 </div>
@@ -123,11 +136,11 @@ const tourGuides = [
                 <div class="text-center mb-8 sm:mb-12 md:mb-16">
                     <p
                         class="text-red-600 dark:text-red-400 text-xs sm:text-sm font-semibold mb-2 uppercase tracking-wide">
-                        Hướng Dẫn Viên Du Lịch
+                        {{ t('about.guidesSub') }}
                     </p>
                     <h2
                         class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white leading-tight">
-                        Gặp Gỡ Hướng Dẫn Viên Xuất Sắc Của Chúng Tôi
+                        {{ t('about.guidesTitle') }}
                     </h2>
                 </div>
 
@@ -146,7 +159,7 @@ const tourGuides = [
                             <!-- Category/Role -->
                             <p
                                 class="text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide mb-2">
-                                HƯỚNG DẪN VIÊN DU LỊCH
+                                {{ t('about.guidesSub') }}
                             </p>
 
                             <!-- Name -->

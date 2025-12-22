@@ -15,11 +15,11 @@ const isScrolled = ref(false)
 const showLoginPopup = ref(false)
 const handleLogout = () => {
     ElMessageBox.confirm(
-        'Are you sure you want to log out?',
-        'Warning',
+        t('auth.logoutConfirm'),
+        t('common.warning'),
         {
-            confirmButtonText: 'OK',
-            cancelButtonText: 'Cancel',
+            confirmButtonText: t('common.confirm'),
+            cancelButtonText: t('common.cancel'),
             type: 'warning',
             center: true,
         }
@@ -30,7 +30,7 @@ const handleLogout = () => {
 
             ElMessage({
                 type: 'success',
-                message: 'Logout successfully!',
+                message: t('auth.logoutSuccess'),
             })
         })
 
@@ -189,7 +189,7 @@ function formLogin() {
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
                                         user?.userName
-                                        }}</p>
+                                    }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
 

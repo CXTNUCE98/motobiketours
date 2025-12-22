@@ -1,8 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { services } from '../../composables/services';
+import { useI18n } from 'vue-i18n';
 
 const searchQuery = ref('');
+const { t } = useI18n();
 
 const filteredServices = computed(() => {
     if (!searchQuery.value) return services;
@@ -48,22 +50,21 @@ const filteredServices = computed(() => {
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
                         </span>
-                        DỊCH VỤ CHUYÊN NGHIỆP
+                        {{ t('service.professionalService') }}
                     </div>
 
                     <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
                         style="animation-delay: 0.2s">
-                        <span class="block text-white">Giải Pháp</span>
+                        <span class="block text-white">{{ t('service.solution') }}</span>
                         <span
                             class="block bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent filter drop-shadow-sm">
-                            Trải Nghiệm Hoàn Hảo
+                            {{ t('service.perfectExperience') }}
                         </span>
                     </h1>
 
                     <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
                         style="animation-delay: 0.4s">
-                        Chúng tôi cung cấp các dịch vụ hỗ trợ du lịch xe máy toàn diện, từ cho thuê xe đến cứu hộ và
-                        hướng dẫn viên.
+                        {{ t('service.professionalServiceDesc') }}
                     </p>
 
                     <!-- Quick Stats -->
@@ -74,21 +75,24 @@ const filteredServices = computed(() => {
                             <div
                                 class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-indigo-400 transition-colors">
                                 {{ services.length }}</div>
-                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">Dịch Vụ</div>
+                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">{{
+                                t('service.service') }}</div>
                         </div>
                         <div
                             class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
                             <div
                                 class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-purple-400 transition-colors">
                                 24/7</div>
-                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">Hỗ Trợ</div>
+                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">{{
+                                t('service.support') }}</div>
                         </div>
                         <div
                             class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
                             <div
                                 class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-pink-400 transition-colors">
                                 5.0</div>
-                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">Uy Tín</div>
+                            <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">{{
+                                t('service.reputation') }}</div>
                         </div>
                     </div>
                 </div>
@@ -112,7 +116,7 @@ const filteredServices = computed(() => {
                     <div
                         class="absolute inset-0 bg-indigo-500/20 rounded-2xl blur-xl group-hover:bg-indigo-500/30 transition-all duration-500">
                     </div>
-                    <input v-model="searchQuery" type="text" placeholder="Tìm kiếm dịch vụ..."
+                    <input v-model="searchQuery" type="text" :placeholder="t('service.filter')"
                         class="relative w-full px-6 py-5 pr-14 rounded-2xl text-gray-800 dark:text-white bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl text-lg shadow-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-300 placeholder-gray-400 border border-white/20 dark:border-gray-700" />
                     <button
                         class="absolute right-3 top-1/2 -translate-y-1/2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-3 rounded-xl hover:scale-110 transition-transform duration-300 shadow-lg">
@@ -215,31 +219,31 @@ const filteredServices = computed(() => {
         <!-- Why Choose Us Section -->
         <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20">
             <div class="container mx-auto px-4">
-                <h2 class="text-4xl font-bold text-center mb-12">Tại Sao Chọn Chúng Tôi?</h2>
+                <h2 class="text-4xl font-bold text-center mb-12">{{ $t('service.whyChooseUs') }}</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                     <div class="text-center">
                         <div
                             class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                             <i class="bx bx-shield-check text-4xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">An Toàn & Bảo Hiểm</h3>
-                        <p class="text-blue-100">Bảo hiểm toàn diện, thiết bị an toàn đầy đủ</p>
+                        <h3 class="text-xl font-bold mb-2">{{ $t('service.safetyInsurance') }}</h3>
+                        <p class="text-blue-100">{{ $t('service.safetyInsuranceDesc') }}</p>
                     </div>
                     <div class="text-center">
                         <div
                             class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                             <i class="bx bx-user-check text-4xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Chuyên Nghiệp</h3>
-                        <p class="text-blue-100">Đội ngũ hướng dẫn viên giàu kinh nghiệm</p>
+                        <h3 class="text-xl font-bold mb-2">{{ $t('service.professional') }}</h3>
+                        <p class="text-blue-100">{{ $t('service.professionalDesc') }}</p>
                     </div>
                     <div class="text-center">
                         <div
                             class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
                             <i class="bx bx-support text-4xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold mb-2">Hỗ Trợ 24/7</h3>
-                        <p class="text-blue-100">Luôn sẵn sàng hỗ trợ bạn mọi lúc mọi nơi</p>
+                        <h3 class="text-xl font-bold mb-2">{{ $t('service.support247') }}</h3>
+                        <p class="text-blue-100">{{ $t('service.support247Desc') }}</p>
                     </div>
                 </div>
             </div>

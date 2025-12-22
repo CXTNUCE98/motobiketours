@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+const { t } = useI18n();
 import { useQuery } from '@tanstack/vue-query';
 import type { Tour } from '@/types/api';
 import { transformTourToCardProps } from '@/utils/tourHelpers';
@@ -30,14 +31,13 @@ const topDestinationsTours = computed(() => {
             <!-- Header Text -->
             <div class="text-center mb-8 md:mb-12">
                 <p class="text-red-600 dark:text-red-400 text-sm md:text-base font-medium mb-2">
-                    Điểm Đến Hàng Đầu
+                    {{ t('home.topDestSubtitle') }}
                 </p>
                 <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174] dark:text-blue-400 mb-4">
-                    Tour Nổi Bật Của Chúng Tôi
+                    {{ t('home.topDestTitle') }}
                 </h2>
                 <p class="text-gray-600 dark:text-gray-300 text-base md:text-lg max-w-3xl mx-auto">
-                    Những địa điểm đặc sắc cả trong và ngoài nước. Mang đến sự đa dạng cho khách hàng thoải mái lựa
-                    chọn chuyến đi cho mình.
+                    {{ t('home.topDestDesc') }}
                 </p>
             </div>
 
@@ -54,7 +54,7 @@ const topDestinationsTours = computed(() => {
 
             <!-- Empty State -->
             <div v-else class="text-center py-12">
-                <p class="text-gray-600 dark:text-gray-400">Chưa có tour nổi bật nào</p>
+                <p class="text-gray-600 dark:text-gray-400">{{ t('home.noHotTours') }}</p>
             </div>
         </div>
     </section>

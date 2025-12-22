@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+const { t } = useI18n();
 import { useRouter } from 'vue-router';
 import type { TourCardItem } from '@/types/api';
 
@@ -154,7 +155,7 @@ const toggleWishlist = (e: Event) => {
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <span class="font-semibold text-gray-700 dark:text-gray-200">Thời gian:</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-200">{{ t('tour.duration') }}:</span>
                         <span class="ml-1">{{ tour?.duration }}</span>
                     </div>
                 </div>
@@ -167,8 +168,8 @@ const toggleWishlist = (e: Event) => {
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <span class="font-semibold text-gray-700 dark:text-gray-200">Số lượng:</span>
-                        <span class="ml-1">{{ tour?.people }}</span>
+                        <span class="font-semibold text-gray-700 dark:text-gray-200">{{ t('tour.people') }}:</span>
+                        <span class="ml-1">{{ t('tour.peopleCount', { count: tour?.people || '2-4' }) }}</span>
                     </div>
                 </div>
             </div>
@@ -181,7 +182,7 @@ const toggleWishlist = (e: Event) => {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <span>Đặt Tour Ngay</span>
+                <span>{{ t('tour.bookNowBtn') }}</span>
                 <svg class="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

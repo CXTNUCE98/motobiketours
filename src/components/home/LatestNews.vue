@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n();
 import { latestNews } from '@/data/homeData';
 </script>
 
@@ -8,10 +9,10 @@ import { latestNews } from '@/data/homeData';
             <!-- Header Text -->
             <div class="text-center mb-8 md:mb-12">
                 <p class="text-red-600 dark:text-red-400 text-sm md:text-base font-medium mb-2">
-                    Tin Tức
+                    {{ t('home.latestNewsSubtitle') }}
                 </p>
                 <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174] dark:text-blue-400">
-                    Bài Viết Mới Nhất
+                    {{ t('home.latestNewsTitle') }}
                 </h2>
             </div>
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+const { t } = useI18n();
 import { locations } from '@/data/homeData';
 import { logger } from '~/utils/logger';
 
@@ -10,12 +11,18 @@ const searchForm = ref({
     duration: ''
 });
 
-const durationOptions = [
-    { value: '', label: 'Số ngày' },
-    { value: '1-3', label: '1-3 ngày' },
-    { value: '4-7', label: '4-7 ngày' },
-    { value: '8+', label: '8+ ngày' },
-];
+const translatedLocations = computed(() => {
+    return locations.map(loc => ({
+        ...loc,
+        label: loc.value === 'all' ? t('tour.all') : loc.label
+    }));
+});
+const durationOptions = computed(() => [
+    { value: '', label: t('tour.durationUnit') },
+    { value: '1-3', label: `1-3 ${t('tour.durationUnit')}` },
+    { value: '4-7', label: `4-7 ${t('tour.durationUnit')}` },
+    { value: '8+', label: `8+ ${t('tour.durationUnit')}` },
+]);
 
 const handleSearch = () => {
     logger.log('Search:', searchForm.value);
@@ -37,13 +44,15 @@ const handleSearch = () => {
             <div class="text-center mb-10 md:mb-14">
                 <p
                     class="text-red-600 dark:text-red-400 font-semibold mb-3 tracking-wide uppercase text-sm md:text-base">
-                    Khám phá Việt Nam !!
+                    {{ t('home.discoverVN') }}
                 </p>
                 <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                    Tìm Kiếm Chuyến Đi <span class="text-blue-600 dark:text-blue-400">Tốt Nhất</span> Của Bạn
+                    {{ t('home.searchBestTrip').split(t('home.best'))[0] }}<span
+                        class="text-blue-600 dark:text-blue-400">{{
+                            t('home.best') }}</span>{{ t('home.searchBestTrip').split(t('home.best'))[1] }}
                 </h2>
                 <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                    Trải nghiệm những hành trình thú vị và đáng nhớ cùng chúng tôi
+                    {{ t('home.searchExp') }}
                 </p>
             </div>
 
@@ -55,13 +64,13 @@ const handleSearch = () => {
 
                     <!-- Keyword Input -->
                     <div class="flex-1 relative group px-2 md:px-4 py-2">
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">Từ
-                            khóa</label>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">{{
+                            t('home.searchKeyword') }}</label>
                         <div class="relative flex items-center">
                             <div class="absolute left-2 text-gray-400 transition-colors">
                                 <i class="i-carbon-search text-xl"></i>
                             </div>
-                            <input v-model="searchForm.keyword" type="text" placeholder="Bạn muốn đi đâu?"
+                            <input v-model="searchForm.keyword" type="text" :placeholder="t('home.searchPlaceholder')"
                                 class="w-full h-10 pl-10 pr-4 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 font-medium"
                                 @keyup.enter="handleSearch" />
                         </div>
@@ -69,15 +78,15 @@ const handleSearch = () => {
 
                     <!-- Location Dropdown -->
                     <div class="flex-1 relative group px-2 md:px-4 py-2">
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">Điểm
-                            đến</label>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">{{
+                            t('home.searchDest') }}</label>
                         <div class="relative flex items-center">
                             <div class="absolute left-2 text-gray-400 transition-colors">
                                 <i class="i-carbon-map text-xl"></i>
                             </div>
                             <select v-model="searchForm.location"
                                 class="w-full h-10 pl-10 pr-8 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
-                                <option v-for="loc in locations" :key="loc.value" :value="loc.value"
+                                <option v-for="loc in translatedLocations" :key="loc.value" :value="loc.value"
                                     class="dark:bg-gray-800">
                                     {{ loc.label }}
                                 </option>
@@ -90,8 +99,8 @@ const handleSearch = () => {
 
                     <!-- Duration Dropdown -->
                     <div class="flex-1 relative group px-2 md:px-4 py-2">
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">Thời
-                            gian</label>
+                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">{{
+                            t('tour.duration') }}</label>
                         <div class="relative flex items-center">
                             <div class="absolute left-2 text-gray-400 transition-colors">
                                 <i class="i-carbon-calendar text-xl"></i>
@@ -114,7 +123,7 @@ const handleSearch = () => {
                         <button @click="handleSearch"
                             class="w-full md:w-auto h-12 md:h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl md:rounded-full font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 flex items-center justify-center gap-2">
                             <i class="i-carbon-search text-xl"></i>
-                            <span>Tìm kiếm</span>
+                            <span>{{ t('common.searchPlaceholder').replace('...', '') }}</span>
                         </button>
                     </div>
                 </div>

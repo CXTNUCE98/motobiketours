@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
-import { ElMessage, ElMessageBox } from 'element-plus';
+// ElMessage and ElMessageBox are auto-imported
 import { fetchTours, type Tour } from '@/services/tourApi';
 import TourFilter from '../../components/TourFilter.vue';
 
@@ -12,6 +13,7 @@ import { useAuth } from '~/composables/useAuth';
 import { logger } from '~/utils/logger';
 
 const route = useRoute();
+const { t } = useI18n();
 const { formatPrice } = useCurrency();
 const localePath = useLocalePath();
 
@@ -26,19 +28,25 @@ const queryClient = useQueryClient();
 
 // Auth
 const { user } = useAuth();
-const isAdmin = computed(() => user.value?.isAdmin);
+const isAdmin = computed(() => user.value?.role === 'ADMIN');
 
 // Pagination state
 const currentPage = ref(1);
 const itemsPerPage = 6;
 
 // Filter state
-const activeFilters = ref({
+const activeFilters = ref<{
+    searchQuery: string;
+    duration: string;
+    priceRange: { min: number; max: number };
+    tourTypes: string[];
+    depart_from: string;
+}>({
     searchQuery: '',
     duration: '',
     priceRange: { min: 0, max: 2000 },
     tourTypes: [],
-    departFrom: '',
+    depart_from: '',
 });
 
 watch(searchQuery, (newVal) => {
@@ -47,11 +55,11 @@ watch(searchQuery, (newVal) => {
 
 // Construct API filters
 const apiFilters = computed(() => {
-    const filters = {
+    const filters: any = {
         p: currentPage.value,
         r: itemsPerPage,
         q: searchQuery.value,
-        depart_from: activeFilters.value.departFrom,
+        depart_from: activeFilters.value.depart_from,
         price_min: activeFilters.value.priceRange.min,
         price_max: activeFilters.value.priceRange.max,
     };
@@ -102,23 +110,23 @@ const processedTours = computed(() => {
         });
     } else if (sortBy.value === 'duration') {
         result.sort((a, b) => {
-            const daysA = a.duration_days || getDurationDays(a.duration);
-            const daysB = b.duration_days || getDurationDays(b.duration);
-            return daysA - daysB;
+            const rangeA = a.duration_range || 0;
+            const rangeB = b.duration_range || 0;
+            return rangeA - rangeB;
         });
     }
 
     return result;
 });
 
-const changePage = (page) => {
+const changePage = (page: number) => {
     if (page >= 1 && page <= totalPages.value) {
         currentPage.value = page;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 };
 
-const handleApplyFilters = (filters) => {
+const handleApplyFilters = (filters: any) => {
     activeFilters.value = filters;
     if (filters.searchQuery !== undefined) {
         searchQuery.value = filters.searchQuery;
@@ -129,10 +137,11 @@ const handleApplyFilters = (filters) => {
 
 const handleClearFilters = () => {
     activeFilters.value = {
+        searchQuery: '',
         duration: '',
         priceRange: { min: 0, max: 2000 },
         tourTypes: [],
-        departFrom: ''
+        depart_from: ''
     };
     searchQuery.value = '';
     currentPage.value = 1;
@@ -161,26 +170,26 @@ const { mutate: deleteTourMutation, isPending: isDeleting } = useDeleteTour();
 
 const deleteTour = (tourId: string) => {
     const tour = tours.value.find(t => t.id === tourId);
-    const tourTitle = tour?.title || 'tour này';
+    const tourTitle = tour?.title || t('tour.thisTour');
 
     ElMessageBox.confirm(
-        `Bạn có chắc chắn muốn xóa "${tourTitle}"? Hành động này không thể hoàn tác.`,
-        'Xác nhận xóa tour',
+        t('tour.message.deleteConfirm', { title: tourTitle }),
+        t('tour.message.deleteTitle'),
         {
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
+            confirmButtonText: t('tour.message.deleteBtn'),
+            cancelButtonText: t('common.cancel'),
             type: 'warning',
             confirmButtonClass: 'el-button--danger'
         }
     ).then(() => {
         deleteTourMutation(tourId, {
             onSuccess: () => {
-                ElMessage.success('Xóa tour thành công!');
+                ElMessage.success(t('tour.message.deleteSuccess'));
                 queryClient.invalidateQueries({ queryKey: ['tours'] });
             },
             onError: (error: unknown) => {
                 logger.error('Error deleting tour:', error);
-                let errorMessage = 'Có lỗi xảy ra khi xóa tour';
+                let errorMessage = t('tour.message.deleteError');
                 if (error && typeof error === 'object') {
                     const apiError = error as { message?: string; response?: { data?: { message?: string } } };
                     errorMessage = apiError?.message || apiError?.response?.data?.message || errorMessage;
@@ -193,32 +202,22 @@ const deleteTour = (tourId: string) => {
     });
 };
 
-const optionFilterPrice = [
-    {
-        label: 'Mặc định',
-        value: 'default',
-    },
-    {
-        label: 'Giá thấp nhất',
-        value: 'price-low',
-    },
-    {
-        label: 'Giá cao nhất',
-        value: 'price-high',
-    },
-    {
-        label: 'Thời gian',
-        value: 'duration',
-    },
-
-]
+const optionFilterPrice = computed(() => {
+    const opts = (t as any)('tour.filter.sortOptions', { returnObjects: true });
+    return [
+        { label: opts.default, value: 'default' },
+        { label: opts.priceLow, value: 'price-low' },
+        { label: opts.priceHigh, value: 'price-high' },
+        { label: opts.duration, value: 'duration' }
+    ];
+});
 
 onMounted(() => {
     if (route.query.keyword) {
         searchQuery.value = route.query.keyword as string;
     }
     if (route.query.location && route.query.location !== 'all') {
-        activeFilters.value.departFrom = route.query.location as string;
+        activeFilters.value.depart_from = route.query.location as string;
     }
     if (route.query.duration) {
         activeFilters.value.duration = route.query.duration as string;
@@ -261,22 +260,21 @@ onMounted(() => {
                                 class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
                         </span>
-                        HÀNH TRÌNH KHÁM PHÁ
+                        {{ t('tour.journeyOfDiscovery') }}
                     </div>
 
                     <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
                         style="animation-delay: 0.2s">
-                        <span class="block text-white">Trải Nghiệm</span>
+                        <span class="block text-white">{{ t('tour.experience') }}</span>
                         <span
                             class="block bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent filter drop-shadow-sm">
-                            Tour Xe Máy Đỉnh Cao
+                            {{ t('tour.peakTour') }}
                         </span>
                     </h1>
 
                     <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
                         style="animation-delay: 0.4s">
-                        Chinh phục những cung đường huyền thoại, khám phá vẻ đẹp tiềm ẩn của Việt Nam cùng đội ngũ
-                        chuyên nghiệp.
+                        {{ t('tour.peakTourDesc') }}
                     </p>
 
                     <!-- Stats Cards -->
@@ -287,21 +285,24 @@ onMounted(() => {
                             <div
                                 class="text-4xl font-black text-white mb-1 group-hover:text-blue-400 transition-colors">
                                 {{ data?.total || 0 }}+</div>
-                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Tours Sẵn Có</div>
+                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{
+                                t('tour.readyTour') }}</div>
                         </div>
                         <div
                             class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
                             <div
                                 class="text-4xl font-black text-white mb-1 group-hover:text-cyan-400 transition-colors">
                                 1.2k+</div>
-                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Khách Hàng</div>
+                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{
+                                t('tour.customers') }}</div>
                         </div>
                         <div
                             class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
                             <div
                                 class="text-4xl font-black text-white mb-1 group-hover:text-indigo-400 transition-colors">
                                 4.9/5</div>
-                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Đánh Giá Cao</div>
+                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{
+                                t('tour.evaluate') }}</div>
                         </div>
                     </div>
                 </div>
@@ -343,18 +344,15 @@ onMounted(() => {
 
                                 <button @click="showFilters = !showFilters"
                                     class="lg:hidden flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors duration-300 font-medium">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                                    </svg>
-                                    Bộ lọc
+                                    <i class="bx bx-filter-alt text-lg"></i>
+                                    {{ t('tour.filterBtn') }}
                                 </button>
                             </div>
 
                             <!-- Right: Actions -->
                             <div class="flex items-center justify-end gap-3 overflow-x-auto pb-1 md:pb-0 no-scrollbar">
                                 <!-- Sort Dropdown -->
-                                <el-select v-model="sortBy" placeholder="Sắp xếp" size="large"
+                                <el-select v-model="sortBy" :placeholder="t('tour.filter.sortBy')" size="large"
                                     class="!w-40 md:!w-48 [&_.el-select\_\_wrapper]:!rounded-xl [&_.el-select\_\_wrapper]:!shadow-none [&_.el-select\_\_wrapper]:bg-gray-50 [&_.el-select\_\_wrapper]:dark:bg-gray-700 [&_.el-select\_\_wrapper]:border-0">
                                     <template #prefix>
                                         <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor"
@@ -392,8 +390,8 @@ onMounted(() => {
                                     <el-icon class="mr-2">
                                         <Plus />
                                     </el-icon>
-                                    <span class="hidden sm:inline">Create tour</span>
-                                    <span class="sm:hidden">Tạo</span>
+                                    <span class="hidden sm:inline">{{ t('tour.createBtn') }}</span>
+                                    <span class="sm:hidden">{{ t('common.create') }}</span>
                                 </el-button>
                             </div>
                         </div>
@@ -470,11 +468,11 @@ onMounted(() => {
                                                 </div>
                                                 <button
                                                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
-                                                    Xem chi tiết
+                                                    {{ t('tour.list.details') }}
                                                 </button>
                                                 <button v-if="isAdmin" @click.prevent="editTour(tour.id)"
                                                     class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
-                                                    Sửa
+                                                    {{ t('tour.edit') }}
                                                 </button>
                                             </div>
                                         </div>
@@ -522,7 +520,8 @@ onMounted(() => {
                                                                     d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                                                     clip-rule="evenodd" />
                                                             </svg>
-                                                            <span><strong>Khởi hành:</strong> {{ tour.departFrom
+                                                            <span><strong>{{ t('tour.list.departure') }}:</strong> {{
+                                                                tour.depart_from
                                                             }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
@@ -532,7 +531,8 @@ onMounted(() => {
                                                                     d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z"
                                                                     clip-rule="evenodd" />
                                                             </svg>
-                                                            <span><strong>Lộ trình:</strong> {{ tour.routes }}</span>
+                                                            <span><strong>{{ t('tour.list.route') }}:</strong> {{
+                                                                tour.routes }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-purple-500 mt-0.5"
@@ -542,8 +542,9 @@ onMounted(() => {
                                                                     d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
                                                                     clip-rule="evenodd" />
                                                             </svg>
-                                                            <span class="line-clamp-2"><strong>Loại:</strong> {{
-                                                                tour.type }}</span>
+                                                            <span class="line-clamp-2"><strong>{{ t('tour.list.type')
+                                                                    }}:</strong> {{
+                                                                        tour.type }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -556,7 +557,7 @@ onMounted(() => {
                                                     </div>
                                                     <button
                                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:scale-105 transition-transform duration-300 shadow-lg flex items-center gap-2">
-                                                        <span>Xem chi tiết</span>
+                                                        <span>{{ t('tour.list.details') }}</span>
                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"

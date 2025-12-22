@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMutation } from '@tanstack/vue-query'
 import { ref, reactive, computed } from 'vue'
+const { t } = useI18n()
 import { authService } from '~/services/auth.service'
 import { useAuth } from '~/composables/useAuth'
 import type { LoginDto, RegisterDto, ApiError } from '~/types/api'
@@ -48,26 +49,26 @@ const registerErrors = ref<ValidationErrors>({})
 
 const loginValidationRules: ValidationRules = {
   email: [
-    validationRules.required('Email is required'),
+    validationRules.required(t('auth.emailRequired')),
     validationRules.email(),
   ],
   password: [
-    validationRules.required('Password is required'),
+    validationRules.required(t('auth.passwordRequired')),
   ],
 }
 
 const registerValidationRules: ValidationRules = {
   userName: [
-    validationRules.required('Username is required'),
-    validationRules.minLength(2, 'Username must be at least 2 characters'),
+    validationRules.required(t('auth.usernameRequired')),
+    validationRules.minLength(2, t('auth.usernameMin')),
   ],
   email: [
-    validationRules.required('Email is required'),
+    validationRules.required(t('auth.emailRequired')),
     validationRules.email(),
   ],
   password: [
-    validationRules.required('Password is required'),
-    validationRules.minLength(6, 'Password must be at least 6 characters'),
+    validationRules.required(t('auth.passwordRequired')),
+    validationRules.minLength(6, t('auth.passwordMin')),
   ],
 }
 
@@ -92,7 +93,7 @@ const {
   mutationFn: (data: LoginDto) => authService.login(data),
   onSuccess: (data) => {
     setAuthState(data.access_token)
-    ElMessage.success('Welcome back!')
+    ElMessage.success(t('auth.loginSuccess'))
     close()
   },
   onError: (error: ApiError) => {
@@ -109,7 +110,7 @@ const {
   mutationFn: (data: RegisterDto) => authService.register(data),
   onSuccess: (data) => {
     setAuthState(data.access_token)
-    logger.log('Registration successful!')
+    ElMessage.success(t('auth.registerSuccess'))
     close()
   },
   onError: (error: ApiError) => {
@@ -135,7 +136,7 @@ const getErrorMessage = (error: any): string => {
   if (!error) return ''
   const apiError = error as ApiError
   if (Array.isArray(apiError.message)) return apiError.message.join(', ')
-  return apiError.message || 'An error occurred'
+  return apiError.message || t('common.errorOccurred')
 }
 
 const isPending = computed(() => isSignUp.value ? isRegisterPending.value : isLoginPending.value)
@@ -185,17 +186,17 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                 leave-to-class="opacity-0 -translate-y-4">
                 <div :key="isSignUp ? 'signup-msg' : 'signin-msg'">
                   <h2 class="text-4xl font-bold mb-6 font-display tracking-tight leading-tight">
-                    {{ isSignUp ? 'Welcome Back!' : 'Start Your Journey' }}
+                    {{ isSignUp ? t('auth.welcomeBack') : t('auth.startJourney') }}
                   </h2>
                   <p class="text-indigo-100 text-lg font-light leading-relaxed mb-8 opacity-90">
                     {{ isSignUp
-                      ? 'To keep connected with us please login with your personal info'
-                      : 'Enter your personal details and start your adventure with us today'
+                      ? t('auth.keepConnected')
+                      : t('auth.enterDetails')
                     }}
                   </p>
                   <button @click="toggleMode"
                     class="inline-block px-10 py-3 border-2 border-white rounded-full font-semibold uppercase tracking-widest text-sm hover:bg-white hover:text-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    {{ isSignUp ? 'Sign In' : 'Sign Up' }}
+                    {{ isSignUp ? t('auth.signIn') : t('auth.signUp') }}
                   </button>
                 </div>
               </Transition>
@@ -210,7 +211,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
               <!-- The content here switches based on mode too -->
               <div class="mb-8">
                 <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-2 font-display">
-                  {{ isSignUp ? 'Create Account' : 'Sign in to ANDAGO' }}
+                  {{ isSignUp ? t('auth.createAccount') : t('auth.signInToAndago') }}
                 </h3>
                 <!-- Social Icons -->
                 <div class="flex justify-center gap-4 my-6">
@@ -220,7 +221,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                   </button>
                 </div>
                 <p class="text-xs uppercase text-slate-400 tracking-wider">
-                  {{ isSignUp ? 'or use your email for registration' : 'or use your email account' }}
+                  {{ isSignUp ? t('auth.orUseEmail') : t('auth.orUseEmailAccount') }}
                 </p>
               </div>
 
@@ -247,7 +248,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                       </div>
                       <input v-model="registerForm.userName" type="text"
                         class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        placeholder="Name" />
+                        :placeholder="t('auth.name')" />
                     </div>
                     <p v-if="registerErrors.userName" class="text-xs text-red-500 ml-1">{{ registerErrors.userName }}
                     </p>
@@ -260,7 +261,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                       </div>
                       <input v-model="registerForm.email" type="email"
                         class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        placeholder="Email" />
+                        :placeholder="t('auth.email')" />
                     </div>
                     <p v-if="registerErrors.email" class="text-xs text-red-500 ml-1">{{ registerErrors.email }}</p>
                   </div>
@@ -272,7 +273,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                       </div>
                       <input v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
                         class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 pr-12 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        placeholder="Password" />
+                        :placeholder="t('auth.password')" />
                       <button type="button" @click="showRegisterPassword = !showRegisterPassword"
                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors">
                         <div :class="showRegisterPassword ? 'i-carbon-view-off' : 'i-carbon-view'" class="text-xl">
@@ -285,8 +286,8 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
 
                   <button type="submit" :disabled="isPending"
                     class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 active:scale-[0.99] transition-all duration-300 disabled:opacity-70 mt-2 uppercase tracking-wider text-sm">
-                    <span v-if="!isPending">Sign Up</span>
-                    <span v-else>Processing...</span>
+                    <span v-if="!isPending">{{ t('auth.signUp') }}</span>
+                    <span v-else>{{ t('auth.processing') }}</span>
                   </button>
                 </form>
 
@@ -298,7 +299,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                       </div>
                       <input v-model="loginForm.email" type="email"
                         class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        placeholder="Email" />
+                        :placeholder="t('auth.email')" />
                     </div>
                     <p v-if="loginErrors.email" class="text-xs text-red-500 ml-1">{{ loginErrors.email }}</p>
                   </div>
@@ -310,7 +311,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                       </div>
                       <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
                         class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 pr-12 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        placeholder="Password" />
+                        :placeholder="t('auth.password')" />
                       <button type="button" @click="showLoginPassword = !showLoginPassword"
                         class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors">
                         <div :class="showLoginPassword ? 'i-carbon-view-off' : 'i-carbon-view'" class="text-xl"></div>
@@ -320,15 +321,14 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
                   </div>
 
                   <div class="text-right">
-                    <a href="#"
-                      class="text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors">Forgot your
-                      password?</a>
+                    <a href="#" class="text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors">{{
+                      t('auth.forgotPassword') }}</a>
                   </div>
 
                   <button type="submit" :disabled="isPending"
                     class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 active:scale-[0.99] transition-all duration-300 disabled:opacity-70 mt-2 uppercase tracking-wider text-sm">
-                    <span v-if="!isPending">Sign In</span>
-                    <span v-else>Processing...</span>
+                    <span v-if="!isPending">{{ t('auth.signIn') }}</span>
+                    <span v-else>{{ t('auth.processing') }}</span>
                   </button>
                 </form>
               </Transition>
@@ -345,8 +345,9 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
 
           <div class="p-8">
             <div class="text-center mb-8">
-              <h3 class="text-2xl font-bold text-slate-900 dark:text-white font-display">{{ isSignUp ? 'Create Account'
-                : 'Sign In' }}</h3>
+              <h3 class="text-2xl font-bold text-slate-900 dark:text-white font-display">{{ isSignUp ?
+                t('auth.createAccount')
+                : t('auth.signIn') }}</h3>
               <p class="text-sm text-slate-400 mt-2">Welcome to Motobike Tours</p>
             </div>
 
@@ -356,20 +357,21 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
               leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
               leave-to-class="opacity-0 -translate-y-8">
               <form v-if="isSignUp" key="mobile-signup" @submit.prevent="handleRegister" class="space-y-4">
-                <input v-model="registerForm.userName" type="text" placeholder="Name"
+                <input v-model="registerForm.userName" type="text" :placeholder="t('auth.name')"
                   class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                <input v-model="registerForm.email" type="email" placeholder="Email"
+                <input v-model="registerForm.email" type="email" :placeholder="t('auth.email')"
                   class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
                 <div class="relative">
                   <input v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
-                    placeholder="Password"
+                    :placeholder="t('auth.password')"
                     class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
                   <button type="button" @click="showRegisterPassword = !showRegisterPassword"
                     class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                     <div :class="showRegisterPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
                   </button>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Sign Up</button>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">{{
+                  t('auth.signUp') }}</button>
                 <p class="text-center text-sm text-slate-500 mt-4">
                   Already have an account? <a href="#" @click.prevent="toggleMode"
                     class="text-indigo-600 font-bold">Sign
@@ -378,18 +380,19 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
               </form>
 
               <form v-else key="mobile-signin" @submit.prevent="handleLogin" class="space-y-4">
-                <input v-model="loginForm.email" type="email" placeholder="Email"
+                <input v-model="loginForm.email" type="email" :placeholder="t('auth.email')"
                   class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
                 <div class="relative">
                   <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
-                    placeholder="Password"
+                    :placeholder="t('auth.password')"
                     class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
                   <button type="button" @click="showLoginPassword = !showLoginPassword"
                     class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
                     <div :class="showLoginPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
                   </button>
                 </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Sign In</button>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">{{
+                  t('auth.signIn') }}</button>
                 <p class="text-center text-sm text-slate-500 mt-4">
                   Don't have an account? <a href="#" @click.prevent="toggleMode" class="text-indigo-600 font-bold">Sign
                     Up</a>

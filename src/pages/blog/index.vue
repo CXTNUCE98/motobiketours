@@ -3,10 +3,13 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuery } from '@tanstack/vue-query'
 import { watchDebounced } from '@vueuse/core'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const { user } = useAuth();
 const isUser = computed(() => !!user.value?.email);
+
+const { t } = useI18n()
 
 // Active category filter
 const activeCategory = ref('All')
@@ -17,13 +20,13 @@ const showMobileFilter = ref(false)
 
 // Categories
 const categories = [
-  { label: 'All', value: '' },
-  { label: 'Travel Tips', value: 'travel-tips' },
-  { label: 'Destination', value: 'destination' },
-  { label: 'Culture', value: 'culture' },
-  { label: 'Food', value: 'food' },
-  { label: 'Adventure', value: 'adventure' },
-  { label: 'Guides', value: 'guides' },
+  { label: t('blog.type.all'), value: '' },
+  { label: t('blog.type.travelTips'), value: 'travel-tips' },
+  { label: t('blog.type.destination'), value: 'destination' },
+  { label: t('blog.type.culture'), value: 'culture' },
+  { label: t('blog.type.food'), value: 'food' },
+  { label: t('blog.type.adventure'), value: 'adventure' },
+  { label: t('blog.type.guides'), value: 'guides' },
 ]
 
 // Popular tags
@@ -151,23 +154,22 @@ const totalBlogs = computed(() => meta.value?.total || 0)
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
             </span>
-            <span class="tracking-wider">BLOG & STORIES</span>
+            <span class="tracking-wider"> {{ t('blog.blog') }}</span>
           </div>
 
           <!-- Main Heading -->
           <h1 class="text-6xl md:text-8xl font-black mb-8 leading-[1.1] animate-fade-in" style="animation-delay: 0.2s">
-            <span class="block text-white mb-2">Discover</span>
+            <span class="block text-white mb-2">{{ t('blog.discover') }}</span>
             <span
               class="block bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent filter drop-shadow-2xl">
-              Epic Journeys
+              {{ t('blog.epicJourneys') }}
             </span>
           </h1>
 
           <!-- Description -->
           <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-3xl mx-auto leading-relaxed font-light animate-fade-in"
             style="animation-delay: 0.4s">
-            Dive into captivating stories of adventure, culture, and the hidden gems of Vietnam's most breathtaking
-            landscapes.
+            {{ t('blog.epicJourneysDesc') }}
           </p>
 
           <!-- Stats Cards -->
@@ -176,23 +178,23 @@ const totalBlogs = computed(() => meta.value?.total || 0)
             <div
               class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:-translate-y-2">
               <div class="text-4xl font-black text-white mb-1 group-hover:text-blue-400 transition-colors">{{ totalBlogs
-                }}+</div>
-              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Stories</div>
+              }}+</div>
+              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{ t('blog.stories') }}</div>
             </div>
             <div
               class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:-translate-y-2">
               <div class="text-4xl font-black text-white mb-1 group-hover:text-cyan-400 transition-colors">50k+</div>
-              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Readers</div>
+              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{ t('blog.readers') }}</div>
             </div>
             <div
               class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:-translate-y-2">
               <div class="text-4xl font-black text-white mb-1 group-hover:text-indigo-400 transition-colors">10k+</div>
-              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Followers</div>
+              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{ t('blog.followers') }}</div>
             </div>
             <div
               class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all duration-500 hover:-translate-y-2">
               <div class="text-4xl font-black text-white mb-1 group-hover:text-purple-400 transition-colors">100+</div>
-              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">Writers</div>
+              <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{ t('blog.writers') }}</div>
             </div>
           </div>
         </div>
@@ -218,7 +220,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
           <button @click="showMobileFilter = true"
             class="lg:hidden flex items-center gap-2 px-6 py-3 rounded-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold shadow-lg border border-gray-100 dark:border-gray-600 active:scale-95 transition-transform">
             <i class='bx bx-filter-alt text-xl text-indigo-500'></i>
-            <span>Filter</span>
+            <span>{{ t('blog.filter.title') }}</span>
           </button>
 
           <!-- Desktop Categories -->
@@ -248,7 +250,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
               </div>
               <span class="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors">
                 <i class='bx bx-plus-circle text-xl'></i>
-                <span>Create Story</span>
+                <span>{{ t('blog.create') }}</span>
               </span>
             </button>
           </div>
@@ -438,7 +440,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
               <span v-for="tag in tags" :key="tag" @click="toggleTag(tag)"
                 :class="activeTags.includes(tag) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 hover:text-indigo-600 dark:hover:text-indigo-400'"
                 class="px-4 py-2 text-sm font-bold rounded-xl transition-all duration-300 cursor-pointer select-none border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800">#{{
-                tag }}</span>
+                  tag }}</span>
             </div>
           </div>
 
@@ -490,7 +492,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
           class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
           <div
             class="p-6 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl z-10">
-            <h3 class="text-xl font-black text-gray-900 dark:text-white">Filters</h3>
+            <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ t('blog.filter.title') }}</h3>
             <button @click="showMobileFilter = false"
               class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
               <i class='bx bx-x text-2xl text-gray-500'></i>
@@ -500,18 +502,18 @@ const totalBlogs = computed(() => meta.value?.total || 0)
           <div class="p-6 overflow-y-auto space-y-8">
             <div>
               <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <i class='bx bx-search text-indigo-500'></i> Search
+                <i class='bx bx-search text-indigo-500'></i> {{ t('blog.filter.search') }}
               </h4>
               <div
                 class="relative flex items-center bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/30">
-                <input v-model="searchQuery" type="text" placeholder="Search stories..."
+                <input v-model="searchQuery" type="text" :placeholder="t('blog.filter.filterDes')"
                   class="w-full bg-transparent border-none outline-none text-gray-700 dark:text-white placeholder-gray-400 text-base font-medium" />
               </div>
             </div>
 
             <div>
               <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <i class='bx bx-category text-indigo-500'></i> Categories
+                <i class='bx bx-category text-indigo-500'></i> {{ t('blog.filter.categories') }}
               </h4>
               <div class="grid grid-cols-2 gap-3">
                 <button v-for="category in categories" :key="category.value" @click="setCategory(category.value)"
@@ -525,13 +527,13 @@ const totalBlogs = computed(() => meta.value?.total || 0)
 
             <div>
               <h4 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <i class='bx bx-hash text-indigo-500'></i> Trending Tags
+                <i class='bx bx-hash text-indigo-500'></i> {{ t('blog.filter.tags') }}
               </h4>
               <div class="flex flex-wrap gap-2">
                 <span v-for="tag in tags" :key="tag" @click="toggleTag(tag)"
                   :class="activeTags.includes(tag) ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'"
                   class="px-3 py-1.5 text-sm font-bold rounded-lg transition-all duration-200 cursor-pointer select-none">#{{
-                  tag }}</span>
+                    tag }}</span>
               </div>
             </div>
           </div>
@@ -539,7 +541,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
           <div class="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50">
             <button @click="showMobileFilter = false"
               class="w-full py-4 bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 active:scale-95 transition-transform flex items-center justify-center gap-2">
-              <span>Show Results</span>
+              <span>{{ t('blog.showResults') }}</span>
               <i class='bx bx-right-arrow-alt text-xl'></i>
             </button>
           </div>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+const { t } = useI18n();
 import { testimonials } from '@/data/homeData';
 
 // Carousel state
@@ -62,10 +63,11 @@ onUnmounted(() => {
 
                         <!-- customer -->
                         <div>
-                            <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-2">#KHÁCH HÀNG HÀI LÒNG
+                            <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-2">{{
+                                t('home.testimonialsSubtitle') }}
                             </p>
                             <h2 class="text-3xl md:text-4xl font-bold text-[#094174] dark:text-blue-400 mb-8">
-                                Khách Hàng Của Chúng Tôi Nói Gì
+                                {{ t('home.testimonialsTitle') }}
                             </h2>
 
                             <!-- Current Testimonial with transition -->
