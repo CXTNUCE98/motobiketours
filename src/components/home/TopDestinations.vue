@@ -6,21 +6,21 @@ import { transformTourToCardProps } from '@/utils/tourHelpers';
 
 // Fetch top destination tours
 const { data, isLoading } = useQuery({
-  queryKey: ['tours', 'top-destinations'],
-  queryFn: async () => {
-    const res = await $motobikertoursApi('/tours', {
-      query: {
-        r: 4, // Limit to 4 tours
-      },
-    });
-    return res;
-  },
+    queryKey: ['tours', 'top-destinations'],
+    queryFn: async () => {
+        const res = await $motobikertoursApi('/tours', {
+            query: {
+                r: 4, // Limit to 4 tours
+            },
+        });
+        return res;
+    },
 });
 
 // Transform tours for display
 const topDestinationsTours = computed(() => {
-  const tours = (data.value?.data || []) as Tour[];
-  return tours.map(transformTourToCardProps);
+    const tours = (data.value?.data || []) as Tour[];
+    return tours.map(transformTourToCardProps);
 });
 </script>
 
@@ -47,19 +47,9 @@ const topDestinationsTours = computed(() => {
             </div>
 
             <!-- Top Destinations Tours Grid -->
-            <div v-else-if="topDestinationsTours.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <TourCard
-                    v-for="tour in topDestinationsTours"
-                    :key="tour.id"
-                    :id="tour.id"
-                    :image="tour.image"
-                    :title="tour.title"
-                    :price="tour.price"
-                    :rating="tour.rating"
-                    :duration="tour.duration"
-                    :people="tour.people"
-                    :to="tour.to"
-                />
+            <div v-else-if="topDestinationsTours.length > 0"
+                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <TourCard v-for="tour in topDestinationsTours" :key="tour.id" :tour="tour" />
             </div>
 
             <!-- Empty State -->

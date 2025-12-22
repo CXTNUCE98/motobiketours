@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue';
 
 
-const { currencySymbol, convertToVnd, locale } = useCurrency();
+const { currencySymbol, convertToVnd, locale, formatPrice } = useCurrency();
 
 type FilterOptions = {
     searchQuery?: string;
@@ -181,8 +181,7 @@ const clearFilters = () => {
                         <input v-model.number="priceMin" type="range" min="0" max="2000" step="50"
                             class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600" />
                         <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                            {{ locale === 'vi' ? new Intl.NumberFormat('vi-VN').format(convertToVnd(priceMin)) + ' ₫' :
-                                '$' + priceMin }}
+                            {{ formatPrice(priceMin) }}
                         </div>
                     </div>
                     <div>
@@ -190,8 +189,7 @@ const clearFilters = () => {
                         <input v-model.number="priceMax" type="range" min="0" max="2000" step="50"
                             class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600" />
                         <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                            {{ locale === 'vi' ? new Intl.NumberFormat('vi-VN').format(convertToVnd(priceMax)) + ' ₫' :
-                                '$' + priceMax }}
+                            {{ formatPrice(priceMax) }}
                         </div>
                     </div>
                 </div>

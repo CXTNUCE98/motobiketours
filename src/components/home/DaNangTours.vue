@@ -15,9 +15,7 @@ import { tourDaNangTours } from '@/data/homeData';
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <TourCard v-for="tour in tourDaNangTours" :key="tour.id" :id="tour.id" :image="tour.image"
-                    :title="tour.title" :price="tour.price" :rating="tour.rating" :duration="tour.duration"
-                    :people="tour.people" :badge="tour.badge" :show-peulis-label="tour.showPeulisLabel" :to="tour.to" />
+                <TourCard v-for="tour in tourDaNangTours" :key="tour.id" :tour="tour" />
             </div>
         </div>
     </section>

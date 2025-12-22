@@ -2,34 +2,46 @@ import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 
 export const useCurrency = () => {
-    const { locale } = useI18n();
+  const { locale } = useI18n();
 
-    const USD_TO_VND_RATE = 24000;
+  // 1 USD = 24,000 VND (approximate exchange rate)
+  const USD_TO_VND_RATE = 24000;
 
-    const currencyCode = computed(() => (locale.value === 'vi' ? 'VND' : 'USD'));
-    const currencySymbol = computed(() => (locale.value === 'vi' ? '₫' : '$'));
+  const currencyCode = computed(() => (locale.value === 'vi' ? 'VND' : 'USD'));
+  const currencySymbol = computed(() => (locale.value === 'vi' ? 'đ' : '$'));
 
-    const formatPrice = (priceUsd: number | string) => {
-        if (typeof priceUsd === 'string') return priceUsd;
+  /**
+   * Formats price based on current locale
+   * @param priceUsd Price in USD
+   */
+  const formatPrice = (priceUsd: number | string | undefined | null) => {
+    if (priceUsd === undefined || priceUsd === null || priceUsd === '') return '';
 
-        if (locale.value === 'vi') {
-            const priceVnd = Math.round(priceUsd * USD_TO_VND_RATE);
-            return new Intl.NumberFormat('vi-VN').format(priceVnd) + ' ₫';
-        }
+    // If it's already a string (e.g. "Liên hệ"), return it as is
+    if (typeof priceUsd === 'string' && isNaN(Number(priceUsd))) return priceUsd;
 
-        return '$' + new Intl.NumberFormat('en-US').format(priceUsd);
-    };
+    const numericPrice = typeof priceUsd === 'string' ? Number(priceUsd) : priceUsd;
 
-    const convertToVnd = (priceUsd: number) => {
-        return Math.round(priceUsd * USD_TO_VND_RATE);
-    };
+    if (locale.value === 'vi') {
+      const priceVnd = Math.round(numericPrice * USD_TO_VND_RATE);
+      // Format with dots as thousands separator and add 'đ' suffix
+      return new Intl.NumberFormat('vi-VN').format(priceVnd) + ' đ';
+    }
 
-    return {
-        locale,
-        currencyCode,
-        currencySymbol,
-        formatPrice,
-        convertToVnd,
-        USD_TO_VND_RATE,
-    };
+    // Return with '$' prefix for 'en'
+    return '$' + new Intl.NumberFormat('en-US').format(numericPrice);
+  };
+
+  const convertToVnd = (priceUsd: number) => {
+    return Math.round(priceUsd * USD_TO_VND_RATE);
+  };
+
+  return {
+    locale,
+    currencyCode,
+    currencySymbol,
+    formatPrice,
+    convertToVnd,
+    USD_TO_VND_RATE,
+  };
 };

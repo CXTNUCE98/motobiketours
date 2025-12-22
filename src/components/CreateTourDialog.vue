@@ -176,6 +176,7 @@ watch(() => props.tourData, (newVal) => {
 }, { immediate: true });
 
 const { mutateAsync: uploadImageMutation } = useUploadImage();
+const { formatPrice } = useCurrency();
 
 const handleThumbnailChange = async (event: Event) => {
     const input = event.target as HTMLInputElement;
@@ -505,7 +506,7 @@ onBeforeUnmount(() => {
                             <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">Xác nhận thông tin</h3>
                             <div class="grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
                                 <div><span class="font-semibold">Tên Tour:</span> {{ formData.title }}</div>
-                                <div><span class="font-semibold">Giá:</span> ${{ formData.price_usd }}</div>
+                                <div><span class="font-semibold">Giá:</span> {{ formatPrice(formData.price_usd) }}</div>
                                 <div><span class="font-semibold">Thời gian:</span> {{ formData.duration }}</div>
                                 <div><span class="font-semibold">Loại:</span> {{ formData.type }}</div>
                                 <div><span class="font-semibold">Khởi hành:</span> {{ formData.depart_from }}</div>

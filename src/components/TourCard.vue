@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import type { TourCardItem } from '@/types/api';
 
 type Props = {
-    id: string;
-    image: string;
-    title: string;
-    price: number | string;
-    originalPrice?: number;
-    discount?: number;
+    tour?: TourCardItem;
     rating?: number;
-    duration: string;
-    people: string;
-    badge?: string;
     showPeulisLabel?: boolean;
     variant?: 'default' | 'compact';
     to?: string;
     tags?: string[];
+    originalPrice?: number;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -33,29 +27,30 @@ const isWishlisted = ref(false);
 const { formatPrice } = useCurrency();
 
 const formattedPrice = computed(() => {
-    return formatPrice(props.price);
+    return formatPrice(props.tour?.price);
 });
 
 const formattedOriginalPrice = computed(() => {
-    if (!props.originalPrice) return '';
-    return formatPrice(props.originalPrice);
+    const oPrice = props.tour?.originalPrice || props.originalPrice;
+    if (!oPrice) return '';
+    return formatPrice(oPrice);
 });
 
 const localePath = useLocalePath();
 
 const handleBookTour = () => {
-    if (props.to) {
-        router.push(localePath(props.to));
+    if (props.tour?.to) {
+        router.push(localePath(props.tour?.to));
     } else {
-        router.push(localePath(`/tour/${props.id}`));
+        router.push(localePath(`/tour/${props.tour?.id}`));
     }
 };
 
 const handleCardClick = () => {
-    if (props.to) {
-        router.push(localePath(props.to));
+    if (props.tour?.to) {
+        router.push(localePath(props.tour?.to));
     } else {
-        router.push(localePath(`/tour/${props.id}`));
+        router.push(localePath(`/tour/${props.tour?.id}`));
     }
 };
 
@@ -70,7 +65,7 @@ const toggleWishlist = (e: Event) => {
         @click="handleCardClick" style="backdrop-filter: blur(10px);">
         <!-- Image Container with Gradient Overlay -->
         <div class="relative h-64 overflow-hidden">
-            <NuxtImg :src="image" :alt="title" loading="lazy" format="webp"
+            <NuxtImg :src="tour?.image" :alt="tour?.title" loading="lazy" format="webp"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 
             <!-- Gradient Overlay -->
@@ -96,21 +91,22 @@ const toggleWishlist = (e: Event) => {
             </div>
 
             <!-- Discount Badge (Top Right, below wishlist) -->
-            <div v-if="discount"
+            <div v-if="tour?.discount"
                 class="absolute top-16 right-4 px-3 py-1.5 rounded-full text-xs font-bold z-10 bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg animate-pulse">
-                -{{ discount }}%
+                -{{ tour?.discount }}%
             </div>
 
             <!-- Badge (Alternative) -->
-            <div v-if="badge && !showPeulisLabel"
+            <div v-if="tour?.badge && !showPeulisLabel"
                 class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold text-gray-700 z-10 flex items-center gap-2 shadow-lg">
                 <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span>{{ badge }}</span>
+                <span>{{ tour?.badge }}</span>
             </div>
 
             <!-- Tags at bottom of image -->
-            <div v-if="tags && tags.length > 0" class="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 z-10">
-                <span v-for="tag in tags.slice(0, 3)" :key="tag"
+            <div v-if="tour?.tags && tour?.tags.length > 0"
+                class="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 z-10">
+                <span v-for="tag in tour?.tags.slice(0, 3)" :key="tag"
                     class="px-3 py-1 rounded-full text-xs font-medium bg-white/90 backdrop-blur-md text-gray-700 shadow-md">
                     {{ tag }}
                 </span>
@@ -122,11 +118,12 @@ const toggleWishlist = (e: Event) => {
             <!-- Rating Stars -->
             <div class="flex items-center gap-1 mb-3">
                 <svg v-for="i in 5" :key="i" class="w-4 h-4 transition-colors duration-300"
-                    :class="i <= rating ? 'text-yellow-400' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+                    :class="i <= (tour?.rating || props.rating) ? 'text-yellow-400' : 'text-gray-300'"
+                    fill="currentColor" viewBox="0 0 20 20">
                     <path
                         d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                 </svg>
-                <span class="text-xs text-gray-500 ml-1">({{ rating }}.0)</span>
+                <span class="text-xs text-gray-500 ml-1">({{ (tour?.rating || props.rating).toFixed(1) }})</span>
             </div>
 
             <!-- Price -->
@@ -143,7 +140,7 @@ const toggleWishlist = (e: Event) => {
             <!-- Tour Title -->
             <h3
                 class="text-gray-800 dark:text-white font-bold text-base mb-4 line-clamp-2 min-h-[3rem] leading-relaxed group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                {{ title }}
+                {{ tour?.title }}
             </h3>
 
             <!-- Details with Icons -->
@@ -158,7 +155,7 @@ const toggleWishlist = (e: Event) => {
                     </div>
                     <div class="flex-1">
                         <span class="font-semibold text-gray-700 dark:text-gray-200">Thời gian:</span>
-                        <span class="ml-1">{{ duration }}</span>
+                        <span class="ml-1">{{ tour?.duration }}</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm">
@@ -171,7 +168,7 @@ const toggleWishlist = (e: Event) => {
                     </div>
                     <div class="flex-1">
                         <span class="font-semibold text-gray-700 dark:text-gray-200">Số lượng:</span>
-                        <span class="ml-1">{{ people }}</span>
+                        <span class="ml-1">{{ tour?.people }}</span>
                     </div>
                 </div>
             </div>

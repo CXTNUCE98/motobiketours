@@ -27,6 +27,21 @@ export interface Tour {
   created_at: string;
 }
 
+export interface TourCardItem {
+  id: string;
+  image: string;
+  title: string;
+  price: number;
+  originalPrice?: number;
+  discount?: number;
+  rating: number;
+  duration: string;
+  people: string;
+  to?: string;
+  badge?: string;
+  tags: string[];
+}
+
 export interface ToursResponse {
   data: Tour[];
   total: number;
