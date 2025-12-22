@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { getSlides } from '@/data/homeData';
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 
 const slides = computed(() => getSlides(t));
 const currentSlide = ref(0);
@@ -62,7 +63,7 @@ onUnmounted(() => {
                                     class="text-slate-600 dark:text-slate-300 text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8 max-w-xl mx-auto lg:mx-0">
                                     {{ slides[currentSlide].description }}
                                 </p>
-                                <NuxtLink to="/tour"
+                                <NuxtLink :to="localePath('/tour')"
                                     class="inline-block bg-gradient-to-r from-sky-500 to-blue-600 dark:from-cyan-500 dark:to-blue-500 hover:from-sky-600 hover:to-blue-700 dark:hover:from-cyan-600 dark:hover:to-blue-600 text-white px-6 py-2.5 sm:px-8 sm:py-3 md:px-10 md:py-4 rounded-lg font-bold text-xs sm:text-sm md:text-base uppercase tracking-wide shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-translate-y-0.5">
                                     {{ t('booking.bookNow') }}
                                 </NuxtLink>
