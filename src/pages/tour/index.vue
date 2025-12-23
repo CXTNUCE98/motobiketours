@@ -28,7 +28,7 @@ const queryClient = useQueryClient();
 
 // Auth
 const { user } = useAuth();
-const isAdmin = computed(() => user.value?.role === 'ADMIN');
+const isAdmin = computed(() => user.value?.isAdmin);
 
 // Pagination state
 const currentPage = ref(1);
@@ -522,7 +522,7 @@ onMounted(() => {
                                                             </svg>
                                                             <span><strong>{{ t('tour.list.departure') }}:</strong> {{
                                                                 tour.depart_from
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -543,7 +543,7 @@ onMounted(() => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>{{ t('tour.list.type')
-                                                                    }}:</strong> {{
+                                                            }}:</strong> {{
                                                                         tour.type }}</span>
                                                         </div>
                                                     </div>
