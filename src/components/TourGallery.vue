@@ -9,6 +9,7 @@ const props = defineProps<{
 const selectedIndex = ref(0);
 const showLightbox = ref(false);
 const isHovering = ref(false);
+const isZoomed = ref(false);
 
 const currentImage = computed(() => props.images[selectedIndex.value] || '');
 
@@ -26,6 +27,7 @@ const openLightbox = (index?: number) => {
 
 const closeLightbox = () => {
     showLightbox.value = false;
+    isZoomed.value = false;
     document.body.style.overflow = '';
 };
 
@@ -83,8 +85,8 @@ onBeforeUnmount(() => {
 <template>
     <div @mouseenter="isHovering = true" @mouseleave="isHovering = false" class="space-y-4">
         <!-- Main Image -->
-        <div class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-xl">
-            <img :src="currentImage" :alt="title" @click="openLightbox()"
+        <div @click="openLightbox()" class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-xl">
+            <img :src="currentImage" :alt="title"
                 class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-105" />
 
             <!-- Zoom Icon Overlay -->
@@ -138,46 +140,92 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Lightbox Modal -->
-        <Teleport to="body">
-            <Transition name="lightbox">
-                <div v-if="showLightbox" @click="closeLightbox"
-                    class="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4">
-                    <!-- Close Button -->
-                    <button @click="closeLightbox"
-                        class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-all duration-300 hover:scale-110 z-10">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+        <ClientOnly>
+            <Teleport to="body">
+                <Transition name="lightbox">
+                    <div v-if="showLightbox" @click="closeLightbox"
+                        class="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4">
 
-                    <!-- Image Counter -->
-                    <div
-                        class="absolute top-6 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full text-lg font-semibold z-10">
-                        {{ selectedIndex + 1 }} / {{ images.length }}
+                        <!-- Top Bar Actions -->
+                        <div class="absolute top-6 right-6 flex items-center gap-4 z-20">
+                            <!-- Zoom Toggle -->
+                            <button @click.stop="isZoomed = !isZoomed"
+                                class="bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                                :title="isZoomed ? 'Thu nhỏ' : 'Phóng to'">
+                                <svg v-if="isZoomed" class="w-6 h-6" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                                </svg>
+                                <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                                </svg>
+                            </button>
+
+                            <!-- Download Button -->
+                            <a :href="currentImage" download target="_blank" @click.stop
+                                class="bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                                title="Tải ảnh">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                            </a>
+
+                            <!-- Close Button -->
+                            <button @click="closeLightbox"
+                                class="bg-white/10 hover:bg-red-500/80 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
+                                title="Đóng">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Image Counter -->
+                        <div
+                            class="absolute top-6 left-6 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full text-lg font-semibold z-10">
+                            {{ selectedIndex + 1 }} / {{ images.length }}
+                        </div>
+
+                        <!-- Main Image -->
+                        <div @click.stop
+                            class="relative w-full h-full flex items-center justify-center overflow-hidden">
+                            <img :src="currentImage" :alt="title" class="transition-transform duration-300 rounded-lg"
+                                :class="isZoomed ? 'w-full h-auto object-cover max-h-none cursor-zoom-out' : 'max-w-full max-h-[90vh] object-contain cursor-zoom-in'"
+                                @click="isZoomed = !isZoomed" />
+                        </div>
+
+                        <!-- Navigation Arrows -->
+                        <button @click.stop="prevImage"
+                            class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-4 transition-all duration-300 hover:scale-110 group">
+                            <svg class="w-8 h-8 group-hover:-translate-x-1 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <button @click.stop="nextImage"
+                            class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-4 transition-all duration-300 hover:scale-110 group">
+                            <svg class="w-8 h-8 group-hover:translate-x-1 transition-transform" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+
+                        <!-- Caption -->
+                        <div class="absolute bottom-6 left-0 right-0 text-center pointer-events-none">
+                            <div class="inline-block bg-black/50 backdrop-blur-md text-white px-6 py-3 rounded-full">
+                                <h3 class="text-lg font-medium">{{ title }}</h3>
+                            </div>
+                        </div>
                     </div>
-
-                    <!-- Main Image -->
-                    <div @click.stop class="relative max-w-6xl max-h-[90vh] w-full">
-                        <img :src="currentImage" :alt="title" class="w-full h-full object-contain rounded-lg" />
-                    </div>
-
-                    <!-- Navigation Arrows -->
-                    <button @click.stop="prevImage"
-                        class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-4 transition-all duration-300 hover:scale-110">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    <button @click.stop="nextImage"
-                        class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-4 transition-all duration-300 hover:scale-110">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            </Transition>
-        </Teleport>
+                </Transition>
+            </Teleport>
+        </ClientOnly>
     </div>
 </template>
 
