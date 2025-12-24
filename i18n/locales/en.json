@@ -83,7 +83,10 @@
         "emailRequired": "Please enter your email",
         "emailInvalid": "Invalid email format",
         "subject": "Please enter a subject",
-        "message": "Please enter a message"
+        "message": "Please enter a message",
+        "phoneRequired": "Please enter your phone number",
+        "phoneInvalid": "Invalid phone number format",
+        "countryRequired": "Please select a country"
       },
       "hours": "Mon-Sun, 8am-8pm",
       "support": "Online Support",
@@ -97,6 +100,7 @@
         "message": "Tell us about your trip plans..."
       }
     },
+    "notFound": "Not Found",
     "faq": "Common Questions",
     "faqItems": {
       "howBook": "How do I book a tour?",

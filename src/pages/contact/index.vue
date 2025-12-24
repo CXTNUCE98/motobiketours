@@ -1,9 +1,20 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useNotifications } from '@/composables/notifications'
 import { useI18n } from 'vue-i18n'
+import { useCountriesQuery } from '@/composables/useCountriesQuery'
+import isEmail from 'validator/lib/isEmail';
+import isMobilePhone from 'validator/lib/isMobilePhone';
 
 const { t } = useI18n()
+const { data: countries, isLoading: isLoadingCountries } = useCountriesQuery()
+
+const countryOptions = computed(() => {
+    return (countries.value || []).map(c => ({
+        value: c.niceName,
+        label: c.niceName,
+    }))
+})
 type ContactForm = {
     fullName: string
     email: string
@@ -31,13 +42,42 @@ const errors = reactive<ContactErrors>({})
 const setError = (key: keyof ContactForm, msg: string) => { errors[key] = msg }
 const clearError = (key: keyof ContactForm) => { if (errors[key]) delete errors[key] }
 
+const validateField = (key: keyof ContactForm) => {
+    clearError(key)
+    const value = (form[key] || '').toString().trim()
+
+    switch (key) {
+        case 'fullName':
+            if (!value) setError('fullName', t('contact.form.validation.fullName'))
+            break
+        case 'email':
+            if (!value) {
+                setError('email', t('contact.form.validation.emailRequired'))
+            } else if (!isEmail(value)) {
+                setError('email', t('contact.form.validation.emailInvalid'))
+            }
+            break
+        case 'phone':
+            if (!value) {
+                setError('phone', t('contact.form.validation.phoneRequired'))
+            } else if (!isMobilePhone(value, 'any', { strictMode: false })) {
+                setError('phone', t('contact.form.validation.phoneInvalid'))
+            }
+            break
+        case 'country':
+            if (!form.country) setError('country', t('contact.form.validation.countryRequired'))
+            break
+        case 'title':
+            if (!value) setError('title', t('contact.form.validation.subject'))
+            break
+        case 'content':
+            if (!value) setError('content', t('contact.form.validation.message'))
+            break
+    }
+}
+
 const validate = () => {
-    for (const k of Object.keys(errors) as (keyof ContactForm)[]) delete errors[k]
-    if (!form.fullName.trim()) setError('fullName', 'Vui lòng nhập họ tên')
-    if (!form.email.trim()) setError('email', 'Vui lòng nhập email')
-    else if (!/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(form.email)) setError('email', 'Email không hợp lệ')
-    if (!form.title.trim()) setError('title', 'Vui lòng nhập tiêu đề')
-    if (!form.content.trim()) setError('content', 'Vui lòng nhập nội dung')
+    (Object.keys(form) as (keyof ContactForm)[]).forEach(validateField)
     return Object.keys(errors).length === 0
 }
 
@@ -50,12 +90,25 @@ const submit = async () => {
     }
     try {
         isSubmitting.value = true
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        notify('success', 'Đã gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại sớm nhất.')
+        // Gọi API thực tế thay vì dùng mock setTimeout
+        await $fetch('/api/contact', {
+            method: 'POST',
+            body: {
+                fullName: form.fullName,
+                email: form.email,
+                phone: form.phone,
+                country: form.country,
+                title: form.title,
+                content: form.content
+            }
+        })
+        notify('success', t('contact.successMessage') || 'Đã gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại sớm nhất.')
         Object.assign(form, { fullName: '', email: '', phone: '', country: '', title: '', content: '' })
         for (const k of Object.keys(errors) as (keyof ContactForm)[]) delete errors[k]
     } catch (e: any) {
-        notify('error', 'Gửi thất bại, vui lòng thử lại')
+        console.error('Mail submit error:', e)
+        const errorMessage = e.data?.statusMessage || e.message || 'Gửi thất bại, vui lòng thử lại'
+        notify('error', errorMessage)
     } finally {
         isSubmitting.value = false
     }
@@ -224,7 +277,8 @@ const toggleFaq = (index: number) => {
                                     <div class="relative">
                                         <i
                                             class="bx bx-user absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
-                                        <input v-model="form.fullName" @input="clearError('fullName')" type="text"
+                                        <input v-model="form.fullName" @input="validateField('fullName')"
+                                            @blur="validateField('fullName')" type="text"
                                             class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400"
                                             placeholder="John Doe"
                                             :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.fullName }">
@@ -239,7 +293,8 @@ const toggleFaq = (index: number) => {
                                     <div class="relative">
                                         <i
                                             class="bx bx-envelope absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
-                                        <input v-model="form.email" @input="clearError('email')" type="email"
+                                        <input v-model="form.email" @input="validateField('email')"
+                                            @blur="validateField('email')" type="email"
                                             class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400"
                                             placeholder="john@example.com"
                                             :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.email }">
@@ -253,22 +308,25 @@ const toggleFaq = (index: number) => {
                                     <div class="relative">
                                         <i
                                             class="bx bx-phone absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
-                                        <input v-model="form.phone" type="tel"
+                                        <input v-model="form.phone" @input="validateField('phone')"
+                                            @blur="validateField('phone')" type="tel"
                                             class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400"
-                                            placeholder="+84 123 456 789">
+                                            placeholder="+84 123 456 789"
+                                            :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.phone }">
                                     </div>
+                                    <p v-if="errors.phone" class="text-red-500 text-xs ml-1">{{ errors.phone }}</p>
                                 </div>
 
                                 <div class="space-y-2">
                                     <label class="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">{{
                                         t('contact.country') }}</label>
-                                    <div class="relative">
-                                        <i
-                                            class="bx bx-world absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
-                                        <input v-model="form.country" type="text"
-                                            class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400"
-                                            placeholder="Your Country">
-                                    </div>
+                                    <SearchableSelect v-model="form.country"
+                                        @update:model-value="validateField('country')" @blur="validateField('country')"
+                                        :options="countryOptions" :placeholder="t('contact.yourCountry')"
+                                        :loading="isLoadingCountries" icon="bx bx-world"
+                                        :has-error="!!errors.country" />
+                                    <p v-if="errors.country" class="text-red-500 text-xs ml-1 mt-1">{{ errors.country }}
+                                    </p>
                                 </div>
                             </div>
 
@@ -278,7 +336,8 @@ const toggleFaq = (index: number) => {
                                 <div class="relative">
                                     <i
                                         class="bx bx-tag absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400"></i>
-                                    <input v-model="form.title" @input="clearError('title')" type="text"
+                                    <input v-model="form.title" @input="validateField('title')"
+                                        @blur="validateField('title')" type="text"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400"
                                         :placeholder="t('contact.howCanHelp')"
                                         :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.title }">
@@ -291,7 +350,8 @@ const toggleFaq = (index: number) => {
                                     t('contact.message') }}</label>
                                 <div class="relative">
                                     <i class="bx bx-message-detail absolute left-4 top-6 text-xl text-gray-400"></i>
-                                    <textarea v-model="form.content" @input="clearError('content')" rows="5"
+                                    <textarea v-model="form.content" @input="validateField('content')"
+                                        @blur="validateField('content')" rows="5"
                                         class="w-full pl-12 pr-4 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all resize-none text-gray-900 dark:text-white placeholder-gray-400"
                                         :placeholder="t('contact.tellUsAboutYourTrip')"
                                         :class="{ 'border-red-500 focus:border-red-500 focus:ring-red-500/10': errors.content }"></textarea>
@@ -366,5 +426,29 @@ const toggleFaq = (index: number) => {
 .animate-fade-in {
     animation: fadeIn 0.6s ease-out forwards;
     opacity: 0;
+}
+
+:deep(.contact-country-select .el-select-v2__wrapper) {
+    @apply pl-12 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 rounded-xl transition-all !important;
+    height: auto !important;
+    min-height: 52px !important;
+}
+
+:deep(.contact-country-select .el-select-v2__wrapper.is-focused) {
+    @apply bg-white dark:bg-gray-600 border-indigo-500 ring-4 ring-indigo-500/10 !important;
+}
+
+:deep(.contact-country-select .el-select-v2__placeholder) {
+    @apply text-gray-400 !important;
+    left: 48px !important;
+}
+
+:deep(.contact-country-select .el-select-v2__input) {
+    @apply text-gray-900 dark:text-white !important;
+    margin-left: 36px !important;
+}
+
+:deep(.contact-country-select .el-select-v2__combobox-input) {
+    padding-left: 0 !important;
 }
 </style>

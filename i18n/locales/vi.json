@@ -82,6 +82,9 @@
         "fullName": "Vui lòng nhập họ tên",
         "emailRequired": "Vui lòng nhập email",
         "emailInvalid": "Email không hợp lệ",
+        "phoneRequired": "Vui lòng nhập số điện thoại",
+        "phoneInvalid": "Số điện thoại không hợp lệ",
+        "countryRequired": "Vui lòng chọn quốc gia",
         "subject": "Vui lòng nhập tiêu đề",
         "message": "Vui lòng nhập nội dung"
       },
@@ -97,6 +100,7 @@
         "message": "Hãy cho chúng tôi biết về kế hoạch của bạn..."
       }
     },
+    "notFound": "Không tìm thấy kết quả",
     "faq": "Câu hỏi thường gặp",
     "faqItems": {
       "howBook": "Tôi đặt tour bằng cách nào?",
