@@ -36,6 +36,7 @@
     "guidesDesc": "Tour guides play an important role in Vietnam's tourism industry, contributing to introducing the image of the country and people of Vietnam to international friends. With many years of experience and extensive knowledge of culture and history, our guides are committed to bringing memorable experiences to visitors."
   },
   "contact": {
+    "sendMailSuccess": "Request sent successfully! We will contact you as soon as possible.",
     "contactUs": "CONTACT US",
     "connect": "Connect",
     "yourJourney": "Your Journey",
