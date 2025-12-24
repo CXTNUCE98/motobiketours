@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { HotSpot } from '~/types/api';
+import { useAuth } from '~/composables/useAuth';
 
 defineProps<{
     spot: HotSpot;
 }>();
 
 const { t } = useI18n();
+const { user } = useAuth();
+const isAdmin = computed(() => user.value?.isAdmin);
 </script>
 
 <template>
@@ -38,12 +41,12 @@ const { t } = useI18n();
             <!-- Quick Actions (Edit/Delete) -->
             <div
                 class="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
-                <button @click.stop="$emit('edit', spot)"
+                <button v-if="isAdmin" @click.stop="$emit('edit', spot)"
                     class="w-9 h-9 bg-white/90 backdrop-blur-md text-zinc-700 hover:text-blue-600 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg"
                     title="Edit">
                     <i class='bx bxs-edit-alt text-lg'></i>
                 </button>
-                <button @click.stop="$emit('delete', spot.id)"
+                <button v-if="isAdmin" @click.stop="$emit('delete', spot.id)"
                     class="w-9 h-9 bg-white/90 backdrop-blur-md text-zinc-700 hover:text-red-600 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg"
                     title="Delete">
                     <i class='bx bxs-trash text-lg'></i>
@@ -70,7 +73,7 @@ const { t } = useI18n();
                 <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 text-sm">
                     <i class='bx bxs-navigation text-blue-500'></i>
                     <span class="font-medium">{{ spot.distance ? Math.round(spot.distance * 10) / 10 + ' km' : 'N/A'
-                    }}</span>
+                        }}</span>
                 </div>
 
                 <div class="flex items-center gap-3">

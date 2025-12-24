@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { HotSpot, GetHotSpotsQuery } from '~/types/api';
+import { useAuth } from '~/composables/useAuth';
 
 const { t } = useI18n();
+const { user } = useAuth();
+const isAdmin = computed(() => user.value?.isAdmin);
 
 const filters = ref<GetHotSpotsQuery>({
     category: '',
@@ -103,7 +106,8 @@ useHead({
                             <UToggle v-model="isMiniMap" />
                         </div>
                         <!-- Create hot spot -->
-                        <el-button type="primary" @click="handleCreate">{{ t('common.create') }}</el-button>
+                        <el-button v-if="isAdmin" type="primary" @click="handleCreate">{{ t('common.create')
+                        }}</el-button>
                     </div>
                 </div>
 
