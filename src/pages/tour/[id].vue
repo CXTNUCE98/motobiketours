@@ -2,11 +2,10 @@
 import { useRoute } from 'vue-router';
 
 import { ref, computed, watch } from 'vue';
-import { useQuery } from '@tanstack/vue-query';
-import { fetchTourById, fetchTours, type Tour } from '@/services/tourApi';
 import TourGallery from '@/components/TourGallery.vue';
 import BookingCard from '@/components/BookingCard.vue';
 import { sanitizeHtml } from '~/utils/sanitize';
+import { useTourByIdQuery, useToursQuery } from '~/composables/useToursQuery';
 
 const route = useRoute();
 const { formatPrice } = useCurrency();
@@ -14,29 +13,15 @@ const localePath = useLocalePath();
 const id = computed(() => String(route.params.id || ''));
 
 // Fetch Tour Detail
-const { data: tour, isLoading: isLoadingTour, error: tourError } = useQuery({
-    queryKey: ['tour', id],
-    queryFn: () => fetchTourById(id.value),
-    retry: 1,
-    enabled: !!id.value
-});
+const { data: tour, isLoading: isLoadingTour, error: tourError } = useTourByIdQuery(id);
 
 // Fetch City Tours (only if tour fetch fails or if we explicitly want to check for location)
-// We can't easily know if 'id' is a location or a tour ID without trying.
-// But if 'tour' is found, we don't need city tours.
-// If 'tour' fails, we try to fetch tours where departFrom matches 'id'.
-
 const formattedLocation = computed(() => id.value.replace(/-/g, ' '));
 
-const { data: cityTours, isLoading: isLoadingCityTours } = useQuery({
-    queryKey: ['tours', 'location', id],
-    queryFn: () => fetchTours({ q: formattedLocation.value }),
-    enabled: computed(() => !!tourError.value), // Only fetch if tour fetch failed
-    retry: false
-});
+const { data: cityTours, isLoading: isLoadingCityTours } = useToursQuery(computed(() => ({ q: formattedLocation.value })));
 
-const isDepartFrom = computed(() => !!tourError.value && cityTours.value?.data && cityTours.value.data.length > 0);
-const isNotFound = computed(() => !!tourError.value && (!cityTours.value?.data || cityTours.value.data.length === 0) && !isLoadingCityTours.value);
+const isDepartFrom = computed(() => !!tourError.value && (cityTours.value as any)?.data && (cityTours.value as any).data.length > 0);
+const isNotFound = computed(() => !!tourError.value && (!(cityTours.value as any)?.data || (cityTours.value as any).data.length === 0) && !isLoadingCityTours.value);
 
 const activeTab = ref('overview');
 
@@ -74,16 +59,13 @@ const setActive = (tab: string) => {
 };
 
 // Related tours (same departure location)
-const { data: relatedToursData } = useQuery({
-    queryKey: ['tours', 'related', id],
-    queryFn: () => fetchTours({ q: tour.value?.depart_from }),
-    enabled: computed(() => !!tour.value?.depart_from),
-});
+const { data: relatedToursData } = useToursQuery(computed(() => ({ q: tour.value?.depart_from })));
 
 const relatedTours = computed(() => {
-    if (!relatedToursData.value?.data || !tour.value) return [];
-    return (relatedToursData.value.data || [])
-        .filter((t: Tour) => t.id !== tour.value?.id)
+    const data = (relatedToursData.value as any)?.data || [];
+    if (!data.length || !tour.value) return [];
+    return data
+        .filter((t: any) => t.id !== (tour.value as any)?.id)
         .slice(0, 3);
 });
 </script>

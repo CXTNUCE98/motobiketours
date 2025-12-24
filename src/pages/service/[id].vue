@@ -1,15 +1,23 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { services } from '../../composables/services';
+import { useServiceByIdQuery, useServicesQuery } from '~/composables/useServicesQuery';
 
 const route = useRoute();
+const id = computed(() => String(route.params.id || ''));
 const activeTab = ref('info'); // 'info' or 'reviews'
 
+// const { data: service, isLoading } = useServiceByIdQuery(id);
+// const { data: relatedServicesData } = useServicesQuery(computed(() => ({ limit: 10 })));
+
+// const relatedServicesList = computed(() => {
+//     const data = (relatedServicesData.value as any)?.data || [];
+//     return data.filter((s: any) => s.id !== id.value).slice(0, 3);
+// });
 const service = computed(() => {
     return services.find(s => s.id === route.params.id);
 });
-
 const contactPhone = '1900 9477'; // Số điện thoại mẫu
 
 const handleCallNow = () => {
@@ -94,7 +102,7 @@ const handleConsultation = () => {
                                         : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                                 ]">
                                     <i class="bx bx-message-square-dots mr-2"></i>
-                                    Bình Luận ({{ service.reviews.length }})
+                                    Bình Luận ({{ service.reviews?.length || 0 }})
                                 </button>
                             </div>
 
@@ -103,7 +111,7 @@ const handleConsultation = () => {
                                 <!-- Info Tab -->
                                 <div v-if="activeTab === 'info'" class="space-y-8">
                                     <!-- Highlights -->
-                                    <div>
+                                    <div v-if="service.highlights?.length">
                                         <h3
                                             class="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                                             <i class="bx bx-star text-yellow-500"></i>
@@ -124,7 +132,7 @@ const handleConsultation = () => {
                                     </div>
 
                                     <!-- Included -->
-                                    <div>
+                                    <div v-if="service.included?.length">
                                         <h3
                                             class="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                                             <i class="bx bx-check-circle text-green-500"></i>
@@ -145,7 +153,7 @@ const handleConsultation = () => {
                                     </div>
 
                                     <!-- Not Included -->
-                                    <div>
+                                    <div v-if="service.notIncluded?.length">
                                         <h3
                                             class="text-2xl font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                                             <i class="bx bx-x-circle text-red-500"></i>
@@ -244,7 +252,8 @@ const handleConsultation = () => {
                             </div>
 
                             <!-- Features List -->
-                            <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                            <div v-if="service.features?.length"
+                                class="border-t border-gray-200 dark:border-gray-700 pt-6">
                                 <h4 class="font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                                     <i class="bx bx-list-check text-blue-600 dark:text-blue-400"></i>
                                     Tính Năng Nổi Bật
@@ -291,8 +300,8 @@ const handleConsultation = () => {
             <div class="container mx-auto px-4">
                 <h2 class="text-3xl font-bold text-center text-gray-800 dark:text-white mb-12">Dịch Vụ Khác</h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    <NuxtLink v-for="relatedService in services.filter(s => s.id !== service.id).slice(0, 3)"
-                        :key="relatedService.id" :to="`/service/${relatedService.id}`"
+                    <NuxtLink v-for="relatedService in relatedServicesList" :key="relatedService.id"
+                        :to="`/service/${relatedService.id}`"
                         class="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-transparent dark:border-gray-700">
                         <div class="relative h-48 overflow-hidden">
                             <img :src="relatedService.thumbnail" :alt="relatedService.title"
@@ -316,7 +325,7 @@ const handleConsultation = () => {
     </div>
 
     <!-- Not Found -->
-    <div v-else class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div v-else-if="!isLoading" class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div class="text-center">
             <i class="bx bx-error-circle text-8xl text-red-500 mb-4"></i>
             <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-2">Không Tìm Thấy Dịch Vụ</h1>
@@ -334,6 +343,7 @@ const handleConsultation = () => {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    line-clamp: 2;
     overflow: hidden;
 }
 

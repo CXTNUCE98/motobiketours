@@ -4,12 +4,12 @@ import { useI18n } from 'vue-i18n';
 
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
 // ElMessage and ElMessageBox are auto-imported
-import { fetchTours, type Tour } from '@/services/tourApi';
 import TourFilter from '../../components/TourFilter.vue';
 
 import { Plus } from '@element-plus/icons-vue';
-import { useDeleteTour } from '~/composables/useTourQuery';
 import { useAuth } from '~/composables/useAuth';
+import { useToursQuery } from '~/composables/useToursQuery';
+import { useDeleteTourMutation } from '~/composables/useToursMutation';
 import { logger } from '~/utils/logger';
 
 const route = useRoute();
@@ -22,7 +22,7 @@ const showFilters = ref(false);
 const viewMode = ref('grid'); // 'grid' or 'list'
 const sortBy = ref('default'); // 'default', 'price-low', 'price-high', 'duration'
 const showCreateDialog = ref(false);
-const selectedTour = ref<Tour | null>(null);
+const selectedTour = ref<any | null>(null);
 
 const queryClient = useQueryClient();
 
@@ -69,21 +69,17 @@ const apiFilters = computed(() => {
     }
 
     if (activeFilters.value.tourTypes.length > 0) {
-        filters.type = activeFilters.value.tourTypes.join(',');
+        filters.type = activeFilters.value.tourTypes; // useToursQuery expects array for type if schema says so
     }
 
     return filters;
 });
 
 // Query
-const { data, isLoading, isError, error, isFetching } = useQuery({
-    queryKey: ['tours', apiFilters],
-    queryFn: () => fetchTours(apiFilters.value),
-    placeholderData: keepPreviousData
-});
+const { data, isLoading, isError, error, isFetching } = useToursQuery(apiFilters);
 
-const tours = computed(() => data.value?.data || []);
-const totalPages = computed(() => data.value?.totalPages || 1);
+const tours = computed(() => (data.value as any)?.data || []);
+const totalPages = computed(() => (data.value as any)?.totalPages || 1);
 
 const getDurationDays = (durationStr: string): number => {
     if (!durationStr) return 0;
@@ -153,7 +149,7 @@ const handleCreateTour = () => {
 };
 
 const editTour = (tourId: string) => {
-    const tour = tours.value.find(t => t.id === tourId);
+    const tour = tours.value.find((tourItem: any) => tourItem.id === tourId);
     if (tour) {
         selectedTour.value = tour;
         showCreateDialog.value = true;
@@ -166,10 +162,10 @@ const handleCreateSuccess = () => {
 };
 
 
-const { mutate: deleteTourMutation, isPending: isDeleting } = useDeleteTour();
+const { mutate: deleteTourMutation, isPending: isDeleting } = useDeleteTourMutation();
 
 const deleteTour = (tourId: string) => {
-    const tour = tours.value.find(t => t.id === tourId);
+    const tour = tours.value.find((tourItem: any) => tourItem.id === tourId);
     const tourTitle = tour?.title || t('tour.thisTour');
 
     ElMessageBox.confirm(
@@ -185,7 +181,6 @@ const deleteTour = (tourId: string) => {
         deleteTourMutation(tourId, {
             onSuccess: () => {
                 ElMessage.success(t('tour.message.deleteSuccess'));
-                queryClient.invalidateQueries({ queryKey: ['tours'] });
             },
             onError: (error: unknown) => {
                 logger.error('Error deleting tour:', error);
@@ -522,7 +517,7 @@ onMounted(() => {
                                                             </svg>
                                                             <span><strong>{{ t('tour.list.departure') }}:</strong> {{
                                                                 tour.depart_from
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -543,7 +538,7 @@ onMounted(() => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>{{ t('tour.list.type')
-                                                            }}:</strong> {{
+                                                                    }}:</strong> {{
                                                                         tour.type }}</span>
                                                         </div>
                                                     </div>

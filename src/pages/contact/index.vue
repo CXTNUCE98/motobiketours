@@ -53,7 +53,7 @@ const validateField = (key: keyof ContactForm) => {
         case 'email':
             if (!value) {
                 setError('email', t('contact.form.validation.emailRequired'))
-            } else if (!isEmail(value)) {
+            } else if (!isEmail(value) || !/\.[a-zA-Z]{2,}$/.test(value)) {
                 setError('email', t('contact.form.validation.emailInvalid'))
             }
             break
@@ -252,7 +252,7 @@ const toggleFaq = (index: number) => {
                         <i class="bx bxl-whatsapp text-2xl text-green-500"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.whatsapp')
-                        }}</h3>
+                    }}</h3>
                     <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">{{ t('contact.chatWithUs') }}</p>
                     <p class="text-sm text-gray-400">Instant Response</p>
                 </a>
@@ -384,7 +384,7 @@ const toggleFaq = (index: number) => {
                                 <button @click="toggleFaq(index)"
                                     class="w-full px-5 py-4 flex items-center justify-between text-left">
                                     <span class="font-medium text-gray-900 dark:text-white text-sm">{{ faq.question
-                                        }}</span>
+                                    }}</span>
                                     <i class="bx bx-chevron-down text-xl text-gray-400 transition-transform duration-300"
                                         :class="{ 'rotate-180 text-indigo-600 dark:text-indigo-400': activeFaq === index }"></i>
                                 </button>
@@ -401,7 +401,7 @@ const toggleFaq = (index: number) => {
                         class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none p-2 h-80 border border-transparent dark:border-gray-700">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.4275425111296!2d108.18603187583106!3d16.04328864013049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142197539244d27%3A0x98059ce4eb00cc95!2zNTMgxJAuIFBo4bqhbSBOZ-G7jWMgTeG6rXUsIEFuIEtow6osIFRoYW5oIEtow6osIMSQw6AgTuG6tW5nLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1766401819853!5m2!1svi!2s"
-                            width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                            width="600" height="450" style="border:0;" allowfullscreen loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>

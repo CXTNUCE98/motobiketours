@@ -2,8 +2,8 @@
 import { ref, reactive, computed, watch, nextTick, onBeforeUnmount } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check, Loading } from '@element-plus/icons-vue';
-import { type CreateTourDto, type Tour, validateTourForm } from '@/services/tourApi';
-import { useUpdateTour, useCreateTour, useUploadImage } from '~/composables/useTourQuery';
+import { type Tour } from '~/types/api';
+import { useCreateTourMutation, useUpdateTourMutation, useUploadImageMutation } from '~/composables/useToursMutation';
 
 const props = defineProps<{
     visible: boolean;
@@ -66,7 +66,7 @@ const mapDurationRange: Record<string, string> = {
 } as const;
 
 // Form Data
-const formData = reactive<CreateTourDto>({
+const formData = reactive<any>({
     title: '',
     type: '',
     price_usd: 0,
@@ -185,7 +185,7 @@ watch(() => props.tourData, (newVal) => {
     }
 }, { immediate: true });
 
-const { mutateAsync: uploadImageMutation } = useUploadImage();
+const { mutateAsync: uploadImageMutation } = useUploadImageMutation();
 const { formatPrice } = useCurrency();
 
 const handleThumbnailChange = async (event: Event) => {
@@ -276,10 +276,10 @@ const prevStep = () => {
 };
 
 // Create Tour Mutation
-const { mutate: createTourMutation, isPending: isCreating } = useCreateTour();
+const { mutate: createTourMutation, isPending: isCreating } = useCreateTourMutation();
 
 // Update Tour Mutation
-const { mutate: updateTourMutation, isPending: isUpdating } = useUpdateTour();
+const { mutate: updateTourMutation, isPending: isUpdating } = useUpdateTourMutation();
 
 const isSubmitting = computed(() => isCreating.value || isUpdating.value || isUploading.value);
 

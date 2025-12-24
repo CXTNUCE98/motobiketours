@@ -182,7 +182,6 @@ function formLogin() {
                                         d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-
                             <!-- Dropdown Menu -->
                             <div
                                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">

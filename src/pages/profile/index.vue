@@ -2,9 +2,11 @@
 import { ref, reactive, onMounted, computed, watchEffect } from 'vue'
 import { ElMessage, ElDialog, ElButton } from 'element-plus'
 import { useAuth } from '~/composables/useAuth'
-import { apiClient } from '~/services/api'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { User, UpdateUserDto } from '~/types/api'
+import { useUserProfileQuery } from '~/composables/useUserQuery'
+import { useUpdateUserMutation } from '~/composables/useUserMutation'
+import { useUploadImageMutation } from '~/composables/useToursMutation'
 import { validateForm, validationRules, type ValidationErrors } from '~/utils/validation'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
@@ -24,13 +26,7 @@ onMounted(() => {
 const activeTab = ref('info') // 'info' | 'security'
 
 // Fetch fresh user data
-const { data: userData, isLoading } = useQuery({
-    queryKey: ['user-profile', authUser.value?.id],
-    queryFn: () => apiClient<User>(`/users/${authUser.value?.id}`, {
-        headers: getAuthHeaders()
-    }),
-    enabled: !!authUser.value?.id
-})
+const { data: userData, isLoading } = useUserProfileQuery(computed(() => authUser.value?.id))
 
 // Avatar Upload
 const avatarPreview = ref<string | null>(null)
@@ -130,6 +126,9 @@ const infoRules = {
 }
 
 const passwordRules = {
+    currentPassword: [
+        validationRules.required('Current password is required')
+    ],
     newPassword: [
         validationRules.required('New password is required'),
         validationRules.minLength(6, 'Password must be at least 6 characters')
@@ -141,95 +140,56 @@ const passwordRules = {
 }
 
 // Upload Avatar Mutation
-const { mutate: uploadAvatar, mutateAsync: uploadAvatarAsync, isPending: isUploadingAvatar } = useMutation({
-    mutationFn: async (file: File) => {
-        const formData = new FormData()
-        formData.append('file', file)
-
-        const API_BASE_URL = 'https://motobikertours-api.vercel.app'
-        const response = await fetch(`${API_BASE_URL}/blog/upload-image`, {
-            method: 'POST',
-            headers: {
-                ...getAuthHeaders(),
-            },
-            body: formData
-        })
-
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            const errorMessage = error.message || 'Upload avatar failed'
-            throw new Error(Array.isArray(errorMessage) ? errorMessage.join(', ') : errorMessage)
-        }
-
-        const result = await response.json()
-        // API trả về { url, secureUrl, imageId } - sử dụng secureUrl nếu có, nếu không dùng url
-        return result.secureUrl || result.url
-    },
-    onError: (error: unknown) => {
-        const message = error instanceof Error ? error.message : 'Failed to upload avatar';
-        ElMessage.error(message)
-    }
-})
+const { mutateAsync: uploadAvatarAsync, isPending: isUploadingAvatar } = useUploadImageMutation()
 
 // Update Profile Mutation
-const { mutate: updateProfile, isPending: isUpdatingProfile } = useMutation({
-    mutationFn: async (data: UpdateUserDto) => {
-        // Đảm bảo avatar chỉ là URL string, không phải base64
-        // Nếu avatar là base64 (bắt đầu với 'data:'), không gửi nó
+const { mutateAsync: updateProfileAsync, isPending: isUpdatingProfile } = useUpdateUserMutation()
+
+const updateProfile = async (data: UpdateUserDto) => {
+    if (!authUser.value?.id) return
+
+    try {
         const updateData: UpdateUserDto = { ...data }
         if (updateData.avatar && typeof updateData.avatar === 'string' && updateData.avatar.startsWith('data:')) {
-            // Không gửi base64, chỉ gửi các field khác
             delete updateData.avatar
         }
 
-        const response = await apiClient<User>(`/users/${authUser.value?.id}`, {
-            method: 'PATCH',
-            headers: {
-                ...getAuthHeaders(),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updateData)
-        })
-        return response
-    },
-    onSuccess: (updatedUser) => {
+        const updatedUser = await updateProfileAsync({ id: authUser.value.id, data: updateData })
+
         queryClient.invalidateQueries({ queryKey: ['user-profile'] })
-        queryClient.setQueryData(['user-profile', authUser.value?.id], updatedUser)
         fetchUserProfile() // Update global auth state
         removeAvatar() // Clear avatar preview after successful update
         ElMessage.success('Profile updated successfully!')
-    },
-    onError: (error: unknown) => {
-        const message = error instanceof Error ? error.message : 'Failed to update profile';
+        return updatedUser
+    } catch (error: any) {
+        const message = error.message || 'Failed to update profile'
         ElMessage.error(message)
+        throw error
     }
-})
+}
 
 // Change Password Mutation
-const { mutate: changePassword, isPending: isChangingPassword } = useMutation({
-    mutationFn: async (data: UpdateUserDto) => {
-        const response = await apiClient<User>(`/users/${authUser.value?.id}`, {
-            method: 'PATCH',
-            headers: {
-                ...getAuthHeaders(),
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        return response
-    },
-    onSuccess: () => {
+const changePassword = async (data: UpdateUserDto) => {
+    if (!authUser.value?.id) return
+    isChangingPassword.value = true
+    try {
+        await updateProfileAsync({ id: authUser.value.id, data })
         passwordForm.currentPassword = ''
         passwordForm.newPassword = ''
         passwordForm.confirmPassword = ''
         passwordErrors.value = {}
         ElMessage.success('Password changed successfully!')
-    },
-    onError: (error: unknown) => {
-        const message = error instanceof Error ? error.message : 'Failed to change password';
+    } catch (error: any) {
+        const message = error.message || 'Failed to change password'
         ElMessage.error(message)
+    } finally {
+        isChangingPassword.value = false
     }
-})
+}
+const isChangingPassword = ref(false)
+const showCurrentPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
 
 const handleUpdateInfo = async () => {
     const errors = validateForm(infoForm, infoRules)
@@ -242,10 +202,9 @@ const handleUpdateInfo = async () => {
                 // Upload avatar và lấy URL
                 const avatarUrl = await uploadAvatarAsync(avatarFile.value)
                 // Sau khi upload thành công, update profile với URL và userName
-                // avatarUrl là string URL từ server, không phải base64
                 await updateProfile({
                     userName: infoForm.userName,
-                    avatar: avatarUrl // Chỉ gửi URL, không phải base64
+                    avatar: avatarUrl.url // Chỉ gửi URL, không phải base64
                 })
             } else {
                 // Just update userName
@@ -263,7 +222,9 @@ const handleChangePassword = () => {
     passwordErrors.value = errors
 
     if (Object.keys(errors).length === 0) {
-        changePassword({ password: passwordForm.newPassword })
+        changePassword({
+            password: passwordForm.newPassword
+        })
     }
 }
 
@@ -645,10 +606,26 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
                                                             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                                     </svg>
                                                 </div>
-                                                <input v-model="passwordForm.currentPassword" type="password"
+                                                <input v-model="passwordForm.currentPassword"
+                                                    :type="showCurrentPassword ? 'text' : 'password'"
                                                     placeholder="Enter your current password"
-                                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all" />
+                                                    class="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all" />
+                                                <button @click="showCurrentPassword = !showCurrentPassword"
+                                                    type="button"
+                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                    <i class="bx"
+                                                        :class="showCurrentPassword ? 'bx-hide' : 'bx-show'"></i>
+                                                </button>
                                             </div>
+                                            <p v-if="passwordErrors.currentPassword"
+                                                class="mt-2 text-sm text-red-500 flex items-center gap-1">
+                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                {{ passwordErrors.currentPassword }}
+                                            </p>
                                         </div>
 
                                         <div>
@@ -666,10 +643,15 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
                                                             d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                                                     </svg>
                                                 </div>
-                                                <input v-model="passwordForm.newPassword" type="password"
+                                                <input v-model="passwordForm.newPassword"
+                                                    :type="showNewPassword ? 'text' : 'password'"
                                                     placeholder="Enter new password (min 6 characters)"
-                                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
+                                                    class="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
                                                     :class="{ 'border-red-500 focus:ring-red-500': passwordErrors.newPassword }" />
+                                                <button @click="showNewPassword = !showNewPassword" type="button"
+                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                    <i class="bx" :class="showNewPassword ? 'bx-hide' : 'bx-show'"></i>
+                                                </button>
                                             </div>
                                             <p v-if="passwordErrors.newPassword"
                                                 class="mt-2 text-sm text-red-500 flex items-center gap-1">
@@ -697,10 +679,17 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
                                                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                 </div>
-                                                <input v-model="passwordForm.confirmPassword" type="password"
+                                                <input v-model="passwordForm.confirmPassword"
+                                                    :type="showConfirmPassword ? 'text' : 'password'"
                                                     placeholder="Confirm your new password"
-                                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
+                                                    class="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
                                                     :class="{ 'border-red-500 focus:ring-red-500': passwordErrors.confirmPassword }" />
+                                                <button @click="showConfirmPassword = !showConfirmPassword"
+                                                    type="button"
+                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                                                    <i class="bx"
+                                                        :class="showConfirmPassword ? 'bx-hide' : 'bx-show'"></i>
+                                                </button>
                                             </div>
                                             <p v-if="passwordErrors.confirmPassword"
                                                 class="mt-2 text-sm text-red-500 flex items-center gap-1">

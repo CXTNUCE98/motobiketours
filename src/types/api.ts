@@ -5,6 +5,7 @@ export interface User {
   email: string;
   userName: string;
   role: 'USER' | 'ADMIN';
+  isAdmin?: boolean;
   provider: string | null;
   created_at: string;
   avatar: string;
@@ -73,15 +74,31 @@ export interface BlogPost {
   created_at: string;
 }
 
+export interface ServiceReview {
+  id: string;
+  name: string;
+  avatar: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
 export interface Service {
   id: string;
   title: string;
-  short_title: string;
+  shortTitle: string;
+  short_title: string; // for compatibility
   description: string;
   thumbnail: string;
   icon: string;
-  price_range: string;
+  priceRange: string;
+  price_range: string; // for compatibility
+  duration: string;
   features: string[];
+  highlights: string[];
+  included: string[];
+  notIncluded: string[];
+  reviews: ServiceReview[];
   created_at: string;
 }
 
@@ -107,6 +124,7 @@ export interface UpdateUserDto {
   userName?: string;
   email?: string;
   password?: string;
+  currentPassword?: string;
   isAdmin?: boolean;
   avatar?: string;
 }

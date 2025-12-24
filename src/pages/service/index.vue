@@ -1,11 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue';
 import { services } from '../../composables/services';
 import { useI18n } from 'vue-i18n';
+// import { useServicesQuery } from '~/composables/useServicesQuery';
 
 const searchQuery = ref('');
 const { t } = useI18n();
 
+// const { data: servicesData, isLoading } = useServicesQuery(computed(() => ({ q: searchQuery.value })));
+
+// const filteredServices = computed(() => {
+//     return (servicesData.value as any)?.data || [];
+// });
+
+// const servicesCount = computed(() => (servicesData.value as any)?.total || 0);
 const filteredServices = computed(() => {
     if (!searchQuery.value) return services;
 
@@ -74,7 +82,7 @@ const filteredServices = computed(() => {
                             class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
                             <div
                                 class="text-3xl md:text-4xl font-black text-white mb-1 group-hover:text-indigo-400 transition-colors">
-                                {{ services.length }}</div>
+                                {{ servicesCount }}</div>
                             <div class="text-xs font-bold text-blue-200/60 uppercase tracking-widest">{{
                                 t('service.service') }}</div>
                         </div>

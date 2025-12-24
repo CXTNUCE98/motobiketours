@@ -2,8 +2,23 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
-import { uploadImage, createBlog, validateBlogForm, countWords } from '~/services/blogApi'
+import { useCreateBlogMutation, useUploadImageMutation } from '~/composables/useBlogMutation'
 import { useAuth } from '~/composables/useAuth'
+
+const countWords = (html: string) => {
+    const text = html.replace(/<[^>]*>/g, ' ');
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+};
+
+const validateBlogForm = (data: any) => {
+    const errors = [];
+    if (!data.title) errors.push('Title is required');
+    if (!data.language) errors.push('Language is required');
+    if (!data.category) errors.push('Category is required');
+    if (!data.content) errors.push('Content is required');
+    if (!data.shortDescription) errors.push('Short description is required');
+    return errors;
+};
 import { logger } from '~/utils/logger'
 
 const router = useRouter()
@@ -13,6 +28,9 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const thumbnailPreview = ref<string | null>(null)
 const thumbnailImageId = ref<string>('')
 const quillEditorRef = ref<any>(null)
+
+const { mutateAsync: uploadImageAsync } = useUploadImageMutation()
+const { mutateAsync: createBlogAsync } = useCreateBlogMutation()
 
 // Loading states
 const uploadingThumbnail = ref(false)
@@ -97,7 +115,7 @@ const handleQuillImageUpload = () => {
 
         try {
             ElMessage.info('Uploading image...')
-            const result = await uploadImage(file)
+            const result = await uploadImageAsync(file)
 
             // Insert image into editor using secureUrl for preview
             const quill = quillEditorRef.value?.getQuill?.()
@@ -151,7 +169,7 @@ const processFile = async (file: File) => {
     // Upload thumbnail to server
     uploadingThumbnail.value = true
     try {
-        const result = await uploadImage(file)
+        const result = await uploadImageAsync(file)
 
         // Save imageId for blog creation
         thumbnailImageId.value = result.imageId
@@ -238,7 +256,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
         }
 
         // Create blog
-        const result = await createBlog(blogData)
+        const result = await createBlogAsync(blogData)
 
         // Show success message
         if (status === 'draft') {
@@ -431,8 +449,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
                         {{ post?.shortDescription }}
                     </p>
 
-                    <div class="prose dark:prose-invert max-w-none"
-                        v-html="sanitizedContent"></div>
+                    <div class="prose dark:prose-invert max-w-none" v-html="sanitizedContent"></div>
                 </div>
             </div>
         </div>

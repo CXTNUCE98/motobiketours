@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { useMutation } from '@tanstack/vue-query'
-import { ref, reactive, computed } from 'vue'
-const { t } = useI18n()
-import { authService } from '~/services/auth.service'
 import { useAuth } from '~/composables/useAuth'
+import { useLoginMutation, useRegisterMutation } from '~/composables/useAuthMutation'
 import type { LoginDto, RegisterDto, ApiError } from '~/types/api'
 import { validateForm, validationRules, type ValidationRules, type ValidationErrors } from '~/utils/validation'
 import { logger } from '~/utils/logger'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   modelValue: boolean
@@ -89,47 +88,45 @@ const {
   isPending: isLoginPending,
   isError: isLoginError,
   error: loginError,
-} = useMutation({
-  mutationFn: (data: LoginDto) => authService.login(data),
-  onSuccess: (data) => {
-    setAuthState(data.access_token)
-    ElMessage.success(t('auth.loginSuccess'))
-    close()
-  },
-  onError: (error: ApiError) => {
-    logger.error('Login failed:', error)
-  },
-})
+} = useLoginMutation();
 
 const {
   mutate: registerMutate,
   isPending: isRegisterPending,
   isError: isRegisterError,
   error: registerError,
-} = useMutation({
-  mutationFn: (data: RegisterDto) => authService.register(data),
-  onSuccess: (data) => {
-    setAuthState(data.access_token)
-    ElMessage.success(t('auth.registerSuccess'))
-    close()
-  },
-  onError: (error: ApiError) => {
-    logger.error('Registration failed:', error)
-  },
-})
+} = useRegisterMutation();
 
 const handleLogin = () => {
   const errors = validateForm(loginForm, loginValidationRules)
   loginErrors.value = errors
   if (Object.keys(errors).length > 0) return
-  loginMutate(loginForm)
+  loginMutate(loginForm, {
+    onSuccess: (data) => {
+      setAuthState(data.access_token)
+      ElMessage.success(t('auth.loginSuccess'))
+      close()
+    },
+    onError: (error: any) => {
+      logger.error('Login failed:', error)
+    },
+  })
 }
 
 const handleRegister = () => {
   const errors = validateForm(registerForm, registerValidationRules)
   registerErrors.value = errors
   if (Object.keys(errors).length > 0) return
-  registerMutate(registerForm)
+  registerMutate(registerForm, {
+    onSuccess: (data) => {
+      setAuthState(data.access_token)
+      ElMessage.success(t('auth.registerSuccess'))
+      close()
+    },
+    onError: (error: any) => {
+      logger.error('Registration failed:', error)
+    },
+  })
 }
 
 const getErrorMessage = (error: any): string => {

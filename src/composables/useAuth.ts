@@ -1,8 +1,5 @@
-import { ref, computed } from 'vue';
-import { authService } from '~/services/auth.service';
-import { apiClient } from '~/services/api';
+import { ref, computed, onMounted } from 'vue';
 import type { User } from '~/types/api';
-import { logger } from '~/utils/logger';
 
 // Helper to decode JWT
 function parseJwt(token: string) {
@@ -27,10 +24,33 @@ function parseJwt(token: string) {
   }
 }
 
+// Token storage key
+const TOKEN_KEY = 'access_token';
+
 // Global auth state
-const isAuthenticated = ref(authService.isAuthenticated());
-const accessToken = ref(authService.getToken());
+const accessToken = ref<string | null>(process.client ? localStorage.getItem(TOKEN_KEY) : null);
+const isAuthenticated = computed(() => !!accessToken.value);
+const PROFILE_KEY = 'user_profile';
 const user = ref<User | null>(null);
+
+// Helper to save profile to cache
+const saveProfileToCache = (userData: User) => {
+  if (process.client) {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify(userData));
+  }
+};
+
+// Helper to get profile from cache
+const getProfileFromCache = (): User | null => {
+  if (!process.client) return null;
+  const cached = localStorage.getItem(PROFILE_KEY);
+  if (!cached) return null;
+  try {
+    return JSON.parse(cached);
+  } catch {
+    return null;
+  }
+};
 
 /**
  * Get auth headers for API requests
@@ -56,56 +76,80 @@ const fetchUserProfile = async () => {
     const userId = decoded?.sub || decoded?.id;
 
     if (userId) {
-      const userData = await apiClient<User>(`/users/${userId}`, {
+      const userData = await $motobikertoursApi('/users/{id}', {
         headers: getAuthHeaders(),
+        path: { id: userId },
       });
-      user.value = userData;
+      const updatedUser = userData as unknown as User;
+      user.value = updatedUser;
+      saveProfileToCache(updatedUser);
     }
   } catch (error) {
-    logger.error('Failed to fetch user profile', error);
+    console.error('Failed to fetch user profile', error);
   }
 };
 
-// Initialize user from token if available
-if (process.client && accessToken.value) {
-  const decoded = parseJwt(accessToken.value);
-  if (decoded) {
-    // Set initial state from token (fast, but maybe stale)
-    user.value = {
-      id: decoded.sub || decoded.id,
-      email: decoded.email,
-      userName: decoded.userName || 'User',
-      role: decoded.role || 'USER',
-      provider: null,
-      avatar: decoded.avatar,
-      created_at: '', // Placeholder until fetch
-    } as User;
+// Initial state from token (client-side only)
+const initUserFromToken = () => {
+  if (process.client && accessToken.value && !user.value) {
+    const decoded = parseJwt(accessToken.value);
+    if (decoded) {
+      const cachedProfile = getProfileFromCache();
+      const userId = decoded.sub || decoded.id;
 
-    // Fetch fresh data from API to update avatar and other details
-    fetchUserProfile();
+      if (cachedProfile && cachedProfile.id === userId) {
+        user.value = cachedProfile;
+      } else {
+        user.value = {
+          id: userId,
+          email: decoded.email,
+          userName: decoded.userName || 'User',
+          role: decoded.role || 'USER',
+          provider: null,
+          avatar: decoded.avatar,
+          created_at: '',
+        } as User;
+      }
+    }
   }
-}
+};
+
+// Initialize early without API call (safe outside Nuxt context)
+initUserFromToken();
 
 export function useAuth() {
   /**
    * Login user and update auth state
    */
   const login = (token: string) => {
-    authService.setToken(token);
+    if (process.client) {
+      localStorage.setItem(TOKEN_KEY, token);
+    }
     accessToken.value = token;
-    isAuthenticated.value = true;
+
+    // Fast init from new token
+    initUserFromToken();
 
     // Fetch full profile
     fetchUserProfile();
   };
 
+  // Only fetch profile on mount if we have an access token and haven't fetched recently
+  onMounted(() => {
+    if (accessToken.value) {
+      fetchUserProfile();
+    }
+  });
+
   /**
    * Logout user and clear auth state
    */
   const logout = () => {
-    authService.removeToken();
+    if (process.client) {
+      localStorage.removeItem(TOKEN_KEY);
+      localStorage.removeItem(PROFILE_KEY);
+    }
     accessToken.value = null;
-    isAuthenticated.value = false;
     user.value = null;
   };
 
@@ -113,15 +157,15 @@ export function useAuth() {
    * Check if user is authenticated
    */
   const checkAuth = () => {
-    const token = authService.getToken();
-    isAuthenticated.value = !!token;
-    accessToken.value = token;
-    return isAuthenticated.value;
+    if (process.client) {
+      accessToken.value = localStorage.getItem(TOKEN_KEY);
+    }
+    return !!accessToken.value;
   };
 
   return {
     // State
-    isAuthenticated: computed(() => isAuthenticated.value),
+    isAuthenticated,
     accessToken: computed(() => accessToken.value),
     user: computed(() => user.value),
 

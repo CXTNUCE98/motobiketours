@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuery } from '@tanstack/vue-query'
+import { useBlogsQuery } from '~/composables/useBlogQuery'
 import { watchDebounced } from '@vueuse/core'
 import { useI18n } from 'vue-i18n'
 
@@ -43,16 +43,7 @@ const params = ref({
 })
 
 // Fetch data
-const { data, isLoading, isFetching } = useQuery({
-  queryKey: ['/blog', params],
-  queryFn: async () => {
-    const res = await $motobikertoursApi('/blog', {
-      query: params.value,
-    })
-    return res
-  },
-  refetchOnWindowFocus: false,
-})
+const { data, isLoading, isFetching } = useBlogsQuery(params)
 
 // Computed properties
 const posts = computed(() => data.value?.data || [])

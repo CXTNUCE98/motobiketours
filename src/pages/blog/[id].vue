@@ -1,37 +1,27 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useBlogsQuery, useBlogByIdQuery } from '~/composables/useBlogQuery'
+import { useCreateCommentMutation } from '~/composables/useBlogMutation'
 import { useAuth } from '~/composables/useAuth'
 import CommentItem from '~/components/CommentItem.vue'
-import { logger } from '~/utils/logger'
+import { useQuery } from '@tanstack/vue-query'
 import { sanitizeHtml } from '~/utils/sanitize'
 
 const route = useRoute()
 const id = computed(() => String(route?.params?.id))
 const { user } = useAuth()
-const queryClient = useQueryClient()
 
 // Fetch Post Detail
-const { data: detailBlog, isLoading } = useQuery({
-  queryKey: ['blog/id', id],
-  queryFn: () => $motobikertoursApi(`/blog/${id.value}`),
-  enabled: computed(() => !!id.value)
-})
+const { data: detailBlog, isLoading } = useBlogByIdQuery(id)
 
 const post = computed(() => detailBlog.value || null)
 
 // Fetch Related Posts
-const { data: relatedData } = useQuery({
-  queryKey: ['blog', 'related', computed(() => post.value?.category)],
-  queryFn: () => $motobikertoursApi('/blog', {
-    query: {
-      category: post.value?.category,
-      r: 4
-    }
-  }),
-  enabled: computed(() => !!post.value?.category)
-})
+const { data: relatedData } = useBlogsQuery(computed(() => ({
+  category: post.value?.category,
+  r: 4
+})))
 
 const relatedPosts = computed(() => {
   if (!relatedData.value?.data) return []
@@ -40,10 +30,11 @@ const relatedPosts = computed(() => {
     .slice(0, 3)
 })
 
-// Comments
+// Comments (Temporary useQuery until useCommentsQuery is created)
 const { data: commentsData, isLoading: commentsLoading, refetch: refetchComments } = useQuery({
   queryKey: ['comments', id],
-  queryFn: () => $motobikertoursApi(`/comments/tree/${id.value}`, {
+  queryFn: () => $motobikertoursApi('/comments/tree/{id}', {
+    path: { id: id.value },
     query: {
       page: 1,
       limit: 50
@@ -57,24 +48,7 @@ const comments = computed(() => commentsData.value?.data || [])
 // Create comment
 const newCommentContent = ref('')
 
-const createCommentMutation = useMutation({
-  mutationFn: (commentData) => $motobikertoursApi('/comments', {
-    method: 'POST',
-    body: commentData
-  }),
-  onSuccess: () => {
-    newCommentContent.value = ''
-    refetchComments()
-  },
-  onError: (error) => {
-    logger.error('Error creating comment:', error)
-    ElNotification({
-      title: 'Error',
-      message: 'Failed to post comment. Please try again.',
-      type: 'error',
-    })
-  }
-})
+const createCommentMutation = useCreateCommentMutation()
 
 const handleCreateComment = () => {
   if (!user.value || !newCommentContent.value.trim()) return
