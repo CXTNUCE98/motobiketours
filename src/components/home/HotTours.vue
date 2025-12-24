@@ -35,7 +35,7 @@ const featuredTours = computed(() => {
       <div class="text-center mb-8 md:mb-12">
         <h2 class="text-3xl md:text-4xl font-bold mb-2">
           <span class="text-gray-800 dark:text-white uppercase">{{ t('nav.tours') }} </span>
-          <span class="text-[#1A71C7] dark:text-blue-400">HOT</span>
+          <span class="text-[#1A71C7] dark:text-blue-400"> HOT</span>
         </h2>
         <p class="text-gray-600 dark:text-gray-300 text-lg">{{ t('home.hotToursDescription') }}</p>
       </div>

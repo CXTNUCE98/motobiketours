@@ -224,7 +224,7 @@ const filteredServices = computed(() => {
                     <div class="text-center">
                         <div
                             class="w-20 h-20 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
-                            <i class="bx bx-shield-check text-4xl"></i>
+                            <i class='bx bx-shield-quarter text-4xl'></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">{{ $t('service.safetyInsurance') }}</h3>
                         <p class="text-blue-100">{{ $t('service.safetyInsuranceDesc') }}</p>
