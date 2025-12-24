@@ -206,7 +206,7 @@ const toggleFaq = (index: number) => {
             <!-- Contact Quick Info Cards (Restored from image) -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 <!-- Call Us -->
-                <a href="tel:0854242357"
+                <a href="tel:+84854242357"
                     class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-blue-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
                     <div
                         class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
@@ -252,7 +252,7 @@ const toggleFaq = (index: number) => {
                         <i class="bx bxl-whatsapp text-2xl text-green-500"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.whatsapp')
-                    }}</h3>
+                        }}</h3>
                     <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">{{ t('contact.chatWithUs') }}</p>
                     <p class="text-sm text-gray-400">Instant Response</p>
                 </a>
@@ -384,7 +384,7 @@ const toggleFaq = (index: number) => {
                                 <button @click="toggleFaq(index)"
                                     class="w-full px-5 py-4 flex items-center justify-between text-left">
                                     <span class="font-medium text-gray-900 dark:text-white text-sm">{{ faq.question
-                                    }}</span>
+                                        }}</span>
                                     <i class="bx bx-chevron-down text-xl text-gray-400 transition-transform duration-300"
                                         :class="{ 'rotate-180 text-indigo-600 dark:text-indigo-400': activeFaq === index }"></i>
                                 </button>
