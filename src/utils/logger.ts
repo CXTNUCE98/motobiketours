@@ -48,7 +48,7 @@ export const logger = {
    * Log error messages (always logged, even in production)
    */
   error: (...args: unknown[]): void => {
-    console.error(...args);
+    console.log(...args);
     // TODO: In production, send to error tracking service (Sentry, etc.)
   },
 

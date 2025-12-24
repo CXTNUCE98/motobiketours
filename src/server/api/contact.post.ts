@@ -88,16 +88,16 @@ export default defineEventHandler(async (event) => {
 
   const transporter = smtpHost
     ? nodemailer.createTransport({
-        host: smtpHost,
-        port: smtpPort,
-        secure: smtpPort === 465,
-        auth: { user: smtpUser, pass: smtpPass },
-      })
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: { user: smtpUser, pass: smtpPass },
+    })
     : nodemailer.createTransport({
-        // Convenience for Gmail accounts when SMTP_HOST is not provided
-        service: 'gmail',
-        auth: { user: smtpUser, pass: smtpPass },
-      })
+      // Convenience for Gmail accounts when SMTP_HOST is not provided
+      service: 'gmail',
+      auth: { user: smtpUser, pass: smtpPass },
+    })
 
   const subject = body.title?.trim() || 'New contact request'
   const html = `
@@ -123,7 +123,7 @@ export default defineEventHandler(async (event) => {
   } catch (err: any) {
     // Provide a clearer error for common Gmail security issues
     const message = typeof err?.message === 'string' ? err.message : 'Failed to send email'
-    console.error('Contact email error:', message)
+    console.log('Contact email error:', message)
     throw createError({ statusCode: 500, statusMessage: message })
   }
 })

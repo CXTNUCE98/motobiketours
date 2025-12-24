@@ -755,8 +755,8 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
         </div>
 
         <!-- Image Cropper Modal -->
-        <el-dialog v-model="showCropper" title="Crop Image" width="500px" :close-on-click-modal="false"
-            destroy-on-close>
+        <el-dialog v-model="showCropper" title="Crop Image" width="500px" :close-on-click-modal="false" destroy-on-close
+            :lock-scroll="true">
             <div
                 class="h-96 w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden rounded-lg">
                 <cropper ref="cropperRef" class="h-full w-full" :src="cropperImage" :stencil-component="CircleStencil"

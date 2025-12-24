@@ -161,7 +161,23 @@
     "viewDetails": "View Details",
     "bookNow": "Book Now",
     "searchPlaceholder": "Search...",
-    "create": "Create"
+    "create": "Create",
+    "name": "Name",
+    "category": "Category",
+    "selectCategory": "Select category",
+    "rating": "Rating",
+    "address": "Address",
+    "description": "Description",
+    "images": "Images",
+    "openingHours": "Opening Hours",
+    "priceInfo": "Price Info",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "update": "Update",
+    "noLocationsFound": "No locations found.",
+    "tryAgain": "Try changing the filters or reloading the page.",
+    "reload": "Reload",
+    "communityCorner": "Community Corner"
   },
   "booking": {
     "bookNow": "Book Now"
@@ -428,11 +444,16 @@
       "all": "All",
       "checkin": "Check-in",
       "nature": "Nature",
-      "spiritual": "Spiritual"
+      "spiritual": "Spiritual",
+      "food": "Food"
     },
     "openingHours": "Opening Hours",
     "price": "Price",
     "free": "Free",
-    "bookTicket": "Book Ticket"
+    "bookTicket": "Book Ticket",
+    "description": "Description",
+    "discoverMost": "Discover the most popular destinations and plan your trip today.",
+    "update": "Update",
+    "create": "Create"
   }
 }

@@ -346,7 +346,7 @@ onBeforeUnmount(() => {
 <template>
     <el-dialog v-model="dialogVisible" :title="isEditMode ? 'Chỉnh sửa Tour' : 'Tạo Tour Mới'" width="90%"
         class="create-tour-dialog dark:bg-gray-800 [&_.el-dialog\_\_title]:dark:text-white"
-        :close-on-click-modal="false" destroy-on-close>
+        :close-on-click-modal="false" destroy-on-close lock-scroll :align-center="true">
         <div class="flex h-[80vh]">
             <!-- Steps Sidebar -->
             <div

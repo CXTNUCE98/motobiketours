@@ -13,7 +13,8 @@ const categories = [
     { label: t('hotSpots.categories.all'), value: '' },
     { label: t('hotSpots.categories.checkin'), value: 'Check-in' },
     { label: t('hotSpots.categories.nature'), value: 'Cảnh đẹp' },
-    { label: t('hotSpots.categories.spiritual'), value: 'Vãn nhà' },
+    { label: t('hotSpots.categories.spiritual'), value: 'Vãn cảnh' },
+    { label: t('hotSpots.categories.food'), value: 'Ăn uống' },
 ];
 
 const selectedSpotId = ref<string | null>(null);
@@ -38,6 +39,38 @@ const selectSpot = (id: string) => {
 const isMiniMap = ref(false);
 const isMapView = ref(false);
 
+const isCreateDialogOpen = ref(false);
+const editingSpot = ref<HotSpot | null>(null);
+
+const { mutateAsync: deleteHotSpot } = useDeleteHotSpot();
+
+const handleCreate = () => {
+    editingSpot.value = null;
+    isCreateDialogOpen.value = true;
+};
+
+const handleEdit = (spot: HotSpot) => {
+    editingSpot.value = spot;
+    isCreateDialogOpen.value = true;
+};
+
+const handleDelete = async (id: string) => {
+    try {
+        await ElMessageBox.confirm(
+            'Are you sure you want to delete this hot spot?',
+            'Warning',
+            {
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+            }
+        );
+        await deleteHotSpot(id);
+    } catch (error) {
+        // Cancelled or error
+    }
+};
+
 useHead({
     title: `${t('hotSpots.title')} | ANDAGO`,
 });
@@ -56,20 +89,21 @@ useHead({
                             {{ t('hotSpots.title') }}
                         </h1>
                         <p class="mt-3 text-zinc-500 dark:text-zinc-400 font-medium max-w-lg">
-                            Khám phá những địa điểm được yêu thích nhất và lên kế hoạch cho hành trình của bạn ngay hôm
-                            nay.
+                            {{ t('hotSpots.discoverMost') }}
                         </p>
                     </div>
 
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 p-1.5 rounded-full">
                             <div class="flex items-center gap-2 px-3 py-1.5">
-                                <UnoIcon i="i-ph-map-pin-fill" class="text-blue-500" />
+                                <i class='bx bxs-map-pin text-blue-500 dark:text-blue-400'></i>
                                 <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{
                                     t('hotSpots.miniMap') }}</span>
                             </div>
                             <UToggle v-model="isMiniMap" />
                         </div>
+                        <!-- Create hot spot -->
+                        <el-button type="primary" @click="handleCreate">{{ t('common.create') }}</el-button>
                     </div>
                 </div>
 
@@ -107,30 +141,27 @@ useHead({
 
                 <div v-else-if="!spots || spots.length === 0"
                     class="mt-20 text-center py-20 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2.5rem]">
-                    <UnoIcon i="i-ph-map-pin-slash" class="text-6xl text-zinc-300 dark:text-zinc-700" />
-                    <h3 class="mt-4 text-xl font-bold text-zinc-400">Không tìm thấy địa điểm nào</h3>
-                    <p class="text-sm text-zinc-500 mt-1">Thử thay đổi bộ lọc hoặc Refresh lại trang</p>
-                    <button @click="refresh"
-                        class="mt-6 px-6 py-2 bg-zinc-900 dark:bg-white dark:text-black text-white rounded-full font-bold">Thử
-                        lại</button>
+                    <i class='bx bxs-map-pin text-6xl text-zinc-300 dark:text-zinc-700'></i>
+                    <h3 class="mt-4 text-xl font-bold text-zinc-400">{{ t('common.noLocationsFound') }}</h3>
+                    <p class="text-sm text-zinc-500 mt-1">{{ t('common.tryAgain') }}</p>
+                    <el-button @click="refresh"
+                        class="mt-6 px-6 py-2 bg-zinc-900 dark:bg-white dark:text-black text-white rounded-full font-bold">{{
+                            t('common.reload') }}</el-button>
                 </div>
 
                 <div v-else class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" @click="selectSpot(spot.id)"
-                        class="cursor-pointer" />
+                        @edit="handleEdit" @delete="handleDelete" class="cursor-pointer" />
                 </div>
 
                 <!-- Mini Footer / Social Section -->
-                <div class="mt-20 pt-12 border-t border-zinc-100 dark:border-zinc-800">
+                <!-- <div class="mt-20 pt-12 border-t border-zinc-100 dark:border-zinc-800">
                     <div class="flex items-center justify-between flex-wrap gap-4">
                         <h4 class="text-xl font-bold flex items-center gap-2">
-                            Góc cộng đồng
+                            {{ t('common.communityCorner') }}
                             <span
                                 class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 text-[10px] rounded uppercase font-black tracking-tighter">New</span>
                         </h4>
-                        <button class="text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
-                            <UnoIcon i="i-ph-x-bold" class="text-xl" />
-                        </button>
                     </div>
 
                     <div class="mt-6 flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
@@ -142,12 +173,15 @@ useHead({
                             <span class="text-[10px] font-bold text-zinc-400">@user_{{ i }}</span>
                         </div>
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 
         <!-- Detail Modal -->
-        <HotSpotDetailModal v-model="isDetailOpen" :spot-id="selectedSpotId" />
+        <HotSpotDetailModal v-model="isDetailOpen" :spot-id="selectedSpotId" @change-spot="selectedSpotId = $event" />
+
+        <!-- Create/Edit Dialog -->
+        <CreateHotSpotDialog v-model="isCreateDialogOpen" :spot-data="editingSpot" @success="refresh" />
     </div>
 </template>
 

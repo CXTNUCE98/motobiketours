@@ -106,7 +106,7 @@ const submit = async () => {
         Object.assign(form, { fullName: '', email: '', phone: '', country: '', title: '', content: '' })
         for (const k of Object.keys(errors) as (keyof ContactForm)[]) delete errors[k]
     } catch (e: any) {
-        console.error('Mail submit error:', e)
+        console.log('Mail submit error:', e)
         const errorMessage = e.data?.statusMessage || e.message || 'Gửi thất bại, vui lòng thử lại'
         notify('error', errorMessage)
     } finally {
@@ -252,7 +252,7 @@ const toggleFaq = (index: number) => {
                         <i class="bx bxl-whatsapp text-2xl text-green-500"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.whatsapp')
-                        }}</h3>
+                    }}</h3>
                     <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">{{ t('contact.chatWithUs') }}</p>
                     <p class="text-sm text-gray-400">Instant Response</p>
                 </a>
@@ -384,7 +384,7 @@ const toggleFaq = (index: number) => {
                                 <button @click="toggleFaq(index)"
                                     class="w-full px-5 py-4 flex items-center justify-between text-left">
                                     <span class="font-medium text-gray-900 dark:text-white text-sm">{{ faq.question
-                                        }}</span>
+                                    }}</span>
                                     <i class="bx bx-chevron-down text-xl text-gray-400 transition-transform duration-300"
                                         :class="{ 'rotate-180 text-indigo-600 dark:text-indigo-400': activeFaq === index }"></i>
                                 </button>

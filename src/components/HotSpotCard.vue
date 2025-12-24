@@ -10,58 +10,76 @@ const { t } = useI18n();
 
 <template>
     <div
-        class="spot-card group bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-zinc-100 dark:border-zinc-800">
-        <!-- Image -->
+        class="spot-card group relative bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-zinc-100 dark:border-zinc-800">
+
+        <!-- Image Section -->
         <div class="relative aspect-[4/3] overflow-hidden">
             <img :src="spot.images[0] || '/placeholder-spot.jpg'" :alt="spot.name"
-                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 
-            <!-- Badge if hot -->
-            <div v-if="spot.is_hot"
-                class="absolute top-4 left-4 bg-blue-600/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 shadow-lg">
-                <span class="text-[10px]">#1</span>
-                <span>Thất</span>
+            <!-- Gradient Overlay -->
+            <div
+                class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
             </div>
 
-            <!-- Quick Action Overlay -->
+            <!-- Badges -->
+            <div class="absolute top-4 left-4 flex flex-col gap-2 items-start">
+                <div v-if="spot.is_hot"
+                    class="bg-red-500/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
+                    <i class='bx bxs-hot'></i>
+                    <span>Hot</span>
+                </div>
+                <div v-if="spot.category"
+                    class="bg-black/50 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg border border-white/10 backdrop-filter">
+                    {{ spot.category }}
+                </div>
+            </div>
+
+            <!-- Quick Actions (Edit/Delete) -->
             <div
-                class="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
-                <button
-                    class="w-10 h-10 bg-white/90 backdrop-blur-sm text-zinc-900 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg">
-                    <UnoIcon i="i-ph-heart" class="text-lg" />
+                class="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
+                <button @click.stop="$emit('edit', spot)"
+                    class="w-9 h-9 bg-white/90 backdrop-blur-md text-zinc-700 hover:text-blue-600 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg"
+                    title="Edit">
+                    <i class='bx bxs-edit-alt text-lg'></i>
                 </button>
-                <button
-                    class="w-10 h-10 bg-white/90 backdrop-blur-sm text-zinc-900 rounded-full flex items-center justify-center hover:bg-white transition-colors shadow-lg">
-                    <UnoIcon i="i-ph-map-pin" class="text-lg" />
+                <button @click.stop="$emit('delete', spot.id)"
+                    class="w-9 h-9 bg-white/90 backdrop-blur-md text-zinc-700 hover:text-red-600 rounded-full flex items-center justify-center hover:bg-white transition-all shadow-lg"
+                    title="Delete">
+                    <i class='bx bxs-trash text-lg'></i>
                 </button>
             </div>
         </div>
 
-        <!-- Content -->
-        <div class="p-5">
-            <h3
-                class="text-lg font-bold text-zinc-900 dark:text-zinc-100 truncate group-hover:text-blue-600 transition-colors">
-                {{ spot.name }}
-            </h3>
-
-            <div class="mt-2 flex items-center gap-2">
-                <div class="flex items-center text-yellow-500">
-                    <UnoIcon i="i-ph-star-fill" v-for="i in 3" :key="i" class="text-xs" />
-                    <UnoIcon i="i-ph-star" v-for="i in 2" :key="i + 3" class="text-xs" />
+        <!-- Content Section -->
+        <div class="p-5 relative">
+            <!-- Title & Rating -->
+            <div class="mb-4">
+                <h3
+                    class="text-lg font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-1.5 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    {{ spot.name }}
+                </h3>
+                <div class="flex items-center gap-2">
+                    <el-rate v-model="spot.rating" disabled show-score text-color="#ff9900" score-template="{value}"
+                        size="small" />
                 </div>
-                <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">{{ spot.rating }}</span>
             </div>
 
-            <div class="mt-3 flex items-center justify-between">
-                <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400">
-                    <UnoIcon i="i-ph-navigation-arrow-fill" class="text-sm text-blue-500" />
-                    <span class="text-sm">{{ t('hotSpots.distance', { distance: spot.distance || 0 }) }}</span>
+            <!-- Info Row -->
+            <div class="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 text-sm">
+                    <i class='bx bxs-navigation text-blue-500'></i>
+                    <span class="font-medium">{{ spot.distance ? Math.round(spot.distance * 10) / 10 + ' km' : 'N/A'
+                    }}</span>
                 </div>
 
-                <div class="flex items-center gap-1">
-                    <UnoIcon i="i-ph-heart" class="text-zinc-300 hover:text-red-500 transition-colors cursor-pointer" />
-                    <UnoIcon i="i-ph-map-trifold"
-                        class="text-zinc-300 hover:text-blue-500 transition-colors cursor-pointer" />
+                <div class="flex items-center gap-3">
+                    <button class="text-zinc-400 hover:text-red-500 transition-colors transform active:scale-90">
+                        <i class='bx bx-heart text-xl'></i>
+                    </button>
+                    <button class="text-zinc-400 hover:text-blue-500 transition-colors transform active:scale-90">
+                        <i class='bx bx-map text-xl'></i>
+                    </button>
                 </div>
             </div>
         </div>

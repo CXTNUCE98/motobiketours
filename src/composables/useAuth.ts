@@ -85,7 +85,7 @@ const fetchUserProfile = async () => {
       saveProfileToCache(updatedUser);
     }
   } catch (error) {
-    console.error('Failed to fetch user profile', error);
+    console.log('Failed to fetch user profile', error);
   }
 };
 

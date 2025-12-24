@@ -161,7 +161,23 @@
     "viewDetails": "Xem chi tiết",
     "bookNow": "Đặt ngay",
     "searchPlaceholder": "Tìm kiếm...",
-    "create": "Tạo"
+    "create": "Tạo",
+    "name": "Tên",
+    "category": "Loại",
+    "selectCategory": "Chọn loại",
+    "rating": "Đánh giá",
+    "address": "Địa chỉ",
+    "description": "Mô tả",
+    "images": "Hình ảnh",
+    "openingHours": "Giờ mở cửa",
+    "priceInfo": "Giá vé",
+    "latitude": "Vĩ độ",
+    "longitude": "Kinh độ",
+    "update": "Cập nhật",
+    "noLocationsFound": "Không tìm thấy địa điểm nào",
+    "tryAgain": "Thử thay đổi bộ lọc hoặc tải lại trang",
+    "reload": "Tải lại",
+    "communityCorner": "Góc cộng đồng"
   },
   "booking": {
     "bookNow": "Đặt bây giờ"
@@ -428,11 +444,16 @@
       "all": "Tất cả",
       "checkin": "Check-in sống ảo",
       "nature": "Cảnh đẹp",
-      "spiritual": "Vãn nhà - Tâm linh"
+      "spiritual": "Vãn cảnh",
+      "food": "Ẩm thực"
     },
     "openingHours": "Giờ mở cửa",
     "price": "Giá vé",
     "free": "Miễn phí",
-    "bookTicket": "Đặt vé ngay"
+    "bookTicket": "Đặt vé ngay",
+    "description": "Mô tả",
+    "discoverMost": "Khám phá những địa điểm được yêu thích nhất và lên kế hoạch cho hành trình của bạn ngay hôm nay.",
+    "update": "Cập nhật",
+    "create": "Tạo"
   }
 }
