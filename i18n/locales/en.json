@@ -6,7 +6,8 @@
     "services": "SERVICES",
     "news": "NEWS",
     "blog": "BLOG",
-    "contact": "CONTACT"
+    "contact": "CONTACT",
+    "hotSpots": "HOT SPOTS"
   },
   "about": {
     "title": "Travel Agency & Tour Booking",
@@ -416,5 +417,22 @@
       "adventure": "Adventure",
       "guides": "Guides"
     }
+  },
+  "hotSpots": {
+    "title": "Hot Spots",
+    "miniMap": "Mini Map",
+    "nearbySuggestions": "Nearby Suggestions",
+    "distance": "{distance}km away",
+    "viewOnMap": "View on map",
+    "categories": {
+      "all": "All",
+      "checkin": "Check-in",
+      "nature": "Nature",
+      "spiritual": "Spiritual"
+    },
+    "openingHours": "Opening Hours",
+    "price": "Price",
+    "free": "Free",
+    "bookTicket": "Book Ticket"
   }
 }

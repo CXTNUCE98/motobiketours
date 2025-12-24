@@ -6,7 +6,8 @@
     "services": "DỊCH VỤ",
     "news": "TIN TỨC",
     "blog": "BLOG",
-    "contact": "LIÊN HỆ"
+    "contact": "LIÊN HỆ",
+    "hotSpots": "ĐỊA ĐIỂM HOT"
   },
   "about": {
     "title": "Đại Lý Du Lịch & Đặt Tour",
@@ -416,5 +417,22 @@
       "adventure": "Du lịch phiêu lưu",
       "guides": "Hướng dẫn"
     }
+  },
+  "hotSpots": {
+    "title": "Địa điểm Hot",
+    "miniMap": "Bản đồ mini",
+    "nearbySuggestions": "Gợi ý địa điểm gần đó",
+    "distance": "Cách bạn {distance}km",
+    "viewOnMap": "Xem trên bản đồ",
+    "categories": {
+      "all": "Tất cả",
+      "checkin": "Check-in sống ảo",
+      "nature": "Cảnh đẹp",
+      "spiritual": "Vãn nhà - Tâm linh"
+    },
+    "openingHours": "Giờ mở cửa",
+    "price": "Giá vé",
+    "free": "Miễn phí",
+    "bookTicket": "Đặt vé ngay"
   }
 }

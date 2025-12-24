@@ -173,6 +173,31 @@ export interface LikeActionResponse {
   action: 'added' | 'removed' | 'updated';
 }
 
+export interface HotSpot {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  rating: number;
+  address: string;
+  lat: number;
+  lng: number;
+  images: string[];
+  opening_hours: string;
+  price_info: string;
+  is_hot: boolean;
+  distance?: number;
+  created_at: string;
+  updated_at: string;
+  nearby?: HotSpot[];
+}
+
+export interface GetHotSpotsQuery {
+  lat?: number;
+  lng?: number;
+  category?: string;
+}
+
 // API Error Response
 export interface ApiError {
   statusCode: number;
