@@ -178,6 +178,7 @@
     "tryAgain": "Try changing the filters or reloading the page.",
     "reload": "Reload",
     "loadingData": "Loading data",
+    "grid": "Grid",
     "communityCorner": "Community Corner"
   },
   "booking": {
@@ -455,6 +456,7 @@
     "description": "Description",
     "discoverMost": "Discover the most popular destinations and plan your trip today.",
     "update": "Update",
-    "create": "Create"
+    "create": "Create",
+    "map": "Map"
   }
 }

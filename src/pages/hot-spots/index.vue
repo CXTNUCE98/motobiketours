@@ -67,6 +67,10 @@ const selectSpot = (id: string) => {
 const isMiniMap = ref(false);
 const isMapView = ref(false);
 
+watch(isMapView, (val) => {
+    if (val) isMiniMap.value = false;
+});
+
 const isCreateDialogOpen = ref(false);
 const editingSpot = ref<HotSpot | null>(null);
 
@@ -122,17 +126,30 @@ useHead({
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <div class="flex items-center gap-2 bg-zinc-100 dark:bg-zinc-800 p-1.5 rounded-full">
-                            <div class="flex items-center gap-2 px-3 py-1.5">
-                                <i class='bx bxs-map-pin text-blue-500 dark:text-blue-400'></i>
-                                <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{
-                                    t('hotSpots.miniMap') }}</span>
-                            </div>
-                            <UToggle v-model="isMiniMap" />
-                        </div>
+                        <!-- Custom Switch for Mini Map (Only show in Grid mode) -->
+                        <transition enter-active-class="transition duration-300 ease-out"
+                            enter-from-class="opacity-0 translate-x-4" enter-to-class="opacity-100 translate-x-0"
+                            leave-active-class="transition duration-200 ease-in"
+                            leave-from-class="opacity-100 translate-x-0" leave-to-class="opacity-0 translate-x-4">
+                            <button v-if="!isMapView" @click="isMiniMap = !isMiniMap"
+                                class="group flex items-center gap-3 bg-zinc-100 dark:bg-zinc-800 p-1.5 pr-4 rounded-full transition-all duration-300 hover:ring-2 hover:ring-blue-500/20"
+                                :class="{ 'ring-2 ring-blue-500/30 bg-blue-50/50 dark:bg-blue-900/10': isMiniMap }">
+                                <div class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500"
+                                    :class="isMiniMap ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white dark:bg-zinc-700 text-zinc-400'">
+                                    <i class='bx bxs-map-pin' :class="{ 'animate-bounce': isMiniMap }"></i>
+                                </div>
+                                <span class="text-xs font-bold tracking-widest uppercase transition-colors"
+                                    :class="isMiniMap ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-400'">
+                                    {{ t('hotSpots.miniMap') }}
+                                </span>
+                            </button>
+                        </transition>
+
                         <!-- Create hot spot -->
-                        <el-button v-if="isAdmin" type="primary" @click="handleCreate">{{ t('common.create')
-                        }}</el-button>
+                        <button v-if="isAdmin" @click="handleCreate"
+                            class="h-11 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
+                            {{ t('common.create') }}
+                        </button>
                     </div>
                 </div>
 
@@ -149,21 +166,51 @@ useHead({
                     </div>
 
                     <div class="flex items-center gap-6 w-full sm:w-auto justify-end">
-                        <div class="flex items-center gap-3">
-                            <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest">{{
-                                t('hotSpots.viewOnMap') }}</span>
-                            <UToggle v-model="isMapView" />
+                        <!-- View mode switcher -->
+                        <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 p-1 rounded-2xl">
+                            <button @click="isMapView = false"
+                                class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all"
+                                :class="!isMapView ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">
+                                <i class='bx bxs-grid-alt'></i>
+                                {{ t('common.grid') || 'Lưới' }}
+                            </button>
+                            <button @click="isMapView = true"
+                                class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all"
+                                :class="isMapView ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">
+                                <i class='bx bxs-map'></i>
+                                {{ t('hotSpots.map') || 'Bản đồ' }}
+                            </button>
                         </div>
 
                         <div
-                            class="hidden sm:flex items-center gap-2 px-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-xs font-bold text-zinc-400 border border-zinc-100 dark:border-zinc-800">
+                            class="hidden lg:flex items-center gap-2 px-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-xs font-bold text-zinc-400 border border-zinc-100 dark:border-zinc-800">
                             <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            {{ isSupported ? 'Geolocation Active' : 'Location Fallback' }}
+                            {{ isSupported ? 'GPS' : 'OFF' }}
                         </div>
                     </div>
                 </div>
 
-                <!-- Grid Results -->
+                <!-- Mini Map Section -->
+                <transition enter-active-class="transition duration-500 ease-out"
+                    enter-from-class="transform scale-95 opacity-0 -translate-y-4"
+                    enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                    leave-active-class="transition duration-300 ease-in"
+                    leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                    leave-to-class="transform scale-95 opacity-0 -translate-y-4">
+                    <div v-if="isMiniMap" class="mt-12 h-64 md:h-80 relative group">
+                        <ClientOnly>
+                            <LeafletMap :spots="spots || []" :selected-spot-id="selectedSpotId"
+                                @select-spot="selectSpot"
+                                :center="filters.lat && filters.lng ? [filters.lat, filters.lng] : undefined" />
+                        </ClientOnly>
+                        <!-- Overlay gradient for depth -->
+                        <div
+                            class="absolute inset-0 pointer-events-none rounded-2xl ring-1 ring-inset ring-black/5 dark:ring-white/5 shadow-inner">
+                        </div>
+                    </div>
+                </transition>
+
+                <!-- Grid/Map Results -->
                 <div v-if="isLoading" class="mt-20 flex flex-col items-center justify-center py-20">
                     <div class="relative">
                         <div class="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 rounded-full"></div>
@@ -186,9 +233,32 @@ useHead({
                             t('common.reload') }}</el-button>
                 </div>
 
-                <div v-else class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" :is-locating="isLocating"
-                        @click="selectSpot(spot.id)" @edit="handleEdit" @delete="handleDelete" class="cursor-pointer" />
+                <!-- Main View Toggle -->
+                <div v-else class="mt-12">
+                    <transition name="fade-slide" mode="out-in">
+                        <div v-if="isMapView" key="map-view"
+                            class="h-[600px] rounded-[2.5rem] overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-sm relative group">
+                            <ClientOnly>
+                                <LeafletMap :spots="spots" :selected-spot-id="selectedSpotId" @select-spot="selectSpot"
+                                    :center="filters.lat && filters.lng ? [filters.lat, filters.lng] : undefined" />
+                            </ClientOnly>
+                            <!-- Decorative corner accent -->
+                            <div class="absolute top-6 left-6 z-[1000] pointer-events-none">
+                                <div
+                                    class="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-xl border border-white/20 dark:border-white/5 flex items-center gap-3">
+                                    <div class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></div>
+                                    <span
+                                        class="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Live
+                                        Exploration</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else key="grid-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                            <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" :is-locating="isLocating"
+                                @click="selectSpot(spot.id)" @edit="handleEdit" @delete="handleDelete"
+                                class="cursor-pointer" />
+                        </div>
+                    </transition>
                 </div>
 
                 <!-- Mini Footer / Social Section -->
@@ -230,5 +300,21 @@ useHead({
 .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+}
+
+/* Transitions */
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.fade-slide-enter-from {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-20px);
 }
 </style>

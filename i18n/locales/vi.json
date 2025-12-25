@@ -178,6 +178,7 @@
     "tryAgain": "Thử thay đổi bộ lọc hoặc tải lại trang",
     "reload": "Tải lại",
     "loadingData": "Đang tải dữ liệu",
+    "grid": "Lưới",
     "communityCorner": "Góc cộng đồng"
   },
   "booking": {
@@ -456,6 +457,7 @@
     "locating": "Đang định vị...",
     "discoverMost": "Khám phá những địa điểm được yêu thích nhất và lên kế hoạch cho hành trình của bạn ngay hôm nay.",
     "update": "Cập nhật",
-    "create": "Tạo"
+    "create": "Tạo",
+    "map": "Bản đồ"
   }
 }
