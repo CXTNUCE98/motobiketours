@@ -26,12 +26,19 @@ const isDetailOpen = ref(false);
 
 const { data: spots, isLoading, isFetching, refetch: refresh } = useHotSpotsQuery(filters);
 
-const { coords, isSupported } = useGeolocation();
+const { coords, isSupported, error: geoError } = useGeolocation();
 
-const isLocationLoading = ref(isSupported.value);
+const isLocationLoading = ref(true);
+const locationErrorMessage = ref('');
 
 watch(coords, (newCoords) => {
-    if (newCoords && newCoords.latitude !== Infinity && newCoords.latitude !== 0) {
+    console.log('newCoords', newCoords);
+
+    if (newCoords &&
+        newCoords.latitude !== Infinity &&
+        newCoords.latitude !== 0 &&
+        newCoords.latitude !== undefined) {
+
         const hasChanged = Math.abs((filters.value.lat || 0) - newCoords.latitude) > 0.0001 ||
             Math.abs((filters.value.lng || 0) - newCoords.longitude) > 0.0001;
 
@@ -44,20 +51,41 @@ watch(coords, (newCoords) => {
 }, { immediate: true, deep: true });
 
 const isLocating = computed(() => {
-    if (isLocationLoading.value) return true;
+    // Nếu có lỗi định vị thì không còn đang xác định vị trí nữa
+    if (geoError.value) return false;
 
-    const hasCoords = filters.value.lat !== undefined && filters.value.lng !== undefined;
-    return hasCoords && isFetching.value;
+    // Nếu chưa có tọa độ trong filters thì vẫn đang xác định vị trí
+    if (filters.value.lat === undefined || filters.value.lng === undefined) {
+        return isSupported.value && isLocationLoading.value;
+    }
+    // Nếu đã có tọa độ thì theo dõi trạng thái fetching của API
+    return isFetching.value;
 });
 
 onMounted(() => {
     if (!isSupported.value) {
         isLocationLoading.value = false;
+        locationErrorMessage.value = t('hotSpots.geoNotSupported');
         return;
     }
+
+    // Tăng timeout lên 15 giây vì định vị GPS có thể mất nhiều thời gian hơn
     setTimeout(() => {
+        if (filters.value.lat === undefined) {
+            isLocationLoading.value = false;
+            if (!geoError.value) {
+                locationErrorMessage.value = t('hotSpots.geoTimeout');
+            }
+        }
+    }, 15000);
+});
+
+// Watch geo errors
+watch(geoError, (err) => {
+    if (err) {
         isLocationLoading.value = false;
-    }, 5000);
+        locationErrorMessage.value = t('hotSpots.geoDenied');
+    }
 });
 
 const selectSpot = (id: string) => {
@@ -124,6 +152,11 @@ useHead({
                         <p class="mt-3 text-zinc-500 dark:text-zinc-400 font-medium max-w-lg">
                             {{ t('hotSpots.discoverMost') }}
                         </p>
+                        <div v-if="locationErrorMessage"
+                            class="mt-4 flex items-center gap-2 text-red-500 text-sm font-medium">
+                            <i class='bx bx-error-circle'></i>
+                            <span>{{ locationErrorMessage }}</span>
+                        </div>
                     </div>
 
                     <div class="flex items-center gap-4">

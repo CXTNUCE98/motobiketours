@@ -11,9 +11,7 @@
             "description": "Return hello message"
           }
         },
-        "tags": [
-          "app"
-        ]
+        "tags": ["app"]
       }
     },
     "/auth/register": {
@@ -46,9 +44,7 @@
             "description": "Email already exists"
           }
         },
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/auth/login": {
@@ -81,9 +77,7 @@
             "description": "Invalid credentials"
           }
         },
-        "tags": [
-          "auth"
-        ]
+        "tags": ["auth"]
       }
     },
     "/users": {
@@ -136,9 +130,7 @@
             }
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       },
       "post": {
         "operationId": "UsersController_create",
@@ -166,9 +158,7 @@
             }
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       }
     },
     "/users/{id}": {
@@ -200,9 +190,7 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       },
       "patch": {
         "operationId": "UsersController_update",
@@ -281,9 +269,7 @@
             "description": "User not found"
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       },
       "delete": {
         "operationId": "UsersController_remove",
@@ -303,9 +289,7 @@
             "description": "The user has been successfully deleted."
           }
         },
-        "tags": [
-          "users"
-        ]
+        "tags": ["users"]
       }
     },
     "/tours": {
@@ -366,11 +350,7 @@
             "in": "query",
             "description": "Duration range (1-3, 4-7, 8+)",
             "schema": {
-              "enum": [
-                "1-3",
-                "4-7",
-                "8+"
-              ],
+              "enum": ["1-3", "4-7", "8+"],
               "type": "string"
             }
           },
@@ -414,9 +394,7 @@
             "description": "Return all tours"
           }
         },
-        "tags": [
-          "tours"
-        ]
+        "tags": ["tours"]
       },
       "post": {
         "operationId": "ToursController_create",
@@ -438,9 +416,7 @@
             "description": "The tour has been successfully created."
           }
         },
-        "tags": [
-          "tours"
-        ]
+        "tags": ["tours"]
       }
     },
     "/tours/{id}": {
@@ -465,9 +441,7 @@
             "description": "Tour not found"
           }
         },
-        "tags": [
-          "tours"
-        ]
+        "tags": ["tours"]
       },
       "patch": {
         "operationId": "ToursController_update",
@@ -503,9 +477,7 @@
             "description": "The tour has been successfully updated."
           }
         },
-        "tags": [
-          "tours"
-        ]
+        "tags": ["tours"]
       },
       "delete": {
         "operationId": "ToursController_remove",
@@ -525,9 +497,7 @@
             "description": "The tour has been successfully deleted."
           }
         },
-        "tags": [
-          "tours"
-        ]
+        "tags": ["tours"]
       }
     },
     "/services": {
@@ -570,9 +540,7 @@
             "description": "Return all services"
           }
         },
-        "tags": [
-          "services"
-        ]
+        "tags": ["services"]
       }
     },
     "/services/{id}": {
@@ -597,9 +565,7 @@
             "description": "Service not found"
           }
         },
-        "tags": [
-          "services"
-        ]
+        "tags": ["services"]
       }
     },
     "/blog": {
@@ -628,9 +594,7 @@
             "description": "Blog with this name already exists"
           }
         },
-        "tags": [
-          "blog"
-        ]
+        "tags": ["blog"]
       },
       "get": {
         "operationId": "BlogController_findAll",
@@ -698,9 +662,7 @@
             "description": "Return all blog posts"
           }
         },
-        "tags": [
-          "blog"
-        ]
+        "tags": ["blog"]
       }
     },
     "/blog/upload-image": {
@@ -739,9 +701,7 @@
             "description": "No file uploaded or invalid file"
           }
         },
-        "tags": [
-          "blog"
-        ]
+        "tags": ["blog"]
       }
     },
     "/blog/{id}": {
@@ -766,9 +726,7 @@
             "description": "Blog post not found"
           }
         },
-        "tags": [
-          "blog"
-        ]
+        "tags": ["blog"]
       }
     },
     "/comments": {
@@ -797,9 +755,7 @@
             "description": "Parent comment not found"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
       },
       "get": {
         "operationId": "CommentsController_findAll",
@@ -851,9 +807,7 @@
             "description": "Return paginated comments"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
       }
     },
     "/comments/tree/{blogId}": {
@@ -894,9 +848,7 @@
             "description": "Return comments with nested replies"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
       }
     },
     "/comments/{id}": {
@@ -922,9 +874,7 @@
             "description": "Comment not found"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
       },
       "delete": {
         "operationId": "CommentsController_remove",
@@ -960,9 +910,7 @@
             "description": "Comment not found"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
       }
     },
     "/comments/{id}/like": {
@@ -998,9 +946,7 @@
             "description": "Comment not found"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
       }
     },
     "/comments/{id}/like-status/{userId}": {
@@ -1032,12 +978,171 @@
             "description": "Return like status"
           }
         },
-        "tags": [
-          "comments"
-        ]
+        "tags": ["comments"]
+      }
+    },
+    "/vehicles": {
+      "get": {
+        "operationId": "VehiclesController_findAll",
+        "summary": "Lấy danh sách tất cả xe",
+        "responses": {
+          "200": {
+            "description": "Return all vehicles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vehicle"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Vehicles"]
+      },
+      "post": {
+        "operationId": "VehiclesController_create",
+        "summary": "Tạo xe mới",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vehicle created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Vehicles"]
+      }
+    },
+    "/vehicles/{id}": {
+      "get": {
+        "operationId": "VehiclesController_findOne",
+        "summary": "Lấy thông tin chi tiết xe",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return vehicle by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Vehicles"]
+      },
+      "patch": {
+        "operationId": "VehiclesController_update",
+        "summary": "Cập nhật thông tin xe",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vehicle updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vehicle"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Vehicles"]
+      },
+      "delete": {
+        "operationId": "VehiclesController_remove",
+        "summary": "Xóa xe",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Vehicle removed" },
+          "200": { "description": "Vehicle removed" }
+        },
+        "tags": ["Vehicles"]
+      }
+    },
+
+    "/tours/estimate": {
+      "post": {
+        "operationId": "ToursController_estimate",
+        "summary": "Estimate tour price and route",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateTourDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Estimate result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstimateRouteResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["tours"]
       }
     }
   },
+
   "info": {
     "title": "Motobike Tours API",
     "description": "The Motobike Tours API description",
@@ -1092,14 +1197,7 @@
             "default": ""
           }
         },
-        "required": [
-          "userName",
-          "email",
-          "password",
-          "isAdmin",
-          "timezone",
-          "avatar"
-        ]
+        "required": ["userName", "email", "password", "isAdmin", "timezone", "avatar"]
       },
       "AuthResponseDto": {
         "type": "object",
@@ -1110,9 +1208,7 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDM2MDB9.signature"
           }
         },
-        "required": [
-          "access_token"
-        ]
+        "required": ["access_token"]
       },
       "LoginDto": {
         "type": "object",
@@ -1128,10 +1224,7 @@
             "description": "User password (min 6 chars)"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "User": {
         "type": "object",
@@ -1186,10 +1279,7 @@
             "description": "Thumbnail image file"
           },
           "images": {
-            "example": [
-              "https://res.cloudinary.com/.../img1.jpg",
-              "https://res.cloudinary.com/.../img2.jpg"
-            ],
+            "example": ["https://res.cloudinary.com/.../img1.jpg", "https://res.cloudinary.com/.../img2.jpg"],
             "description": "Array of image URLs (comma‑separated for SQLite)",
             "type": "array",
             "items": {
@@ -1223,11 +1313,7 @@
           },
           "duration_range": {
             "type": "string",
-            "enum": [
-              "1-3",
-              "4-7",
-              "8+"
-            ],
+            "enum": ["1-3", "4-7", "8+"],
             "example": "4-7",
             "description": "Duration range for filtering (1-3, 4-7, 8+)"
           },
@@ -1279,10 +1365,7 @@
             "description": "Thumbnail image file"
           },
           "images": {
-            "example": [
-              "https://res.cloudinary.com/.../img1.jpg",
-              "https://res.cloudinary.com/.../img2.jpg"
-            ],
+            "example": ["https://res.cloudinary.com/.../img1.jpg", "https://res.cloudinary.com/.../img2.jpg"],
             "description": "Array of image URLs (comma‑separated for SQLite)",
             "type": "array",
             "items": {
@@ -1316,11 +1399,7 @@
           },
           "duration_range": {
             "type": "string",
-            "enum": [
-              "1-3",
-              "4-7",
-              "8+"
-            ],
+            "enum": ["1-3", "4-7", "8+"],
             "example": "4-7",
             "description": "Duration range for filtering (1-3, 4-7, 8+)"
           },
@@ -1370,9 +1449,7 @@
             "example": "<p>Content here...</p><figure class=\"image\"><img src=\"image-BIZu3Aad\"></figure>"
           },
           "tags": {
-            "example": [
-              "2412421"
-            ],
+            "example": ["2412421"],
             "type": "array",
             "items": {
               "type": "string"
@@ -1388,11 +1465,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "waiting",
-              "published",
-              "draft"
-            ],
+            "enum": ["waiting", "published", "draft"],
             "example": "waiting"
           },
           "author": {
@@ -1433,11 +1506,7 @@
             "example": "https://res.cloudinary.com/..."
           }
         },
-        "required": [
-          "imageId",
-          "url",
-          "secureUrl"
-        ]
+        "required": ["imageId", "url", "secureUrl"]
       },
       "CreateCommentDto": {
         "type": "object",
@@ -1464,11 +1533,7 @@
             "description": "Parent comment ID for nested replies"
           }
         },
-        "required": [
-          "blogId",
-          "content",
-          "author"
-        ]
+        "required": ["blogId", "content", "author"]
       },
       "LikeCommentDto": {
         "type": "object",
@@ -1479,17 +1544,75 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "like",
-              "dislike"
-            ],
+            "enum": ["like", "dislike"],
             "example": "like"
           }
         },
-        "required": [
-          "userId",
-          "type"
-        ]
+        "required": ["userId", "type"]
+      },
+      "Vehicle": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "model": { "type": "string" },
+          "type": { "type": "string" },
+          "capacity": { "type": "number" },
+          "price_per_km": { "type": "number" },
+          "thumbnail": { "type": "string" },
+          "amenities": { "type": "array", "items": { "type": "string" } },
+          "is_available": { "type": "boolean" }
+        }
+      },
+      "CreateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "model": { "type": "string" },
+          "type": { "type": "string" },
+          "capacity": { "type": "number" },
+          "price_per_km": { "type": "number" },
+          "thumbnail": { "type": "string" },
+          "amenities": { "type": "array", "items": { "type": "string" } },
+          "is_available": { "type": "boolean" }
+        },
+        "required": ["model", "type", "capacity", "price_per_km"]
+      },
+      "UpdateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "model": { "type": "string" },
+          "type": { "type": "string" },
+          "capacity": { "type": "number" },
+          "price_per_km": { "type": "number" },
+          "thumbnail": { "type": "string" },
+          "amenities": { "type": "array", "items": { "type": "string" } },
+          "is_available": { "type": "boolean" }
+        }
+      },
+      "EstimateTourDto": {
+        "type": "object",
+        "properties": {
+          "hot_spot_ids": { "type": "array", "items": { "type": "string" } },
+          "vehicle_id": { "type": "string" },
+          "departure_name": { "type": "string" }
+        },
+        "required": ["hot_spot_ids", "vehicle_id"]
+      },
+      "EstimateRouteResponse": {
+        "type": "object",
+        "properties": {
+          "distance": { "type": "number" },
+          "duration": { "type": "number" },
+          "price_estimate_usd": { "type": "number" },
+          "geometry": { "type": "string" },
+          "vehicle": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "model": { "type": "string" },
+              "price_per_km": { "type": "number" }
+            }
+          }
+        }
       }
     }
   }

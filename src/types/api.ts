@@ -11,6 +11,14 @@ export interface User {
   avatar: string;
 }
 
+export interface TourItinerary {
+  id: string;
+  hot_spot: HotSpot;
+  order: number;
+  activity_description?: string;
+  duration_minutes?: number;
+}
+
 export interface Tour {
   id: string;
   title: string;
@@ -23,9 +31,12 @@ export interface Tour {
   duration_days: number;
   depart_from: string;
   routes: string;
-  type: string;
+  type: string[];
   is_featured: boolean;
   created_at: string;
+  itineraries?: TourItinerary[];
+  suggested_vehicle?: Vehicle;
+  suggested_vehicle_id?: string | null;
 }
 
 export interface TourCardItem {
@@ -196,6 +207,60 @@ export interface GetHotSpotsQuery {
   lat?: number;
   lng?: number;
   category?: string;
+}
+
+export interface Vehicle {
+  id: string;
+  model: string;
+  type: string;
+  image_url: string;
+  thumbnail: string;
+  capacity: number;
+  price_per_km: number;
+  amenities: string[];
+  is_available: boolean;
+  is_featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateVehicleDto {
+  model: string;
+  type: string;
+  capacity: number;
+  price_per_km: number;
+  thumbnail?: string;
+  amenities?: string[];
+  is_available?: boolean;
+}
+
+export interface UpdateVehicleDto {
+  model?: string;
+  type?: string;
+  capacity?: number;
+  price_per_km?: number;
+  thumbnail?: string;
+  amenities?: string[];
+  is_available?: boolean;
+}
+
+export interface EstimateRouteRequest {
+  hot_spot_ids: string[];
+  vehicle_id: string;
+  departure_name?: string;
+}
+
+export interface EstimateRouteResponse {
+  distance: number;
+  duration: number;
+  geometry: string;
+  vehicle: {
+    id: string;
+    model: string;
+    price_per_km: number;
+  };
+  price_estimate_usd: number;
+  currency: string;
 }
 
 // API Error Response

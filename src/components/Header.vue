@@ -8,6 +8,7 @@ import LoginPopup from '@/components/LoginPopup.vue'
 const route = useRoute()
 const router = useRouter()
 const { theme, toggleTheme } = useTheme()
+const localePath = useLocalePath()
 const { isAuthenticated, user, logout } = useAuth()
 const { locale, locales, t } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
@@ -53,8 +54,6 @@ const handleScroll = () => {
     }
 }
 
-const localePath = useLocalePath()
-
 // Menu items với i18n
 const menuItems = computed(() => [
     { name: t('nav.home'), path: localePath('/'), icon: '' },
@@ -64,6 +63,7 @@ const menuItems = computed(() => [
     { name: t('nav.news'), path: localePath('/news'), hasDropdown: true, icon: '' },
     { name: t('nav.blog'), path: localePath('/blog'), hasDropdown: true, icon: '' },
     { name: t('nav.hotSpots'), path: localePath('/hot-spots'), icon: '' },
+    { name: t('nav.customTour') || 'BUILD TOUR', path: localePath('/custom-tour'), icon: 'bx-car' },
     { name: t('nav.contact'), path: localePath('/contact'), icon: '' },
 ])
 
@@ -189,11 +189,11 @@ function formLogin() {
                                 <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
                                     <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
                                         user?.userName
-                                        }}</p>
+                                    }}</p>
                                     <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
                                 </div>
 
-                                <NuxtLink to="/profile"
+                                <NuxtLink :to="localePath('/profile')"
                                     class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                                     {{ t('auth.profile') }}
                                 </NuxtLink>

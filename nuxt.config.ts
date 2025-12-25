@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   apiParty: {
     endpoints: {
       motobikertoursApi: {
-        url: 'https://motobikertours-api.vercel.app', // process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
+        url: 'http://localhost:3001', // process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
         schema: resolve('./src/schemas/motobikertoursApi.json'),
       },
     },

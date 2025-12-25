@@ -60,17 +60,17 @@ const tourTypeOptions = computed(() => {
 
 const departFromOptions = computed(() => [
     { value: 'all', label: t('tour.all') },
-    { value: 'Sài Gòn', label: 'Sài Gòn' },
-    { value: 'Hà Nội', label: 'Hà Nội' },
-    { value: 'Đà Nẵng', label: 'Đà Nẵng' },
-    { value: 'Huế', label: 'Huế' },
-    { value: 'Hội An', label: 'Hội An' },
-    { value: 'Đà Lạt', label: 'Đà Lạt' },
-    { value: 'Nha Trang', label: 'Nha Trang' },
-    { value: 'Mũi Né', label: 'Mũi Né' },
-    { value: 'Hà Giang', label: 'Hà Giang' },
-    { value: 'Sapa', label: 'Sapa' },
-    { value: 'Phú Quốc', label: 'Phú Quốc' },
+    { value: 'Sài Gòn', label: t('tour.locations.sai_gon') },
+    { value: 'Hà Nội', label: t('tour.locations.ha_noi') },
+    { value: 'Đà Nẵng', label: t('tour.locations.da_nang') },
+    { value: 'Huế', label: t('tour.locations.hue') },
+    { value: 'Hội An', label: t('tour.locations.hoi_an') },
+    { value: 'Đà Lạt', label: t('tour.locations.da_lat') },
+    { value: 'Nha Trang', label: t('tour.locations.nha_trang') },
+    { value: 'Mũi Né', label: t('tour.locations.mui_ne') },
+    { value: 'Hà Giang', label: t('tour.locations.ha_giang') },
+    { value: 'Sapa', label: t('tour.locations.sapa') },
+    { value: 'Phú Quốc', label: t('tour.locations.phu_quoc') },
 ]);
 
 const activeFilterCount = computed(() => {

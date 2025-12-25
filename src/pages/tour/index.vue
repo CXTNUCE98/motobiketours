@@ -517,7 +517,7 @@ onMounted(() => {
                                                             </svg>
                                                             <span><strong>{{ t('tour.list.departure') }}:</strong> {{
                                                                 tour.depart_from
-                                                            }}</span>
+                                                                }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -538,7 +538,7 @@ onMounted(() => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>{{ t('tour.list.type')
-                                                                    }}:</strong> {{
+                                                            }}:</strong> {{
                                                                         tour.type }}</span>
                                                         </div>
                                                     </div>
@@ -604,12 +604,13 @@ onMounted(() => {
                                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Không tìm thấy tour nào</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">Hãy thử điều chỉnh bộ lọc hoặc tìm kiếm của bạn
+                        <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">{{ t('tour.list.emptyTitle')
+                            }}</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mb-6">{{ t('tour.list.emptyDesc') }}
                         </p>
                         <button @click="handleClearFilters"
                             class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
-                            Xóa bộ lọc
+                            {{ t('tour.list.clearFilters') }}
                         </button>
                     </div>
                 </div>
@@ -636,7 +637,7 @@ onMounted(() => {
                 <!-- Header -->
                 <div
                     class="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl z-10">
-                    <h3 class="text-xl font-black text-gray-900 dark:text-white">Bộ lọc</h3>
+                    <h3 class="text-xl font-black text-gray-900 dark:text-white">{{ t('tour.filter.title') }}</h3>
                     <button @click="showFilters = false"
                         class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
                         <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

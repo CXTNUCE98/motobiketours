@@ -1,9 +1,37 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch, nextTick, onBeforeUnmount } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check, Loading } from '@element-plus/icons-vue';
-import { type Tour } from '~/types/api';
-import { useCreateTourMutation, useUpdateTourMutation, useUploadImageMutation } from '~/composables/useToursMutation';
+import { ElMessage, ElMessageBox, type FormRules } from 'element-plus';
+import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check, Loading, Menu } from '@element-plus/icons-vue';
+import { type Tour, type HotSpot, type Vehicle } from '~/types/api';
+import { useCreateTourMutation, useUpdateTourMutation } from '~/composables/useToursMutation';
+import { useVehiclesQuery } from '~/composables/useVehiclesQuery';
+import { useHotSpotsQuery } from '~/composables/useHotSpotsQuery';
+import draggable from 'vuedraggable';
+
+interface ItineraryItem {
+    hot_spot_id: string;
+    activity_description: string;
+    duration_minutes: number;
+}
+
+interface TourForm {
+    title: string;
+    type: string[];
+    price_usd: number;
+    duration: string;
+    duration_range: string;
+    depart_from: string;
+    routes: string;
+    description: string;
+    content: string;
+    thumbnail: string;
+    images: string[];
+    is_featured: boolean;
+    suggested_vehicle_id: string | null;
+    itineraries: ItineraryItem[];
+}
+
+const { t } = useI18n();
 
 const props = defineProps<{
     visible: boolean;
@@ -66,20 +94,37 @@ const mapDurationRange: Record<string, string> = {
 } as const;
 
 // Form Data
-const formData = reactive<any>({
+const formData = reactive<TourForm>({
     title: '',
-    type: '',
+    type: [],
     price_usd: 0,
     duration: '',
-    duration_range: 0,
+    duration_range: '',
     depart_from: '',
     routes: '',
     description: '',
     content: '',
     thumbnail: '',
     images: [],
-    is_featured: false
+    is_featured: false,
+    suggested_vehicle_id: null,
+    itineraries: []
 });
+
+const { data: vehicles } = useVehiclesQuery();
+const { data: hotSpots } = useHotSpotsQuery(ref({}));
+
+const addItineraryItem = () => {
+    formData.itineraries.push({
+        hot_spot_id: '',
+        activity_description: '',
+        duration_minutes: 0
+    });
+};
+
+const removeItineraryItem = (index: number) => {
+    formData.itineraries.splice(index, 1);
+};
 
 // File Handling
 const thumbnailPreview = ref<string>('');
@@ -89,38 +134,38 @@ const galleryInput = ref<any>(null);
 const isUploading = ref(false);
 
 // Validation Rules
-const rules = {
+const rules: FormRules = {
     title: [
-        { required: true, message: 'Vui lòng nhập tên tour', trigger: 'blur' },
-        { min: 3, message: 'Tên tour phải có ít nhất 3 ký tự', trigger: 'blur' }
+        { required: true, message: t('tour.validation.titleRequired'), trigger: 'blur' },
+        { min: 3, message: t('tour.validation.titleMin'), trigger: 'blur' }
     ],
     type: [
-        { required: true, message: 'Vui lòng chọn loại tour', trigger: 'change' }
+        { required: true, message: t('tour.validation.typeRequired'), trigger: 'change' }
     ],
     price_usd: [
-        { required: true, message: 'Vui lòng nhập giá', trigger: 'blur' },
+        { required: true, message: t('tour.validation.priceRequired'), trigger: 'blur' },
         {
-            type: 'number',
+            type: 'number' as const,
             min: 1,
-            message: 'Giá phải lớn hơn 0',
+            message: t('tour.validation.priceMin'),
             trigger: 'blur'
         }
     ],
     duration: [
-        { required: true, message: 'Vui lòng nhập thời gian', trigger: 'blur' }
+        { required: true, message: t('tour.validation.durationRequired'), trigger: 'blur' }
     ],
     depart_from: [
-        { required: true, message: 'Vui lòng nhập điểm khởi hành', trigger: 'blur' }
+        { required: true, message: t('tour.validation.departFromRequired'), trigger: 'blur' }
     ],
     routes: [
-        { required: true, message: 'Vui lòng nhập lộ trình', trigger: 'blur' }
+        { required: true, message: t('tour.validation.routesRequired'), trigger: 'blur' }
     ],
     description: [
-        { required: true, message: 'Vui lòng nhập mô tả ngắn', trigger: 'blur' },
-        { min: 10, message: 'Mô tả phải có ít nhất 10 ký tự', trigger: 'blur' }
+        { required: true, message: t('tour.validation.descriptionRequired'), trigger: 'blur' },
+        { min: 10, message: t('tour.validation.descriptionMin'), trigger: 'blur' }
     ],
     content: [
-        { required: true, message: 'Vui lòng nhập nội dung chi tiết', trigger: 'blur' }
+        { required: true, message: t('tour.validation.contentRequired'), trigger: 'blur' }
     ]
 };
 
@@ -151,17 +196,19 @@ const resetForm = () => {
 
     Object.assign(formData, {
         title: '',
-        type: '',
+        type: [],
         price_usd: 0,
         duration: '',
-        duration_range: 0,
+        duration_range: '',
         depart_from: '',
         routes: '',
         description: '',
         content: '',
         thumbnail: '',
         images: [],
-        is_featured: false
+        is_featured: false,
+        suggested_vehicle_id: null,
+        itineraries: []
     });
     thumbnailPreview.value = '';
     galleryPreviews.value = [];
@@ -176,8 +223,20 @@ watch(() => props.tourData, (newVal) => {
         // Cleanup blob URLs before setting new data
         cleanupObjectURLs();
 
-        const { id, created_at, ...tourDataWithoutMeta } = newVal;
+        const { id, created_at, itineraries, suggested_vehicle, ...tourDataWithoutMeta } = newVal;
         Object.assign(formData, tourDataWithoutMeta);
+
+        // Map itineraries from response to form format
+        if (itineraries) {
+            formData.itineraries = itineraries.map(item => ({
+                hot_spot_id: item.hot_spot.id,
+                activity_description: item.activity_description || '',
+                duration_minutes: item.duration_minutes || 0
+            }));
+        } else {
+            formData.itineraries = [];
+        }
+
         thumbnailPreview.value = newVal.thumbnail;
         galleryPreviews.value = [...newVal.images];
     } else {
@@ -193,7 +252,7 @@ const handleThumbnailChange = async (event: Event) => {
     if (input.files && input.files[0]) {
         const file = input.files[0];
         if (file.size > 5 * 1024 * 1024) {
-            ElMessage.error('Ảnh không được quá 5MB');
+            ElMessage.error(t('tour.validation.imageSize'));
             return;
         }
 
@@ -202,9 +261,9 @@ const handleThumbnailChange = async (event: Event) => {
             const res = await uploadImageMutation(file);
             formData.thumbnail = res.url;
             thumbnailPreview.value = res.url;
-            ElMessage.success('Tải ảnh đại diện thành công');
+            ElMessage.success(t('tour.message.thumbnailSuccess'));
         } catch (error) {
-            ElMessage.error('Lỗi khi tải ảnh lên');
+            ElMessage.error(t('tour.message.uploadError'));
         } finally {
             isUploading.value = false;
         }
@@ -224,7 +283,7 @@ const handleGalleryChange = async (event: Event) => {
         const validFiles = newFiles.filter(file => file.size <= 5 * 1024 * 1024);
 
         if (validFiles?.length < newFiles?.length) {
-            ElMessage.warning('Một số ảnh bị bỏ qua do lớn hơn 5MB');
+            ElMessage.warning(t('tour.message.imageLimitWarning'));
         }
 
         try {
@@ -234,9 +293,9 @@ const handleGalleryChange = async (event: Event) => {
                 formData.images.push(res.url);
                 galleryPreviews.value.push(res.url);
             }
-            ElMessage.success(`Đã tải lên ${validFiles.length} ảnh`);
+            ElMessage.success(t('tour.message.gallerySuccess', { count: validFiles.length }));
         } catch (error) {
-            ElMessage.error('Lỗi khi tải ảnh lên');
+            ElMessage.error(t('tour.message.uploadError'));
         } finally {
             isUploading.value = false;
         }
@@ -284,9 +343,9 @@ const { mutate: updateTourMutation, isPending: isUpdating } = useUpdateTourMutat
 const isSubmitting = computed(() => isCreating.value || isUpdating.value || isUploading.value);
 
 const handleClose = () => {
-    ElMessageBox.confirm('Bạn có chắc chắn muốn hủy? Các thay đổi sẽ không được lưu.', 'Cảnh báo', {
-        confirmButtonText: 'Đồng ý',
-        cancelButtonText: 'Hủy',
+    ElMessageBox.confirm(t('tour.message.cancelConfirm'), t('common.warning'), {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
         type: 'warning'
     }).then(() => {
         dialogVisible.value = false;
@@ -299,7 +358,13 @@ const handleSubmit = async () => {
     const submitData = {
         ...formData,
         // Explicitly include images array (even if empty)
-        images: formData.images
+        images: formData.images,
+        // Ensure itineraries is formatted correctly
+        itineraries: formData.itineraries.map((item: any) => ({
+            hot_spot_id: item.hot_spot_id,
+            activity_description: item.activity_description,
+            duration_minutes: item.duration_minutes
+        }))
     };
     // Remove id and created_at if they exist in formData
     delete (submitData as any).id;
@@ -308,32 +373,32 @@ const handleSubmit = async () => {
     if (isEditMode.value && props.tourData?.id) {
         updateTourMutation({ id: props.tourData.id, data: submitData }, {
             onSuccess: () => {
-                ElMessage.success('Cập nhật tour thành công!');
+                ElMessage.success(t('tour.message.updateSuccess'));
                 emit('success');
                 dialogVisible.value = false;
                 resetForm();
             },
             onError: (error: any) => {
-                ElMessage.error(error.message || 'Có lỗi xảy ra khi cập nhật tour');
+                ElMessage.error(error.message || t('tour.message.updateError'));
             }
         });
     } else {
         createTourMutation(submitData, {
             onSuccess: () => {
-                ElMessage.success('Tạo tour thành công!');
+                ElMessage.success(t('tour.message.createSuccess'));
                 emit('success');
                 dialogVisible.value = false;
                 resetForm();
             },
             onError: (error: any) => {
-                ElMessage.error(error.message || 'Có lỗi xảy ra khi tạo tour');
+                ElMessage.error(error.message || t('tour.message.createError'));
             }
         });
     }
 };
 
 function handleUpdateDuration(value: string) {
-    formData.duration_range = mapDurationRange[value] || 0;
+    formData.duration_range = mapDurationRange[value] || '';
 }
 
 // Cleanup on component unmount
@@ -352,10 +417,11 @@ onBeforeUnmount(() => {
             <div
                 class="w-64 bg-gray-50 dark:bg-gray-800 border-r [&_.el-step\_\_title]:dark:text-white [&_.el-step\_\_description]:dark:text-white border-gray-200 dark:border-gray-700 p-6">
                 <el-steps direction="vertical" :active="currentStep" finish-status="success">
-                    <el-step title="Thông tin cơ bản" description="Tên, giá, thời gian" />
-                    <el-step title="Hình ảnh" description="Thumbnail & Gallery" />
-                    <el-step title="Nội dung chi tiết" description="Mô tả, lịch trình" />
-                    <el-step title="Xác nhận" description="Kiểm tra lại thông tin" />
+                    <el-step :title="t('tour.steps.basicInfo')" :description="t('tour.steps.basicInfoDesc')" />
+                    <el-step :title="t('tour.steps.images')" :description="t('tour.steps.imagesDesc')" />
+                    <el-step :title="t('tour.steps.itinerary')" :description="t('tour.steps.itineraryDesc')" />
+                    <el-step :title="t('tour.steps.details')" :description="t('tour.steps.detailsDesc')" />
+                    <el-step :title="t('tour.steps.confirm')" :description="t('tour.steps.confirmDesc')" />
                 </el-steps>
             </div>
 
@@ -366,61 +432,60 @@ onBeforeUnmount(() => {
                     <!-- Step 1: Basic Info -->
                     <div v-show="currentStep === 0" class="space-y-6 animate-fade-in">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <el-form-item label="Tên Tour" prop="title"
+                            <el-form-item :label="t('tour.form.title')" prop="title"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-input v-model="formData.title"
                                     class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
-                                    placeholder="Nhập tên tour hấp dẫn..." size="large" />
+                                    :placeholder="t('tour.form.titlePlaceholder')" size="large" />
                             </el-form-item>
 
-                            <el-form-item label="Loại Tour" prop="type"
+                            <el-form-item :label="t('tour.form.type')" prop="type"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
-                                <el-select v-model="formData.type" multiple placeholder="Chọn loại tour" size="large"
+                                <el-select v-model="formData.type" multiple
+                                    :placeholder="t('tour.form.typePlaceholder')" size="large"
                                     class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
-                                    <el-option label="Adventure" value="Adventure" />
-                                    <el-option label="Culture" value="Culture" />
-                                    <el-option label="Nature" value="Nature" />
-                                    <el-option label="Food" value="Food" />
+                                    <el-option v-for="(label, value) in t('tour.types' as any)" :key="value"
+                                        :label="label" :value="value" />
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item label="Giá (USD)" prop="price_usd"
+                            <el-form-item :label="t('tour.form.price')" prop="price_usd"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-input-number v-model="formData.price_usd" :min="0" :step="10" size="large"
                                     class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
                             </el-form-item>
 
-                            <el-form-item label="Thời gian" prop="duration"
+                            <el-form-item :label="t('tour.form.duration')" prop="duration"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
-                                <!-- <el-input v-model="formData.duration" placeholder="Ví dụ: 3 days 2 nights"
-                                    size="large" /> -->
-
-                                <el-select v-model="formData.duration" placeholder="Chọn thời gian" size="large"
+                                <el-select v-model="formData.duration" :placeholder="t('tour.form.durationPlaceholder')"
+                                    size="large"
                                     class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white"
                                     @change="handleUpdateDuration">
                                     <el-option v-for="option in durationOptions" :key="option.value"
-                                        :label="option.label" :value="option.value" />
+                                        :label="t('tour.durationOptions.' + option.value.replace(/\s/g, '') as any)"
+                                        :value="option.value" />
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item label="Điểm khởi hành" prop="depart_from"
+                            <el-form-item :label="t('tour.form.departFrom')" prop="depart_from"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-input v-model="formData.depart_from"
                                     class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
-                                    placeholder="Ví dụ: Ha Giang City" size="large" />
+                                    :placeholder="t('tour.form.departFromPlaceholder')" size="large" />
                             </el-form-item>
 
-                            <el-form-item label="Lộ trình" prop="routes"
+                            <el-form-item :label="t('tour.form.routes')" prop="routes"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-input v-model="formData.routes"
                                     class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
-                                    placeholder="Ví dụ: Ha Giang - Dong Van - Meo Vac" size="large" />
+                                    :placeholder="t('tour.form.routesPlaceholder')" size="large" />
                             </el-form-item>
                         </div>
 
-                        <el-form-item label="Tour nổi bật" class="[&_.el-form-item\_\_label]:dark:text-white">
+                        <el-form-item :label="t('tour.form.featured')"
+                            class="[&_.el-form-item\_\_label]:dark:text-white">
                             <el-switch v-model="formData.is_featured" class="[&_.el-switch\_\_core]:dark:bg-gray-800"
-                                active-text="Có" inactive-text="Không" />
+                                :active-text="t('common.yes')" :inactive-text="t('common.no')" />
                         </el-form-item>
                     </div>
 
@@ -429,7 +494,7 @@ onBeforeUnmount(() => {
                         <!-- Thumbnail Upload -->
                         <div
                             class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
-                            <h3 class="text-lg font-semibold mb-4 dark:text-white">Ảnh đại diện (Thumbnail)</h3>
+                            <h3 class="text-lg font-semibold mb-4 dark:text-white">{{ t('tour.form.thumbnail') }}</h3>
                             <div class="flex items-center gap-6 ">
                                 <div v-if="thumbnailPreview || isUploading"
                                     class="relative w-48 h-32 rounded-lg overflow-hidden shadow-md group bg-gray-100 dark:bg-gray-700">
@@ -448,12 +513,12 @@ onBeforeUnmount(() => {
                                 <div class="flex-1">
                                     <input type="file" ref="thumbnailInput" accept="image/*" class="hidden"
                                         @change="handleThumbnailChange" />
-                                    <el-button type="primary" :icon="Upload" @click="$refs.thumbnailInput.click()"
+                                    <el-button type="primary" :icon="Upload" @click="thumbnailInput?.click()"
                                         :loading="isUploading">
-                                        Chọn ảnh
+                                        {{ t('common.chooseImage') }}
                                     </el-button>
-                                    <p class="mt-2 text-sm text-gray-500 dark:text-white">Định dạng: JPG, PNG. Tối đa
-                                        5MB.</p>
+                                    <p class="mt-2 text-sm text-gray-500 dark:text-white">{{ t('tour.form.imageRule') }}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -461,7 +526,7 @@ onBeforeUnmount(() => {
                         <!-- Gallery Upload -->
                         <div
                             class="bg-gray-50 dark:bg-gray-800 p-6 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
-                            <h3 class="text-lg font-semibold mb-4 dark:text-white">Thư viện ảnh (Gallery)</h3>
+                            <h3 class="text-lg font-semibold mb-4 dark:text-white">{{ t('tour.form.gallery') }}</h3>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                                 <div v-for="(url, index) in galleryPreviews" :key="index"
                                     class="relative aspect-video rounded-lg overflow-hidden shadow-sm group">
@@ -478,28 +543,100 @@ onBeforeUnmount(() => {
                                     <el-icon class="is-loading text-2xl text-primary mb-2">
                                         <Loading />
                                     </el-icon>
-                                    <span class="text-xs text-gray-500 dark:text-gray-400">Đang tải ảnh...</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('common.uploading')
+                                        }}</span>
                                 </div>
                             </div>
                             <input type="file" ref="galleryInput" accept="image/*" multiple class="hidden"
                                 @change="handleGalleryChange" />
-                            <el-button type="primary" plain :icon="Picture" @click="$refs.galleryInput.click()"
+                            <el-button type="primary" plain :icon="Picture" @click="galleryInput?.click()"
                                 :loading="isUploading">
-                                Thêm ảnh vào thư viện
+                                {{ t('tour.form.addToGallery') }}
                             </el-button>
                         </div>
                     </div>
 
-                    <!-- Step 3: Content -->
+                    <!-- Step 3: Itinerary & Vehicle -->
                     <div v-show="currentStep === 2" class="space-y-6 animate-fade-in">
-                        <el-form-item label="Mô tả ngắn" prop="description">
-                            <el-input v-model="formData.description"
-                                class="[&_.el-textarea\_\_inner]:dark:bg-gray-800 [&_.el-textarea\_\_inner]:dark:text-white"
-                                type="textarea" :rows="3"
-                                placeholder="Mô tả ngắn gọn về tour để hiển thị trên thẻ..." />
+                        <h3 class="text-xl font-bold dark:text-white mb-4">{{ t('tour.form.suggestedVehicle') }}</h3>
+                        <el-form-item :label="t('tour.form.suggestedVehicle')"
+                            class="[&_.el-form-item\_\_label]:dark:text-white">
+                            <el-select v-model="formData.suggested_vehicle_id"
+                                :placeholder="t('tour.form.suggestedVehiclePlaceholder')" size="large"
+                                class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white"
+                                clearable>
+                                <el-option v-for="v in vehicles" :key="v.id" :label="`${v.model} (${v.capacity} seats)`"
+                                    :value="v.id" />
+                            </el-select>
                         </el-form-item>
 
-                        <el-form-item label="Nội dung chi tiết" prop="content">
+                        <div class="mt-8">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xl font-bold dark:text-white">{{ t('tour.form.itineraryTitle') }}</h3>
+                                <el-button type="primary" :icon="Check" circle @click="addItineraryItem" />
+                            </div>
+
+                            <div class="space-y-4">
+                                <draggable v-model="formData.itineraries" item-key="hot_spot_id" handle=".drag-handle">
+                                    <template #item="{ element, index }">
+                                        <div
+                                            class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 flex gap-4 items-start mb-4">
+                                            <div class="drag-handle cursor-move pt-2 text-gray-400">
+                                                <el-icon>
+                                                    <Menu />
+                                                </el-icon>
+                                            </div>
+
+                                            <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <el-form-item :label="t('tour.form.hotSpot')"
+                                                    class="mb-0 [&_.el-form-item\_\_label]:dark:text-white">
+                                                    <el-select v-model="element.hot_spot_id" filterable
+                                                        :placeholder="t('tour.form.hotSpot')" class="w-full">
+                                                        <el-option v-for="spot in hotSpots" :key="spot.id"
+                                                            :label="spot.name" :value="spot.id" />
+                                                    </el-select>
+                                                </el-form-item>
+
+                                                <el-form-item :label="t('tour.form.durationMinutes')"
+                                                    class="mb-0 [&_.el-form-item\_\_label]:dark:text-white">
+                                                    <el-input-number v-model="element.duration_minutes" :min="0"
+                                                        class="w-full" />
+                                                </el-form-item>
+
+                                                <el-form-item :label="t('tour.form.activity')"
+                                                    class="md:col-span-2 mb-0 [&_.el-form-item\_\_label]:dark:text-white">
+                                                    <el-input v-model="element.activity_description"
+                                                        :placeholder="t('tour.form.activityPlaceholder')" />
+                                                </el-form-item>
+                                            </div>
+
+                                            <el-button type="danger" :icon="Delete" circle plain class="mt-8"
+                                                @click="removeItineraryItem(index)" />
+                                        </div>
+                                    </template>
+                                </draggable>
+
+                                <div v-if="formData.itineraries.length === 0"
+                                    class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-3xl border border-dashed border-gray-300 dark:border-gray-700">
+                                    <p class="text-gray-500">{{ t('tour.form.noStops') }}</p>
+                                </div>
+
+                                <el-button v-else type="primary" plain class="w-full" @click="addItineraryItem">
+                                    + {{ t('tour.form.addStop') }}
+                                </el-button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Content -->
+                    <div v-show="currentStep === 3" class="space-y-6 animate-fade-in">
+                        <el-form-item :label="t('tour.form.description')" prop="description">
+                            <el-input v-model="formData.description"
+                                class="[&_.el-textarea\_\_inner]:dark:bg-gray-800 [&_.el-textarea\_\_inner]:dark:text-white"
+                                type="textarea" :rows="3" :placeholder="t('tour.form.descriptionPlaceholder')" />
+                        </el-form-item>
+
+                        <el-form-item :label="t('tour.form.content')" prop="content">
                             <div class="border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                                 <ClientOnly>
                                     <QuillEditor v-model:content="formData.content" contentType="html" theme="snow"
@@ -509,35 +646,64 @@ onBeforeUnmount(() => {
                         </el-form-item>
                     </div>
 
-                    <!-- Step 4: Confirmation -->
-                    <div v-show="currentStep === 3" class="space-y-6 animate-fade-in">
+                    <!-- Step 5: Confirmation -->
+                    <div v-show="currentStep === 4" class="space-y-6 animate-fade-in">
                         <div
                             class="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-xl border border-blue-100 dark:border-blue-800">
-                            <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">Xác nhận thông tin</h3>
+                            <h3 class="text-xl font-bold text-blue-800 dark:text-blue-300 mb-4">{{
+                                t('tour.steps.confirmTitle') }}</h3>
                             <div class="grid grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                                <div><span class="font-semibold">Tên Tour:</span> {{ formData.title }}</div>
-                                <div><span class="font-semibold">Giá:</span> {{ formatPrice(formData.price_usd) }}</div>
-                                <div><span class="font-semibold">Thời gian:</span> {{ formData.duration }}</div>
-                                <div><span class="font-semibold">Loại:</span> {{ formData.type }}</div>
-                                <div><span class="font-semibold">Khởi hành:</span> {{ formData.depart_from }}</div>
+                                <div><span class="font-semibold">{{ t('tour.form.title') }}:</span> {{ formData.title }}
+                                </div>
+                                <div><span class="font-semibold">{{ t('tour.form.priceLabel') }}</span> {{
+                                    formatPrice(formData.price_usd)
+                                    }}</div>
+                                <div><span class="font-semibold">{{ t('tour.form.duration') }}:</span> {{
+                                    formData.duration }}</div>
+                                <div><span class="font-semibold">{{ t('tour.form.type') }}:</span> {{ formData.type }}
+                                </div>
+                                <div><span class="font-semibold">{{ t('tour.form.departFromLabel') }}</span> {{
+                                    formData.depart_from }}
+                                </div>
+                                <div><span class="font-semibold">{{ t('tour.form.vehicleLabel') }}</span> {{
+                                    vehicles?.find((v: any) => v.id
+                                        === formData.suggested_vehicle_id)?.model || t('common.no')}}</div>
                                 <div class="col-span-2">
-                                    <span class="font-semibold block mb-2">Ảnh thumbnail:</span>
+                                    <span class="font-semibold block mb-2">{{ t('tour.form.itineraryLabel', {
+                                        count:
+                                            formData.itineraries.length
+                                    }) }}</span>
+                                    <div class="space-y-1 pl-4 border-l-2 border-primary/30">
+                                        <div v-for="(item, idx) in formData.itineraries" :key="idx" class="text-xs">
+                                            {{ Number(idx) + 1 }}. {{hotSpots?.find((s: any) => s.id ===
+                                                item.hot_spot_id)?.name}}
+                                            <span v-if="item.duration_minutes">({{ item.duration_minutes }} {{
+                                                t('hotSpots.minutes' as any)
+                                                || 'phút' }})</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-span-2">
+                                    <span class="font-semibold block mb-2">{{ t('tour.form.thumbnailLabel') }}</span>
                                     <div v-if="thumbnailPreview"
                                         class="w-40 h-24 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                                         <img :src="thumbnailPreview" class="w-full h-full object-cover" />
                                     </div>
-                                    <span v-else class="text-gray-400 italic">Chưa chọn ảnh</span>
+                                    <span v-else class="text-gray-400 italic">{{ t('tour.form.noThumbnail') }}</span>
                                 </div>
                                 <div class="col-span-2">
-                                    <span class="font-semibold block mb-2">Ảnh gallery ({{ galleryPreviews?.length }}
-                                        ảnh):</span>
+                                    <span class="font-semibold block mb-2">{{ t('tour.form.galleryLabel', {
+                                        count:
+                                            galleryPreviews?.length
+                                    }) }}</span>
                                     <div class="flex flex-wrap gap-3">
                                         <div v-for="(url, idx) in galleryPreviews" :key="idx"
                                             class="w-24 h-16 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
                                             <img :src="url" class="w-full h-full object-cover" />
                                         </div>
-                                        <span v-if="galleryPreviews?.length === 0" class="text-gray-400 italic">Chưa có
-                                            ảnh nào</span>
+                                        <span v-if="galleryPreviews.length === 0" class="text-gray-400 italic">{{
+                                            t('tour.form.noGallery')
+                                        }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -546,7 +712,7 @@ onBeforeUnmount(() => {
                         <!-- Upload Progress -->
                         <div v-if="isSubmitting" class="mt-6">
                             <div class="flex justify-between mb-2 text-sm font-medium">
-                                <span>Đang xử lý...</span>
+                                <span>{{ t('common.processing') }}</span>
                             </div>
                             <el-progress :percentage="100" status="success" :stroke-width="10" indeterminate striped
                                 striped-flow />
@@ -559,13 +725,13 @@ onBeforeUnmount(() => {
         <template #footer>
             <div
                 class="dialog-footer flex justify-between items-center px-6 py-4 border-t border-gray-100 dark:border-gray-800">
-                <el-button @click="handleClose">Hủy bỏ</el-button>
+                <el-button @click="handleClose">{{ t('common.cancelBtn') }}</el-button>
                 <div class="flex gap-3">
                     <el-button v-if="currentStep > 0" @click="prevStep" :icon="ArrowLeft">
-                        Quay lại
+                        {{ t('common.prevStep') }}
                     </el-button>
-                    <el-button v-if="currentStep < 3" type="primary" @click="nextStep" :icon="ArrowRight">
-                        Tiếp theo
+                    <el-button v-if="currentStep < 4" type="primary" @click="nextStep" :icon="ArrowRight">
+                        {{ t('common.nextStep') }}
                     </el-button>
                     <el-button v-else type="success" @click="handleSubmit" :loading="isSubmitting" :icon="Check"
                         size="large">

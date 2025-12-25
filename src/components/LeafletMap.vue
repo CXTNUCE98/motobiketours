@@ -9,6 +9,7 @@ const props = defineProps<{
     center?: [number, number];
     zoom?: number;
     selectedSpotId?: string | null;
+    routeGeometry?: string | null;
 }>();
 
 const emit = defineEmits(['select-spot']);
@@ -16,6 +17,7 @@ const emit = defineEmits(['select-spot']);
 const mapContainer = ref<HTMLElement | null>(null);
 let map: L.Map | null = null;
 let markers: L.Marker[] = [];
+let routeLine: L.Polyline | null = null;
 
 const initMap = () => {
     if (!mapContainer.value) return;
@@ -40,6 +42,35 @@ const initMap = () => {
     }).addTo(map);
 
     updateMarkers();
+    updateRoute();
+};
+
+const updateRoute = async () => {
+    if (!map) return;
+    if (routeLine) {
+        routeLine.remove();
+        routeLine = null;
+    }
+
+    if (props.routeGeometry) {
+        try {
+            // Polyline decoding (OSRM uses precision 5 by default)
+            const polyline = (await import('@mapbox/polyline')).default;
+            const coordinates = polyline.decode(props.routeGeometry);
+
+            routeLine = L.polyline(coordinates, {
+                color: '#3b82f6', // blue-500
+                weight: 5,
+                opacity: 0.7,
+                lineJoin: 'round'
+            }).addTo(map);
+
+            // Fit bounds if we have a route
+            map.fitBounds(routeLine.getBounds(), { padding: [50, 50] });
+        } catch (error) {
+            console.error('Failed to decode route geometry', error);
+        }
+    }
 };
 
 const updateMarkers = () => {
@@ -59,8 +90,8 @@ const updateMarkers = () => {
                     <div class="user-dot"></div>
                 </div>
             `,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
+            iconSize: [24, 24],
+            iconAnchor: [12, 12],
         });
         L.marker(props.center, { icon: userIcon, zIndexOffset: 1000 }).addTo(map!);
     }
@@ -73,16 +104,18 @@ const updateMarkers = () => {
                 className: 'custom-div-icon',
                 html: `
                     <div class="marker-container ${isSelected ? 'selected' : ''}">
-                        <div class="marker-pin shadow-lg">
-                            <i class='bx bxs-map-pin'></i>
-                        </div>
-                        <div class="marker-label shadow-xl transition-all duration-300">
+                        <div class="marker-label shadow-xl">
                             ${spot.name}
+                        </div>
+                        <div class="marker-pin-wrapper">
+                            <div class="marker-pin shadow-lg">
+                                <i class='bx bxs-map-pin'></i>
+                            </div>
                         </div>
                     </div>
                 `,
-                iconSize: [30, 42],
-                iconAnchor: [15, 42],
+                iconSize: [36, 48],
+                iconAnchor: [18, 48],
             });
 
             const marker = L.marker([spot.lat, spot.lng], { icon })
@@ -97,6 +130,7 @@ const updateMarkers = () => {
 };
 
 watch(() => props.spots, updateMarkers, { deep: true });
+watch(() => props.routeGeometry, updateRoute);
 watch(() => props.selectedSpotId, () => {
     updateMarkers();
     if (props.selectedSpotId) {
@@ -127,8 +161,29 @@ onUnmounted(() => {
     }
 });
 
+const fitToView = () => {
+    if (!map) return;
+
+    let bounds: L.LatLngBounds | null = null;
+
+    if (routeLine) {
+        bounds = routeLine.getBounds();
+    } else if (markers.length > 0) {
+        bounds = L.featureGroup(markers).getBounds();
+    }
+
+    if (bounds && bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
+    }
+};
+
 defineExpose({
-    invalidateSize: () => map?.invalidateSize()
+    invalidateSize: () => {
+        map?.invalidateSize();
+        // Cần một chút delay để Leaflet nhận diện kích thước mới trước khi fitBounds
+        setTimeout(fitToView, 100);
+    },
+    fitToView
 });
 </script>
 
@@ -148,64 +203,92 @@ defineExpose({
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end;
+    width: 36px;
+    height: 48px;
+}
+
+.marker-pin-wrapper {
     position: relative;
+    width: 30px;
+    height: 30px;
+    margin-bottom: 8px;
+    /* Space for the triangle tip */
+    animation: markerDrop 0.5s ease-out forwards;
 }
 
 .marker-pin {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #3b82f6;
-    /* blue-500 */
-    font-size: 20px;
     border: 2px solid #3b82f6;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+/* The triangle tip */
+.marker-pin::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #3b82f6;
+    z-index: 1;
 }
 
 .dark .marker-pin {
     background: #18181b;
-    /* zinc-900 */
     border-color: #60a5fa;
-    /* blue-400 */
     color: #60a5fa;
+}
+
+.dark .marker-pin::after {
+    border-top-color: #60a5fa;
+}
+
+.marker-pin i {
+    font-size: 18px;
 }
 
 .marker-container.selected .marker-pin {
     background: #3b82f6;
     color: white;
-    transform: scale(1.2);
-    z-index: 100;
-}
-
-.dark .marker-container.selected .marker-pin {
-    background: #3b82f6;
-    color: white;
+    transform: scale(1.1);
 }
 
 .marker-label {
     position: absolute;
     bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
     background: white;
-    padding: 4px 10px;
+    padding: 4px 12px;
     border-radius: 8px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     color: #18181b;
     white-space: nowrap;
     margin-bottom: 8px;
     opacity: 0;
-    transform: translateY(4px);
-    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid rgba(0, 0, 0, 0.05);
+    pointer-events: none;
+    z-index: 1000;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .dark .marker-label {
     background: #27272a;
-    /* zinc-800 */
     color: #f4f4f5;
     border-color: rgba(255, 255, 255, 0.05);
 }
@@ -213,13 +296,12 @@ defineExpose({
 .marker-container:hover .marker-label,
 .marker-container.selected .marker-label {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(-50%) translateY(0);
 }
 
 .marker-container.selected .marker-label {
     background: #3b82f6;
     color: white;
-    z-index: 101;
 }
 
 /* Animations */
@@ -235,9 +317,6 @@ defineExpose({
     }
 }
 
-.leaflet-marker-icon {
-    animation: markerDrop 0.5s ease-out forwards;
-}
 
 /* User position marker */
 .user-position-marker {

@@ -7,8 +7,10 @@
     "news": "NEWS",
     "blog": "BLOG",
     "contact": "CONTACT",
-    "hotSpots": "HOT SPOTS"
+    "hotSpots": "HOT SPOTS",
+    "customTour": "SMART CAR"
   },
+
   "about": {
     "title": "Travel Agency & Tour Booking",
     "introTitle": "About ANDAGO",
@@ -291,11 +293,14 @@
       "basicInfoDesc": "Name, price, duration",
       "images": "Images",
       "imagesDesc": "Thumbnail & Gallery",
-      "details": "Details",
-      "detailsDesc": "Description, itinerary",
+      "itinerary": "Route & Vehicle",
+      "itineraryDesc": "Stops, suggested vehicle",
+      "details": "Content",
+      "detailsDesc": "Detailed description",
       "confirm": "Confirm",
-      "confirmDesc": "Review information",
-      "confirmTitle": "Confirm Information"
+      "confirmDesc": "Review everything",
+      "confirmTitle": "Confirm Information",
+      "none": "None"
     },
     "form": {
       "title": "Tour Title",
@@ -320,9 +325,21 @@
       "priceLabel": "Price:",
       "departFromLabel": "Depart:",
       "thumbnailLabel": "Thumbnail:",
+      "noThumbnail": "No thumbnail selected",
       "noImage": "No image selected",
       "galleryLabel": "Gallery images ({count} images):",
-      "noGallery": "No gallery images"
+      "noGallery": "No gallery images",
+      "suggestedVehicle": "Suggested Vehicle",
+      "suggestedVehiclePlaceholder": "Select a vehicle for this tour",
+      "itineraryTitle": "Detailed Itinerary (Stops)",
+      "addStop": "Add Stop",
+      "noStops": "No stops added yet. Click + to add.",
+      "hotSpot": "Stop/Location",
+      "durationMinutes": "Duration (minutes)",
+      "activity": "Activity",
+      "activityPlaceholder": "Describe activity here...",
+      "vehicleLabel": "Vehicle:",
+      "itineraryLabel": "Itinerary ({count} stops):"
     },
     "validation": {
       "titleRequired": "Title is required",
@@ -382,6 +399,19 @@
       "deleteMessage": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
       "deleteButton": "Delete",
       "cancelButton": "Cancel"
+    },
+    "locations": {
+      "sai_gon": "Ho Chi Minh City",
+      "ha_noi": "Ha Noi",
+      "da_nang": "Da Nang",
+      "hue": "Hue",
+      "hoi_an": "Hoi An",
+      "da_lat": "Da Lat",
+      "nha_trang": "Nha Trang",
+      "mui_ne": "Mui Ne",
+      "ha_giang": "Ha Giang",
+      "sapa": "Sapa",
+      "phu_quoc": "Phu Quoc"
     }
   },
   "footer": {
@@ -464,6 +494,51 @@
     "discoverMost": "Discover the most popular destinations and plan your trip today.",
     "update": "Update",
     "create": "Create",
-    "map": "Map"
+    "map": "Map",
+    "addToTrip": "Add to trip",
+    "added": "Added",
+    "locating": "Locating...",
+    "geoDenied": "Please allow location access to see distances",
+    "geoTimeout": "Location timed out. Please try again later",
+    "geoNotSupported": "Your browser doesn't support geolocation"
+  },
+  "customTour": {
+    "title": "Smart Car Tour Builder",
+    "subtitle": "Design your personal journey with our premium vehicle fleet",
+    "tabs": {
+      "spots": "1. Choose Stops",
+      "vehicle": "2. Select Vehicle",
+      "map": "3. View Route"
+    },
+    "myItinerary": "My Itinerary",
+    "stops": "Stops",
+    "emptyItinerary": "Your journey is empty. Start adding some hot spots!",
+    "summary": "Trip Summary",
+    "totalDistance": "Total Distance",
+    "travelTime": "Total Travel Time",
+    "vehicle": "Selected Vehicle",
+    "estimatedPrice": "Estimated Price",
+    "bookNow": "Book This Tour Now",
+    "selectVehicle": "Choose Your Ride"
+  },
+  "vehicles": {
+    "title": "Vehicle Management",
+    "create": "Add New Vehicle",
+    "edit": "Edit Vehicle",
+    "delete": "Delete Vehicle",
+    "model": "Model Name",
+    "type": "Vehicle Type",
+    "capacity": "Capacity",
+    "price_per_km": "Price per km",
+    "amenities": "Amenities",
+    "isAvailable": "Is Available",
+    "available": "Available",
+    "unavailable": "Unavailable",
+    "addAmenity": "Add Amenity",
+    "noVehicles": "No vehicles registered yet",
+    "deleteConfirm": "Are you sure you want to delete this vehicle?",
+    "createSuccess": "Vehicle created successfully!",
+    "updateSuccess": "Vehicle updated successfully!",
+    "deleteSuccess": "Vehicle deleted successfully!"
   }
 }

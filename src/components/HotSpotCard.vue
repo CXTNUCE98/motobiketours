@@ -5,7 +5,16 @@ import { useAuth } from '~/composables/useAuth';
 defineProps<{
     spot: HotSpot;
     isLocating?: boolean;
+    isInTrip?: boolean;
 }>();
+
+defineEmits<{
+    (e: 'edit', spot: HotSpot): void;
+    (e: 'delete', id: string): void;
+    (e: 'addToTrip', spot: HotSpot): void;
+    (e: 'removeFromTrip', id: string): void;
+}>();
+
 
 const { t } = useI18n();
 const { user } = useAuth();
@@ -85,13 +94,21 @@ const isAdmin = computed(() => user.value?.isAdmin);
                     </template>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button class="text-zinc-400 hover:text-red-500 transition-colors transform active:scale-90">
-                        <i class='bx bx-heart text-xl'></i>
+                    <button v-if="!isInTrip" @click.stop="$emit('addToTrip', spot)"
+                        class="flex items-center gap-1 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-full text-xs font-bold transition-all transform active:scale-95 shadow-sm">
+                        <i class='bx bx-plus'></i>
+                        <span>{{ t('hotSpots.addToTrip') }}</span>
+                    </button>
+                    <button v-else @click.stop="$emit('removeFromTrip', spot.id)"
+                        class="flex items-center gap-1 px-3 py-1.5 bg-zinc-100 text-zinc-400 hover:bg-red-50 text-red-600 hover:text-red-600 rounded-full text-xs font-bold transition-all transform active:scale-95">
+                        <i class='bx bx-check'></i>
+                        <span>{{ t('hotSpots.added') }}</span>
                     </button>
                     <button class="text-zinc-400 hover:text-blue-500 transition-colors transform active:scale-90">
                         <i class='bx bx-map text-xl'></i>
                     </button>
                 </div>
+
             </div>
         </div>
     </div>

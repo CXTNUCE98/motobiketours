@@ -7,8 +7,10 @@
     "news": "TIN TỨC",
     "blog": "BLOG",
     "contact": "LIÊN HỆ",
-    "hotSpots": "ĐỊA ĐIỂM HOT"
+    "hotSpots": "ĐỊA ĐIỂM HOT",
+    "customTour": "TỰ CHỌN XE"
   },
+
   "about": {
     "title": "Đại Lý Du Lịch & Đặt Tour",
     "introTitle": "Giới thiệu về ANDAGO",
@@ -291,11 +293,14 @@
       "basicInfoDesc": "Tên, giá, thời gian",
       "images": "Hình ảnh",
       "imagesDesc": "Thumbnail & Gallery",
-      "details": "Nội dung chi tiết",
-      "detailsDesc": "Mô tả, lịch trình",
+      "itinerary": "Lộ trình & Xe",
+      "itineraryDesc": "Điểm dừng, phương tiện",
+      "details": "Nội dung",
+      "detailsDesc": "Mô tả chi tiết",
       "confirm": "Xác nhận",
-      "confirmDesc": "Kiểm tra lại thông tin",
-      "confirmTitle": "Xác nhận thông tin"
+      "confirmDesc": "Kiểm tra lại",
+      "confirmTitle": "Xác nhận thông tin",
+      "none": "Không có"
     },
     "form": {
       "title": "Tên Tour",
@@ -319,10 +324,22 @@
       "content": "Nội dung chi tiết",
       "priceLabel": "Giá:",
       "departFromLabel": "Khởi hành:",
-      "thumbnailLabel": "Ảnh thumbnail:",
+      "thumbnailLabel": "Ảnh đại diện:",
+      "noThumbnail": "Chưa chọn ảnh đại diện",
       "noImage": "Chưa chọn ảnh",
       "galleryLabel": "Ảnh gallery ({count} ảnh):",
-      "noGallery": "Chưa có ảnh nào"
+      "noGallery": "Chưa có ảnh nào",
+      "suggestedVehicle": "Phương tiện gợi ý",
+      "suggestedVehiclePlaceholder": "Chọn xe phù hợp với tour này",
+      "itineraryTitle": "Lịch trình chi tiết (Điểm dừng)",
+      "addStop": "Thêm điểm dừng",
+      "noStops": "Chưa có điểm dừng nào. Nhấn nút + để thêm.",
+      "hotSpot": "Địa điểm",
+      "durationMinutes": "Thời gian dừng (phút)",
+      "activity": "Hoạt động",
+      "activityPlaceholder": "Mô tả hoạt động tại đây...",
+      "vehicleLabel": "Phương tiện:",
+      "itineraryLabel": "Lộ trình ({count} điểm):"
     },
     "validation": {
       "titleRequired": "Vui lòng nhập tên tour",
@@ -382,6 +399,19 @@
       "deleteMessage": "Bạn có chắc chắn muốn xóa \"{title}\"? Hành động này không thể hoàn tác.",
       "deleteButton": "Xóa",
       "cancelButton": "Hủy"
+    },
+    "locations": {
+      "sai_gon": "Sài Gòn",
+      "ha_noi": "Hà Nội",
+      "da_nang": "Đà Nẵng",
+      "hue": "Huế",
+      "hoi_an": "Hội An",
+      "da_lat": "Đà Lạt",
+      "nha_trang": "Nha Trang",
+      "mui_ne": "Mũi Né",
+      "ha_giang": "Hà Giang",
+      "sapa": "Sapa",
+      "phu_quoc": "Phú Quốc"
     }
   },
   "footer": {
@@ -465,6 +495,50 @@
     "discoverMost": "Khám phá những địa điểm được yêu thích nhất và lên kế hoạch cho hành trình của bạn ngay hôm nay.",
     "update": "Cập nhật",
     "create": "Tạo",
-    "map": "Bản đồ"
+    "map": "Bản đồ",
+    "addToTrip": "Thêm vào chuyến đi",
+    "added": "Đã thêm",
+    "geoDenied": "Vui lòng cho phép truy cập vị trí để xem khoảng cách",
+    "geoTimeout": "Không thể xác định vị trí. Vui lòng thử lại sau",
+    "geoNotSupported": "Trình duyệt của bạn không hỗ trợ định vị"
+  },
+  "customTour": {
+    "title": "Tự Xây Dựng Lịch Trình Ô Tô",
+    "subtitle": "Thiết kế hành trình cá nhân của bạn với đội xe cao cấp của chúng tôi",
+    "tabs": {
+      "spots": "1. Chọn điểm dừng",
+      "vehicle": "2. Chọn loại xe",
+      "map": "3. Xem lộ trình"
+    },
+    "myItinerary": "Hành trình của tôi",
+    "stops": "điểm dừng",
+    "emptyItinerary": "Hành trình của bạn còn trống. Hãy bắt đầu thêm các địa điểm hot!",
+    "summary": "Tóm tắt chuyến đi",
+    "totalDistance": "Tổng quãng đường",
+    "travelTime": "Thời gian di chuyển",
+    "vehicle": "Loại xe đã chọn",
+    "estimatedPrice": "Giá dự kiến",
+    "bookNow": "Đặt tour ngay bây giờ",
+    "selectVehicle": "Chọn xế cưng của bạn"
+  },
+  "vehicles": {
+    "title": "Quản lý xe",
+    "create": "Thêm xe mới",
+    "edit": "Chỉnh sửa xe",
+    "delete": "Xóa xe",
+    "model": "Tên dòng xe",
+    "type": "Loại xe",
+    "capacity": "Sức chứa",
+    "price_per_km": "Giá mỗi km",
+    "amenities": "Tiện nghi",
+    "isAvailable": "Sẵn sàng",
+    "available": "Có sẵn",
+    "unavailable": "Đang bận",
+    "addAmenity": "Thêm tiện nghi",
+    "noVehicles": "Chưa có xe nào được đăng ký",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa xe này không?",
+    "createSuccess": "Thêm xe thành công!",
+    "updateSuccess": "Cập nhật xe thành công!",
+    "deleteSuccess": "Xóa xe thành công!"
   }
 }
