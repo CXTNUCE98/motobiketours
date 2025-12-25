@@ -87,7 +87,7 @@ const handleDelete = async (vehicle: Vehicle) => {
                     : 'border-zinc-100 dark:border-zinc-800 hover:border-blue-300 bg-white dark:bg-zinc-900'">
 
                 <div class="flex gap-4">
-                    <div class="w-24 h-24 rounded-xl overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-zinc-800">
+                    <div class="w-auto h-24 rounded-xl overflow-hidden flex-shrink-0 bg-zinc-100 dark:bg-zinc-800">
                         <img :src="vehicle.thumbnail || '/placeholder-car.jpg'" :alt="vehicle.model"
                             class="w-full h-full object-cover" />
                     </div>

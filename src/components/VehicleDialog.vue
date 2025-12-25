@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch } from 'vue';
-import { ElMessage } from 'element-plus';
 import { Plus, Delete, Upload } from '@element-plus/icons-vue';
-import type { FormInstance, FormRules } from 'element-plus';
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus';
 import type { Vehicle, CreateVehicleDto } from '~/types/api';
-import { useCreateVehicleMutation, useUpdateVehicleMutation } from '~/composables/useVehiclesMutation';
-import { useUploadImageMutation } from '~/composables/useBlogMutation';
+
+import { Cropper } from 'vue-advanced-cropper';
+import 'vue-advanced-cropper/dist/style.css';
 
 const props = defineProps<{
     modelValue: boolean;
@@ -109,20 +108,59 @@ const commonAmenities = [
 
 const isUploading = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
-const handleThumbnailUpload = async (event: Event) => {
+
+// Cropper State
+const showCropper = ref(false);
+const cropperImage = ref<string | null>(null);
+const cropperRef = ref<any>(null);
+const selectedFile = ref<File | null>(null);
+
+const handleThumbnailUpload = (event: Event) => {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
 
-    isUploading.value = true;
-    try {
-        const res = await uploadImage(input.files[0]);
-        formData.thumbnail = res.url;
-        ElMessage.success('Thumbnail uploaded successfully');
-    } catch (error) {
-        ElMessage.error('Upload failed');
-    } finally {
-        isUploading.value = false;
-        input.value = '';
+    const file = input.files[0];
+    selectedFile.value = file;
+
+    // Create preview for cropper
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        cropperImage.value = e.target?.result as string;
+        showCropper.value = true;
+    };
+    reader.readAsDataURL(file);
+
+    // Reset input so same file can be selected again
+    input.value = '';
+};
+
+const onCrop = async () => {
+    if (!cropperRef.value) return;
+
+    const { canvas } = cropperRef.value.getResult();
+    if (canvas) {
+        canvas.toBlob(async (blob: Blob) => {
+            if (blob) {
+                isUploading.value = true;
+                try {
+                    // Create a new file from the blob
+                    const file = new File([blob], selectedFile.value?.name || 'image.jpg', {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+
+                    const res = await uploadImage(file);
+                    formData.thumbnail = res.url;
+                    ElMessage.success('Thumbnail uploaded successfully');
+                    showCropper.value = false;
+                } catch (error) {
+                    console.error(error);
+                    ElMessage.error('Upload failed');
+                } finally {
+                    isUploading.value = false;
+                }
+            }
+        }, 'image/jpeg', 0.8); // 0.8 quality
     }
 };
 
@@ -155,30 +193,35 @@ const handleClose = () => {
 
 <template>
     <el-dialog v-model="dialogVisible" :title="isEditMode ? t('vehicles.edit') : t('vehicles.create')" width="500px"
-        class="rounded-2xl dark:bg-zinc-900 shadow-2xl" :before-close="handleClose">
+        class="rounded-2xl dark:bg-zinc-900 shadow-2xl [&_.el-dialog\_\_title]:dark:text-white"
+        :before-close="handleClose">
         <el-form ref="formRef" :model="formData" :rules="rules" label-position="top" class="mt-4">
             <el-form-item :label="t('vehicles.model')" prop="model">
-                <el-input v-model="formData.model" :placeholder="t('vehicles.model')" />
+                <el-input class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                    v-model="formData.model" :placeholder="t('vehicles.model')" />
             </el-form-item>
 
             <div class="grid grid-cols-2 gap-4">
                 <el-form-item :label="t('vehicles.type')" prop="type">
-                    <el-select v-model="formData.type" class="w-full">
+                    <el-select v-model="formData.type"
+                        class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
                         <el-option v-for="vType in vehicleTypes" :key="vType" :label="vType" :value="vType" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="t('vehicles.capacity')" prop="capacity">
-                    <el-input-number v-model="formData.capacity" :min="1" class="w-full" />
+                    <el-input-number v-model="formData.capacity" :min="1"
+                        class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
                 </el-form-item>
             </div>
 
             <el-form-item :label="t('vehicles.price_per_km')" prop="price_per_km">
-                <el-input-number v-model="formData.price_per_km" :precision="2" :step="0.1" :min="0" class="w-full" />
+                <el-input-number v-model="formData.price_per_km" :precision="2" :step="0.1" :min="0"
+                    class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
             </el-form-item>
 
             <el-form-item :label="t('common.images')" prop="thumbnail">
                 <div class="flex items-center gap-4">
-                    <div v-if="formData.thumbnail" class="relative group w-24 h-24 rounded-lg overflow-hidden border">
+                    <div v-if="formData.thumbnail" class="relative group w-auto h-24 rounded-lg overflow-hidden border">
                         <img :src="formData.thumbnail" class="w-full h-full object-cover" />
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity"
                             @click="formData.thumbnail = ''">
@@ -204,7 +247,8 @@ const handleClose = () => {
 
             <el-form-item :label="t('vehicles.amenities')">
                 <el-select v-model="formData.amenities" multiple filterable allow-create default-first-option
-                    :placeholder="t('vehicles.addAmenity')" class="w-full">
+                    :placeholder="t('vehicles.addAmenity')"
+                    class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
                     <el-option v-for="item in commonAmenities" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
@@ -223,6 +267,23 @@ const handleClose = () => {
                 <el-button type="primary" :loading="isCreating || isUpdating" @click="handleSubmit(formRef)">
                     {{ isEditMode ? t('common.update') : t('common.create') }}
                 </el-button>
+            </div>
+        </template>
+    </el-dialog>
+
+    <!-- Image Cropper Modal -->
+    <el-dialog v-model="showCropper" title="Crop Image" width="600px" append-to-body :close-on-click-modal="false"
+        destroy-on-close>
+        <div
+            class="h-96 w-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden rounded-lg">
+            <cropper ref="cropperRef" class="h-full w-full" :src="cropperImage" :stencil-props="{
+                aspectRatio: 16 / 9
+            }" />
+        </div>
+        <template #footer>
+            <div class="flex justify-end gap-3">
+                <el-button @click="showCropper = false">{{ t('common.cancel') }}</el-button>
+                <el-button type="primary" :loading="isUploading" @click="onCrop">{{ t('common.confirm') }}</el-button>
             </div>
         </template>
     </el-dialog>

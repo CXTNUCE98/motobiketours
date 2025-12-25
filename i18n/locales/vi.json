@@ -10,7 +10,6 @@
     "hotSpots": "ĐỊA ĐIỂM HOT",
     "customTour": "TỰ CHỌN XE"
   },
-
   "about": {
     "title": "Đại Lý Du Lịch & Đặt Tour",
     "introTitle": "Giới thiệu về ANDAGO",
@@ -188,7 +187,8 @@
     "maintainClean": "Vui lòng giữ gìn vệ sinh chung tại điểm tham quan.",
     "adhereRegulations": "Tuân thủ các quy định về trang phục nếu là điểm tâm linh.",
     "touchExhibits": "Không tự ý chạm vào hiện vật trưng bày (nếu có).",
-    "directions": "Chỉ đường"
+    "directions": "Chỉ đường",
+    "none": "Không"
   },
   "booking": {
     "bookNow": "Đặt bây giờ"
@@ -500,7 +500,9 @@
     "added": "Đã thêm",
     "geoDenied": "Vui lòng cho phép truy cập vị trí để xem khoảng cách",
     "geoTimeout": "Không thể xác định vị trí. Vui lòng thử lại sau",
-    "geoNotSupported": "Trình duyệt của bạn không hỗ trợ định vị"
+    "geoNotSupported": "Trình duyệt của bạn không hỗ trợ định vị",
+    "changeVehicle": "Thay đổi xe",
+    "selectVehicle": "Chọn xe"
   },
   "customTour": {
     "title": "Tự Xây Dựng Lịch Trình Ô Tô",

@@ -4,8 +4,7 @@ import { useAuth } from '~/composables/useAuth';
 
 const { t } = useI18n();
 const { user } = useAuth();
-// const isAdmin = computed(() => user.value?.isAdmin);
-const isAdmin = computed(() => true);
+const isAdmin = computed(() => user.value?.isAdmin);
 
 const filters = ref<GetHotSpotsQuery>({
     category: '',
@@ -101,6 +100,7 @@ watch(isMapView, (val) => {
 });
 
 const isCreateDialogOpen = ref(false);
+const isCustomTourOpen = ref(false);
 const editingSpot = ref<HotSpot | null>(null);
 
 const { mutateAsync: deleteHotSpot } = useDeleteHotSpot();
@@ -179,9 +179,16 @@ useHead({
                             </button>
                         </transition>
 
-                        <!-- Create hot spot -->
+                        <!-- Custom Tour Builder Button -->
+                        <button @click="isCustomTourOpen = true"
+                            class="h-11 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-full hover:shadow-lg hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
+                            <i class='bx bxs-car'></i>
+                            {{ t('customTour.title') }}
+                        </button>
+
+                        <!-- Create hot spot (Admin only) -->
                         <button v-if="isAdmin" @click="handleCreate"
-                            class="h-11 px-6 bg-zinc-900 dark:bg-blue-500 text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
+                            class="h-11 px-6 bg-zinc-900 dark:bg-zinc-800 text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
                             {{ t('common.create') }}
                         </button>
                     </div>
@@ -262,7 +269,7 @@ useHead({
                     <i class='bx bxs-map-pin text-6xl text-zinc-300 dark:text-zinc-700'></i>
                     <h3 class="mt-4 text-xl font-bold text-zinc-400">{{ t('common.noLocationsFound') }}</h3>
                     <p class="text-sm text-zinc-500 mt-1">{{ t('common.tryAgain') }}</p>
-                    <el-button @click="refresh"
+                    <el-button @click="() => refresh()"
                         class="mt-6 px-6 py-2 bg-zinc-900 dark:bg-white dark:text-black text-white rounded-full font-bold">{{
                             t('common.reload') }}</el-button>
                 </div>
@@ -323,6 +330,12 @@ useHead({
 
         <!-- Create/Edit Dialog -->
         <CreateHotSpotDialog v-model="isCreateDialogOpen" :spot-data="editingSpot" @success="refresh" />
+
+        <!-- Custom Tour Builder Dialog -->
+        <el-dialog v-model="isCustomTourOpen" width="1200" align-center destroy-on-close :show-close="true"
+            :lock-scroll="true" class="custom-tour-dialog dark:bg-zinc-900">
+            <CustomTourBuilder />
+        </el-dialog>
     </div>
 </template>
 

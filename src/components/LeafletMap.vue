@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
 import type { HotSpot } from '~/types/api';
+
+// Leaflet instance (loaded dynamically)
+let L: any = null;
 
 const props = defineProps<{
     spots: HotSpot[];
@@ -15,12 +16,12 @@ const props = defineProps<{
 const emit = defineEmits(['select-spot']);
 
 const mapContainer = ref<HTMLElement | null>(null);
-let map: L.Map | null = null;
-let markers: L.Marker[] = [];
-let routeLine: L.Polyline | null = null;
+let map: any = null;
+let markers: any[] = [];
+let routeLine: any = null;
 
 const initMap = () => {
-    if (!mapContainer.value) return;
+    if (!mapContainer.value || !L) return;
 
     // Use a premium looking tile layer (e.g. CartoDB Positron or Voyager)
     const defaultCenter: [number, number] = props.center || [16.047, 108.206]; // Default to Da Nang
@@ -46,7 +47,7 @@ const initMap = () => {
 };
 
 const updateRoute = async () => {
-    if (!map) return;
+    if (!map || !L) return;
     if (routeLine) {
         routeLine.remove();
         routeLine = null;
@@ -74,7 +75,7 @@ const updateRoute = async () => {
 };
 
 const updateMarkers = () => {
-    if (!map) return;
+    if (!map || !L) return;
 
     // Clear existing markers
     markers.forEach(m => m.remove());
@@ -133,7 +134,7 @@ watch(() => props.spots, updateMarkers, { deep: true });
 watch(() => props.routeGeometry, updateRoute);
 watch(() => props.selectedSpotId, () => {
     updateMarkers();
-    if (props.selectedSpotId) {
+    if (props.selectedSpotId && L) {
         const spot = props.spots.find(s => s.id === props.selectedSpotId);
         if (spot && spot.lat && spot.lng) {
             map?.flyTo([spot.lat, spot.lng], 15, { duration: 1.5 });
@@ -141,16 +142,27 @@ watch(() => props.selectedSpotId, () => {
     }
 });
 
-onMounted(() => {
-    // Small delay to ensure container is ready
-    setTimeout(initMap, 100);
+onMounted(async () => {
+    if (process.client) {
+        try {
+            // Dynamic import leaflet to avoid SSR issues
+            const leafletModule = await import('leaflet');
+            L = leafletModule.default || leafletModule;
+            await import('leaflet/dist/leaflet.css');
 
-    // Watch for container resize to invalidate map size
-    if (mapContainer.value) {
-        const resizeObserver = new ResizeObserver(() => {
-            map?.invalidateSize();
-        });
-        resizeObserver.observe(mapContainer.value);
+            // Small delay to ensure container is ready
+            setTimeout(initMap, 100);
+
+            // Watch for container resize to invalidate map size
+            if (mapContainer.value) {
+                const resizeObserver = new ResizeObserver(() => {
+                    map?.invalidateSize();
+                });
+                resizeObserver.observe(mapContainer.value);
+            }
+        } catch (error) {
+            console.error('Failed to load Leaflet:', error);
+        }
     }
 });
 
@@ -162,9 +174,9 @@ onUnmounted(() => {
 });
 
 const fitToView = () => {
-    if (!map) return;
+    if (!map || !L) return;
 
-    let bounds: L.LatLngBounds | null = null;
+    let bounds: any = null;
 
     if (routeLine) {
         bounds = routeLine.getBounds();

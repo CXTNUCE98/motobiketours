@@ -10,7 +10,6 @@
     "hotSpots": "HOT SPOTS",
     "customTour": "SMART CAR"
   },
-
   "about": {
     "title": "Travel Agency & Tour Booking",
     "introTitle": "About ANDAGO",
@@ -188,7 +187,8 @@
     "maintainClean": "Please maintain cleanliness at the tourist attraction.",
     "adhereRegulations": "Please adhere to dress code regulations if visiting a spiritual site.",
     "touchExhibits": "Do not touch any exhibits without permission.",
-    "directions": "Directions"
+    "directions": "Directions",
+    "none": "None"
   },
   "booking": {
     "bookNow": "Book Now"
@@ -500,7 +500,9 @@
     "locating": "Locating...",
     "geoDenied": "Please allow location access to see distances",
     "geoTimeout": "Location timed out. Please try again later",
-    "geoNotSupported": "Your browser doesn't support geolocation"
+    "geoNotSupported": "Your browser doesn't support geolocation",
+    "changeVehicle": "Change Vehicle",
+    "selectVehicle": "Select Vehicle"
   },
   "customTour": {
     "title": "Smart Car Tour Builder",
