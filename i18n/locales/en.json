@@ -179,7 +179,14 @@
     "reload": "Reload",
     "loadingData": "Loading data",
     "grid": "Grid",
-    "communityCorner": "Community Corner"
+    "communityCorner": "Community Corner",
+    "updating": "Updating",
+    "free": "Free",
+    "rules": "Rules & notes",
+    "maintainClean": "Please maintain cleanliness at the tourist attraction.",
+    "adhereRegulations": "Please adhere to dress code regulations if visiting a spiritual site.",
+    "touchExhibits": "Do not touch any exhibits without permission.",
+    "directions": "Directions"
   },
   "booking": {
     "bookNow": "Book Now"

@@ -155,25 +155,31 @@ const handleClose = () => {
 <template>
     <el-dialog v-model="dialogVisible"
         :title="isEditMode ? `${t('hotSpots.update')} ${formData.name}` : t('hotSpots.create')" width="90%"
-        class="max-w-2xl [&_.el-dialog\_\_title]:font-bold rounded-2xl overflow-hidden" :before-close="handleClose"
-        :lock-scroll="true" :align-center="true">
+        class="max-w-2xl [&_.el-dialog\_\_title]:font-bold rounded-2xl overflow-hidden [&_.el-dialog\_\_title]:dark:text-white detail-dialog dark:bg-gray-800"
+        :before-close="handleClose" :lock-scroll="true" :align-center="true">
         <el-scrollbar height="80vh">
             <div class="overflow-y-auto p-4">
                 <el-form ref="formRef" :model="formData" :rules="rules" label-position="top">
-                    <el-form-item :label="t('common.name')" prop="name">
-                        <el-input v-model="formData.name" placeholder="Spot name..." size="large" />
+                    <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.name')"
+                        prop="name">
+                        <el-input
+                            class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                            v-model="formData.name" placeholder="Spot name..." size="large" />
                     </el-form-item>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <el-form-item :label="t('common.category')" prop="category">
-                            <el-select v-model="formData.category" :placeholder="t('common.selectCategory')"
-                                size="large" class="w-full">
+                        <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.category')"
+                            prop="category">
+                            <el-select
+                                class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white"
+                                v-model="formData.category" :placeholder="t('common.selectCategory')" size="large">
                                 <el-option v-for="cat in categories" :key="cat.value" :label="cat.label"
                                     :value="cat.value" />
                             </el-select>
                         </el-form-item>
 
-                        <el-form-item :label="t('common.rating')" prop="rating">
+                        <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.rating')"
+                            prop="rating">
                             <div class="flex items-center gap-2 w-full">
                                 <el-rate v-model="formData.rating" allow-half />
                                 <span class="text-sm text-gray-500">{{ formData.rating }}</span>
@@ -181,36 +187,52 @@ const handleClose = () => {
                         </el-form-item>
                     </div>
 
-                    <el-form-item :label="t('common.address')" prop="address">
-                        <el-input v-model="formData.address" placeholder="Full address..." size="large" />
+                    <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.address')"
+                        prop="address">
+                        <el-input v-model="formData.address"
+                            class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                            placeholder="Full address..." size="large" />
                     </el-form-item>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <el-form-item :label="t('common.latitude')" prop="lat">
-                            <el-input-number v-model="formData.lat" :precision="6" :step="0.0001" class="w-full"
+                        <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.latitude')"
+                            prop="lat">
+                            <el-input-number v-model="formData.lat" :precision="6" :step="0.0001"
+                                class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white"
                                 size="large" />
                         </el-form-item>
-                        <el-form-item :label="t('common.longitude')" prop="lng">
-                            <el-input-number v-model="formData.lng" :precision="6" :step="0.0001" class="w-full"
+                        <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.longitude')"
+                            prop="lng">
+                            <el-input-number v-model="formData.lng" :precision="6" :step="0.0001"
+                                class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white"
                                 size="large" />
                         </el-form-item>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <el-form-item :label="t('common.openingHours')" prop="opening_hours">
-                            <el-input v-model="formData.opening_hours" placeholder="e.g. 08:00 - 22:00" size="large" />
+                        <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white"
+                            :label="t('common.openingHours')" prop="opening_hours">
+                            <el-input v-model="formData.opening_hours"
+                                class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                                placeholder="e.g. 08:00 - 22:00" size="large" />
                         </el-form-item>
-                        <el-form-item :label="t('common.priceInfo')" prop="price_info">
-                            <el-input v-model="formData.price_info" placeholder="e.g. Free or 50.000đ" size="large" />
+                        <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.priceInfo')"
+                            prop="price_info">
+                            <el-input v-model="formData.price_info"
+                                class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
+                                placeholder="e.g. Free or 50.000đ" size="large" />
                         </el-form-item>
                     </div>
 
-                    <el-form-item :label="t('common.description')" prop="description">
-                        <el-input v-model="formData.description" type="textarea" :rows="3"
-                            placeholder="Describe the spot..." />
+                    <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.description')"
+                        prop="description">
+                        <el-input v-model="formData.description"
+                            class="[&_.el-textarea\_\_inner]:dark:bg-gray-800 [&_.el-textarea\_\_inner]:dark:text-white"
+                            type="textarea" :rows="3" placeholder="Describe the spot..." />
                     </el-form-item>
 
-                    <el-form-item :label="t('common.images')" prop="images">
+                    <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.images')"
+                        prop="images">
                         <div class="grid grid-cols-4 gap-3 w-full">
                             <div v-for="(img, idx) in formData.images" :key="idx"
                                 class="relative group aspect-square rounded-lg overflow-hidden border border-gray-200">
@@ -222,7 +244,7 @@ const handleClose = () => {
                                     </el-icon>
                                 </div>
                             </div>
-                            <div class="aspect-square flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition-colors bg-gray-50"
+                            <div class="aspect-square flex items-center justify-center border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg cursor-pointer hover:border-blue-500 transition-colors bg-zinc-50 dark:bg-zinc-800/50"
                                 @click="fileInput?.click()">
                                 <el-icon v-if="!isUploading" class="text-2xl text-gray-400">
                                     <Plus />
@@ -254,22 +276,59 @@ const handleClose = () => {
 </template>
 
 <style scoped>
-:deep(.el-dialog) {
+.detail-dialog :deep(.el-dialog__body) {
+    padding: 0;
+}
+
+
+/* :deep(.el-dialog) {
     border-radius: 1rem;
+    background-color: var(--color-bg-primary);
+}
+
+.dark :deep(.el-dialog__title) {
+    color: var(--color-text-primary);
 }
 
 :deep(.el-dialog__header) {
     margin-right: 0;
     padding: 1.5rem;
-    border-bottom: 1px solid #e5e7eb;
+    border-bottom: 1px solid var(--color-border);
 }
 
 :deep(.el-dialog__body) {
     padding: 0;
+    background-color: var(--color-bg-primary);
 }
 
 :deep(.el-dialog__footer) {
     padding: 1.5rem;
-    border-top: 1px solid #e5e7eb;
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg-primary);
 }
+
+:deep(.el-form-item__label) {
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.dark :deep(.el-input__wrapper),
+.dark :deep(.el-textarea__inner),
+.dark :deep(.el-input-number__wrapper) {
+    background-color: var(--color-bg-secondary);
+    box-shadow: 0 0 0 1px var(--color-border) inset;
+}
+
+.dark :deep(.el-input__inner),
+.dark :deep(.el-textarea__inner) {
+    color: var(--color-text-primary);
+}
+
+.dark :deep(.el-checkbox.is-bordered) {
+    border-color: var(--color-border);
+}
+
+.dark :deep(.el-checkbox__label) {
+    color: var(--color-text-primary);
+} */
 </style>

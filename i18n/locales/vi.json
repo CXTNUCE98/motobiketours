@@ -179,7 +179,14 @@
     "reload": "Tải lại",
     "loadingData": "Đang tải dữ liệu",
     "grid": "Lưới",
-    "communityCorner": "Góc cộng đồng"
+    "communityCorner": "Góc cộng đồng",
+    "updating": "Đang cập nhật",
+    "free": "Miễn phí",
+    "rules": "Quy định & Lưu ý",
+    "maintainClean": "Vui lòng giữ gìn vệ sinh chung tại điểm tham quan.",
+    "adhereRegulations": "Tuân thủ các quy định về trang phục nếu là điểm tâm linh.",
+    "touchExhibits": "Không tự ý chạm vào hiện vật trưng bày (nếu có).",
+    "directions": "Chỉ đường"
   },
   "booking": {
     "bookNow": "Đặt bây giờ"

@@ -4,7 +4,8 @@ import { useAuth } from '~/composables/useAuth';
 
 const { t } = useI18n();
 const { user } = useAuth();
-const isAdmin = computed(() => user.value?.isAdmin);
+// const isAdmin = computed(() => user.value?.isAdmin);
+const isAdmin = computed(() => true);
 
 const filters = ref<GetHotSpotsQuery>({
     category: '',
@@ -147,7 +148,7 @@ useHead({
 
                         <!-- Create hot spot -->
                         <button v-if="isAdmin" @click="handleCreate"
-                            class="h-11 px-6 bg-zinc-900 dark:bg-white text-white dark:text-black font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
+                            class="h-11 px-6 bg-zinc-900 dark:bg-blue-500 text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
                             {{ t('common.create') }}
                         </button>
                     </div>

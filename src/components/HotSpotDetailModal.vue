@@ -32,13 +32,15 @@ const openGoogleMaps = () => {
 </script>
 
 <template>
-    <el-dialog v-model="dialogVisible" width="90%" class="hot-spot-detail-dialog max-w-5xl rounded-3xl overflow-hidden"
-        :show-close="false" :lock-scroll="true" :before-close="handleClose" destroy-on-close align-center>
+    <el-dialog v-model="dialogVisible" width="90%"
+        class="hot-spot-detail-dialog max-w-5xl dark:bg-zinc-900 rounded-3xl overflow-hidden" :show-close="false"
+        :lock-scroll="true" :before-close="handleClose" destroy-on-close align-center>
         <div v-if="isLoading" class="p-20 flex justify-center items-center h-96">
             <div class="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
         </div>
 
-        <div v-else-if="spot" class="relative bg-white dark:bg-zinc-900 overflow-hidden flex flex-col h-[90vh]">
+        <div v-else-if="spot"
+            class="relative bg-white dark:bg-zinc-900 overflow-hidden flex flex-col h-[90vh] rounded-3xl">
             <!-- Header -->
             <div
                 class="px-6 py-4 flex items-center justify-between bg-white dark:bg-zinc-900 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 z-10">
@@ -92,9 +94,11 @@ const openGoogleMaps = () => {
                                         class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600">
                                         <i class='bx bx-time-five text-lg'></i>
                                     </div>
-                                    <span class="font-bold text-green-700 dark:text-green-400">Giờ mở cửa</span>
+                                    <span class="font-bold text-green-700 dark:text-green-400">{{
+                                        t('common.openingHours') }}</span>
                                 </div>
-                                <p class="text-sm font-medium pl-11">{{ spot.opening_hours || 'Đang cập nhật' }}</p>
+                                <p class="text-sm font-medium pl-11">{{ spot.opening_hours || t('common.updating') }}
+                                </p>
                             </div>
 
                             <!-- Price -->
@@ -105,9 +109,10 @@ const openGoogleMaps = () => {
                                         class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
                                         <i class='bx bx-money text-lg'></i>
                                     </div>
-                                    <span class="font-bold text-blue-700 dark:text-blue-400">Giá vé</span>
+                                    <span class="font-bold text-blue-700 dark:text-blue-400">{{ t('common.priceInfo')
+                                    }}</span>
                                 </div>
-                                <p class="text-sm font-medium pl-11">{{ spot.price_info || 'Miễn phí' }}</p>
+                                <p class="text-sm font-medium pl-11">{{ spot.price_info || t('common.free') }}</p>
                             </div>
                         </div>
 
@@ -119,13 +124,14 @@ const openGoogleMaps = () => {
                                 <i class='bx bx-map text-xl'></i>
                             </div>
                             <div>
-                                <h4 class="font-bold text-sm text-zinc-400 uppercase tracking-wider mb-1">Địa chỉ</h4>
+                                <h4 class="font-bold text-sm text-zinc-400 uppercase tracking-wider mb-1">{{
+                                    t('common.address') }}</h4>
                                 <p class="text-zinc-900 dark:text-zinc-100 font-medium">{{ spot.address }}</p>
                                 <div class="mt-2 flex items-center gap-2 text-xs text-zinc-500">
                                     <span class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Lat: {{ spot.lat
-                                        }}</span>
+                                    }}</span>
                                     <span class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Lng: {{ spot.lng
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
@@ -136,30 +142,30 @@ const openGoogleMaps = () => {
                             <h4
                                 class="font-bold text-sm text-zinc-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                                 <i class='bx bx-notepad'></i>
-                                Quy định & Lưu ý
+                                {{ t('common.rules') }}
                             </h4>
                             <ul class="space-y-3 text-sm text-zinc-600 dark:text-zinc-400">
                                 <li class="flex items-start gap-2">
                                     <i class='bx bx-check text-green-500 mt-0.5'></i>
-                                    <span>Vui lòng giữ gìn vệ sinh chung tại điểm tham quan.</span>
+                                    <span>{{ t('common.maintainClean') }}</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <i class='bx bx-check text-green-500 mt-0.5'></i>
-                                    <span>Tuân thủ các quy định về trang phục nếu là điểm tâm linh.</span>
+                                    <span>{{ t('common.adhereRegulations') }}</span>
                                 </li>
                                 <li class="flex items-start gap-2">
                                     <i class='bx bx-check text-green-500 mt-0.5'></i>
-                                    <span>Không tự ý chạm vào hiện vật trưng bày (nếu có).</span>
+                                    <span>{{ t('common.touchExhibits') }}</span>
                                 </li>
                             </ul>
                         </div>
 
                         <!-- Actions -->
                         <div class="pt-4">
-                            <button @click="openGoogleMaps"
-                                class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                            <button @click="openGoogleMaps" size="large"
+                                class="w-full py-4 bg-blue-600 dark:bg-blue-500 text-white dark:text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
                                 <i class='bx bxs-direction-right text-xl'></i>
-                                Chỉ đường đến đây
+                                {{ t('common.directions') }}
                             </button>
                         </div>
                     </div>
@@ -195,6 +201,12 @@ const openGoogleMaps = () => {
 </template>
 
 <style scoped>
+.hot-spot-detail-dialog :deep(.el-dialog) {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
 .hot-spot-detail-dialog :deep(.el-dialog__header) {
     display: none;
 }
