@@ -12,7 +12,7 @@ import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { logger } from '~/utils/logger'
 
-const { isAuthenticated, user: authUser, getAuthHeaders, fetchUserProfile } = useAuth()
+const { isAuthenticated, user: authUser, getAuthHeaders, fetchUserProfile, updateUserLocal } = useAuth()
 const queryClient = useQueryClient()
 
 // Redirect if not authenticated
@@ -157,7 +157,7 @@ const updateProfile = async (data: UpdateUserDto) => {
         const updatedUser = await updateProfileAsync({ id: authUser.value.id, data: updateData })
 
         queryClient.invalidateQueries({ queryKey: ['user-profile'] })
-        fetchUserProfile() // Update global auth state
+        updateUserLocal(updatedUser as unknown as User) // Update global auth state directly
         removeAvatar() // Clear avatar preview after successful update
         ElMessage.success('Profile updated successfully!')
         return updatedUser

@@ -32,12 +32,21 @@ const accessToken = ref<string | null>(process.client ? localStorage.getItem(TOK
 const isAuthenticated = computed(() => !!accessToken.value);
 const PROFILE_KEY = 'user_profile';
 const user = ref<User | null>(null);
+const isFetchingProfile = ref(false);
 
 // Helper to save profile to cache
 const saveProfileToCache = (userData: User) => {
   if (process.client) {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(userData));
   }
+};
+
+/**
+ * Update user state locally and in cache
+ */
+const updateUserLocal = (userData: User) => {
+  user.value = userData;
+  saveProfileToCache(userData);
 };
 
 // Helper to get profile from cache
@@ -68,10 +77,11 @@ const getAuthHeaders = (): HeadersInit => {
 /**
  * Fetch full user profile from API
  */
-const fetchUserProfile = async () => {
-  if (!accessToken.value) return;
+const fetchUserProfile = async (force = false) => {
+  if (!accessToken.value || (isFetchingProfile.value && !force)) return;
 
   try {
+    isFetchingProfile.value = true;
     const decoded = parseJwt(accessToken.value);
     const userId = decoded?.sub || decoded?.id;
 
@@ -86,6 +96,8 @@ const fetchUserProfile = async () => {
     }
   } catch (error) {
     console.log('Failed to fetch user profile', error);
+  } finally {
+    isFetchingProfile.value = false;
   }
 };
 
@@ -131,12 +143,14 @@ export function useAuth() {
     initUserFromToken();
 
     // Fetch full profile
-    fetchUserProfile();
+    fetchUserProfile(true);
   };
 
   // Only fetch profile on mount if we have an access token and haven't fetched recently
   onMounted(() => {
-    if (accessToken.value) {
+    // Only fetch if authenticated and no full profile data yet (beyond basic token info)
+    // or if the profile is not being fetched currently
+    if (accessToken.value && !isFetchingProfile.value && (!user.value || !user.value.created_at)) {
       fetchUserProfile();
     }
   });
@@ -175,5 +189,6 @@ export function useAuth() {
     checkAuth,
     getAuthHeaders,
     fetchUserProfile,
+    updateUserLocal,
   };
 }

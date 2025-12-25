@@ -23,15 +23,40 @@ const categories = [
 const selectedSpotId = ref<string | null>(null);
 const isDetailOpen = ref(false);
 
-const { data: spots, isLoading, refetch: refresh } = useHotSpotsQuery(filters);
+const { data: spots, isLoading, isFetching, refetch: refresh } = useHotSpotsQuery(filters);
 
 const { coords, isSupported } = useGeolocation();
 
-watchEffect(() => {
-    if (coords.value && coords.value.latitude !== Infinity) {
-        filters.value.lat = coords.value.latitude;
-        filters.value.lng = coords.value.longitude;
+const isLocationLoading = ref(isSupported.value);
+
+watch(coords, (newCoords) => {
+    if (newCoords && newCoords.latitude !== Infinity && newCoords.latitude !== 0) {
+        const hasChanged = Math.abs((filters.value.lat || 0) - newCoords.latitude) > 0.0001 ||
+            Math.abs((filters.value.lng || 0) - newCoords.longitude) > 0.0001;
+
+        if (hasChanged) {
+            filters.value.lat = newCoords.latitude;
+            filters.value.lng = newCoords.longitude;
+        }
+        isLocationLoading.value = false;
     }
+}, { immediate: true, deep: true });
+
+const isLocating = computed(() => {
+    if (isLocationLoading.value) return true;
+
+    const hasCoords = filters.value.lat !== undefined && filters.value.lng !== undefined;
+    return hasCoords && isFetching.value;
+});
+
+onMounted(() => {
+    if (!isSupported.value) {
+        isLocationLoading.value = false;
+        return;
+    }
+    setTimeout(() => {
+        isLocationLoading.value = false;
+    }, 5000);
 });
 
 const selectSpot = (id: string) => {
@@ -139,8 +164,16 @@ useHead({
                 </div>
 
                 <!-- Grid Results -->
-                <div v-if="isLoading" class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <USkeleton v-for="i in 8" :key="i" class="h-80 w-full rounded-3xl" />
+                <div v-if="isLoading" class="mt-20 flex flex-col items-center justify-center py-20">
+                    <div class="relative">
+                        <div class="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 rounded-full"></div>
+                        <div
+                            class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin">
+                        </div>
+                    </div>
+                    <p class="mt-6 text-zinc-500 dark:text-zinc-400 font-bold animate-pulse">
+                        {{ t('common.loadingData') }}...
+                    </p>
                 </div>
 
                 <div v-else-if="!spots || spots.length === 0"
@@ -154,8 +187,8 @@ useHead({
                 </div>
 
                 <div v-else class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" @click="selectSpot(spot.id)"
-                        @edit="handleEdit" @delete="handleDelete" class="cursor-pointer" />
+                    <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" :is-locating="isLocating"
+                        @click="selectSpot(spot.id)" @edit="handleEdit" @delete="handleDelete" class="cursor-pointer" />
                 </div>
 
                 <!-- Mini Footer / Social Section -->

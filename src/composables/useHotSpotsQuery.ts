@@ -7,7 +7,7 @@ import { cleanObject } from '~/utils/api';
  */
 export const useHotSpotsQuery = (params: MaybeRef<GetHotSpotsQuery>) => {
   return useQuery({
-    queryKey: ['hot-spots', params],
+    queryKey: ['hot-spots', computed(() => JSON.stringify(unref(params)))],
     queryFn: async (): Promise<HotSpot[]> => {
       return (await $motobikertoursApi('/hot-spots', {
         query: cleanObject(unref(params)),

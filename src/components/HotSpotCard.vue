@@ -4,6 +4,7 @@ import { useAuth } from '~/composables/useAuth';
 
 defineProps<{
     spot: HotSpot;
+    isLocating?: boolean;
 }>();
 
 const { t } = useI18n();
@@ -14,7 +15,6 @@ const isAdmin = computed(() => user.value?.isAdmin);
 <template>
     <div
         class="spot-card group relative bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-500 border border-zinc-100 dark:border-zinc-800">
-
         <!-- Image Section -->
         <div class="relative aspect-[4/3] overflow-hidden">
             <img :src="spot.images[0] || '/placeholder-spot.jpg'" :alt="spot.name"
@@ -37,7 +37,6 @@ const isAdmin = computed(() => user.value?.isAdmin);
                     {{ spot.category }}
                 </div>
             </div>
-
             <!-- Quick Actions (Edit/Delete) -->
             <div
                 class="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-4 group-hover:translate-x-0">
@@ -72,10 +71,19 @@ const isAdmin = computed(() => user.value?.isAdmin);
             <div class="flex items-center justify-between pt-4 border-t border-zinc-100 dark:border-zinc-800">
                 <div class="flex items-center gap-1.5 text-zinc-500 dark:text-zinc-400 text-sm">
                     <i class='bx bxs-navigation text-blue-500'></i>
-                    <span class="font-medium">{{ spot.distance ? Math.round(spot.distance * 10) / 10 + ' km' : 'N/A'
-                        }}</span>
+                    <template v-if="spot.distance !== undefined && spot.distance !== null">
+                        <span class="font-medium">{{ Math.round(spot.distance * 10) / 10 }} km</span>
+                    </template>
+                    <template v-else-if="isLocating">
+                        <div class="flex items-center gap-1 opacity-60">
+                            <i class='bx bx-loader-alt animate-spin text-xs'></i>
+                            <span class="text-[10px] italic">{{ t('hotSpots.locating') }}</span>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <span class="font-medium">N/A</span>
+                    </template>
                 </div>
-
                 <div class="flex items-center gap-3">
                     <button class="text-zinc-400 hover:text-red-500 transition-colors transform active:scale-90">
                         <i class='bx bx-heart text-xl'></i>

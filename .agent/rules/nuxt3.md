@@ -20,7 +20,7 @@ Nuxt 3 Specifics
 - Use the Server API (within the server/api directory) to handle server-side operations like database interactions, authentication, or processing sensitive data that must remain confidential.
 - Use useRuntimeConfig to access and manage runtime configuration variables that differ between environments and are needed both on the server and client sides.
 - For SEO use useHead and useSeoMeta.
-- For images use <NuxtImage> or <NuxtPicture> components, and for icons use the Nuxt Icons module.
+- For images use <NuxtImage> or <NuxtPicture> components.
 - Use app.config.ts for app theme configuration.
 
 Fetching Data and Server State Management
@@ -77,5 +77,5 @@ TypeScript Usage
 
 UI and Styling
 
-- Use Nuxt UI and Tailwind CSS for components and styling.
+- Use Tailwind CSS for components and styling.
 - Implement responsive design with Tailwind CSS using a mobile-first approach.

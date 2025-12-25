@@ -177,6 +177,7 @@
     "noLocationsFound": "No locations found.",
     "tryAgain": "Try changing the filters or reloading the page.",
     "reload": "Reload",
+    "loadingData": "Loading data",
     "communityCorner": "Community Corner"
   },
   "booking": {
