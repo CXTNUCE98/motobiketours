@@ -21,7 +21,7 @@ const draggableSpots = computed({
     set: (val) => reorderSpots(val)
 });
 
-const { coords, isSupported } = useGeolocation();
+const { coords, isSupported, isLoading: isGeoLoading } = useGeolocationStore();
 const filters = ref<GetHotSpotsQuery>({
     lat: undefined,
     lng: undefined
@@ -38,7 +38,7 @@ const { data: allSpots, isLoading: isLoadingSpots, isFetching } = useHotSpotsQue
 const { mutate: estimateRoute, data: estimate, isPending: isEstimating } = useEstimateTour();
 
 const isLocating = computed(() => {
-    if (filters.value.lat === undefined) return isSupported.value;
+    if (filters.value.lat === undefined) return isSupported.value || isGeoLoading.value;
     return isFetching.value;
 });
 
@@ -122,8 +122,7 @@ watch(activeTab, (newTab) => {
                             <h3 class="text-xl font-bold mb-6 dark:text-white flex items-center justify-between">
                                 <span>{{ t('customTour.myItinerary') }}</span>
                                 <span class="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-lg">{{
-                                    selectedSpots.length
-                                    }} {{ t('customTour.stops') }}</span>
+                                    selectedSpots.length }} {{ t('customTour.stops') }}</span>
                             </h3>
 
                             <div v-if="selectedSpots.length === 0" class="py-12 text-center">

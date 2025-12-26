@@ -1,4 +1,10 @@
 <script setup lang="ts">
+const { initGeolocation } = useGeolocationStore();
+
+onMounted(() => {
+  initGeolocation();
+});
+
 useHead({
   title: 'Motobike Tours'
 })
@@ -24,16 +30,16 @@ useHead({
   --color-primary: #0EA5E9;
   --color-primary-dark: #0284C7;
   --color-primary-light: #38BDF8;
-  
+
   /* Secondary Colors - Warm Coral */
   --color-secondary: #FF6B35;
   --color-secondary-dark: #F97316;
   --color-secondary-light: #FB923C;
-  
+
   /* Accent Colors */
   --color-accent: #FBBF24;
   --color-accent-dark: #F59E0B;
-  
+
   /* Neutral Colors - Light Theme */
   --color-bg-primary: #FFFFFF;
   --color-bg-secondary: #F8FAFC;
@@ -51,16 +57,16 @@ useHead({
   --color-primary: #06B6D4;
   --color-primary-dark: #0891B2;
   --color-primary-light: #22D3EE;
-  
+
   /* Secondary Colors - Warm Orange */
   --color-secondary: #FB923C;
   --color-secondary-dark: #F97316;
   --color-secondary-light: #FDBA74;
-  
+
   /* Accent Colors */
   --color-accent: #FCD34D;
   --color-accent-dark: #FBBF24;
-  
+
   /* Neutral Colors - Dark Theme */
   --color-bg-primary: #0F172A;
   --color-bg-secondary: #1E293B;

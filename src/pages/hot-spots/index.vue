@@ -25,7 +25,7 @@ const isDetailOpen = ref(false);
 
 const { data: spots, isLoading, isFetching, refetch: refresh } = useHotSpotsQuery(filters);
 
-const { coords, isSupported, error: geoError } = useGeolocation();
+const { coords, isSupported, error: geoError, isLoading: isGeoLoading } = useGeolocationStore();
 
 const isLocationLoading = ref(true);
 const locationErrorMessage = ref('');
@@ -45,7 +45,10 @@ watch(coords, (newCoords) => {
             filters.value.lat = newCoords.latitude;
             filters.value.lng = newCoords.longitude;
         }
+
+        // Clear loading and errors on success
         isLocationLoading.value = false;
+        locationErrorMessage.value = '';
     }
 }, { immediate: true, deep: true });
 
@@ -55,26 +58,31 @@ const isLocating = computed(() => {
 
     // Nếu chưa có tọa độ trong filters thì vẫn đang xác định vị trí
     if (filters.value.lat === undefined || filters.value.lng === undefined) {
-        return isSupported.value && isLocationLoading.value;
+        return isSupported.value && (isLocationLoading.value || isGeoLoading.value);
     }
     // Nếu đã có tọa độ thì theo dõi trạng thái fetching của API
     return isFetching.value;
 });
 
 onMounted(() => {
+    // Nếu store báo không hỗ trợ, hiển thị lỗi ngay
     if (!isSupported.value) {
         isLocationLoading.value = false;
         locationErrorMessage.value = t('hotSpots.geoNotSupported');
         return;
     }
 
+    // Nếu đã có tọa độ (từ cache), không cần hiển thị loading
+    if (coords.value) {
+        isLocationLoading.value = false;
+    }
+
     // Tăng timeout lên 15 giây vì định vị GPS có thể mất nhiều thời gian hơn
     setTimeout(() => {
-        if (filters.value.lat === undefined) {
+        // Nếu sau timeout vẫn chưa có tọa độ và không có lỗi cụ thể (như bị từ chối)
+        if (filters.value.lat === undefined && !geoError.value) {
             isLocationLoading.value = false;
-            if (!geoError.value) {
-                locationErrorMessage.value = t('hotSpots.geoTimeout');
-            }
+            locationErrorMessage.value = t('hotSpots.geoTimeout');
         }
     }, 15000);
 });
@@ -83,7 +91,11 @@ onMounted(() => {
 watch(geoError, (err) => {
     if (err) {
         isLocationLoading.value = false;
+        // Trình duyệt từ chối hoặc lỗi GPS
         locationErrorMessage.value = t('hotSpots.geoDenied');
+    } else if (coords.value) {
+        // Nếu lỗi mất đi và có tọa độ, xóa thông báo lỗi
+        locationErrorMessage.value = '';
     }
 });
 
