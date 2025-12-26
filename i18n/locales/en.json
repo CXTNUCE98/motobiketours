@@ -51,8 +51,14 @@
       "call": "Call Us",
       "email": "Email Us",
       "visit": "Visit Us",
-      "whatsapp": "WhatsApp"
+      "whatsapp": "WhatsApp",
+      "messenger": "Messenger",
+      "zalo": "Zalo",
+      "viber": "Viber",
+      "line": "Line"
     },
+    "instantResponse": "Instant Response",
+    "fastSupport": "Fast Support",
     "chatWithUs": "Chat with us",
     "sendUsAMessage": "Send Us a Message",
     "fillOut": "Fill out the form below and our team will get back to you within 24 hours.",

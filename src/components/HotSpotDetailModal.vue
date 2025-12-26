@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue';
 import type { HotSpot } from '~/types/api';
 import { useHotSpotByIdQuery } from '~/composables/useHotSpotsQuery';
 import TourGallery from '~/components/TourGallery.vue';
+import ContactPopup from '~/components/ContactPopup.vue';
 
 const props = defineProps<{
     spotId: string | null;
@@ -12,6 +13,10 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue', 'change-spot']);
 
 const { t } = useI18n();
+
+const showContactPopup = ref(false);
+const contactSubject = ref('');
+const contactMessage = ref('');
 
 const { data: spot, isLoading } = useHotSpotByIdQuery(computed(() => props.spotId || ''));
 
@@ -30,10 +35,13 @@ const openGoogleMaps = () => {
     }
 };
 
-function contactUs() {
-    console.log('running');
+const contactUs = () => {
+    if (!spot.value) return;
+    contactSubject.value = `Custom Trip: ${spot.value.name}`;
+    contactMessage.value = `I am interested in visiting ${spot.value.name} (${spot.value.address}). Please help me customize a trip here.`;
+    showContactPopup.value = true;
+};
 
-}
 </script>
 
 <template>
@@ -115,7 +123,7 @@ function contactUs() {
                                         <i class='bx bx-money text-lg'></i>
                                     </div>
                                     <span class="font-bold text-blue-700 dark:text-blue-400">{{ t('common.priceInfo')
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <p class="text-sm font-medium pl-11">{{ spot.price_info || t('common.free') }}</p>
                             </div>
@@ -134,9 +142,9 @@ function contactUs() {
                                 <p class="text-zinc-900 dark:text-zinc-100 font-medium">{{ spot.address }}</p>
                                 <div class="mt-2 flex items-center gap-2 text-xs text-zinc-500">
                                     <span class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Lat: {{ spot.lat
-                                        }}</span>
+                                    }}</span>
                                     <span class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Lng: {{ spot.lng
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                         </div>
@@ -209,6 +217,7 @@ function contactUs() {
                 </div>
             </div>
         </div>
+        <ContactPopup v-model="showContactPopup" :subject="contactSubject" :message="contactMessage" />
     </el-dialog>
 </template>
 

@@ -76,9 +76,9 @@ onUnmounted(() => {
             <i v-if="icon" :class="[icon, 'absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400 z-10']"></i>
             <input type="text" :value="isOpen ? searchQuery : displayedValue"
                 @input="searchQuery = ($event.target as HTMLInputElement).value" :placeholder="placeholder" readonly
-                class="w-full pl-12 pr-10 py-3.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 cursor-pointer"
+                class="w-full pl-12 pr-10 py-3.5 bg-gray-50 dark:bg-zinc-800/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 cursor-pointer"
                 :class="{
-                    'ring-4 ring-indigo-500/10 border-indigo-500 bg-white dark:bg-gray-600': isOpen,
+                    'ring-4 ring-indigo-500/10 border-indigo-500 bg-white dark:bg-zinc-800/50': isOpen,
                     'border-red-500 focus:border-red-500 focus:ring-red-500/10': hasError
                 }" @mousedown.prevent />
             <!-- Custom Arrow -->

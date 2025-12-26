@@ -51,8 +51,14 @@
       "call": "Gọi cho chúng tôi",
       "email": "Gửi email",
       "visit": "Ghé thăm",
-      "whatsapp": "WhatsApp"
+      "whatsapp": "WhatsApp",
+      "messenger": "Messenger",
+      "zalo": "Zalo",
+      "viber": "Viber",
+      "line": "Line"
     },
+    "instantResponse": "Phản hồi ngay lập tức",
+    "fastSupport": "Hỗ trợ nhanh chóng",
     "chatWithUs": "Chat với chúng tôi",
     "sendUsAMessage": "Gửi tin nhắn cho chúng tôi",
     "fillOut": "Hãy điền vào mẫu bên dưới và nhóm của chúng tôi sẽ liên hệ lại với bạn trong vòng 24 giờ.",

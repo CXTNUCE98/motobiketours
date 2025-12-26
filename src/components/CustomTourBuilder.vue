@@ -4,6 +4,7 @@ import { useCustomTour } from '~/composables/useCustomTour';
 import { useEstimateTour } from '~/composables/useEstimateTour';
 import { useHotSpotsQuery } from '~/composables/useHotSpotsQuery';
 import type { GetHotSpotsQuery } from '~/types/api';
+import ContactPopup from '~/components/ContactPopup.vue';
 
 const { t } = useI18n();
 const {
@@ -14,6 +15,10 @@ const {
     isInTrip,
     reorderSpots
 } = useCustomTour();
+
+const showContactPopup = ref(false);
+const contactSubject = ref('');
+const contactMessage = ref('');
 
 // Computed property for draggable to use (it needs a getter/setter or a bound array)
 const draggableSpots = computed({
@@ -64,6 +69,14 @@ watch(activeTab, (newTab) => {
         });
     }
 });
+
+const contactUs = () => {
+    const spotsList = selectedSpots.value.map((s, i) => `${i + 1}. ${s.name} (${s.address})`).join('\n');
+    const vehicleInfo = selectedVehicle.value ? `\nVehicle: ${selectedVehicle.value.model}` : '';
+    contactSubject.value = `Custom Tour Request: ${selectedSpots.value.length} stops`;
+    contactMessage.value = `I would like to book a trip with the following itinerary:\n\n${spotsList}${vehicleInfo}\n\nTotal distance: ${estimate.value?.distance || 0} km\nEstimated Price: $${estimate.value?.price_estimate_usd || 0}`;
+    showContactPopup.value = true;
+};
 </script>
 
 <template>
@@ -200,17 +213,18 @@ watch(activeTab, (newTab) => {
                                 </div>
                             </div>
 
-                            <button
+                            <button @click="contactUs"
                                 class="w-full mt-8 py-4 bg-white text-blue-600 rounded-2xl font-black hover:bg-zinc-100 transition-colors shadow-lg active:scale-95 disabled:opacity-50"
                                 :disabled="selectedSpots.length < 2 || !selectedVehicle">
-                                <!-- {{ t('customTour.bookNow') }} -->
-                                Contact Us
+                                {{ t('common.contactUs') }}
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
         </el-scrollbar>
+
+        <ContactPopup v-model="showContactPopup" :subject="contactSubject" :message="contactMessage" />
     </div>
 </template>
 

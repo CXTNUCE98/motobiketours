@@ -7,6 +7,7 @@ import isEmail from 'validator/lib/isEmail';
 import isMobilePhone from 'validator/lib/isMobilePhone';
 
 const { t } = useI18n()
+const route = useRoute()
 const { data: countries, isLoading: isLoadingCountries } = useCountriesQuery()
 
 const countryOptions = computed(() => {
@@ -137,6 +138,78 @@ const activeFaq = ref<number | null>(0)
 const toggleFaq = (index: number) => {
     activeFaq.value = activeFaq.value === index ? null : index
 }
+
+const contactMethods = [
+    {
+        key: 'call',
+        icon: 'bx bx-phone-call',
+        color: 'text-blue-500',
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        shadow: 'shadow-blue-500/10',
+        link: 'tel:+84854242357',
+        value: '+84854.242.357',
+        sub: 'Mon-Sun, 8am-8pm'
+    },
+    {
+        key: 'zalo',
+        icon: 'bx bxs-chat',
+        color: 'text-sky-500',
+        bgColor: 'bg-sky-50 dark:bg-sky-900/30',
+        shadow: 'shadow-sky-500/10',
+        link: 'https://zalo.me/84854242357',
+        value: t('contact.chatWithUs'),
+        sub: 'Mon-Sun, 8am-8pm'
+    },
+    {
+        key: 'viber',
+        icon: 'bx bx-phone-call',
+        color: 'text-purple-500',
+        bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+        shadow: 'shadow-purple-500/10',
+        link: 'viber://chat?number=+84854242357',
+        value: t('contact.chatWithUs'),
+        sub: 'Mon-Sun, 8am-8pm'
+    },
+    {
+        key: 'line',
+        icon: 'bx bx-phone',
+        color: 'text-green-500',
+        bgColor: 'bg-green-50 dark:bg-green-900/30',
+        shadow: 'shadow-green-500/10',
+        link: 'https://line.me/ti/p/~84854242357',
+        value: t('contact.chatWithUs'),
+        sub: 'Mon-Sun, 8am-8pm'
+    },
+    {
+        key: 'whatsapp',
+        icon: 'bx bxl-whatsapp',
+        color: 'text-emerald-500',
+        bgColor: 'bg-emerald-50 dark:bg-emerald-900/30',
+        shadow: 'shadow-emerald-500/10',
+        link: 'https://wa.me/84854242357',
+        value: t('contact.chatWithUs'),
+        sub: t('contact.instantResponse')
+    },
+    {
+        key: 'messenger',
+        icon: 'bx bxl-messenger',
+        color: 'text-blue-600',
+        bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        shadow: 'shadow-blue-600/10',
+        link: 'https://m.me/61579936051310',
+        value: t('contact.chatWithUs'),
+        sub: t('contact.fastSupport')
+    }
+]
+
+onMounted(() => {
+    if (route.query.subject) {
+        form.title = route.query.subject as string
+    }
+    if (route.query.message) {
+        form.content = route.query.message as string
+    }
+})
 </script>
 
 <template>
@@ -203,58 +276,33 @@ const toggleFaq = (index: number) => {
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20 pb-20">
-            <!-- Contact Quick Info Cards (Restored from image) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                <!-- Call Us -->
-                <a href="tel:+84854242357"
-                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-blue-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
-                    <div
-                        class="w-14 h-14 rounded-2xl bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <i class="bx bx-phone-call text-2xl text-blue-500"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.call') }}
-                    </h3>
-                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">+84854.242.357 (Mr An)</p>
-                    <p class="text-sm text-gray-400">Mon-Sun, 8am-8pm</p>
-                </a>
+            <!-- Contact Quick Info Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-16">
+                <a v-for="method in contactMethods" :key="method.key" :href="method.link" target="_blank"
+                    class="group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl border border-white dark:border-gray-700 hover:shadow-indigo-500/10 hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center"
+                    :class="method.shadow">
 
-                <!-- Email Us -->
-                <a href="mailto:contact.andago@gmail.com"
-                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-purple-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
                     <div
-                        class="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <i class="bx bx-envelope text-2xl text-pink-500"></i>
+                        :class="['w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6', method.bgColor]">
+                        <i :class="[method.icon, 'text-3xl', method.color]"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.email') }}
-                    </h3>
-                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">contact.andago@gmail.com</p>
-                    <p class="text-sm text-gray-400">Online Support</p>
-                </a>
 
-                <!-- Visit Us -->
-                <div
-                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-indigo-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
-                    <div
-                        class="w-14 h-14 rounded-2xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <i class="bx bx-map text-2xl text-purple-500"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.visit') }}
+                    <h3
+                        class="text-sm font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-indigo-500 transition-colors">
+                        {{ t(`contact.quickInfo.${method.key}`) }}
                     </h3>
-                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">53 Phạm Ngọc Mậu</p>
-                    <p class="text-sm text-gray-400">Thanh Khê, Đà Nẵng</p>
-                </div>
 
-                <!-- WhatsApp -->
-                <a href="https://wa.me/84854242357" target="_blank"
-                    class="group bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl shadow-green-500/5 border border-white dark:border-gray-700 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
-                    <div
-                        class="w-14 h-14 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-                        <i class="bx bxl-whatsapp text-2xl text-green-500"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">{{ t('contact.quickInfo.whatsapp')
-                    }}</h3>
-                    <p class="text-gray-700 dark:text-gray-200 font-bold mb-1">{{ t('contact.chatWithUs') }}</p>
-                    <p class="text-sm text-gray-400">Instant Response</p>
+                    <p class="text-lg font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                        {{ method.value }}
+                    </p>
+
+                    <p class="text-xs font-medium text-gray-400">
+                        {{ method.sub }}
+                    </p>
+
+                    <!-- Subtle Decorative Element -->
+                    <div class="absolute top-4 right-4 w-2 h-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                        :class="method.bgColor"></div>
                 </a>
             </div>
 
@@ -384,7 +432,7 @@ const toggleFaq = (index: number) => {
                                 <button @click="toggleFaq(index)"
                                     class="w-full px-5 py-4 flex items-center justify-between text-left">
                                     <span class="font-medium text-gray-900 dark:text-white text-sm">{{ faq.question
-                                    }}</span>
+                                        }}</span>
                                     <i class="bx bx-chevron-down text-xl text-gray-400 transition-transform duration-300"
                                         :class="{ 'rotate-180 text-indigo-600 dark:text-indigo-400': activeFaq === index }"></i>
                                 </button>
@@ -398,10 +446,10 @@ const toggleFaq = (index: number) => {
 
                     <!-- Map Section -->
                     <div
-                        class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl shadow-gray-200/50 dark:shadow-none p-2 h-80 border border-transparent dark:border-gray-700">
+                        class="bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 dark:shadow-none p-2 h-80 border border-transparent dark:border-gray-700">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.4275425111296!2d108.18603187583106!3d16.04328864013049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142197539244d27%3A0x98059ce4eb00cc95!2zNTMgxJAuIFBo4bqhbSBOZ-G7jWMgTeG6rXUsIEFuIEtow6osIFRoYW5oIEtow6osIMSQw6AgTuG6tW5nLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1766401819853!5m2!1svi!2s"
-                            width="600" height="450" style="border:0;" allowfullscreen loading="lazy"
+                            width="560" height="450" style="border:0;" allowfullscreen loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
