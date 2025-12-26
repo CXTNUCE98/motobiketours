@@ -29,6 +29,11 @@ const openGoogleMaps = () => {
         window.open(`https://www.google.com/maps/dir/?api=1&destination=${spot.value.lat},${spot.value.lng}`, '_blank');
     }
 };
+
+function contactUs() {
+    console.log('running');
+
+}
 </script>
 
 <template>
@@ -110,7 +115,7 @@ const openGoogleMaps = () => {
                                         <i class='bx bx-money text-lg'></i>
                                     </div>
                                     <span class="font-bold text-blue-700 dark:text-blue-400">{{ t('common.priceInfo')
-                                    }}</span>
+                                        }}</span>
                                 </div>
                                 <p class="text-sm font-medium pl-11">{{ spot.price_info || t('common.free') }}</p>
                             </div>
@@ -129,9 +134,9 @@ const openGoogleMaps = () => {
                                 <p class="text-zinc-900 dark:text-zinc-100 font-medium">{{ spot.address }}</p>
                                 <div class="mt-2 flex items-center gap-2 text-xs text-zinc-500">
                                     <span class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Lat: {{ spot.lat
-                                    }}</span>
+                                        }}</span>
                                     <span class="bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">Lng: {{ spot.lng
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
                         </div>
@@ -161,12 +166,19 @@ const openGoogleMaps = () => {
                         </div>
 
                         <!-- Actions -->
-                        <div class="pt-4">
+                        <div class="pt-4 flex items-center gap-4">
                             <button @click="openGoogleMaps" size="large"
-                                class="w-full py-4 bg-blue-600 dark:bg-blue-500 text-white dark:text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                class="w-full py-4 bg-zinc-600 dark:bg-light-500 text-white dark:text-black font-bold rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
                                 <i class='bx bxs-direction-right text-xl'></i>
                                 {{ t('common.directions') }}
                             </button>
+                            <el-tooltip content="Contact Us to custom your trip" placement="top">
+                                <button @click="contactUs" size="large"
+                                    class="w-full py-4 bg-blue-600 dark:bg-blue-500 text-white dark:text-white font-bold rounded-xl hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center justify-center gap-2">
+                                    <i class='bx bxs-direction-right text-xl'></i>
+                                    {{ t('common.contactUs') }}
+                                </button>
+                            </el-tooltip>
                         </div>
                     </div>
                 </div>

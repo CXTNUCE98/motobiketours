@@ -188,7 +188,8 @@
     "adhereRegulations": "Please adhere to dress code regulations if visiting a spiritual site.",
     "touchExhibits": "Do not touch any exhibits without permission.",
     "directions": "Directions",
-    "none": "None"
+    "none": "None",
+    "contactUs": "Contact Us"
   },
   "booking": {
     "bookNow": "Book Now"

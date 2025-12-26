@@ -59,10 +59,10 @@ const menuItems = computed(() => [
     { name: t('nav.home'), path: localePath('/'), icon: '' },
     { name: t('nav.about'), path: localePath('/about'), icon: '' },
     { name: t('nav.tours'), path: localePath('/tour'), hasDropdown: true, icon: '' },
-    { name: t('nav.services'), path: localePath('/service'), hasDropdown: true, icon: '' },
+    { name: t('nav.hotSpots'), path: localePath('/hot-spots'), icon: '' },
+    // { name: t('nav.services'), path: localePath('/service'), hasDropdown: true, icon: '' },
     { name: t('nav.news'), path: localePath('/news'), hasDropdown: true, icon: '' },
     { name: t('nav.blog'), path: localePath('/blog'), hasDropdown: true, icon: '' },
-    { name: t('nav.hotSpots'), path: localePath('/hot-spots'), icon: '' },
     { name: t('nav.contact'), path: localePath('/contact'), icon: '' },
 ])
 
