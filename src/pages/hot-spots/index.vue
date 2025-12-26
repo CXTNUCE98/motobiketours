@@ -161,36 +161,37 @@ useHead({
 
                     <div class="flex items-center gap-4">
                         <!-- Custom Switch for Mini Map (Only show in Grid mode) -->
-                        <transition enter-active-class="transition duration-300 ease-out"
-                            enter-from-class="opacity-0 translate-x-4" enter-to-class="opacity-100 translate-x-0"
-                            leave-active-class="transition duration-200 ease-in"
-                            leave-from-class="opacity-100 translate-x-0" leave-to-class="opacity-0 translate-x-4">
-                            <button v-if="!isMapView" @click="isMiniMap = !isMiniMap"
-                                class="group flex items-center gap-3 bg-zinc-100 dark:bg-zinc-800 p-1.5 pr-4 rounded-full transition-all duration-300 hover:ring-2 hover:ring-blue-500/20"
-                                :class="{ 'ring-2 ring-blue-500/30 bg-blue-50/50 dark:bg-blue-900/10': isMiniMap }">
-                                <div class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500"
-                                    :class="isMiniMap ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white dark:bg-zinc-700 text-zinc-400'">
-                                    <i class='bx bxs-map-pin' :class="{ 'animate-bounce': isMiniMap }"></i>
-                                </div>
-                                <span class="text-xs font-bold tracking-widest uppercase transition-colors"
-                                    :class="isMiniMap ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-400'">
-                                    {{ t('hotSpots.miniMap') }}
-                                </span>
-                            </button>
-                        </transition>
+                        <el-tooltip class="box-item" :content="t('hotSpots.miniMap')" placement="top">
+                            <transition enter-active-class="transition duration-300 ease-out"
+                                enter-from-class="opacity-0 translate-x-4" enter-to-class="opacity-100 translate-x-0"
+                                leave-active-class="transition duration-200 ease-in"
+                                leave-from-class="opacity-100 translate-x-0" leave-to-class="opacity-0 translate-x-4">
+                                <button v-if="!isMapView" @click="isMiniMap = !isMiniMap"
+                                    class="group flex items-center gap-3 bg-zinc-100 dark:bg-zinc-800 p-1.5 rounded-full transition-all duration-300 hover:ring-2 hover:ring-blue-500/20"
+                                    :class="{ 'ring-2 ring-blue-500/30 bg-blue-50/50 dark:bg-blue-900/10': isMiniMap }">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500"
+                                        :class="isMiniMap ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white dark:bg-zinc-700 text-zinc-400'">
+                                        <i class='bx bxs-map-pin' :class="{ 'animate-bounce': isMiniMap }"></i>
+                                    </div>
+                                </button>
+                            </transition>
+                        </el-tooltip>
 
                         <!-- Custom Tour Builder Button -->
-                        <button @click="isCustomTourOpen = true"
-                            class="h-11 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-full hover:shadow-lg hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
-                            <i class='bx bxs-car'></i>
-                            {{ t('customTour.title') }}
-                        </button>
+                        <el-tooltip class="box-item" :content="t('customTour.title')" placement="top">
+                            <button @click="isCustomTourOpen = true"
+                                class="h-11 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-full hover:shadow-lg hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
+                                <i class='bx bxs-car'></i>
+                            </button>
+                        </el-tooltip>
 
                         <!-- Create hot spot (Admin only) -->
-                        <button v-if="isAdmin" @click="handleCreate"
-                            class="h-11 px-6 bg-zinc-900 dark:bg-zinc-800 text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
-                            {{ t('common.create') }}
-                        </button>
+                        <el-tooltip class="box-item" :content="t('common.create')" placement="top">
+                            <button v-if="isAdmin" @click="handleCreate"
+                                class="h-11 flex items-center justify-center px-6 bg-zinc-900 dark:bg-zinc-800 text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
+                                <i class='bx bx-plus-circle'></i>
+                            </button>
+                        </el-tooltip>
                     </div>
                 </div>
 

@@ -1,11 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
-// ElMessage and ElMessageBox are auto-imported
 import TourFilter from '../../components/TourFilter.vue';
-
 import { Plus } from '@element-plus/icons-vue';
 import { useAuth } from '~/composables/useAuth';
 import { useToursQuery } from '~/composables/useToursQuery';
@@ -380,14 +377,15 @@ onMounted(() => {
                                         </svg>
                                     </button>
                                 </div>
-                                <el-button v-if="isAdmin" type="primary" @click="handleCreateTour"
-                                    class="!rounded-xl !px-4 !py-2 !h-[40px] !font-bold !bg-gradient-to-r !from-blue-600 !to-cyan-600 !border-none hover:opacity-80 transition-transform duration-300 shadow-lg shrink-0">
-                                    <el-icon class="mr-2">
-                                        <Plus />
-                                    </el-icon>
-                                    <span class="hidden sm:inline">{{ t('tour.createBtn') }}</span>
-                                    <span class="sm:hidden">{{ t('common.create') }}</span>
-                                </el-button>
+                                <el-tooltip class="box-item" effect="dark" :content="t('tour.createBtn')"
+                                    placement="top">
+                                    <el-button v-if="isAdmin" type="primary" @click="handleCreateTour"
+                                        class="!rounded-xl !px-4 !py-2 !h-[40px] !font-bold !bg-gradient-to-r !from-blue-600 !to-cyan-600 !border-none hover:opacity-80 transition-transform duration-300 shadow-lg shrink-0">
+                                        <el-icon>
+                                            <Plus />
+                                        </el-icon>
+                                    </el-button>
+                                </el-tooltip>
                             </div>
                         </div>
                     </div>
@@ -461,14 +459,22 @@ onMounted(() => {
                                                     class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
                                                     {{ formatPrice(tour.price_usd) }}
                                                 </div>
-                                                <button
-                                                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
-                                                    {{ t('tour.list.details') }}
-                                                </button>
-                                                <button v-if="isAdmin" @click.prevent="editTour(tour.id)"
-                                                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
-                                                    {{ t('tour.edit') }}
-                                                </button>
+                                                <div class="flex gap-1">
+                                                    <el-tooltip class="box-item" effect="dark"
+                                                        :content="t('tour.list.details')" placement="top">
+                                                        <button
+                                                            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
+                                                            <i class='bx bxs-detail'></i>
+                                                        </button>
+                                                    </el-tooltip>
+                                                    <el-tooltip v-if="isAdmin" class="box-item" effect="dark"
+                                                        :content="t('tour.edit')" placement="top">
+                                                        <button @click.prevent="editTour(tour.id)"
+                                                            class="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold hover:scale-105 transition-transform duration-300 shadow-md">
+                                                            <i class='bx bx-edit-alt'></i>
+                                                        </button>
+                                                    </el-tooltip>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

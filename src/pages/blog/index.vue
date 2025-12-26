@@ -233,17 +233,12 @@ const totalBlogs = computed(() => meta.value?.total || 0)
 
           <!-- Actions -->
           <div v-if="isUser" class="flex items-center gap-3 ml-auto lg:ml-0 px-2">
-            <div class="h-8 w-px bg-gray-200 dark:bg-gray-700 hidden md:block mx-2"></div>
-            <button @click="createNewBlog"
-              class="group relative flex-1 md:flex-none flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 md:px-8 py-3 rounded-full font-bold text-sm shadow-xl shadow-gray-900/20 dark:shadow-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
-              <div
-                class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              </div>
-              <span class="relative z-10 flex items-center gap-2 group-hover:text-white transition-colors">
+            <el-tooltip class="box-item" effect="dark" :content="t('blog.create')" placement="top">
+              <button @click="createNewBlog"
+                class="group relative flex-1 md:flex-none flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 md:px-8 py-3 rounded-full font-bold text-sm shadow-xl shadow-gray-900/20 dark:shadow-white/10 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden">
                 <i class='bx bx-plus-circle text-xl'></i>
-                <span>{{ t('blog.create') }}</span>
-              </span>
-            </button>
+              </button>
+            </el-tooltip>
           </div>
         </div>
       </div>
