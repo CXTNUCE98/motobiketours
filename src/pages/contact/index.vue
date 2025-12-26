@@ -166,7 +166,7 @@ const contactMethods = [
         color: 'text-purple-500',
         bgColor: 'bg-purple-50 dark:bg-purple-900/30',
         shadow: 'shadow-purple-500/10',
-        link: 'viber://chat?number=+84854242357',
+        link: 'https://viber.click/84854242357',
         value: t('contact.chatWithUs'),
         sub: 'Mon-Sun, 8am-8pm'
     },
@@ -199,6 +199,16 @@ const contactMethods = [
         link: 'https://m.me/61579936051310',
         value: t('contact.chatWithUs'),
         sub: t('contact.fastSupport')
+    },
+    {
+        key: 'kakaotalk',
+        icon: 'bx bxs-conversation',
+        color: 'text-yellow-500',
+        bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+        shadow: 'shadow-yellow-500/10',
+        link: 'https://open.kakao.com/o/+84854242357',
+        value: t('contact.chatWithUs'),
+        sub: 'KakaoTalk ID'
     }
 ]
 
@@ -277,8 +287,9 @@ onMounted(() => {
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20 pb-20">
             <!-- Contact Quick Info Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-16">
-                <a v-for="method in contactMethods" :key="method.key" :href="method.link" target="_blank"
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 mb-16">
+                <a v-for="method in contactMethods" :key="method.key" :href="method.link"
+                    :target="method.link.startsWith('http') ? '_blank' : undefined"
                     class="group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl border border-white dark:border-gray-700 hover:shadow-indigo-500/10 hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center"
                     :class="method.shadow">
 

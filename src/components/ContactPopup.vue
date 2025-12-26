@@ -131,10 +131,10 @@ const socialPlatforms = [
     { name: 'Zalo', icon: 'bx bxs-chat', color: '#0068FF', link: `https://zalo.me/84854242357` },
     { name: 'WhatsApp', icon: 'bx bxl-whatsapp', color: '#25D366', link: `https://wa.me/84854242357` },
     { name: 'Messenger', icon: 'bx bxl-messenger', color: '#0084FF', link: `https://m.me/61579936051310` },
-    { name: 'Viber', icon: 'bx bx-phone', color: '#7360F2', link: `viber://chat?number=+84854242357` },
+    { name: 'Viber', icon: 'bx bx-phone', color: '#7360F2', link: `https://viber.click/84854242357` },
     { name: 'Line', icon: 'bx bxs-message-rounded-dots', color: '#00C300', link: `https://line.me/ti/p/+84854242357` },
-    { name: "Fanpage", icon: 'bx bxl-facebook', color: '#1877F2', link: `https://www.facebook.com/profile.php?id=61579936051310` },
-    // { name: 'KakaoTalk', icon: 'bx bxs-conversation', color: '#FEE500', link: `https://open.kakao.com/o/+84854242357` }
+    { name: 'KakaoTalk', icon: 'bx bxs-conversation', color: '#FEE500', link: `https://open.kakao.com/o/+84854242357` },
+    { name: "Fanpage", icon: 'bx bxl-facebook', color: '#1877F2', link: `https://www.facebook.com/profile.php?id=61579936051310` }
 ]
 </script>
 
@@ -160,7 +160,8 @@ const socialPlatforms = [
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <a v-for="social in socialPlatforms" :key="social.name" :href="social.link" target="_blank"
+                        <a v-for="social in socialPlatforms" :key="social.name" :href="social.link"
+                            :target="social.link.startsWith('http') ? '_blank' : undefined"
                             class="group relative flex flex-col items-center justify-center p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
                             <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-transform group-hover:scale-110"
                                 :style="{ backgroundColor: social.color + '10', color: social.color }">

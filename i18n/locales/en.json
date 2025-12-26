@@ -55,7 +55,8 @@
       "messenger": "Messenger",
       "zalo": "Zalo",
       "viber": "Viber",
-      "line": "Line"
+      "line": "Line",
+      "kakaotalk": "KakaoTalk"
     },
     "instantResponse": "Instant Response",
     "fastSupport": "Fast Support",
