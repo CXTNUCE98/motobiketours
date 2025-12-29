@@ -15,8 +15,9 @@ export const useUpdateUserMutation = () => {
         path: { id },
       });
     },
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['user-profile', variables.id] });
+    onSuccess: (data, variables) => {
+      const updatedUser = { ...data };
+      queryClient.setQueryData(['user-profile', variables.id], updatedUser);
     },
   });
 };

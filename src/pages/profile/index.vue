@@ -152,7 +152,6 @@ const updateProfile = async (data: UpdateUserDto) => {
 
         const updatedUser = await updateProfileAsync({ id: authUser.value.id, data: updateData })
 
-        queryClient.invalidateQueries({ queryKey: ['user-profile'] })
         updateUserLocal(updatedUser as unknown as User) // Update global auth state directly
         removeAvatar() // Clear avatar preview after successful update
         ElMessage.success('Profile updated successfully!')

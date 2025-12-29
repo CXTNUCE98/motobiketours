@@ -9,9 +9,10 @@ export const useUserProfileQuery = (userId: string | Ref<string | undefined>) =>
   return useQuery({
     queryKey: ['user-profile', userId],
     queryFn: async (): Promise<User> => {
-      return await $motobikertoursApi('/users/{id}', {
+      const user = await $motobikertoursApi('/users/{id}', {
         path: { id: unref(userId) as string },
-      });
+      }) as unknown as User;
+      return user;
     },
     enabled: computed(() => !!unref(userId) && isAuthenticated.value),
     staleTime: 5 * 60 * 1000, // 5 phút
