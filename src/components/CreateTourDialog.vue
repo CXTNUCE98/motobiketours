@@ -5,25 +5,25 @@ import { type Tour, type HotSpot, type Vehicle } from '~/types/api';
 import draggable from 'vuedraggable';
 
 interface ItineraryItem {
-    hot_spot_id: string;
-    activity_description: string;
-    duration_minutes: number;
+    hotSpotId: string;
+    activityDescription: string;
+    durationMinutes: number;
 }
 
 interface TourForm {
     title: string;
     type: string[];
-    price_usd: number;
+    priceUsd: number;
     duration: string;
-    duration_range: string;
-    depart_from: string;
+    durationRange: string;
+    departFrom: string;
     routes: string;
     description: string;
     content: string;
     thumbnail: string;
     images: string[];
-    is_featured: boolean;
-    suggested_vehicle_id: string | null;
+    isFeatured: boolean;
+    suggestedVehicleId: string | null;
     itineraries: ItineraryItem[];
     discount: number;
 }
@@ -94,17 +94,17 @@ const mapDurationRange: Record<string, string> = {
 const formData = reactive<TourForm>({
     title: '',
     type: [],
-    price_usd: 0,
+    priceUsd: 0,
     duration: '',
-    duration_range: '',
-    depart_from: '',
+    durationRange: '',
+    departFrom: '',
     routes: '',
     description: '',
     content: '',
     thumbnail: '',
     images: [],
-    is_featured: false,
-    suggested_vehicle_id: null,
+    isFeatured: false,
+    suggestedVehicleId: null,
     itineraries: [],
     discount: 0
 });
@@ -114,9 +114,9 @@ const { data: hotSpots } = useHotSpotsQuery(ref({}));
 
 const addItineraryItem = () => {
     formData.itineraries.push({
-        hot_spot_id: '',
-        activity_description: '',
-        duration_minutes: 0
+        hotSpotId: '',
+        activityDescription: '',
+        durationMinutes: 0
     });
 };
 
@@ -140,7 +140,7 @@ const rules: FormRules = {
     type: [
         { required: true, message: t('tour.validation.typeRequired'), trigger: 'change' }
     ],
-    price_usd: [
+    priceUsd: [
         { required: true, message: t('tour.validation.priceRequired'), trigger: 'blur' },
         {
             type: 'number' as const,
@@ -152,7 +152,7 @@ const rules: FormRules = {
     duration: [
         { required: true, message: t('tour.validation.durationRequired'), trigger: 'blur' }
     ],
-    depart_from: [
+    departFrom: [
         { required: true, message: t('tour.validation.departFromRequired'), trigger: 'blur' }
     ],
     routes: [
@@ -195,17 +195,17 @@ const resetForm = () => {
     Object.assign(formData, {
         title: '',
         type: [],
-        price_usd: 0,
+        priceUsd: 0,
         duration: '',
-        duration_range: '',
-        depart_from: '',
+        durationRange: '',
+        departFrom: '',
         routes: '',
         description: '',
         content: '',
         thumbnail: '',
         images: [],
-        is_featured: false,
-        suggested_vehicle_id: null,
+        isFeatured: false,
+        suggestedVehicleId: null,
         itineraries: [],
         discount: 0
     });
@@ -222,28 +222,28 @@ watch(() => props.tourData, (newVal) => {
         // Cleanup blob URLs before setting new data
         cleanupObjectURLs();
 
-        // Gán dữ liệu tường minh để tránh dính rating_stats, reviews, etc.
+        // Gán dữ liệu tường minh để tránh dính ratingStats, reviews, etc.
         formData.title = newVal.title || '';
         formData.type = Array.isArray(newVal.type) ? [...newVal.type] : [];
-        formData.price_usd = newVal.price_usd || 0;
+        formData.priceUsd = newVal.priceUsd || 0;
         formData.duration = newVal.duration || '';
-        formData.duration_range = (newVal as any).duration_range || '';
-        formData.depart_from = newVal.depart_from || '';
+        formData.durationRange = newVal.durationRange || '';
+        formData.departFrom = newVal.departFrom || '';
         formData.routes = newVal.routes || '';
         formData.description = newVal.description || '';
         formData.content = newVal.content || '';
         formData.thumbnail = newVal.thumbnail || '';
         formData.images = Array.isArray(newVal.images) ? [...newVal.images] : [];
-        formData.is_featured = !!newVal.is_featured;
-        formData.suggested_vehicle_id = newVal.suggested_vehicle_id || null;
-        formData.discount = (newVal as any).discount || 0;
+        formData.isFeatured = !!newVal.isFeatured;
+        formData.suggestedVehicleId = newVal.suggestedVehicleId || null;
+        formData.discount = newVal.discount || 0;
 
         // Map itineraries from response to form format
         if (newVal.itineraries) {
             formData.itineraries = newVal.itineraries.map(item => ({
-                hot_spot_id: item.hot_spot?.id || '',
-                activity_description: item.activity_description || '',
-                duration_minutes: item.duration_minutes || 0
+                hotSpotId: item.hotSpot?.id || '',
+                activityDescription: item.activityDescription || '',
+                durationMinutes: item.durationMinutes || 0
             }));
         } else {
             formData.itineraries = [];
@@ -373,18 +373,18 @@ const handleSubmit = async () => {
         images: formData.images,
         // Ensure itineraries is formatted correctly
         itineraries: formData.itineraries.map((item: any) => ({
-            hot_spot_id: item.hot_spot_id,
-            activity_description: item.activity_description,
-            duration_minutes: item.duration_minutes
+            hotSpotId: item.hotSpotId,
+            activityDescription: item.activityDescription,
+            durationMinutes: item.durationMinutes
         }))
     };
     // Remove meta fields if they exist in formData
     delete (submitData as any).id;
-    delete (submitData as any).created_at;
-    delete (submitData as any).rating_stats;
+    delete (submitData as any).createdAt;
+    delete (submitData as any).ratingStats;
     delete (submitData as any).reviews;
-    delete (submitData as any).suggested_vehicle;
-    delete (submitData as any).duration_days;
+    delete (submitData as any).suggestedVehicle;
+    delete (submitData as any).durationDays;
 
     if (isEditMode.value && props.tourData?.id) {
         updateTourMutation({ id: props.tourData.id, data: submitData }, {
@@ -414,7 +414,7 @@ const handleSubmit = async () => {
 };
 
 function handleUpdateDuration(value: string) {
-    formData.duration_range = mapDurationRange[value] || '';
+    formData.durationRange = mapDurationRange[value] || '';
 }
 
 // Cleanup on component unmount
@@ -465,9 +465,9 @@ onBeforeUnmount(() => {
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item :label="t('tour.form.price')" prop="price_usd"
+                            <el-form-item :label="t('tour.form.price')" prop="priceUsd"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
-                                <el-input-number v-model="formData.price_usd" :min="0" :step="10" size="large"
+                                <el-input-number v-model="formData.priceUsd" :min="0" :step="10" size="large"
                                     class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
                             </el-form-item>
 
@@ -489,9 +489,9 @@ onBeforeUnmount(() => {
                                 </el-select>
                             </el-form-item>
 
-                            <el-form-item :label="t('tour.form.departFrom')" prop="depart_from"
+                            <el-form-item :label="t('tour.form.departFrom')" prop="departFrom"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
-                                <el-input v-model="formData.depart_from"
+                                <el-input v-model="formData.departFrom"
                                     class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
                                     :placeholder="t('tour.form.departFromPlaceholder')" size="large" />
                             </el-form-item>
@@ -506,7 +506,7 @@ onBeforeUnmount(() => {
 
                         <el-form-item :label="t('tour.form.featured')"
                             class="[&_.el-form-item\_\_label]:dark:text-white">
-                            <el-switch v-model="formData.is_featured" class="[&_.el-switch\_\_core]:dark:bg-gray-800"
+                            <el-switch v-model="formData.isFeatured" class="[&_.el-switch\_\_core]:dark:bg-gray-800"
                                 :active-text="t('common.yes')" :inactive-text="t('common.no')" />
                         </el-form-item>
                     </div>
@@ -583,7 +583,7 @@ onBeforeUnmount(() => {
                         <h3 class="text-xl font-bold dark:text-white mb-4">{{ t('tour.form.suggestedVehicle') }}</h3>
                         <el-form-item :label="t('tour.form.suggestedVehicle')"
                             class="[&_.el-form-item\_\_label]:dark:text-white">
-                            <el-select v-model="formData.suggested_vehicle_id"
+                            <el-select v-model="formData.suggestedVehicleId"
                                 :placeholder="t('tour.form.suggestedVehiclePlaceholder')" size="large"
                                 class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white"
                                 clearable>
@@ -599,7 +599,7 @@ onBeforeUnmount(() => {
                             </div>
 
                             <div class="space-y-4">
-                                <draggable v-model="formData.itineraries" item-key="hot_spot_id" handle=".drag-handle">
+                                <draggable v-model="formData.itineraries" item-key="hotSpotId" handle=".drag-handle">
                                     <template #item="{ element, index }">
                                         <div
                                             class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 flex gap-4 items-start mb-4">
@@ -612,7 +612,7 @@ onBeforeUnmount(() => {
                                             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <el-form-item :label="t('tour.form.hotSpot')"
                                                     class="mb-0 [&_.el-form-item\_\_label]:dark:text-white">
-                                                    <el-select v-model="element.hot_spot_id" filterable
+                                                    <el-select v-model="element.hotSpotId" filterable
                                                         :placeholder="t('tour.form.hotSpot')" class="w-full">
                                                         <el-option v-for="spot in hotSpots" :key="spot.id"
                                                             :label="spot.name" :value="spot.id" />
@@ -621,13 +621,13 @@ onBeforeUnmount(() => {
 
                                                 <el-form-item :label="t('tour.form.durationMinutes')"
                                                     class="mb-0 [&_.el-form-item\_\_label]:dark:text-white">
-                                                    <el-input-number v-model="element.duration_minutes" :min="0"
+                                                    <el-input-number v-model="element.durationMinutes" :min="0"
                                                         class="w-full" />
                                                 </el-form-item>
 
                                                 <el-form-item :label="t('tour.form.activity')"
                                                     class="md:col-span-2 mb-0 [&_.el-form-item\_\_label]:dark:text-white">
-                                                    <el-input v-model="element.activity_description"
+                                                    <el-input v-model="element.activityDescription"
                                                         :placeholder="t('tour.form.activityPlaceholder')" />
                                                 </el-form-item>
                                             </div>
@@ -678,18 +678,18 @@ onBeforeUnmount(() => {
                                 <div><span class="font-semibold">{{ t('tour.form.title') }}:</span> {{ formData.title }}
                                 </div>
                                 <div><span class="font-semibold">{{ t('tour.form.priceLabel') }}</span> {{
-                                    formatPrice(formData.price_usd)
+                                    formatPrice(formData.priceUsd)
                                     }}</div>
                                 <div><span class="font-semibold">{{ t('tour.form.duration') }}:</span> {{
                                     formData.duration }}</div>
                                 <div><span class="font-semibold">{{ t('tour.form.type') }}:</span> {{ formData.type }}
                                 </div>
                                 <div><span class="font-semibold">{{ t('tour.form.departFromLabel') }}</span> {{
-                                    formData.depart_from }}
+                                    formData.departFrom }}
                                 </div>
                                 <div><span class="font-semibold">{{ t('tour.form.vehicleLabel') }}</span> {{
                                     vehicles?.find((v: any) => v.id
-                                        === formData.suggested_vehicle_id)?.model || t('common.no')}}</div>
+                                        === formData.suggestedVehicleId)?.model || t('common.no')}}</div>
                                 <div class="col-span-2">
                                     <span class="font-semibold block mb-2">{{ t('tour.form.itineraryLabel', {
                                         count:
@@ -698,8 +698,8 @@ onBeforeUnmount(() => {
                                     <div class="space-y-1 pl-4 border-l-2 border-primary/30">
                                         <div v-for="(item, idx) in formData.itineraries" :key="idx" class="text-xs">
                                             {{ Number(idx) + 1 }}. {{hotSpots?.find((s: any) => s.id ===
-                                                item.hot_spot_id)?.name}}
-                                            <span v-if="item.duration_minutes">({{ item.duration_minutes }} {{
+                                                item.hotSpotId)?.name}}
+                                            <span v-if="item.durationMinutes">({{ item.durationMinutes }} {{
                                                 t('hotSpots.minutes' as any)
                                                 || 'phút' }})</span>
                                         </div>

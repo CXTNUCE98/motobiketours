@@ -37,7 +37,7 @@ const isAdmin = computed(() => user.value?.isAdmin);
 
             <!-- Badges -->
             <div class="absolute top-4 left-4 flex flex-col gap-2 items-start">
-                <div v-if="spot.is_hot"
+                <div v-if="spot.isHot"
                     class="bg-red-500/90 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1">
                     <i class='bx bxs-hot'></i>
                     <span>Hot</span>

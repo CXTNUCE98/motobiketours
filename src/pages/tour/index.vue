@@ -31,13 +31,13 @@ const activeFilters = ref<{
     duration: string;
     priceRange: { min: number; max: number };
     tourTypes: string[];
-    depart_from: string;
+    departFrom: string;
 }>({
     searchQuery: '',
     duration: '',
     priceRange: { min: 0, max: 2000 },
     tourTypes: [],
-    depart_from: '',
+    departFrom: '',
 });
 
 watch(searchQuery, (newVal) => {
@@ -50,13 +50,13 @@ const apiFilters = computed(() => {
         p: currentPage.value,
         r: itemsPerPage,
         q: searchQuery.value,
-        depart_from: activeFilters.value.depart_from,
-        price_min: activeFilters.value.priceRange.min,
-        price_max: activeFilters.value.priceRange.max,
+        departFrom: activeFilters.value.departFrom,
+        priceMin: activeFilters.value.priceRange.min,
+        priceMax: activeFilters.value.priceRange.max,
     };
 
     if (activeFilters.value.duration) {
-        filters.duration_range = activeFilters.value.duration;
+        filters.durationRange = activeFilters.value.duration;
     }
 
     if (activeFilters.value.tourTypes.length > 0) {
@@ -85,20 +85,20 @@ const processedTours = computed(() => {
     // Sort
     if (sortBy.value === 'price-low') {
         result.sort((a, b) => {
-            const priceA = typeof a.price_usd === 'number' ? a.price_usd : 0;
-            const priceB = typeof b.price_usd === 'number' ? b.price_usd : 0;
+            const priceA = typeof a.priceUsd === 'number' ? a.priceUsd : 0;
+            const priceB = typeof b.priceUsd === 'number' ? b.priceUsd : 0;
             return priceA - priceB;
         });
     } else if (sortBy.value === 'price-high') {
         result.sort((a, b) => {
-            const priceA = typeof a.price_usd === 'number' ? a.price_usd : 0;
-            const priceB = typeof b.price_usd === 'number' ? b.price_usd : 0;
+            const priceA = typeof a.priceUsd === 'number' ? a.priceUsd : 0;
+            const priceB = typeof b.priceUsd === 'number' ? b.priceUsd : 0;
             return priceB - priceA;
         });
     } else if (sortBy.value === 'duration') {
         result.sort((a, b) => {
-            const rangeA = a.duration_range || 0;
-            const rangeB = b.duration_range || 0;
+            const rangeA = a.durationRange || 0;
+            const rangeB = b.durationRange || 0;
             return rangeA - rangeB;
         });
     }
@@ -128,7 +128,7 @@ const handleClearFilters = () => {
         duration: '',
         priceRange: { min: 0, max: 2000 },
         tourTypes: [],
-        depart_from: ''
+        departFrom: ''
     };
     searchQuery.value = '';
     currentPage.value = 1;
@@ -202,7 +202,7 @@ onMounted(() => {
         searchQuery.value = route.query.keyword as string;
     }
     if (route.query.location && route.query.location !== 'all') {
-        activeFilters.value.depart_from = route.query.location as string;
+        activeFilters.value.departFrom = route.query.location as string;
     }
     if (route.query.duration) {
         activeFilters.value.duration = route.query.duration as string;
@@ -434,7 +434,7 @@ onMounted(() => {
                                                             d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                                             clip-rule="evenodd" />
                                                     </svg>
-                                                    <span class="line-clamp-1">{{ tour.depart_from }}</span>
+                                                    <span class="line-clamp-1">{{ tour.departFrom }}</span>
                                                 </div>
                                                 <div class="flex items-center gap-2">
                                                     <svg class="w-4 h-4 text-green-500" fill="currentColor"
@@ -450,7 +450,7 @@ onMounted(() => {
                                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                 <div
                                                     class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                                    {{ formatPrice(tour.price_usd) }}
+                                                    {{ formatPrice(tour.priceUsd) }}
                                                 </div>
                                                 <div class="flex gap-1">
                                                     <el-tooltip class="box-item" effect="dark"
@@ -515,7 +515,7 @@ onMounted(() => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span><strong>{{ t('tour.list.departure') }}:</strong> {{
-                                                                tour.depart_from
+                                                                tour.departFrom
                                                                 }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
@@ -547,7 +547,7 @@ onMounted(() => {
                                                     class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                                     <div
                                                         class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                                        {{ formatPrice(tour.price_usd) }}
+                                                        {{ formatPrice(tour.priceUsd) }}
                                                     </div>
                                                     <button
                                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-bold hover:scale-105 transition-transform duration-300 shadow-lg flex items-center gap-2">

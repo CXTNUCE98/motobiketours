@@ -567,7 +567,7 @@
     "model": "Tên dòng xe",
     "type": "Loại xe",
     "capacity": "Sức chứa",
-    "price_per_km": "Giá mỗi km",
+    "pricePerKm": "Giá mỗi km",
     "amenities": "Tiện nghi",
     "isAvailable": "Sẵn sàng",
     "available": "Có sẵn",

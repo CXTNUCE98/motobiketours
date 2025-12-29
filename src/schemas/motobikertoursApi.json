@@ -327,7 +327,7 @@
             }
           },
           {
-            "name": "price_min",
+            "name": "priceMin",
             "required": false,
             "in": "query",
             "description": "Minimum price",
@@ -336,7 +336,7 @@
             }
           },
           {
-            "name": "price_max",
+            "name": "priceMax",
             "required": false,
             "in": "query",
             "description": "Maximum price",
@@ -345,7 +345,7 @@
             }
           },
           {
-            "name": "duration_range",
+            "name": "durationRange",
             "required": false,
             "in": "query",
             "description": "Duration range (1-3, 4-7, 8+)",
@@ -367,7 +367,7 @@
             }
           },
           {
-            "name": "depart_from",
+            "name": "departFrom",
             "required": false,
             "in": "query",
             "description": "Filter by departure city (comma separated)",
@@ -379,7 +379,7 @@
             }
           },
           {
-            "name": "is_featured",
+            "name": "isFeatured",
             "required": false,
             "in": "query",
             "description": "Filter by featured tours",
@@ -566,6 +566,128 @@
           }
         },
         "tags": ["services"]
+      }
+    },
+    "/wishlist": {
+      "get": {
+        "operationId": "WishlistController_getUserWishlist",
+        "summary": "Lấy danh sách tour yêu thích của người dùng hiện tại",
+        "responses": {
+          "200": {
+            "description": "Danh sách tour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tour"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Wishlist"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/wishlist/toggle/{tourId}": {
+      "post": {
+        "operationId": "WishlistController_toggleWishlist",
+        "summary": "Thêm hoặc xóa tour khỏi danh sách yêu thích",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Đã thay đổi trạng thái yêu thích"
+          }
+        },
+        "tags": ["Wishlist"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/wishlist/check/{tourId}": {
+      "get": {
+        "operationId": "WishlistController_isWishlisted",
+        "summary": "Kiểm tra xem tour có trong wishlist không",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trạng thái yêu thích",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "isWishlisted": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Wishlist"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/wishlist/count": {
+      "get": {
+        "operationId": "WishlistController_getWishlistCount",
+        "summary": "Lấy số lượng tour trong wishlist",
+        "responses": {
+          "200": {
+            "description": "Số lượng tour",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Wishlist"],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/blog": {
@@ -1296,7 +1418,7 @@
             "example": "<p>Full HTML content of the tour...</p>",
             "description": "Detailed content (HTML)"
           },
-          "price_usd": {
+          "priceUsd": {
             "type": "number",
             "example": 199.99,
             "description": "Price in USD"
@@ -1311,13 +1433,13 @@
             "example": "5 days",
             "description": "Duration of the tour"
           },
-          "duration_range": {
+          "durationRange": {
             "type": "string",
             "enum": ["1-3", "4-7", "8+"],
             "example": "4-7",
             "description": "Duration range for filtering (1-3, 4-7, 8+)"
           },
-          "depart_from": {
+          "departFrom": {
             "type": "string",
             "example": "Hanoi",
             "description": "Starting city"
@@ -1332,7 +1454,7 @@
             "example": "Adventure",
             "description": "Tour type/category"
           },
-          "is_featured": {
+          "isFeatured": {
             "type": "boolean",
             "example": true,
             "description": "Featured tour flag"
@@ -1342,13 +1464,13 @@
           "title",
           "description",
           "content",
-          "price_usd",
+          "priceUsd",
           "duration",
-          "duration_range",
-          "depart_from",
+          "durationRange",
+          "departFrom",
           "routes",
           "type",
-          "is_featured"
+          "isFeatured"
         ]
       },
       "UpdateTourDto": {
@@ -1382,7 +1504,7 @@
             "example": "<p>Full HTML content of the tour...</p>",
             "description": "Detailed content (HTML)"
           },
-          "price_usd": {
+          "priceUsd": {
             "type": "number",
             "example": 199.99,
             "description": "Price in USD"
@@ -1397,13 +1519,13 @@
             "example": "5 days",
             "description": "Duration of the tour"
           },
-          "duration_range": {
+          "durationRange": {
             "type": "string",
             "enum": ["1-3", "4-7", "8+"],
             "example": "4-7",
             "description": "Duration range for filtering (1-3, 4-7, 8+)"
           },
-          "depart_from": {
+          "departFrom": {
             "type": "string",
             "example": "Hanoi",
             "description": "Starting city"
@@ -1418,7 +1540,7 @@
             "example": "Adventure",
             "description": "Tour type/category"
           },
-          "is_featured": {
+          "isFeatured": {
             "type": "boolean",
             "example": true,
             "description": "Featured tour flag"
@@ -1557,10 +1679,10 @@
           "model": { "type": "string" },
           "type": { "type": "string" },
           "capacity": { "type": "number" },
-          "price_per_km": { "type": "number" },
+          "pricePerKm": { "type": "number" },
           "thumbnail": { "type": "string" },
           "amenities": { "type": "array", "items": { "type": "string" } },
-          "is_available": { "type": "boolean" }
+          "isAvailable": { "type": "boolean" }
         }
       },
       "CreateVehicleDto": {
@@ -1569,12 +1691,12 @@
           "model": { "type": "string" },
           "type": { "type": "string" },
           "capacity": { "type": "number" },
-          "price_per_km": { "type": "number" },
+          "pricePerKm": { "type": "number" },
           "thumbnail": { "type": "string" },
           "amenities": { "type": "array", "items": { "type": "string" } },
-          "is_available": { "type": "boolean" }
+          "isAvailable": { "type": "boolean" }
         },
-        "required": ["model", "type", "capacity", "price_per_km"]
+        "required": ["model", "type", "capacity", "pricePerKm"]
       },
       "UpdateVehicleDto": {
         "type": "object",
@@ -1582,34 +1704,34 @@
           "model": { "type": "string" },
           "type": { "type": "string" },
           "capacity": { "type": "number" },
-          "price_per_km": { "type": "number" },
+          "pricePerKm": { "type": "number" },
           "thumbnail": { "type": "string" },
           "amenities": { "type": "array", "items": { "type": "string" } },
-          "is_available": { "type": "boolean" }
+          "isAvailable": { "type": "boolean" }
         }
       },
       "EstimateTourDto": {
         "type": "object",
         "properties": {
-          "hot_spot_ids": { "type": "array", "items": { "type": "string" } },
-          "vehicle_id": { "type": "string" },
-          "departure_name": { "type": "string" }
+          "hotSpotIds": { "type": "array", "items": { "type": "string" } },
+          "vehicleId": { "type": "string" },
+          "departureName": { "type": "string" }
         },
-        "required": ["hot_spot_ids", "vehicle_id"]
+        "required": ["hotSpotIds", "vehicleId"]
       },
       "EstimateRouteResponse": {
         "type": "object",
         "properties": {
           "distance": { "type": "number" },
           "duration": { "type": "number" },
-          "price_estimate_usd": { "type": "number" },
+          "priceEstimateUsd": { "type": "number" },
           "geometry": { "type": "string" },
           "vehicle": {
             "type": "object",
             "properties": {
               "id": { "type": "string" },
               "model": { "type": "string" },
-              "price_per_km": { "type": "number" }
+              "pricePerKm": { "type": "number" }
             }
           }
         }

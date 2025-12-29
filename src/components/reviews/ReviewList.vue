@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Review } from '~/types/api';
 import dayjs from 'dayjs';
+import { Calendar } from '@element-plus/icons-vue';
 
 const props = defineProps<{
     reviews: Review[];
@@ -44,7 +45,7 @@ const { t } = useI18n();
                                 <el-icon>
                                     <Calendar />
                                 </el-icon>
-                                {{ dayjs(review.created_at).format('DD MMM YYYY') }}
+                                {{ dayjs(review.createdAt).format('DD MMM YYYY') }}
                             </time>
                         </div>
 

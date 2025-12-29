@@ -160,7 +160,7 @@ const isOwnComment = computed(() => {
                 <!-- Header -->
                 <div class="flex items-center gap-2 mb-2">
                     <span class="font-bold text-gray-800 dark:text-white">{{ comment?.author?.userName }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(comment?.created_at) }}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(comment?.createdAt) }}</span>
                 </div>
                 <!-- Content -->
                 <p class="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{{ comment?.content }}</p>
@@ -232,6 +232,7 @@ const isOwnComment = computed(() => {
 
 <style scoped>
 .comment-item {
-    @apply py-4;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 </style>

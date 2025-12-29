@@ -110,7 +110,7 @@ const contactUs = () => {
                                     <span class="font-bold text-green-700 dark:text-green-400">{{
                                         t('common.openingHours') }}</span>
                                 </div>
-                                <p class="text-sm font-medium pl-11">{{ spot.opening_hours || t('common.updating') }}
+                                <p class="text-sm font-medium pl-11">{{ spot.openingHours || t('common.updating') }}
                                 </p>
                             </div>
 
@@ -125,7 +125,7 @@ const contactUs = () => {
                                     <span class="font-bold text-blue-700 dark:text-blue-400">{{ t('common.priceInfo')
                                     }}</span>
                                 </div>
-                                <p class="text-sm font-medium pl-11">{{ spot.price_info || t('common.free') }}</p>
+                                <p class="text-sm font-medium pl-11">{{ spot.priceInfo || t('common.free') }}</p>
                             </div>
                         </div>
 
@@ -205,7 +205,7 @@ const contactUs = () => {
                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 <div
                                     class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 rounded-full">
-                                    {{ Math.round(near.distance * 10) / 10 }}km
+                                    {{ near.distance ? (Math.round(near.distance * 10) / 10) : 'N/A' }}km
                                 </div>
                             </div>
                             <h5

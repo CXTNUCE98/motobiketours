@@ -566,7 +566,7 @@
     "model": "Model Name",
     "type": "Vehicle Type",
     "capacity": "Capacity",
-    "price_per_km": "Price per km",
+    "pricePerKm": "Price per km",
     "amenities": "Amenities",
     "isAvailable": "Is Available",
     "available": "Available",

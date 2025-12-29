@@ -251,8 +251,7 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
 
 // Wishlist
 const { openDrawer: openWishlistDrawer } = useWishlistDrawer()
-const { data: wishlistData } = useWishlistQuery()
-const wishlistCount = computed(() => wishlistData.value?.length || 0)
+const { data: wishlistCount } = useWishlistCountQuery()
 </script>
 
 <template>

@@ -81,10 +81,10 @@ const switchLanguage = (langCode: 'en' | 'vi') => {
 
 const cartCount = ref(0)
 const showMobileMenu = ref(false)
-const { isWishlistDrawerVisible, openDrawer } = useWishlistDrawer()
+const { openDrawer: openWishlistDrawer } = useWishlistDrawer();
 
-const { data: wishlistData } = useWishlistQuery()
-const wishlistCount = computed(() => wishlistData.value?.length || 0)
+const { data: wishlistCount } = useWishlistCountQuery();
+const wishlistCountDisplay = computed(() => wishlistCount.value || 0);
 
 const isActive = (path: string) => {
     const homePath = localePath('/')
@@ -154,16 +154,16 @@ function formLogin() {
                     </button> -->
 
                     <!-- Wishlist Icon -->
-                    <button v-if="isAuthenticated" @click="openDrawer"
+                    <button v-if="isAuthenticated" @click="openWishlistDrawer"
                         class="relative text-slate-700 dark:text-slate-300 hover:text-red-500 transition-colors group">
                         <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:scale-110" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
-                        <span v-if="wishlistCount > 0"
+                        <span v-if="wishlistCountDisplay > 0"
                             class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full min-w-4 h-4 px-1 flex items-center justify-center font-bold shadow-sm">
-                            {{ wishlistCount }}
+                            {{ wishlistCountDisplay }}
                         </span>
                     </button>
 
@@ -210,7 +210,7 @@ function formLogin() {
                                     {{ t('auth.profile') }}
                                 </NuxtLink>
 
-                                <button @click="openDrawer"
+                                <button @click="openWishlistDrawer"
                                     class="w-full text-left block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                                     {{ t('wishlist.myWishlist') }}
                                 </button>
@@ -332,7 +332,7 @@ function formLogin() {
                         </NuxtLink>
 
                         <!-- Mobile Wishlist -->
-                        <button v-if="isAuthenticated" @click="openDrawer(); showMobileMenu = false"
+                        <button v-if="isAuthenticated" @click="openWishlistDrawer(); showMobileMenu = false"
                             class="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-sky-500 dark:hover:text-sky-400">
                             <div class="flex items-center gap-3">
                                 <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
@@ -343,7 +343,7 @@ function formLogin() {
                             </div>
                             <span
                                 class="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-[10px] text-red-600 dark:text-red-400 font-bold">
-                                {{ wishlistCount }}
+                                {{ wishlistCountDisplay }}
                             </span>
                         </button>
 

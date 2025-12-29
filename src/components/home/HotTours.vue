@@ -9,12 +9,12 @@ const { t } = useI18n();
 // Fetch featured tours (hot tours)
 const { data, isLoading } = useQuery({
   queryKey: ['tours', 'featured'],
-  queryFn: async () => {
+  queryFn: async (): Promise<{ data: Tour[]; total: number }> => {
     const res = await $motobikertoursApi('/tours', {
       query: {
         r: 20, // Fetch more to filter featured ones
       },
-    });
+    }) as { data: Tour[]; total: number };
     return res;
   },
 });
@@ -23,7 +23,7 @@ const { data, isLoading } = useQuery({
 const featuredTours = computed(() => {
   const tours = (data.value?.data || []) as Tour[];
   return tours
-    .filter((tour) => tour.is_featured === true)
+    .filter((tour) => tour.isFeatured === true)
     .slice(0, 4)
     .map(transformTourToCardProps);
 });

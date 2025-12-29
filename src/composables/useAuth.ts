@@ -25,12 +25,12 @@ function parseJwt(token: string) {
 }
 
 // Token storage key
-const TOKEN_KEY = 'access_token';
+const TOKEN_KEY = 'accessToken';
 
 // Global auth state
 const accessToken = ref<string | null>(process.client ? localStorage.getItem(TOKEN_KEY) : null);
 const isAuthenticated = computed(() => !!accessToken.value);
-const PROFILE_KEY = 'user_profile';
+const PROFILE_KEY = 'userProfile';
 const user = ref<User | null>(null);
 const isFetchingProfile = ref(false);
 
@@ -119,7 +119,7 @@ const initUserFromToken = () => {
           role: decoded.role || 'USER',
           provider: null,
           avatar: decoded.avatar,
-          created_at: '',
+          createdAt: '',
         } as User;
       }
     }
@@ -150,7 +150,7 @@ export function useAuth() {
   onMounted(() => {
     // Only fetch if authenticated and no full profile data yet (beyond basic token info)
     // or if the profile is not being fetched currently
-    if (accessToken.value && !isFetchingProfile.value && (!user.value || !user.value.created_at)) {
+    if (accessToken.value && !isFetchingProfile.value && (!user.value || !user.value.createdAt)) {
       fetchUserProfile();
     }
   });

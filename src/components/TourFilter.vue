@@ -9,7 +9,7 @@ type FilterOptions = {
     duration: string;
     priceRange: { min: number; max: number };
     tourTypes: string[];
-    depart_from: string;
+    departFrom: string;
 };
 
 const emit = defineEmits<{
@@ -28,7 +28,7 @@ const selectedDuration = ref<string>(props.initialFilters?.duration || '');
 const priceMin = ref(props.initialFilters?.priceRange?.min || 0);
 const priceMax = ref(props.initialFilters?.priceRange?.max || 2000);
 const selectedTypes = ref<string[]>(props.initialFilters?.tourTypes || []);
-const selectedDepartFrom = ref(props.initialFilters?.depart_from || 'all');
+const selectedDepartFrom = ref(props.initialFilters?.departFrom || 'all');
 
 watch(() => props.initialFilters, (newFilters) => {
     if (newFilters) {
@@ -37,7 +37,7 @@ watch(() => props.initialFilters, (newFilters) => {
         priceMin.value = newFilters.priceRange?.min || 0;
         priceMax.value = newFilters.priceRange?.max || 2000;
         selectedTypes.value = newFilters.tourTypes || [];
-        selectedDepartFrom.value = newFilters.depart_from || 'all';
+        selectedDepartFrom.value = newFilters.departFrom || 'all';
     }
 }, { deep: true });
 
@@ -99,7 +99,7 @@ const applyFilters = () => {
         duration: selectedDuration.value,
         priceRange: { min: priceMin.value, max: priceMax.value },
         tourTypes: selectedTypes.value,
-        depart_from: selectedDepartFrom.value !== 'all' ? selectedDepartFrom.value : '',
+        departFrom: selectedDepartFrom.value !== 'all' ? selectedDepartFrom.value : '',
     });
 };
 
@@ -154,7 +154,7 @@ const clearFilters = () => {
             <!-- Duration Filter -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.duration')
-                }}</label>
+                    }}</label>
                 <div class="space-y-0 flex flex-wrap justify-between gap-1 md:space-y-2">
                     <button v-for="option in durationOptions" :key="option.value" @click="toggleDuration(option.value)"
                         class="w-3/10 md:w-full px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-300 flex items-center justify-between"
@@ -176,7 +176,7 @@ const clearFilters = () => {
             <!-- Price Range Filter -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.priceRange')
-                }}
+                    }}
                     ({{ locale === 'vi' ? 'VND' : 'USD' }})</label>
                 <div class="space-y-4">
                     <div>
@@ -201,7 +201,7 @@ const clearFilters = () => {
             <!-- Tour Type Filter -->
             <div class="mb-6">
                 <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.tourType')
-                }}</label>
+                    }}</label>
                 <div class="space-y-0 flex flex-wrap gap-2 md:space-y-2">
                     <label v-for="option in tourTypeOptions" :key="option.value"
                         class="flex items-center w-130px gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700">

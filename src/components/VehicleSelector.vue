@@ -96,8 +96,8 @@ const handleDelete = async (vehicle: Vehicle) => {
                             <h4 class="font-bold text-zinc-900 dark:text-zinc-100">{{ vehicle.model }}</h4>
                             <div class="flex gap-2 items-center">
                                 <span class="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                                    :class="vehicle.is_available ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
-                                    {{ vehicle.is_available ? t('vehicles.available') : t('vehicles.unavailable') }}
+                                    :class="vehicle.isAvailable ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'">
+                                    {{ vehicle.isAvailable ? t('vehicles.available') : t('vehicles.unavailable') }}
                                 </span>
                             </div>
                         </div>
@@ -112,7 +112,7 @@ const handleDelete = async (vehicle: Vehicle) => {
 
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-1 text-blue-600 font-bold">
-                                <span>${{ vehicle.price_per_km }}</span>
+                                <span>${{ vehicle.pricePerKm }}</span>
                                 <span class="text-[10px] font-normal text-zinc-400">/km</span>
                             </div>
                             <div class="flex items-center gap-1 text-zinc-500 text-sm">

@@ -62,8 +62,8 @@ const setActive = (tab: string) => {
 
 // Related tours (same departure location)
 const { data: relatedToursData } = useToursQuery(
-    computed(() => ({ q: tour.value?.depart_from })),
-    computed(() => !!tour.value?.depart_from)
+    computed(() => ({ q: tour.value?.departFrom })),
+    computed(() => !!tour.value?.departFrom)
 );
 
 const relatedTours = computed(() => {
@@ -135,7 +135,7 @@ const relatedTours = computed(() => {
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>{{ t('tour.departingFrom') }}:</strong> {{ item?.depart_from
+                                        <span><strong>{{ t('tour.departingFrom') }}:</strong> {{ item?.departFrom
                                             }}</span>
                                     </div>
                                     <div class="flex items-start gap-2">
@@ -163,7 +163,7 @@ const relatedTours = computed(() => {
                                 class="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                                 <div
                                     class="text-3xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                    {{ formatPrice(item?.price_usd) }}
+                                    {{ formatPrice(item?.priceUsd) }}
                                 </div>
                                 <div class="flex gap-3">
                                     <NuxtLink :to="localePath(`/tour/${item?.id}`)"
@@ -212,7 +212,7 @@ const relatedTours = computed(() => {
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>{{ t('tour.departFrom') }}:</strong> {{ tour?.depart_from }}</span>
+                        <span><strong>{{ t('tour.departFrom') }}:</strong> {{ tour?.departFrom }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -224,11 +224,11 @@ const relatedTours = computed(() => {
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex">
-                            <el-rate :model-value="tour?.rating_stats?.average_rating || 0" disabled
+                            <el-rate :model-value="tour?.ratingStats?.averageRating || 0" disabled
                                 disabled-void-color="#DCDFE6" size="small" />
                         </div>
-                        <span class="font-semibold">{{ tour?.rating_stats?.average_rating || 0 }}</span>
-                        <span class="text-secondary text-sm">({{ tour?.rating_stats?.total_reviews || 0 }})</span>
+                        <span class="font-semibold">{{ tour?.ratingStats?.averageRating || 0 }}</span>
+                        <span class="text-secondary text-sm">({{ tour?.ratingStats?.totalReviews || 0 }})</span>
                     </div>
                 </div>
             </div>
@@ -330,8 +330,8 @@ const relatedTours = computed(() => {
                                                     class="w-0.5 flex-grow bg-blue-100 dark:bg-blue-900/30 my-1"></div>
                                             </div>
                                             <div class="pb-6">
-                                                <h4 class="font-bold text-primary-text">{{ item.hot_spot?.name }}</h4>
-                                                <p class="text-sm text-secondary mt-1">{{ item.activity_description }}
+                                                <h4 class="font-bold text-primary-text">{{ item.hotSpot?.name }}</h4>
+                                                <p class="text-sm text-secondary mt-1">{{ item.activityDescription }}
                                                 </p>
                                             </div>
                                         </div>
@@ -344,9 +344,9 @@ const relatedTours = computed(() => {
                             </div>
 
                             <div v-else-if="activeTab === 'reviews'" class="space-y-8">
-                                <RatingOverview :stats="tour.rating_stats" size="large" />
-                                <ReviewForm :tour-id="tour.id" />
-                                <ReviewList :reviews="reviews || []" />
+                                <ReviewsRatingOverview :stats="tour.ratingStats" size="large" />
+                                <ReviewsReviewForm :tour-id="tour.id" />
+                                <ReviewsReviewList :reviews="reviews || []" />
                             </div>
 
                             <div v-else-if="activeTab === 'contact'" v-html="sanitizeHtml(contactHtml)"
@@ -358,7 +358,7 @@ const relatedTours = computed(() => {
 
                 <!-- Right Column - Booking Card -->
                 <div class="lg:col-span-4">
-                    <BookingCard :price="tour.price_usd || 'Liên hệ'" :duration="tour.duration" groupSize="2-10 người"
+                    <BookingCard :price="tour.priceUsd || 'Liên hệ'" :duration="tour.duration" groupSize="2-10 người"
                         difficulty="Trung bình" :tourId="tour.id" />
                 </div>
             </div>
@@ -392,7 +392,7 @@ const relatedTours = computed(() => {
                                     }}</span>
                                     <span
                                         class="text-xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                                        {{ formatPrice(relatedTour?.price_usd) }}
+                                        {{ formatPrice(relatedTour?.priceUsd) }}
                                     </span>
                                 </div>
                             </div>

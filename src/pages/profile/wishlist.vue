@@ -9,11 +9,11 @@ const tours = computed(() => {
         id: tour.id,
         image: tour.thumbnail,
         title: tour.title,
-        price: tour.price_usd,
+        price: tour.priceUsd,
         duration: tour.duration,
         people: '2-4',
         tags: tour.type || [],
-        rating: tour.rating_stats?.average_rating || 5
+        rating: tour.ratingStats?.averageRating || 5
     }));
 });
 </script>

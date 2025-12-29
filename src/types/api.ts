@@ -7,21 +7,21 @@ export interface User {
   role: 'USER' | 'ADMIN';
   isAdmin?: boolean;
   provider: string | null;
-  created_at: string;
+  createdAt: string;
   avatar: string;
 }
 
 export interface TourItinerary {
   id: string;
-  hot_spot: HotSpot;
+  hotSpot: HotSpot;
   order: number;
-  activity_description?: string;
-  duration_minutes?: number;
+  activityDescription?: string;
+  durationMinutes?: number;
 }
 
 export interface RatingStats {
-  average_rating: number;
-  total_reviews: number;
+  averageRating: number;
+  totalReviews: number;
   breakdown?: Record<number, number>;
 }
 
@@ -32,7 +32,7 @@ export interface Review {
   rating: number;
   content: string;
   images?: string[];
-  created_at: string;
+  createdAt: string;
   user?: User;
 }
 
@@ -50,19 +50,21 @@ export interface Tour {
   images: string[];
   description: string;
   content: string;
-  price_usd: number;
+  priceUsd: number;
   duration: string;
-  duration_days: number;
-  depart_from: string;
+  durationDays: number;
+  departFrom: string;
   routes: string;
   type: string[];
-  is_featured: boolean;
-  created_at: string;
+  isFeatured: boolean;
+  createdAt: string;
   itineraries?: TourItinerary[];
-  suggested_vehicle?: Vehicle;
-  suggested_vehicle_id?: string | null;
-  rating_stats?: RatingStats;
+  suggestedVehicle?: Vehicle;
+  suggestedVehicleId?: string | null;
+  ratingStats?: RatingStats;
   reviews?: Review[];
+  durationRange: string;
+  discount: number;
 }
 
 export interface TourCardItem {
@@ -90,9 +92,9 @@ export interface ToursResponse {
 
 export interface TourFilter {
   q?: string;
-  price_min?: number;
-  price_max?: number;
-  duration_range?: string;
+  priceMin?: number;
+  priceMax?: number;
+  durationRange?: string;
   type?: string;
   p?: number;
   r?: number;
@@ -106,9 +108,9 @@ export interface BlogPost {
   content: string;
   thumbnail: string;
   category: string;
-  author_name: string;
+  authorName: string;
   tags: string[];
-  created_at: string;
+  createdAt: string;
 }
 
 export interface ServiceReview {
@@ -124,19 +126,17 @@ export interface Service {
   id: string;
   title: string;
   shortTitle: string;
-  short_title: string; // for compatibility
   description: string;
   thumbnail: string;
   icon: string;
   priceRange: string;
-  price_range: string; // for compatibility
   duration: string;
   features: string[];
   highlights: string[];
   included: string[];
   notIncluded: string[];
   reviews: ServiceReview[];
-  created_at: string;
+  createdAt: string;
 }
 
 // Auth DTOs
@@ -154,7 +154,7 @@ export interface LoginDto {
 }
 
 export interface AuthResponse {
-  access_token: string;
+  accessToken: string;
 }
 
 export interface UpdateUserDto {
@@ -182,8 +182,8 @@ export interface Comment {
   likeCount: number;
   dislikeCount: number;
   replyCount: number;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   replies?: Comment[];
 }
 
@@ -220,12 +220,12 @@ export interface HotSpot {
   lat: number;
   lng: number;
   images: string[];
-  opening_hours: string;
-  price_info: string;
-  is_hot: boolean;
+  openingHours: string;
+  priceInfo: string;
+  isHot: boolean;
   distance?: number;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
   nearby?: HotSpot[];
 }
 
@@ -239,41 +239,41 @@ export interface Vehicle {
   id: string;
   model: string;
   type: string;
-  image_url: string;
+  imageUrl: string;
   thumbnail: string;
   capacity: number;
-  price_per_km: number;
+  pricePerKm: number;
   amenities: string[];
-  is_available: boolean;
-  is_featured: boolean;
-  created_at: string;
-  updated_at: string;
+  isAvailable: boolean;
+  isFeatured: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateVehicleDto {
   model: string;
   type: string;
   capacity: number;
-  price_per_km: number;
+  pricePerKm: number;
   thumbnail?: string;
   amenities?: string[];
-  is_available?: boolean;
+  isAvailable?: boolean;
 }
 
 export interface UpdateVehicleDto {
   model?: string;
   type?: string;
   capacity?: number;
-  price_per_km?: number;
+  pricePerKm?: number;
   thumbnail?: string;
   amenities?: string[];
-  is_available?: boolean;
+  isAvailable?: boolean;
 }
 
 export interface EstimateRouteRequest {
-  hot_spot_ids: string[];
-  vehicle_id: string;
-  departure_name?: string;
+  hotSpotIds: string[];
+  vehicleId: string;
+  departureName?: string;
 }
 
 export interface EstimateRouteResponse {
@@ -283,9 +283,9 @@ export interface EstimateRouteResponse {
   vehicle: {
     id: string;
     model: string;
-    price_per_km: number;
+    pricePerKm: number;
   };
-  price_estimate_usd: number;
+  priceEstimateUsd: number;
   currency: string;
 }
 

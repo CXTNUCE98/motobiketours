@@ -10,9 +10,9 @@ const props = defineProps<{
 const { t } = useI18n();
 
 const getPercentage = (star: number) => {
-    if (!props.stats?.total_reviews || !props.stats?.breakdown) return 0;
+    if (!props.stats?.totalReviews || !props.stats?.breakdown) return 0;
     const count = props.stats.breakdown[star] || 0;
-    return Math.round((count / props.stats.total_reviews) * 100);
+    return Math.round((count / props.stats.totalReviews) * 100);
 };
 </script>
 
@@ -21,11 +21,11 @@ const getPercentage = (star: number) => {
         <div class="rating-overview__summary p-6 bg-gradient-to-br from-blue-50 to-white dark:from-zinc-800 dark:to-zinc-900 rounded-2xl border border-blue-100 dark:border-zinc-700 shadow-sm"
             :class="size === 'large' ? 'min-w-[180px]' : ''">
             <div class="text-5xl font-black text-blue-600 dark:text-blue-400 leading-none mb-2">
-                {{ stats?.average_rating || 0 }}
+                {{ stats?.averageRating || 0 }}
             </div>
-            <el-rate :model-value="stats?.average_rating || 0" disabled disabled-void-color="#DCDFE6" size="large" />
+            <el-rate :model-value="stats?.averageRating || 0" disabled disabled-void-color="#DCDFE6" size="large" />
             <div class="text-sm font-medium text-secondary mt-2">
-                {{ t('review.total', { count: stats?.total_reviews || 0 }) }}
+                {{ t('review.total', { count: stats?.totalReviews || 0 }) }}
             </div>
         </div>
 

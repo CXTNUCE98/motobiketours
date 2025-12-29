@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, reactive, computed, watch } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Delete, Upload } from '@element-plus/icons-vue';
 import type { FormInstance, FormRules } from 'element-plus';
 import type { HotSpot } from '~/types/api';
@@ -34,9 +33,9 @@ const formData = reactive({
     lat: 0,
     lng: 0,
     images: [] as string[],
-    opening_hours: '',
-    price_info: '',
-    is_hot: false,
+    openingHours: '',
+    priceInfo: '',
+    isHot: false,
 });
 
 const rules = reactive<FormRules>({
@@ -69,9 +68,9 @@ watch(() => props.spotData, (newData) => {
             lat: newData.lat,
             lng: newData.lng,
             images: newData.images || [],
-            opening_hours: newData.opening_hours,
-            price_info: newData.price_info,
-            is_hot: newData.is_hot,
+            openingHours: newData.openingHours,
+            priceInfo: newData.priceInfo,
+            isHot: newData.isHot,
         });
     } else {
         resetForm();
@@ -89,9 +88,9 @@ const resetForm = () => {
         lat: 0,
         lng: 0,
         images: [],
-        opening_hours: '',
-        price_info: '',
-        is_hot: false,
+        openingHours: '',
+        priceInfo: '',
+        isHot: false,
     });
 };
 
@@ -129,7 +128,7 @@ const removeImage = (index: number) => {
 
 const handleSubmit = async (formEl: FormInstance | undefined) => {
     if (!formEl) return;
-    await formEl.validate(async (valid, fields) => {
+    await formEl.validate(async (valid: boolean, fields: any) => {
         if (valid) {
             try {
                 if (isEditMode.value && props.spotData) {
@@ -211,14 +210,14 @@ const handleClose = () => {
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white"
-                            :label="t('common.openingHours')" prop="opening_hours">
-                            <el-input v-model="formData.opening_hours"
+                            :label="t('common.openingHours')" prop="openingHours">
+                            <el-input v-model="formData.openingHours"
                                 class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
                                 placeholder="e.g. 08:00 - 22:00" size="large" />
                         </el-form-item>
                         <el-form-item class="[&_.el-form-item\_\_label]:dark:text-white" :label="t('common.priceInfo')"
-                            prop="price_info">
-                            <el-input v-model="formData.price_info"
+                            prop="priceInfo">
+                            <el-input v-model="formData.priceInfo"
                                 class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
                                 placeholder="e.g. Free or 50.000đ" size="large" />
                         </el-form-item>
@@ -259,7 +258,7 @@ const handleClose = () => {
                     </el-form-item>
 
                     <el-form-item>
-                        <el-checkbox v-model="formData.is_hot" label="Mark as Hot Spot" size="large" border />
+                        <el-checkbox v-model="formData.isHot" label="Mark as Hot Spot" size="large" border />
                     </el-form-item>
                 </el-form>
             </div>

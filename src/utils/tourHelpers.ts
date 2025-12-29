@@ -44,12 +44,12 @@ export const transformTourToCardProps = (tour: Tour) => {
     id: tour.id,
     image: getTourImageUrl(tour.thumbnail),
     title: tour.title,
-    price: tour.price_usd, // Pass USD price directly
-    rating: 5, // Default rating, can be enhanced later
+    price: tour.priceUsd, // Pass USD price directly
+    rating: tour.ratingStats?.averageRating || 5,
     duration: tour.duration || '',
     people: getPeopleCount(tour.routes),
     to: `/tour/${tour.id}`,
-    badge: tour.type ? tour.type : undefined,
+    badge: tour.type?.[0],
     showPeulisLabel: false,
     tags: tour.routes ? tour.routes.split(',').map((r) => r.trim()) : [],
   };

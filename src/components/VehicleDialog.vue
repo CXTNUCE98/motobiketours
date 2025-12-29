@@ -30,10 +30,10 @@ const formData = reactive({
     model: '',
     type: 'Luxury Sedan',
     capacity: 4,
-    price_per_km: 0.5,
+    pricePerKm: 0.5,
     thumbnail: '',
     amenities: [] as string[],
-    is_available: true,
+    isAvailable: true,
 });
 
 const rules = reactive<FormRules>({
@@ -46,7 +46,7 @@ const rules = reactive<FormRules>({
     capacity: [
         { required: true, message: 'Please input capacity', trigger: 'blur' },
     ],
-    price_per_km: [
+    pricePerKm: [
         { required: true, message: 'Please input price per km', trigger: 'blur' },
     ],
 });
@@ -57,10 +57,10 @@ const resetForm = () => {
         model: '',
         type: 'Luxury Sedan',
         capacity: 4,
-        price_per_km: 0.5,
+        pricePerKm: 0.5,
         thumbnail: '',
         amenities: [],
-        is_available: true,
+        isAvailable: true,
     });
 };
 
@@ -70,10 +70,10 @@ watch(() => props.vehicleData, (newData) => {
             model: newData.model,
             type: newData.type,
             capacity: newData.capacity,
-            price_per_km: newData.price_per_km,
+            pricePerKm: newData.pricePerKm,
             thumbnail: newData.thumbnail,
             amenities: Array.isArray(newData.amenities) ? [...newData.amenities] : [],
-            is_available: newData.is_available,
+            isAvailable: newData.isAvailable,
         });
     } else {
         resetForm();
@@ -214,8 +214,8 @@ const handleClose = () => {
                 </el-form-item>
             </div>
 
-            <el-form-item :label="t('vehicles.price_per_km')" prop="price_per_km">
-                <el-input-number v-model="formData.price_per_km" :precision="2" :step="0.1" :min="0"
+            <el-form-item :label="t('vehicles.pricePerKm')" prop="pricePerKm">
+                <el-input-number v-model="formData.pricePerKm" :precision="2" :step="0.1" :min="0"
                     class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
             </el-form-item>
 
@@ -254,7 +254,7 @@ const handleClose = () => {
             </el-form-item>
 
             <el-form-item>
-                <el-switch v-model="formData.is_available" :active-text="t('vehicles.available')"
+                <el-switch v-model="formData.isAvailable" :active-text="t('vehicles.available')"
                     :inactive-text="t('vehicles.unavailable')" />
             </el-form-item>
         </el-form>

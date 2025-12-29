@@ -13,11 +13,11 @@ const tours = computed(() => {
         id: tour.id,
         image: tour.thumbnail,
         title: tour.title,
-        price: tour.price_usd,
+        price: tour.priceUsd,
         duration: tour.duration,
         type: tour.type?.[0] || 'Adventure',
-        rating: tour.rating_stats?.average_rating || 5,
-        departFrom: tour.depart_from,
+        rating: tour.ratingStats?.averageRating || 5,
+        departFrom: tour.departFrom,
         routes: tour.routes
     }));
 });
@@ -57,7 +57,7 @@ const viewTour = (id: string) => {
                         <div class="flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                             <p class="text-xs font-medium text-slate-500 dark:text-slate-400 capitalize">{{ tours.length
-                            }} {{ t('nav.tours') }}</p>
+                                }} {{ t('nav.tours') }}</p>
                         </div>
                     </div>
                 </div>

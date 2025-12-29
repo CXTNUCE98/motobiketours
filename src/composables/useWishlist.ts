@@ -54,6 +54,27 @@ export const useToggleWishlistMutation = () => {
       // Làm mới danh sách và trạng thái check
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       queryClient.invalidateQueries({ queryKey: ['wishlist-check', tourId] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-count'] });
     },
+  });
+};
+
+/**
+ * Hook lấy số lượng tour trong danh sách yêu thích
+ */
+export const useWishlistCountQuery = () => {
+  const { isAuthenticated } = useAuth();
+
+  return useQuery({
+    queryKey: ['wishlist-count'],
+    queryFn: async (): Promise<number> => {
+      const { getAuthHeaders } = useAuth();
+      const res = (await $motobikertoursApi('/wishlist/count', {
+        method: 'GET',
+        headers: getAuthHeaders(),
+      })) as { count: number };
+      return res.count;
+    },
+    enabled: isAuthenticated,
   });
 };

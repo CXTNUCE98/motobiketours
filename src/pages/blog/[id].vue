@@ -169,7 +169,7 @@ const getImageUrl = (thumbnail) => {
               <div>
                 <div class="text-white font-bold text-lg">{{ post?.author?.userName }}</div>
                 <div class="text-gray-300 text-sm flex items-center gap-2">
-                  <span>{{ formatDate(post?.created_at) }}</span>
+                  <span>{{ formatDate(post?.createdAt) }}</span>
                   <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
                   <span>{{ calculateReadTime(post?.content) }} min read</span>
                 </div>
@@ -340,7 +340,7 @@ const getImageUrl = (thumbnail) => {
                         class="font-bold text-gray-800 dark:text-white leading-snug mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2">
                         {{ relatedPost?.name }}</h4>
                       <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{
-                        formatDate(relatedPost?.created_at)
+                        formatDate(relatedPost?.createdAt)
                       }}</span>
                     </div>
                   </router-link>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { EditPen, Lock, Plus } from '@element-plus/icons-vue';
 
 const props = defineProps<{
     tourId: string;

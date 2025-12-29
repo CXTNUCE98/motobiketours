@@ -287,7 +287,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
                       <div>
                         <div class="text-white font-bold text-lg">{{ featuredPost?.author?.userName }}</div>
                         <div class="text-gray-400 text-sm flex items-center gap-2">
-                          <span>{{ formatDate(featuredPost?.created_at) }}</span>
+                          <span>{{ formatDate(featuredPost?.createdAt) }}</span>
                           <span class="w-1 h-1 bg-gray-500 rounded-full"></span>
                           <span>{{ calculateReadTime(featuredPost?.content) }} min read</span>
                         </div>
@@ -324,7 +324,7 @@ const totalBlogs = computed(() => meta.value?.total || 0)
               <div class="p-8 flex flex-col flex-grow">
                 <div class="mb-4 flex items-center gap-2 text-xs font-semibold text-gray-500 dark:text-gray-400">
                   <i class='bx bx-calendar text-indigo-500'></i>
-                  <span>{{ formatDate(post?.created_at) }}</span>
+                  <span>{{ formatDate(post?.createdAt) }}</span>
                 </div>
 
                 <h3

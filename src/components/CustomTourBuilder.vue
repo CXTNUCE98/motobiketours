@@ -53,8 +53,8 @@ const activeTab = ref('spots');
 watch([selectedSpots, selectedVehicle], () => {
     if (selectedSpots.value.length >= 2 && selectedVehicle.value) {
         estimateRoute({
-            hot_spot_ids: selectedSpots.value.map(s => s.id),
-            vehicle_id: selectedVehicle.value.id
+            hotSpotIds: selectedSpots.value.map(s => s.id),
+            vehicleId: selectedVehicle.value.id
         });
     }
 }, { deep: true });
@@ -74,7 +74,7 @@ const contactUs = () => {
     const spotsList = selectedSpots.value.map((s, i) => `${i + 1}. ${s.name} (${s.address})`).join('\n');
     const vehicleInfo = selectedVehicle.value ? `\nVehicle: ${selectedVehicle.value.model}` : '';
     contactSubject.value = `Custom Tour Request: ${selectedSpots.value.length} stops`;
-    contactMessage.value = `I would like to book a trip with the following itinerary:\n\n${spotsList}${vehicleInfo}\n\nTotal distance: ${estimate.value?.distance || 0} km\nEstimated Price: $${estimate.value?.price_estimate_usd || 0}`;
+    contactMessage.value = `I would like to book a trip with the following itinerary:\n\n${spotsList}${vehicleInfo}\n\nTotal distance: ${estimate.value?.distance || 0} km\nEstimated Price: $${estimate.value?.priceEstimateUsd || 0}`;
     showContactPopup.value = true;
 };
 </script>
@@ -208,7 +208,7 @@ const contactUs = () => {
                             <div>
                                 <p class="text-white/60 text-xs mb-1">{{ t('customTour.estimatedPrice') }}</p>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-4xl font-black">${{ estimate?.price_estimate_usd || 0 }}</span>
+                                    <span class="text-4xl font-black">${{ estimate?.priceEstimateUsd || 0 }}</span>
                                     <span class="text-sm font-medium">USD</span>
                                 </div>
                             </div>
