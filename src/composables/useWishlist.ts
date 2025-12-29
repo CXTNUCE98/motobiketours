@@ -5,6 +5,7 @@ import type { Tour } from '~/types/api';
  * Hook lấy danh sách yêu thích của người dùng hiện tại
  */
 export const useWishlistQuery = () => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['wishlist'],
     queryFn: async (): Promise<Tour[]> => {
@@ -14,6 +15,7 @@ export const useWishlistQuery = () => {
         headers: getAuthHeaders(),
       })) as Tour[];
     },
+    enabled: computed(() => isAuthenticated.value),
   });
 };
 
@@ -21,6 +23,7 @@ export const useWishlistQuery = () => {
  * Hook kiểm tra trạng thái yêu thích của một tour
  */
 export const useIsWishlistedQuery = (tourId: string | Ref<string>) => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ['wishlist-check', tourId],
     queryFn: async (): Promise<{ isWishlisted: boolean }> => {
@@ -30,7 +33,7 @@ export const useIsWishlistedQuery = (tourId: string | Ref<string>) => {
         headers: getAuthHeaders(),
       })) as { isWishlisted: boolean };
     },
-    enabled: computed(() => !!unref(tourId)),
+    enabled: computed(() => !!unref(tourId) && isAuthenticated.value),
   });
 };
 
@@ -74,6 +77,6 @@ export const useWishlistCountQuery = () => {
       })) as { count: number };
       return res.count;
     },
-    enabled: isAuthenticated,
+    enabled: computed(() => isAuthenticated.value),
   });
 };
