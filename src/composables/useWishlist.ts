@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import type { Tour } from '~/types/api';
-import { useAuth } from '~/composables/useAuth';
 
 /**
  * Hook lấy danh sách yêu thích của người dùng hiện tại

@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useVehiclesQuery } from '~/composables/useVehiclesQuery';
-import { useDeleteVehicleMutation } from '~/composables/useVehiclesMutation';
-import { useCustomTour } from '~/composables/useCustomTour';
-import { useAuth } from '~/composables/useAuth';
 import type { Vehicle } from '~/types/api';
-import { ElMessageBox, ElMessage } from 'element-plus';
 import { Plus, Edit, Delete } from '@element-plus/icons-vue';
-import VehicleDialog from './VehicleDialog.vue';
 
 const { selectedVehicle } = useCustomTour();
 const { data: vehicles, isLoading } = useVehiclesQuery();

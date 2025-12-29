@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { HotSpot, GetHotSpotsQuery } from '~/types/api';
-import { useAuth } from '~/composables/useAuth';
 
 const { t } = useI18n();
 const { user } = useAuth();

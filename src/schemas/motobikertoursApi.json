@@ -11,7 +11,9 @@
             "description": "Return hello message"
           }
         },
-        "tags": ["app"]
+        "tags": [
+          "app"
+        ]
       }
     },
     "/auth/register": {
@@ -44,7 +46,9 @@
             "description": "Email already exists"
           }
         },
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/auth/login": {
@@ -77,7 +81,9 @@
             "description": "Invalid credentials"
           }
         },
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/users": {
@@ -130,7 +136,9 @@
             }
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       },
       "post": {
         "operationId": "UsersController_create",
@@ -158,7 +166,9 @@
             }
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       }
     },
     "/users/{id}": {
@@ -190,7 +200,9 @@
             "description": "User not found"
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       },
       "patch": {
         "operationId": "UsersController_update",
@@ -269,7 +281,9 @@
             "description": "User not found"
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       },
       "delete": {
         "operationId": "UsersController_remove",
@@ -289,7 +303,9 @@
             "description": "The user has been successfully deleted."
           }
         },
-        "tags": ["users"]
+        "tags": [
+          "users"
+        ]
       }
     },
     "/tours": {
@@ -350,7 +366,11 @@
             "in": "query",
             "description": "Duration range (1-3, 4-7, 8+)",
             "schema": {
-              "enum": ["1-3", "4-7", "8+"],
+              "enum": [
+                "1-3",
+                "4-7",
+                "8+"
+              ],
               "type": "string"
             }
           },
@@ -394,7 +414,9 @@
             "description": "Return all tours"
           }
         },
-        "tags": ["tours"]
+        "tags": [
+          "tours"
+        ]
       },
       "post": {
         "operationId": "ToursController_create",
@@ -404,7 +426,7 @@
           "required": true,
           "description": "Tour data with thumbnail and images",
           "content": {
-            "multipart/form-data": {
+            "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CreateTourDto"
               }
@@ -416,7 +438,9 @@
             "description": "The tour has been successfully created."
           }
         },
-        "tags": ["tours"]
+        "tags": [
+          "tours"
+        ]
       }
     },
     "/tours/{id}": {
@@ -441,11 +465,13 @@
             "description": "Tour not found"
           }
         },
-        "tags": ["tours"]
+        "tags": [
+          "tours"
+        ]
       },
       "patch": {
         "operationId": "ToursController_update",
-        "summary": "Update a tour (supports both JSON and multipart/form-data)",
+        "summary": "Update a tour",
         "parameters": [
           {
             "name": "id",
@@ -458,13 +484,8 @@
         ],
         "requestBody": {
           "required": true,
-          "description": "Tour data to update (JSON or form-data)",
+          "description": "Tour data to update",
           "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTourDto"
-              }
-            },
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/UpdateTourDto"
@@ -477,7 +498,9 @@
             "description": "The tour has been successfully updated."
           }
         },
-        "tags": ["tours"]
+        "tags": [
+          "tours"
+        ]
       },
       "delete": {
         "operationId": "ToursController_remove",
@@ -497,7 +520,304 @@
             "description": "The tour has been successfully deleted."
           }
         },
-        "tags": ["tours"]
+        "tags": [
+          "tours"
+        ]
+      }
+    },
+    "/tours/estimate": {
+      "post": {
+        "operationId": "ToursController_estimate",
+        "summary": "Calculate estimated price and route",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EstimateTourDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Return estimation"
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      }
+    },
+    "/hot-spots": {
+      "post": {
+        "operationId": "HotSpotsController_executeCreate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateHotSpotDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hot spots"
+        ]
+      },
+      "get": {
+        "operationId": "HotSpotsController_executeFindAll",
+        "parameters": [
+          {
+            "name": "lat",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 15.9989,
+              "type": "number"
+            }
+          },
+          {
+            "name": "lng",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": 107.9961,
+              "type": "number"
+            }
+          },
+          {
+            "name": "category",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "Cảnh đẹp",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hot spots"
+        ]
+      }
+    },
+    "/hot-spots/{id}": {
+      "get": {
+        "operationId": "HotSpotsController_executeFindOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hot spots"
+        ]
+      },
+      "patch": {
+        "operationId": "HotSpotsController_executeUpdate",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHotSpotDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hot spots"
+        ]
+      },
+      "delete": {
+        "operationId": "HotSpotsController_executeRemove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Hot spots"
+        ]
+      }
+    },
+    "/vehicles": {
+      "post": {
+        "operationId": "VehiclesController_create",
+        "summary": "Tạo xe mới (Admin)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "VehiclesController_findAll",
+        "summary": "Lấy danh sách tất cả xe",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      }
+    },
+    "/vehicles/{id}": {
+      "get": {
+        "operationId": "VehiclesController_findOne",
+        "summary": "Lấy thông tin chi tiết xe",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ]
+      },
+      "patch": {
+        "operationId": "VehiclesController_update",
+        "summary": "Cập nhật thông tin xe (Admin)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "VehiclesController_remove",
+        "summary": "Xóa xe (Admin)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Vehicles"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
     "/services": {
@@ -540,7 +860,9 @@
             "description": "Return all services"
           }
         },
-        "tags": ["services"]
+        "tags": [
+          "services"
+        ]
       }
     },
     "/services/{id}": {
@@ -565,128 +887,8 @@
             "description": "Service not found"
           }
         },
-        "tags": ["services"]
-      }
-    },
-    "/wishlist": {
-      "get": {
-        "operationId": "WishlistController_getUserWishlist",
-        "summary": "Lấy danh sách tour yêu thích của người dùng hiện tại",
-        "responses": {
-          "200": {
-            "description": "Danh sách tour",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Tour"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": ["Wishlist"],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/wishlist/toggle/{tourId}": {
-      "post": {
-        "operationId": "WishlistController_toggleWishlist",
-        "summary": "Thêm hoặc xóa tour khỏi danh sách yêu thích",
-        "parameters": [
-          {
-            "name": "tourId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Đã thay đổi trạng thái yêu thích"
-          }
-        },
-        "tags": ["Wishlist"],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/wishlist/check/{tourId}": {
-      "get": {
-        "operationId": "WishlistController_isWishlisted",
-        "summary": "Kiểm tra xem tour có trong wishlist không",
-        "parameters": [
-          {
-            "name": "tourId",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Trạng thái yêu thích",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "isWishlisted": {
-                      "type": "boolean"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": ["Wishlist"],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/wishlist/count": {
-      "get": {
-        "operationId": "WishlistController_getWishlistCount",
-        "summary": "Lấy số lượng tour trong wishlist",
-        "responses": {
-          "200": {
-            "description": "Số lượng tour",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "count": {
-                      "type": "number"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": ["Wishlist"],
-        "security": [
-          {
-            "bearer": []
-          }
+        "tags": [
+          "services"
         ]
       }
     },
@@ -716,7 +918,9 @@
             "description": "Blog with this name already exists"
           }
         },
-        "tags": ["blog"]
+        "tags": [
+          "blog"
+        ]
       },
       "get": {
         "operationId": "BlogController_findAll",
@@ -784,7 +988,9 @@
             "description": "Return all blog posts"
           }
         },
-        "tags": ["blog"]
+        "tags": [
+          "blog"
+        ]
       }
     },
     "/blog/upload-image": {
@@ -823,7 +1029,9 @@
             "description": "No file uploaded or invalid file"
           }
         },
-        "tags": ["blog"]
+        "tags": [
+          "blog"
+        ]
       }
     },
     "/blog/{id}": {
@@ -848,7 +1056,9 @@
             "description": "Blog post not found"
           }
         },
-        "tags": ["blog"]
+        "tags": [
+          "blog"
+        ]
       }
     },
     "/comments": {
@@ -877,7 +1087,9 @@
             "description": "Parent comment not found"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       },
       "get": {
         "operationId": "CommentsController_findAll",
@@ -929,7 +1141,9 @@
             "description": "Return paginated comments"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       }
     },
     "/comments/tree/{blogId}": {
@@ -970,7 +1184,9 @@
             "description": "Return comments with nested replies"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       }
     },
     "/comments/{id}": {
@@ -996,7 +1212,9 @@
             "description": "Comment not found"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       },
       "delete": {
         "operationId": "CommentsController_remove",
@@ -1032,7 +1250,9 @@
             "description": "Comment not found"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       }
     },
     "/comments/{id}/like": {
@@ -1068,7 +1288,9 @@
             "description": "Comment not found"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       }
     },
     "/comments/{id}/like-status/{userId}": {
@@ -1100,65 +1322,54 @@
             "description": "Return like status"
           }
         },
-        "tags": ["comments"]
+        "tags": [
+          "comments"
+        ]
       }
     },
-    "/vehicles": {
-      "get": {
-        "operationId": "VehiclesController_findAll",
-        "summary": "Lấy danh sách tất cả xe",
-        "responses": {
-          "200": {
-            "description": "Return all vehicles",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Vehicle"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": ["Vehicles"]
-      },
+    "/reviews": {
       "post": {
-        "operationId": "VehiclesController_create",
-        "summary": "Tạo xe mới",
+        "operationId": "ReviewsController_createReview",
+        "summary": "Tạo đánh giá mới cho tour",
+        "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateVehicleDto"
+                "$ref": "#/components/schemas/CreateReviewDto"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Vehicle created",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Vehicle"
-                }
-              }
-            }
+            "description": "Đánh giá đã được tạo thành công"
+          },
+          "401": {
+            "description": "Chưa xác thực"
+          },
+          "404": {
+            "description": "Không tìm thấy tour"
           }
         },
-        "tags": ["Vehicles"]
+        "tags": [
+          "Reviews"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     },
-    "/vehicles/{id}": {
+    "/reviews/tour/{tourId}": {
       "get": {
-        "operationId": "VehiclesController_findOne",
-        "summary": "Lấy thông tin chi tiết xe",
+        "operationId": "ReviewsController_getTourReviews",
+        "summary": "Lấy danh sách đánh giá của một tour",
         "parameters": [
           {
-            "name": "id",
+            "name": "tourId",
             "required": true,
             "in": "path",
             "schema": {
@@ -1168,103 +1379,140 @@
         ],
         "responses": {
           "200": {
-            "description": "Return vehicle by id",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Vehicle"
-                }
-              }
-            }
+            "description": "Danh sách đánh giá"
           }
         },
-        "tags": ["Vehicles"]
-      },
-      "patch": {
-        "operationId": "VehiclesController_update",
-        "summary": "Cập nhật thông tin xe",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": { "type": "string" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateVehicleDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Vehicle updated",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Vehicle"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["Vehicles"]
-      },
-      "delete": {
-        "operationId": "VehiclesController_remove",
-        "summary": "Xóa xe",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "204": { "description": "Vehicle removed" },
-          "200": { "description": "Vehicle removed" }
-        },
-        "tags": ["Vehicles"]
+        "tags": [
+          "Reviews"
+        ]
       }
     },
-
-    "/tours/estimate": {
-      "post": {
-        "operationId": "ToursController_estimate",
-        "summary": "Estimate tour price and route",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/EstimateTourDto"
-              }
+    "/reviews/tour/{tourId}/stats": {
+      "get": {
+        "operationId": "ReviewsController_getTourRatingStats",
+        "summary": "Lấy thống kê đánh giá của một tour",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thống kê (điểm trung bình, tổng số)"
+          }
         },
+        "tags": [
+          "Reviews"
+        ]
+      }
+    },
+    "/wishlist/toggle/{tourId}": {
+      "post": {
+        "operationId": "WishlistController_toggleWishlist",
+        "summary": "Thêm hoặc xóa tour khỏi danh sách yêu thích",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
-            "description": "Estimate result",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/EstimateRouteResponse"
-                }
-              }
-            }
+            "description": "Đã thay đổi trạng thái yêu thích"
+          },
+          "401": {
+            "description": "Chưa xác thực"
           }
         },
-        "tags": ["tours"]
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/wishlist": {
+      "get": {
+        "operationId": "WishlistController_getUserWishlist",
+        "summary": "Lấy danh sách tour yêu thích của người dùng hiện tại",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Danh sách tour"
+          }
+        },
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/wishlist/check/{tourId}": {
+      "get": {
+        "operationId": "WishlistController_isWishlisted",
+        "summary": "Kiểm tra xem tour có trong wishlist không",
+        "parameters": [
+          {
+            "name": "tourId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trạng thái yêu thích"
+          }
+        },
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/wishlist/count": {
+      "get": {
+        "operationId": "WishlistController_getWishlistCount",
+        "summary": "Lấy số lượng tour trong wishlist",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Số lượng tour"
+          }
+        },
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
       }
     }
   },
-
   "info": {
     "title": "Motobike Tours API",
     "description": "The Motobike Tours API description",
@@ -1319,18 +1567,27 @@
             "default": ""
           }
         },
-        "required": ["userName", "email", "password", "isAdmin", "timezone", "avatar"]
+        "required": [
+          "userName",
+          "email",
+          "password",
+          "isAdmin",
+          "timezone",
+          "avatar"
+        ]
       },
       "AuthResponseDto": {
         "type": "object",
         "properties": {
-          "access_token": {
+          "accessToken": {
             "type": "string",
             "description": "JWT Access Token",
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJzdWIiOiI1NTBlODQwMC1lMjliLTQxZDQtYTcxNi00NDY2NTU0NDAwMDAiLCJpc0FkbWluIjpmYWxzZSwiaWF0IjoxNzAwMDAwMDAwLCJleHAiOjE3MDAwMDM2MDB9.signature"
           }
         },
-        "required": ["access_token"]
+        "required": [
+          "accessToken"
+        ]
       },
       "LoginDto": {
         "type": "object",
@@ -1346,7 +1603,10 @@
             "description": "User password (min 6 chars)"
           }
         },
-        "required": ["email", "password"]
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "User": {
         "type": "object",
@@ -1387,6 +1647,30 @@
           }
         }
       },
+      "ItineraryDto": {
+        "type": "object",
+        "properties": {
+          "hotSpotId": {
+            "type": "string",
+            "description": "UUID of the hot spot"
+          },
+          "order": {
+            "type": "number",
+            "description": "Order of specific activity"
+          },
+          "activityDescription": {
+            "type": "string",
+            "description": "Description of what to do here"
+          },
+          "durationMinutes": {
+            "type": "number",
+            "description": "Estimated time spent in minutes"
+          }
+        },
+        "required": [
+          "hotSpotId"
+        ]
+      },
       "CreateTourDto": {
         "type": "object",
         "properties": {
@@ -1397,11 +1681,14 @@
           },
           "thumbnail": {
             "type": "string",
-            "format": "binary",
-            "description": "Thumbnail image file"
+            "example": "https://res.cloudinary.com/.../thumb.jpg",
+            "description": "Thumbnail image URL"
           },
           "images": {
-            "example": ["https://res.cloudinary.com/.../img1.jpg", "https://res.cloudinary.com/.../img2.jpg"],
+            "example": [
+              "https://res.cloudinary.com/.../img1.jpg",
+              "https://res.cloudinary.com/.../img2.jpg"
+            ],
             "description": "Array of image URLs (comma‑separated for SQLite)",
             "type": "array",
             "items": {
@@ -1435,7 +1722,11 @@
           },
           "durationRange": {
             "type": "string",
-            "enum": ["1-3", "4-7", "8+"],
+            "enum": [
+              "1-3",
+              "4-7",
+              "8+"
+            ],
             "example": "4-7",
             "description": "Duration range for filtering (1-3, 4-7, 8+)"
           },
@@ -1450,18 +1741,36 @@
             "description": "Route description"
           },
           "type": {
-            "type": "string",
-            "example": "Adventure",
-            "description": "Tour type/category"
+            "example": [
+              "Adventure",
+              "Nature"
+            ],
+            "description": "Tour type/category",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "isFeatured": {
             "type": "boolean",
             "example": true,
             "description": "Featured tour flag"
+          },
+          "itineraries": {
+            "description": "List of itinerary items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItineraryDto"
+            }
+          },
+          "suggestedVehicleId": {
+            "type": "string",
+            "description": "Recommended vehicle for this tour"
           }
         },
         "required": [
           "title",
+          "thumbnail",
           "description",
           "content",
           "priceUsd",
@@ -1483,11 +1792,14 @@
           },
           "thumbnail": {
             "type": "string",
-            "format": "binary",
-            "description": "Thumbnail image file"
+            "example": "https://res.cloudinary.com/.../thumb.jpg",
+            "description": "Thumbnail image URL"
           },
           "images": {
-            "example": ["https://res.cloudinary.com/.../img1.jpg", "https://res.cloudinary.com/.../img2.jpg"],
+            "example": [
+              "https://res.cloudinary.com/.../img1.jpg",
+              "https://res.cloudinary.com/.../img2.jpg"
+            ],
             "description": "Array of image URLs (comma‑separated for SQLite)",
             "type": "array",
             "items": {
@@ -1521,7 +1833,11 @@
           },
           "durationRange": {
             "type": "string",
-            "enum": ["1-3", "4-7", "8+"],
+            "enum": [
+              "1-3",
+              "4-7",
+              "8+"
+            ],
             "example": "4-7",
             "description": "Duration range for filtering (1-3, 4-7, 8+)"
           },
@@ -1536,14 +1852,251 @@
             "description": "Route description"
           },
           "type": {
-            "type": "string",
-            "example": "Adventure",
-            "description": "Tour type/category"
+            "example": [
+              "Adventure",
+              "Nature"
+            ],
+            "description": "Tour type/category",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "isFeatured": {
             "type": "boolean",
             "example": true,
             "description": "Featured tour flag"
+          },
+          "itineraries": {
+            "description": "List of itinerary items",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ItineraryDto"
+            }
+          },
+          "suggestedVehicleId": {
+            "type": "string",
+            "description": "Recommended vehicle for this tour"
+          }
+        }
+      },
+      "EstimateTourDto": {
+        "type": "object",
+        "properties": {
+          "hotSpotIds": {
+            "example": [
+              "id1",
+              "id2"
+            ],
+            "description": "List of HotSpot IDs",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "vehicleId": {
+            "type": "string",
+            "example": "vehicle-uuid",
+            "description": "Selected vehicle ID"
+          },
+          "departureName": {
+            "type": "string",
+            "example": "Hanoi",
+            "description": "Custom departure point"
+          }
+        },
+        "required": [
+          "hotSpotIds",
+          "vehicleId",
+          "departureName"
+        ]
+      },
+      "CreateHotSpotDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Cầu Vàng - Bà Nà Hills"
+          },
+          "description": {
+            "type": "string",
+            "example": "Cây cầu biểu tượng với đôi bàn tay khổng lồ nâng đỡ."
+          },
+          "category": {
+            "type": "string",
+            "example": "Cảnh đẹp"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4.8
+          },
+          "address": {
+            "type": "string",
+            "example": "Hòa Vang, Đà Nẵng"
+          },
+          "lat": {
+            "type": "number",
+            "example": 15.9989
+          },
+          "lng": {
+            "type": "number",
+            "example": 107.9961
+          },
+          "images": {
+            "example": [
+              "https://vietnam.travel/sites/default/files/styles/top_banner/public/2021-07/Golden%20Bridge%20Da%20Nang.jpg"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "openingHours": {
+            "type": "string",
+            "example": "08:00 - 22:00"
+          },
+          "priceInfo": {
+            "type": "string",
+            "example": "850.000đ - 1.050.000đ"
+          },
+          "isHot": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "name",
+          "category",
+          "address",
+          "lat",
+          "lng"
+        ]
+      },
+      "UpdateHotSpotDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Cầu Vàng - Bà Nà Hills"
+          },
+          "description": {
+            "type": "string",
+            "example": "Cây cầu biểu tượng với đôi bàn tay khổng lồ nâng đỡ."
+          },
+          "category": {
+            "type": "string",
+            "example": "Cảnh đẹp"
+          },
+          "rating": {
+            "type": "number",
+            "example": 4.8
+          },
+          "address": {
+            "type": "string",
+            "example": "Hòa Vang, Đà Nẵng"
+          },
+          "lat": {
+            "type": "number",
+            "example": 15.9989
+          },
+          "lng": {
+            "type": "number",
+            "example": 107.9961
+          },
+          "images": {
+            "example": [
+              "https://vietnam.travel/sites/default/files/styles/top_banner/public/2021-07/Golden%20Bridge%20Da%20Nang.jpg"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "openingHours": {
+            "type": "string",
+            "example": "08:00 - 22:00"
+          },
+          "priceInfo": {
+            "type": "string",
+            "example": "850.000đ - 1.050.000đ"
+          },
+          "isHot": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "CreateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "example": "Kia Carnival"
+          },
+          "type": {
+            "type": "string",
+            "example": "SUV"
+          },
+          "capacity": {
+            "type": "number",
+            "example": 7
+          },
+          "pricePerKm": {
+            "type": "number",
+            "example": 1.5
+          },
+          "thumbnail": {
+            "type": "string"
+          },
+          "amenities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "model",
+          "type",
+          "capacity",
+          "pricePerKm"
+        ]
+      },
+      "UpdateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "model": {
+            "type": "string",
+            "example": "Kia Carnival"
+          },
+          "type": {
+            "type": "string",
+            "example": "SUV"
+          },
+          "capacity": {
+            "type": "number",
+            "example": 7
+          },
+          "pricePerKm": {
+            "type": "number",
+            "example": 1.5
+          },
+          "thumbnail": {
+            "type": "string"
+          },
+          "amenities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "default": true
           }
         }
       },
@@ -1571,7 +2124,9 @@
             "example": "<p>Content here...</p><figure class=\"image\"><img src=\"image-BIZu3Aad\"></figure>"
           },
           "tags": {
-            "example": ["2412421"],
+            "example": [
+              "2412421"
+            ],
             "type": "array",
             "items": {
               "type": "string"
@@ -1587,7 +2142,11 @@
           },
           "status": {
             "type": "string",
-            "enum": ["waiting", "published", "draft"],
+            "enum": [
+              "waiting",
+              "published",
+              "draft"
+            ],
             "example": "waiting"
           },
           "author": {
@@ -1628,7 +2187,11 @@
             "example": "https://res.cloudinary.com/..."
           }
         },
-        "required": ["imageId", "url", "secureUrl"]
+        "required": [
+          "imageId",
+          "url",
+          "secureUrl"
+        ]
       },
       "CreateCommentDto": {
         "type": "object",
@@ -1655,7 +2218,11 @@
             "description": "Parent comment ID for nested replies"
           }
         },
-        "required": ["blogId", "content", "author"]
+        "required": [
+          "blogId",
+          "content",
+          "author"
+        ]
       },
       "LikeCommentDto": {
         "type": "object",
@@ -1666,75 +2233,54 @@
           },
           "type": {
             "type": "string",
-            "enum": ["like", "dislike"],
+            "enum": [
+              "like",
+              "dislike"
+            ],
             "example": "like"
           }
         },
-        "required": ["userId", "type"]
+        "required": [
+          "userId",
+          "type"
+        ]
       },
-      "Vehicle": {
+      "CreateReviewDto": {
         "type": "object",
         "properties": {
-          "id": { "type": "string" },
-          "model": { "type": "string" },
-          "type": { "type": "string" },
-          "capacity": { "type": "number" },
-          "pricePerKm": { "type": "number" },
-          "thumbnail": { "type": "string" },
-          "amenities": { "type": "array", "items": { "type": "string" } },
-          "isAvailable": { "type": "boolean" }
-        }
-      },
-      "CreateVehicleDto": {
-        "type": "object",
-        "properties": {
-          "model": { "type": "string" },
-          "type": { "type": "string" },
-          "capacity": { "type": "number" },
-          "pricePerKm": { "type": "number" },
-          "thumbnail": { "type": "string" },
-          "amenities": { "type": "array", "items": { "type": "string" } },
-          "isAvailable": { "type": "boolean" }
-        },
-        "required": ["model", "type", "capacity", "pricePerKm"]
-      },
-      "UpdateVehicleDto": {
-        "type": "object",
-        "properties": {
-          "model": { "type": "string" },
-          "type": { "type": "string" },
-          "capacity": { "type": "number" },
-          "pricePerKm": { "type": "number" },
-          "thumbnail": { "type": "string" },
-          "amenities": { "type": "array", "items": { "type": "string" } },
-          "isAvailable": { "type": "boolean" }
-        }
-      },
-      "EstimateTourDto": {
-        "type": "object",
-        "properties": {
-          "hotSpotIds": { "type": "array", "items": { "type": "string" } },
-          "vehicleId": { "type": "string" },
-          "departureName": { "type": "string" }
-        },
-        "required": ["hotSpotIds", "vehicleId"]
-      },
-      "EstimateRouteResponse": {
-        "type": "object",
-        "properties": {
-          "distance": { "type": "number" },
-          "duration": { "type": "number" },
-          "priceEstimateUsd": { "type": "number" },
-          "geometry": { "type": "string" },
-          "vehicle": {
-            "type": "object",
-            "properties": {
-              "id": { "type": "string" },
-              "model": { "type": "string" },
-              "pricePerKm": { "type": "number" }
+          "tourId": {
+            "type": "string",
+            "example": "550e8400-e29b-411d-a716-446655440000",
+            "description": "ID của tour được đánh giá"
+          },
+          "rating": {
+            "type": "number",
+            "example": 5,
+            "description": "Số sao đánh giá (1-5)",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "content": {
+            "type": "string",
+            "example": "Chuyến đi tuyệt vời, hướng dẫn viên rất nhiệt tình!",
+            "description": "Nội dung bình luận"
+          },
+          "images": {
+            "example": [
+              "https://res.cloudinary.com/.../image1.jpg"
+            ],
+            "description": "Danh sách URL hình ảnh thực tế",
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           }
-        }
+        },
+        "required": [
+          "tourId",
+          "rating",
+          "content"
+        ]
       }
     }
   }

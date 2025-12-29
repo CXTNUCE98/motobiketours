@@ -103,9 +103,15 @@ const handleLogin = () => {
   if (Object.keys(errors).length > 0) return
   loginMutate(loginForm, {
     onSuccess: (data) => {
-      setAuthState(data.access_token)
-      ElMessage.success(t('auth.loginSuccess'))
-      close()
+      const token = data.accessToken
+      if (token) {
+        setAuthState(token)
+        ElMessage.success(t('auth.loginSuccess'))
+        close()
+      } else {
+        logger.error('Login failed: No access token received')
+        ElMessage.error(t('auth.loginFailed'))
+      }
     },
     onError: (error: any) => {
       logger.error('Login failed:', error)
@@ -119,9 +125,15 @@ const handleRegister = () => {
   if (Object.keys(errors).length > 0) return
   registerMutate(registerForm, {
     onSuccess: (data) => {
-      setAuthState(data.access_token)
-      ElMessage.success(t('auth.registerSuccess'))
-      close()
+      const token = data.accessToken
+      if (token) {
+        setAuthState(token)
+        ElMessage.success(t('auth.registerSuccess'))
+        close()
+      } else {
+        logger.error('Registration failed: No access token received')
+        ElMessage.error(t('auth.registerFailed'))
+      }
     },
     onError: (error: any) => {
       logger.error('Registration failed:', error)

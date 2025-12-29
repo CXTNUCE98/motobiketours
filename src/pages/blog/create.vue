@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 import { useCreateBlogMutation, useUploadImageMutation } from '~/composables/useBlogMutation'
-import { useAuth } from '~/composables/useAuth'
 
 const countWords = (html: string) => {
     const text = html.replace(/<[^>]*>/g, ' ');

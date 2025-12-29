@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import type { Review, CreateReviewDto } from '~/types/api';
-import { useAuth } from '~/composables/useAuth';
 
 /**
  * Hook lấy danh sách đánh giá của một tour

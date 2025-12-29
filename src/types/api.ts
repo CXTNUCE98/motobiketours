@@ -157,6 +157,10 @@ export interface AuthResponse {
   accessToken: string;
 }
 
+export interface AuthResponseDto {
+  accessToken: string;
+}
+
 export interface UpdateUserDto {
   userName?: string;
   email?: string;

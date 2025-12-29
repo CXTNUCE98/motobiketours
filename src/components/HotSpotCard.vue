@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { HotSpot } from '~/types/api';
-import { useAuth } from '~/composables/useAuth';
 
 defineProps<{
     spot: HotSpot;

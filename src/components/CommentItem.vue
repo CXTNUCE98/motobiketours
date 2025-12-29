@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
-import { useAuth } from '~/composables/useAuth'
 import { logger } from '~/utils/logger'
 
 const props = defineProps({
