@@ -420,7 +420,25 @@
       "ha_giang": "Hà Giang",
       "sapa": "Sapa",
       "phu_quoc": "Phú Quốc"
-    }
+    },
+    "tourCode": "Mã Tour",
+    "route": "Lộ trình",
+    "group": "Nhóm",
+    "time": "Thời gian",
+    "overview": "Tổng quan",
+    "contact": "Liên hệ",
+    "bookTourNow": "Đặt Tour",
+    "saveTour": "Lưu Tour",
+    "shareThisTour": "Chia sẻ Tour",
+    "moneyBack": "Đảm bảo hoàn tiền 100%",
+    "departingFrom": "Khởi hành từ",
+    "cancelBefore": "Hủy miễn phí trước 24h",
+    "notFoundTour": "Không tìm thấy tour",
+    "notFoundTourDesc": "Tour bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.",
+    "goBackTourList": "Quay lại danh sách tour",
+    "pricePerPerson": "Giá cho mỗi người",
+    "groupSize": "Số lượng",
+    "saved": "Đã lưu"
   },
   "footer": {
     "address": "Địa chỉ",

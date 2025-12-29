@@ -1,5 +1,6 @@
 import { getRequestIP } from 'h3';
 
+// @ts-ignore
 export default defineEventHandler(async (event) => {
   const clientIp = getRequestIP(event, { xForwardedFor: true });
   const isLocal =

@@ -9,6 +9,7 @@ const props = defineProps<{
     difficulty?: string;
     tourId: string;
 }>();
+const { t } = useI18n();
 
 const isWishlisted = ref(false);
 
@@ -62,7 +63,7 @@ const formatPrice = (price: number | string) => {
                     {{ formatPrice(originalPrice) }}
                 </span>
             </div>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Giá cho mỗi người</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ t('tour.pricePerPerson') }}</p>
         </div>
 
         <!-- Tour Highlights -->
@@ -76,7 +77,7 @@ const formatPrice = (price: number | string) => {
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Thời gian</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('tour.time') }}</p>
                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ duration }}</p>
                 </div>
             </div>
@@ -90,12 +91,12 @@ const formatPrice = (price: number | string) => {
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Số lượng</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('tour.groupSize') }}</p>
                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ groupSize }}</p>
                 </div>
             </div>
 
-            <div v-if="difficulty" class="flex items-center gap-3">
+            <!-- <div v-if="difficulty" class="flex items-center gap-3">
                 <div
                     class="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center flex-shrink-0">
                     <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,7 +108,7 @@ const formatPrice = (price: number | string) => {
                     <p class="text-xs text-gray-500 dark:text-gray-400">Độ khó</p>
                     <p class="text-sm font-semibold text-gray-800 dark:text-gray-200">{{ difficulty }}</p>
                 </div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Action Buttons -->
@@ -119,7 +120,7 @@ const formatPrice = (price: number | string) => {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                 </svg>
-                <span class="text-lg">Đặt Tour Ngay</span>
+                <span class="text-lg">{{ t('tour.bookTourNow') }}</span>
             </button>
 
             <button @click="toggleWishlist"
@@ -132,13 +133,13 @@ const formatPrice = (price: number | string) => {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                <span>{{ isWishlisted ? 'Đã lưu' : 'Lưu tour' }}</span>
+                <span>{{ isWishlisted ? t('tour.saved') : t('tour.saveTour') }}</span>
             </button>
         </div>
 
         <!-- Share Section -->
         <div class="pt-6 border-t-2 border-gray-100 dark:border-gray-700">
-            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Chia sẻ tour này</p>
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.shareThisTour') }}</p>
             <div class="flex gap-3">
                 <button @click="shareOn('facebook')"
                     class="flex-1 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-lg transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 shadow-md">
@@ -173,8 +174,8 @@ const formatPrice = (price: number | string) => {
                         clip-rule="evenodd" />
                 </svg>
                 <div>
-                    <p class="font-semibold text-gray-800 dark:text-gray-200">Đảm bảo hoàn tiền 100%</p>
-                    <p class="text-xs text-gray-500 dark:text-gray-400">Hủy miễn phí trước 24h</p>
+                    <p class="font-semibold text-gray-800 dark:text-gray-200">{{ t('tour.moneyBack') }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ t('tour.cancelBefore') }}</p>
                 </div>
             </div>
         </div>

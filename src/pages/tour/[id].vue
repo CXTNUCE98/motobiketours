@@ -1,13 +1,9 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router';
-
-import { ref, computed, watch } from 'vue';
-import TourGallery from '@/components/TourGallery.vue';
-import BookingCard from '@/components/BookingCard.vue';
 import { sanitizeHtml } from '~/utils/sanitize';
-import { useTourByIdQuery, useToursQuery } from '~/composables/useToursQuery';
 
 const route = useRoute();
+const { t } = useI18n();
 const { formatPrice } = useCurrency();
 const localePath = useLocalePath();
 const id = computed(() => String(route.params.id || ''));
@@ -88,7 +84,7 @@ const relatedTours = computed(() => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Tất cả tours
+                    {{ t('tour.allTours') }}
                 </NuxtLink>
                 <span class="text-gray-400">/</span>
                 <span class="text-gray-700 dark:text-gray-300 font-medium capitalize">{{ formattedLocation }}</span>
@@ -96,14 +92,15 @@ const relatedTours = computed(() => {
 
             <!-- Header -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-8 transition-colors duration-300">
-                <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-3">Tour và Giá</h1>
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white mb-3">{{ t('tour.title') }}</h1>
                 <div class="flex items-center gap-2 text-orange-600 dark:text-orange-400 font-medium">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
                             d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                             clip-rule="evenodd" />
                     </svg>
-                    <span>Khởi hành từ: <span class="font-bold capitalize">{{ formattedLocation }}</span></span>
+                    <span>{{ t('tour.departingFrom') }}: <span class="font-bold capitalize">{{ formattedLocation
+                            }}</span></span>
                 </div>
             </div>
 
@@ -130,7 +127,8 @@ const relatedTours = computed(() => {
                                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>Thời gian:</strong> {{ item?.duration }}</span>
+                                        <span><strong>{{ t('tour.departingFrom') }}:</strong> {{ item?.depart_from
+                                            }}</span>
                                     </div>
                                     <div class="flex items-start gap-2">
                                         <svg class="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5"
@@ -139,7 +137,7 @@ const relatedTours = computed(() => {
                                                 d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>Lộ trình:</strong> {{ item?.routes }}</span>
+                                        <span><strong>{{ t('tour.route') }}:</strong> {{ item?.routes }}</span>
                                     </div>
                                     <div class="flex items-start gap-2">
                                         <svg class="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5"
@@ -149,7 +147,7 @@ const relatedTours = computed(() => {
                                                 d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
                                                 clip-rule="evenodd" />
                                         </svg>
-                                        <span><strong>Loại tour:</strong> {{ item?.type }}</span>
+                                        <span><strong>{{ t('tour.type') }}:</strong> {{ item?.type }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -162,11 +160,11 @@ const relatedTours = computed(() => {
                                 <div class="flex gap-3">
                                     <NuxtLink :to="localePath(`/tour/${item?.id}`)"
                                         class="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
-                                        Chi tiết
+                                        {{ t('tour.detail') }}
                                     </NuxtLink>
                                     <NuxtLink :to="localePath('/contact')"
                                         class="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg">
-                                        Đặt ngay
+                                        {{ t('tour.bookTourNow') }}
                                     </NuxtLink>
                                 </div>
                             </div>
@@ -189,7 +187,7 @@ const relatedTours = computed(() => {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Tất cả tours
+                    {{ t('tour.allTours') }}
                 </NuxtLink>
                 <span class="text-gray-400">/</span>
                 <span class="text-gray-700 dark:text-gray-300 font-medium">{{ tour?.title?.substring(0, 50) }}...</span>
@@ -206,7 +204,7 @@ const relatedTours = computed(() => {
                                 d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Khởi hành từ:</strong> {{ tour?.depart_from }}</span>
+                        <span><strong>{{ t('tour.departFrom') }}:</strong> {{ tour?.depart_from }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
@@ -214,7 +212,7 @@ const relatedTours = computed(() => {
                                 d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                 clip-rule="evenodd" />
                         </svg>
-                        <span><strong>Thời gian:</strong> {{ tour?.duration }}</span>
+                        <span><strong>{{ t('tour.duration') }}:</strong> {{ tour?.duration }}</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex">
@@ -249,7 +247,7 @@ const relatedTours = computed(() => {
                                         d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
                                         clip-rule="evenodd" />
                                 </svg>
-                                <div class="text-sm text-gray-600 dark:text-gray-400">Thời gian</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ t('tour.time') }}</div>
                                 <div class="font-bold text-gray-800 dark:text-white">{{ tour?.duration }}</div>
                             </div>
                             <div
@@ -259,7 +257,7 @@ const relatedTours = computed(() => {
                                     <path
                                         d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                                 </svg>
-                                <div class="text-sm text-gray-600 dark:text-gray-400">Nhóm</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ t('tour.group') }}</div>
                                 <div class="font-bold text-gray-800 dark:text-white">2-10 người</div>
                             </div>
                             <div
@@ -270,7 +268,7 @@ const relatedTours = computed(() => {
                                         d="M12 1.586l-4 4v12.828l4-4V1.586zM3.707 3.293A1 1 0 002 4v10a1 1 0 00.293.707L6 18.414V5.586L3.707 3.293zM17.707 5.293L14 1.586v12.828l2.293 2.293A1 1 0 0018 16V6a1 1 0 00-.293-.707z"
                                         clip-rule="evenodd" />
                                 </svg>
-                                <div class="text-sm text-gray-600 dark:text-gray-400">Lộ trình</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ t('tour.route') }}</div>
                                 <div class="font-bold text-gray-800 dark:text-white text-xs">{{
                                     tour?.routes?.substring(0,
                                         15) }}...</div>
@@ -284,7 +282,7 @@ const relatedTours = computed(() => {
                                         d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
                                         clip-rule="evenodd" />
                                 </svg>
-                                <div class="text-sm text-gray-600 dark:text-gray-400">Mã tour</div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">{{ t('tour.tourCode') }}</div>
                                 <div class="font-bold text-gray-800 dark:text-white">{{ tourCode || 'N/A' }}</div>
                             </div>
                         </div>
@@ -295,7 +293,7 @@ const relatedTours = computed(() => {
                                 <button @click="setActive('overview')"
                                     class="relative pb-4 font-semibold transition-colors duration-300"
                                     :class="activeTab === 'overview' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
-                                    Tổng quan
+                                    {{ t('tour.overview') }}
                                     <div v-if="activeTab === 'overview'"
                                         class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full">
                                     </div>
@@ -303,7 +301,7 @@ const relatedTours = computed(() => {
                                 <button @click="setActive('contact')"
                                     class="relative pb-4 font-semibold transition-colors duration-300"
                                     :class="activeTab === 'contact' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
-                                    Liên hệ
+                                    {{ t('tour.contact') }}
                                     <div v-if="activeTab === 'contact'"
                                         class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full">
                                     </div>
@@ -333,7 +331,7 @@ const relatedTours = computed(() => {
             <div v-if="relatedTours.length > 0" class="mt-12">
                 <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-8 text-center">
                     <span class="bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                        Tour liên quan
+                        {{ t('tour.relatedTours') }}
                     </span>
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -380,15 +378,15 @@ const relatedTours = computed(() => {
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">Không tìm thấy tour</h2>
-            <p class="text-gray-600 dark:text-gray-400 mb-8">Tour bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+            <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-4">{{ t('tour.notFoundTour') }}</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">{{ t('tour.notFoundTourDesc') }}</p>
             <NuxtLink :to="localePath('/tour')"
                 class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-semibold hover:scale-105 transition-transform duration-300 shadow-lg">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Quay lại danh sách tour
+                {{ t('tour.goBackTourList') }}
             </NuxtLink>
         </div>
     </div>

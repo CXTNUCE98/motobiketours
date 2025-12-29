@@ -420,7 +420,25 @@
       "ha_giang": "Ha Giang",
       "sapa": "Sapa",
       "phu_quoc": "Phu Quoc"
-    }
+    },
+    "tourCode": "Tour Code",
+    "route": "Route",
+    "group": "Group",
+    "time": "Time",
+    "overview": "Overview",
+    "contact": "Contact",
+    "bookTourNow": "Book Tour Now",
+    "saveTour": "Save Tour",
+    "shareThisTour": "Share This Tour",
+    "moneyBack": "100% Money-Back Guarantee",
+    "departingFrom": "Departing From",
+    "cancelBefore": "Free cancellation up to 24 hours in advance.",
+    "notFoundTour": "Not Found Tour",
+    "notFoundTourDesc": "The tour you are looking for either doesn't exist or has been removed.",
+    "goBackTourList": "Return to tour list",
+    "pricePerPerson": "Price per person",
+    "groupSize": "Group size",
+    "saved": "Saved"
   },
   "footer": {
     "address": "Address",
