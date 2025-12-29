@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-const { t } = useI18n();
 import { useRouter } from 'vue-router';
 import type { TourCardItem } from '@/types/api';
 
@@ -23,9 +21,32 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const router = useRouter();
-const isWishlisted = ref(false);
-
+const { t } = useI18n();
+const { isAuthenticated } = useAuth();
 const { formatPrice } = useCurrency();
+const localePath = useLocalePath();
+
+const tourId = computed(() => props.tour?.id || '');
+
+// Wishlist Logic
+const { data: wishlistStatus } = useIsWishlistedQuery(tourId);
+const toggleWishlistMutation = useToggleWishlistMutation();
+
+const isWishlisted = computed(() => wishlistStatus.value?.isWishlisted || false);
+
+const toggleWishlist = async (e: Event) => {
+    e.stopPropagation();
+    if (!isAuthenticated.value) {
+        ElMessage.warning(t('review.loginRequired'));
+        return;
+    }
+
+    try {
+        await toggleWishlistMutation.mutateAsync(tourId.value);
+    } catch (err) {
+        ElMessage.error(t('review.error'));
+    }
+};
 
 const formattedPrice = computed(() => {
     return formatPrice(props.tour?.price);
@@ -36,8 +57,6 @@ const formattedOriginalPrice = computed(() => {
     if (!oPrice) return '';
     return formatPrice(oPrice);
 });
-
-const localePath = useLocalePath();
 
 const handleBookTour = () => {
     if (props.tour?.to) {
@@ -53,11 +72,6 @@ const handleCardClick = () => {
     } else {
         router.push(localePath(`/tour/${props.tour?.id}`));
     }
-};
-
-const toggleWishlist = (e: Event) => {
-    e.stopPropagation();
-    isWishlisted.value = !isWishlisted.value;
 };
 </script>
 

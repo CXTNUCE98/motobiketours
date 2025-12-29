@@ -196,7 +196,11 @@
     "touchExhibits": "Do not touch any exhibits without permission.",
     "directions": "Directions",
     "none": "None",
-    "contactUs": "Contact Us"
+    "contactUs": "Contact Us",
+    "upload": "Upload",
+    "remove": "Remove",
+    "edit": "Edit",
+    "save": "Save"
   },
   "booking": {
     "bookNow": "Book Now"
@@ -347,7 +351,8 @@
       "activity": "Activity",
       "activityPlaceholder": "Describe activity here...",
       "vehicleLabel": "Vehicle:",
-      "itineraryLabel": "Itinerary ({count} stops):"
+      "itineraryLabel": "Itinerary ({count} stops):",
+      "discount": "Discount"
     },
     "validation": {
       "titleRequired": "Title is required",
@@ -438,7 +443,11 @@
     "goBackTourList": "Return to tour list",
     "pricePerPerson": "Price per person",
     "groupSize": "Group size",
-    "saved": "Saved"
+    "saved": "Saved",
+    "map": "Itinerary Map",
+    "reviews": "Reviews",
+    "itinerary": "Itinerary",
+    "allTours": "All Tours"
   },
   "footer": {
     "address": "Address",
@@ -568,5 +577,33 @@
     "createSuccess": "Vehicle created successfully!",
     "updateSuccess": "Vehicle updated successfully!",
     "deleteSuccess": "Vehicle deleted successfully!"
+  },
+  "review": {
+    "title": "Reviews & Ratings",
+    "average": "Average Rating",
+    "total": "{count} reviews",
+    "write": "Write your review",
+    "rating": "Rating",
+    "content": "Review Content",
+    "placeholder": "Share your experience about this tour...",
+    "submit": "Submit Review",
+    "success": "Thank you for your review!",
+    "error": "An error occurred, please try again later.",
+    "loginRequired": "Please login to write a review",
+    "images": "Photos",
+    "imageUploadSuccess": "Image uploaded successfully",
+    "imageUploadError": "Failed to upload image",
+    "noReviews": "No reviews yet for this tour.",
+    "validation": {
+      "contentRequired": "Please enter your review content"
+    }
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "empty": "Your wishlist is empty",
+    "addSuccess": "Added to wishlist",
+    "removeSuccess": "Removed from wishlist",
+    "myWishlist": "My Favorite Tours",
+    "savedItems": "Saved Tours"
   }
 }

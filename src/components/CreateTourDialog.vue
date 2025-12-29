@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { ref, reactive, computed, watch, nextTick, onBeforeUnmount } from 'vue';
 import { ElMessage, ElMessageBox, type FormRules } from 'element-plus';
-import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check, Loading, Menu } from '@element-plus/icons-vue';
+import { Upload, Picture, Delete, ArrowRight, ArrowLeft, Check, Loading, Menu, Plus } from '@element-plus/icons-vue';
 import { type Tour, type HotSpot, type Vehicle } from '~/types/api';
-import { useCreateTourMutation, useUpdateTourMutation } from '~/composables/useToursMutation';
-import { useVehiclesQuery } from '~/composables/useVehiclesQuery';
-import { useHotSpotsQuery } from '~/composables/useHotSpotsQuery';
 import draggable from 'vuedraggable';
 
 interface ItineraryItem {
@@ -29,6 +25,7 @@ interface TourForm {
     is_featured: boolean;
     suggested_vehicle_id: string | null;
     itineraries: ItineraryItem[];
+    discount: number;
 }
 
 const { t } = useI18n();
@@ -108,7 +105,8 @@ const formData = reactive<TourForm>({
     images: [],
     is_featured: false,
     suggested_vehicle_id: null,
-    itineraries: []
+    itineraries: [],
+    discount: 0
 });
 
 const { data: vehicles } = useVehiclesQuery();
@@ -208,7 +206,8 @@ const resetForm = () => {
         images: [],
         is_featured: false,
         suggested_vehicle_id: null,
-        itineraries: []
+        itineraries: [],
+        discount: 0
     });
     thumbnailPreview.value = '';
     galleryPreviews.value = [];
@@ -223,13 +222,26 @@ watch(() => props.tourData, (newVal) => {
         // Cleanup blob URLs before setting new data
         cleanupObjectURLs();
 
-        const { id, created_at, itineraries, suggested_vehicle, ...tourDataWithoutMeta } = newVal;
-        Object.assign(formData, tourDataWithoutMeta);
+        // Gán dữ liệu tường minh để tránh dính rating_stats, reviews, etc.
+        formData.title = newVal.title || '';
+        formData.type = Array.isArray(newVal.type) ? [...newVal.type] : [];
+        formData.price_usd = newVal.price_usd || 0;
+        formData.duration = newVal.duration || '';
+        formData.duration_range = (newVal as any).duration_range || '';
+        formData.depart_from = newVal.depart_from || '';
+        formData.routes = newVal.routes || '';
+        formData.description = newVal.description || '';
+        formData.content = newVal.content || '';
+        formData.thumbnail = newVal.thumbnail || '';
+        formData.images = Array.isArray(newVal.images) ? [...newVal.images] : [];
+        formData.is_featured = !!newVal.is_featured;
+        formData.suggested_vehicle_id = newVal.suggested_vehicle_id || null;
+        formData.discount = (newVal as any).discount || 0;
 
         // Map itineraries from response to form format
-        if (itineraries) {
-            formData.itineraries = itineraries.map(item => ({
-                hot_spot_id: item.hot_spot.id,
+        if (newVal.itineraries) {
+            formData.itineraries = newVal.itineraries.map(item => ({
+                hot_spot_id: item.hot_spot?.id || '',
                 activity_description: item.activity_description || '',
                 duration_minutes: item.duration_minutes || 0
             }));
@@ -237,8 +249,8 @@ watch(() => props.tourData, (newVal) => {
             formData.itineraries = [];
         }
 
-        thumbnailPreview.value = newVal.thumbnail;
-        galleryPreviews.value = [...newVal.images];
+        thumbnailPreview.value = newVal.thumbnail || '';
+        galleryPreviews.value = Array.isArray(newVal.images) ? [...newVal.images] : [];
     } else {
         resetForm();
     }
@@ -366,9 +378,13 @@ const handleSubmit = async () => {
             duration_minutes: item.duration_minutes
         }))
     };
-    // Remove id and created_at if they exist in formData
+    // Remove meta fields if they exist in formData
     delete (submitData as any).id;
     delete (submitData as any).created_at;
+    delete (submitData as any).rating_stats;
+    delete (submitData as any).reviews;
+    delete (submitData as any).suggested_vehicle;
+    delete (submitData as any).duration_days;
 
     if (isEditMode.value && props.tourData?.id) {
         updateTourMutation({ id: props.tourData.id, data: submitData }, {
@@ -453,6 +469,12 @@ onBeforeUnmount(() => {
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
                                 <el-input-number v-model="formData.price_usd" :min="0" :step="10" size="large"
                                     class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
+                            </el-form-item>
+
+                            <el-form-item :label="t('tour.form.discount') || 'Giảm giá (%)'" prop="discount"
+                                class="[&_.el-form-item\_\_label]:dark:text-white">
+                                <el-input-number v-model="formData.discount" :min="0" :max="100" :step="5" size="large"
+                                    class="w-full [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
                             </el-form-item>
 
                             <el-form-item :label="t('tour.form.duration')" prop="duration"
@@ -573,7 +595,7 @@ onBeforeUnmount(() => {
                         <div class="mt-8">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-xl font-bold dark:text-white">{{ t('tour.form.itineraryTitle') }}</h3>
-                                <el-button type="primary" :icon="Check" circle @click="addItineraryItem" />
+                                <el-button type="primary" :icon="Plus" circle @click="addItineraryItem" />
                             </div>
 
                             <div class="space-y-4">

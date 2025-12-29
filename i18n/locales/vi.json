@@ -196,7 +196,11 @@
     "touchExhibits": "Không tự ý chạm vào hiện vật trưng bày (nếu có).",
     "directions": "Chỉ đường",
     "none": "Không",
-    "contactUs": "Liên hệ chúng tôi"
+    "contactUs": "Liên hệ chúng tôi",
+    "upload": "Tải lên",
+    "remove": "Xóa",
+    "edit": "Sửa",
+    "save": "Lưu"
   },
   "booking": {
     "bookNow": "Đặt bây giờ"
@@ -347,7 +351,8 @@
       "activity": "Hoạt động",
       "activityPlaceholder": "Mô tả hoạt động tại đây...",
       "vehicleLabel": "Phương tiện:",
-      "itineraryLabel": "Lộ trình ({count} điểm):"
+      "itineraryLabel": "Lộ trình ({count} điểm):",
+      "discount": "Giảm giá"
     },
     "validation": {
       "titleRequired": "Vui lòng nhập tên tour",
@@ -438,13 +443,18 @@
     "goBackTourList": "Quay lại danh sách tour",
     "pricePerPerson": "Giá cho mỗi người",
     "groupSize": "Số lượng",
-    "saved": "Đã lưu"
+    "saved": "Đã lưu",
+    "map": "Sơ đồ lộ trình",
+    "reviews": "Đánh giá",
+    "itinerary": "Lịch trình",
+    "allTours": "Tất cả tour"
   },
   "footer": {
     "address": "Địa chỉ",
     "email": "Nhận email",
     "phone": "Số điện thoại",
     "featuredTours": "Tour Nổi Bật",
+    "noItinerary": "Chưa có lịch trình chi tiết cho tour này",
     "tourGallery": "Thư Viện Ảnh",
     "tourCategories": {
       "north": "Tour Miền Bắc",
@@ -568,5 +578,33 @@
     "createSuccess": "Thêm xe thành công!",
     "updateSuccess": "Cập nhật xe thành công!",
     "deleteSuccess": "Xóa xe thành công!"
+  },
+  "review": {
+    "title": "Đánh giá & Nhận xét",
+    "average": "Đánh giá trung bình",
+    "total": "{count} đánh giá",
+    "write": "Viết đánh giá của bạn",
+    "rating": "Điểm đánh giá",
+    "content": "Nội dung nhận xét",
+    "placeholder": "Chia sẻ trải nghiệm của bạn về tour này...",
+    "submit": "Gửi đánh giá",
+    "success": "Cảm ơn bạn đã đánh giá!",
+    "error": "Có lỗi xảy ra, vui lòng thử lại sau.",
+    "loginRequired": "Vui lòng đăng nhập để viết đánh giá",
+    "images": "Hình ảnh thực tế",
+    "imageUploadSuccess": "Tải ảnh lên thành công",
+    "imageUploadError": "Lỗi khi tải ảnh lên",
+    "noReviews": "Chưa có đánh giá nào cho tour này.",
+    "validation": {
+      "contentRequired": "Vui lòng nhập nội dung nhận xét"
+    }
+  },
+  "wishlist": {
+    "title": "Danh sách yêu thích",
+    "empty": "Danh sách yêu thích của bạn đang trống",
+    "addSuccess": "Đã thêm vào danh sách yêu thích",
+    "removeSuccess": "Đã xóa khỏi danh sách yêu thích",
+    "myWishlist": "Tour yêu thích của tôi",
+    "savedItems": "Tour đã lưu"
   }
 }

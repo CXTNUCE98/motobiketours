@@ -2,11 +2,7 @@
 import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
-import TourFilter from '../../components/TourFilter.vue';
 import { Plus } from '@element-plus/icons-vue';
-import { useAuth } from '~/composables/useAuth';
-import { useToursQuery } from '~/composables/useToursQuery';
-import { useDeleteTourMutation } from '~/composables/useToursMutation';
 import { logger } from '~/utils/logger';
 
 const route = useRoute();
@@ -20,8 +16,6 @@ const viewMode = ref('grid'); // 'grid' or 'list'
 const sortBy = ref('default'); // 'default', 'price-low', 'price-high', 'duration'
 const showCreateDialog = ref(false);
 const selectedTour = ref<any | null>(null);
-
-const queryClient = useQueryClient();
 
 // Auth
 const { user } = useAuth();
@@ -154,7 +148,6 @@ const editTour = (tourId: string) => {
 };
 
 const handleCreateSuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['tours'] });
     selectedTour.value = null;
 };
 

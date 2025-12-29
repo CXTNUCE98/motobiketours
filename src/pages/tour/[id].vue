@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { useRoute } from 'vue-router';
 import { sanitizeHtml } from '~/utils/sanitize';
 
 const route = useRoute();
@@ -11,13 +10,19 @@ const id = computed(() => String(route.params.id || ''));
 // Fetch Tour Detail
 const { data: tour, isLoading: isLoadingTour, error: tourError } = useTourByIdQuery(id);
 
-// Fetch City Tours (only if tour fetch fails or if we explicitly want to check for location)
-const formattedLocation = computed(() => id.value.replace(/-/g, ' '));
+// Fetch Reviews
+const { data: reviews } = useTourReviewsQuery(id);
 
-const { data: cityTours, isLoading: isLoadingCityTours } = useToursQuery(computed(() => ({ q: formattedLocation.value })));
+// Fetch City Tours (only if tour fetch fails and id is not a UUID)
+const isUuid = computed(() => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id.value));
+const formattedLocation = computed(() => id.value.replace(/-/g, ' '));
+const { data: cityTours, isLoading: isLoadingCityTours } = useToursQuery(
+    computed(() => ({ q: formattedLocation.value })),
+    computed(() => !!tourError.value && !isUuid.value)
+);
 
 const isDepartFrom = computed(() => !!tourError.value && (cityTours.value as any)?.data && (cityTours.value as any).data.length > 0);
-const isNotFound = computed(() => !!tourError.value && (!(cityTours.value as any)?.data || (cityTours.value as any).data.length === 0) && !isLoadingCityTours.value);
+const isNotFound = computed(() => !!tourError.value && (!isUuid.value ? (!(cityTours.value as any)?.data || (cityTours.value as any).data.length === 0) : true) && !isLoadingCityTours.value);
 
 const activeTab = ref('overview');
 
@@ -54,8 +59,12 @@ const setActive = (tab: string) => {
     activeTab.value = tab;
 };
 
+
 // Related tours (same departure location)
-const { data: relatedToursData } = useToursQuery(computed(() => ({ q: tour.value?.depart_from })));
+const { data: relatedToursData } = useToursQuery(
+    computed(() => ({ q: tour.value?.depart_from })),
+    computed(() => !!tour.value?.depart_from)
+);
 
 const relatedTours = computed(() => {
     const data = (relatedToursData.value as any)?.data || [];
@@ -103,7 +112,6 @@ const relatedTours = computed(() => {
                             }}</span></span>
                 </div>
             </div>
-
             <!-- Tours List -->
             <div class="space-y-6">
                 <div v-for="item in cityTours?.data" :key="item.id"
@@ -216,13 +224,11 @@ const relatedTours = computed(() => {
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="flex">
-                            <svg v-for="i in 5" :key="i" class="w-5 h-5 text-yellow-400" fill="currentColor"
-                                viewBox="0 0 20 20">
-                                <path
-                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
+                            <el-rate :model-value="tour?.rating_stats?.average_rating || 0" disabled
+                                disabled-void-color="#DCDFE6" size="small" />
                         </div>
-                        <span class="font-semibold">5.0</span>
+                        <span class="font-semibold">{{ tour?.rating_stats?.average_rating || 0 }}</span>
+                        <span class="text-secondary text-sm">({{ tour?.rating_stats?.total_reviews || 0 }})</span>
                     </div>
                 </div>
             </div>
@@ -289,20 +295,13 @@ const relatedTours = computed(() => {
 
                         <!-- Tabs -->
                         <div class="border-b-2 border-gray-100 dark:border-gray-700 mb-6">
-                            <div class="flex gap-8">
-                                <button @click="setActive('overview')"
-                                    class="relative pb-4 font-semibold transition-colors duration-300"
-                                    :class="activeTab === 'overview' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
-                                    {{ t('tour.overview') }}
-                                    <div v-if="activeTab === 'overview'"
-                                        class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full">
-                                    </div>
-                                </button>
-                                <button @click="setActive('contact')"
-                                    class="relative pb-4 font-semibold transition-colors duration-300"
-                                    :class="activeTab === 'contact' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
-                                    {{ t('tour.contact') }}
-                                    <div v-if="activeTab === 'contact'"
+                            <div class="flex gap-6 overflow-x-auto pb-0.5 scrollbar-hide">
+                                <button v-for="tab in ['overview', 'itinerary', 'reviews', 'contact']" :key="tab"
+                                    @click="setActive(tab)"
+                                    class="relative pb-4 font-semibold transition-colors duration-300 whitespace-nowrap"
+                                    :class="activeTab === tab ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'">
+                                    {{ t(`tour.${tab}`) }}
+                                    <div v-if="activeTab === tab"
                                         class="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full">
                                     </div>
                                 </button>
@@ -313,7 +312,44 @@ const relatedTours = computed(() => {
                         <div class="prose dark:prose-invert max-w-none">
                             <div v-if="activeTab === 'overview'" v-html="sanitizeHtml(overviewHtml)"
                                 class="leading-relaxed text-gray-700 dark:text-gray-300"></div>
-                            <div v-else v-html="sanitizeHtml(contactHtml)"
+
+                            <div v-else-if="activeTab === 'itinerary'" class="space-y-6">
+                                <template v-if="tour?.itineraries && tour.itineraries.length > 0">
+                                    <div
+                                        class="h-[400px] w-full rounded-2xl overflow-hidden border border-gray-100 dark:border-zinc-800">
+                                        <InteractiveMap :itineraries="tour.itineraries" />
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div v-for="(item, idx) in tour.itineraries" :key="item.id" class="flex gap-4">
+                                            <div class="flex flex-col items-center">
+                                                <div
+                                                    class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+                                                    {{ idx + 1 }}
+                                                </div>
+                                                <div v-if="idx < tour.itineraries.length - 1"
+                                                    class="w-0.5 flex-grow bg-blue-100 dark:bg-blue-900/30 my-1"></div>
+                                            </div>
+                                            <div class="pb-6">
+                                                <h4 class="font-bold text-primary-text">{{ item.hot_spot?.name }}</h4>
+                                                <p class="text-sm text-secondary mt-1">{{ item.activity_description }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div v-else class="py-12 text-center bg-gray-50 dark:bg-zinc-900/50 rounded-3xl">
+                                    <el-empty
+                                        :description="t('tour.noItinerary') || 'Chưa có lịch trình cho tour này'" />
+                                </div>
+                            </div>
+
+                            <div v-else-if="activeTab === 'reviews'" class="space-y-8">
+                                <RatingOverview :stats="tour.rating_stats" size="large" />
+                                <ReviewForm :tour-id="tour.id" />
+                                <ReviewList :reviews="reviews || []" />
+                            </div>
+
+                            <div v-else-if="activeTab === 'contact'" v-html="sanitizeHtml(contactHtml)"
                                 class="leading-relaxed text-gray-700 dark:text-gray-300">
                             </div>
                         </div>

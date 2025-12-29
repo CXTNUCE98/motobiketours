@@ -1,3 +1,4 @@
+import { computed, ref, unref, type Ref, type ComputedRef } from 'vue';
 import { useQuery, keepPreviousData } from '@tanstack/vue-query';
 import type { Tour, ToursResponse, TourFilter } from '~/types/api';
 import { cleanObject } from '~/utils/api';
@@ -5,7 +6,7 @@ import { cleanObject } from '~/utils/api';
 /**
  * Query lấy danh sách tour với bộ lọc
  */
-export const useToursQuery = (filters: any) => {
+export const useToursQuery = (filters: any, enabled: Ref<boolean> | ComputedRef<boolean> = ref(true)) => {
   return useQuery({
     queryKey: ['tours', filters],
     queryFn: async (): Promise<ToursResponse> => {
@@ -15,6 +16,7 @@ export const useToursQuery = (filters: any) => {
       return res as ToursResponse;
     },
     placeholderData: keepPreviousData,
+    enabled,
   });
 };
 

@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watchEffect } from 'vue'
-import { ElMessage, ElDialog, ElButton } from 'element-plus'
-import { useAuth } from '~/composables/useAuth'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
 import type { User, UpdateUserDto } from '~/types/api'
-import { useUserProfileQuery } from '~/composables/useUserQuery'
-import { useUpdateUserMutation } from '~/composables/useUserMutation'
 import { validateForm, validationRules, type ValidationErrors } from '~/utils/validation'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
@@ -13,6 +9,7 @@ import { logger } from '~/utils/logger'
 
 const { isAuthenticated, user: authUser, getAuthHeaders, fetchUserProfile, updateUserLocal } = useAuth()
 const queryClient = useQueryClient()
+const { t } = useI18n()
 
 // Redirect if not authenticated
 onMounted(() => {
@@ -251,6 +248,11 @@ const displayName = computed(() => {
 
 // Check if profile is being updated (either uploading avatar or updating profile)
 const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.value)
+
+// Wishlist
+const { openDrawer: openWishlistDrawer } = useWishlistDrawer()
+const { data: wishlistData } = useWishlistQuery()
+const wishlistCount = computed(() => wishlistData.value?.length || 0)
 </script>
 
 <template>
@@ -361,6 +363,31 @@ const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.v
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
+
+                                <button @click="openWishlistDrawer"
+                                    class="w-full flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors group">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                            </svg>
+                                        </div>
+                                        <div class="text-left">
+                                            <p class="text-xs text-slate-500 dark:text-slate-400">{{
+                                                t('wishlist.savedItems') }} ({{ wishlistCount }})</p>
+                                            <p class="text-sm font-semibold text-slate-900 dark:text-white">{{
+                                                t('wishlist.myWishlist') }}</p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-5 h-5 text-red-400 group-hover:translate-x-1 transition-transform"
+                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
                     </div>

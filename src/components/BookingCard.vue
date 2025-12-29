@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const props = defineProps<{
     price: number | string;
@@ -9,18 +9,30 @@ const props = defineProps<{
     difficulty?: string;
     tourId: string;
 }>();
+
 const { t } = useI18n();
-
-const isWishlisted = ref(false);
-
-const toggleWishlist = () => {
-    isWishlisted.value = !isWishlisted.value;
-};
-
-import { useRouter } from 'vue-router';
-
+const { isAuthenticated } = useAuth();
 const router = useRouter();
 const localePath = useLocalePath();
+
+// Wishlist Logic
+const { data: wishlistStatus } = useIsWishlistedQuery(computed(() => props.tourId));
+const toggleWishlistMutation = useToggleWishlistMutation();
+
+const isWishlisted = computed(() => wishlistStatus.value?.isWishlisted || false);
+
+const toggleWishlist = async () => {
+    if (!isAuthenticated.value) {
+        ElMessage.warning(t('review.loginRequired'));
+        return;
+    }
+
+    try {
+        await toggleWishlistMutation.mutateAsync(props.tourId);
+    } catch (err) {
+        ElMessage.error(t('review.error'));
+    }
+};
 
 const handleBookNow = () => {
     // Navigate to contact or booking page

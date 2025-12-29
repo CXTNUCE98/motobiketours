@@ -19,6 +19,30 @@ export interface TourItinerary {
   duration_minutes?: number;
 }
 
+export interface RatingStats {
+  average_rating: number;
+  total_reviews: number;
+  breakdown?: Record<number, number>;
+}
+
+export interface Review {
+  id: string;
+  userId: string;
+  tourId: string;
+  rating: number;
+  content: string;
+  images?: string[];
+  created_at: string;
+  user?: User;
+}
+
+export interface CreateReviewDto {
+  tourId: string;
+  rating: number;
+  content: string;
+  images?: string[];
+}
+
 export interface Tour {
   id: string;
   title: string;
@@ -37,6 +61,8 @@ export interface Tour {
   itineraries?: TourItinerary[];
   suggested_vehicle?: Vehicle;
   suggested_vehicle_id?: string | null;
+  rating_stats?: RatingStats;
+  reviews?: Review[];
 }
 
 export interface TourCardItem {
