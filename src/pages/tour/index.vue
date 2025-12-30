@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { useQuery, keepPreviousData, useQueryClient } from '@tanstack/vue-query';
 import { Plus } from '@element-plus/icons-vue';
 import { logger } from '~/utils/logger';
 

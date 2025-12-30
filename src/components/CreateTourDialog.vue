@@ -417,6 +417,13 @@ function handleUpdateDuration(value: string) {
     formData.durationRange = mapDurationRange[value] || '';
 }
 
+const optionsType = [
+    { label: t('tour.types.Adventure'), value: 'Adventure' },
+    { label: t('tour.types.Culture'), value: 'Culture' },
+    { label: t('tour.types.Nature'), value: 'Nature' },
+    { label: t('tour.types.Food'), value: 'Food' },
+];
+
 // Cleanup on component unmount
 onBeforeUnmount(() => {
     cleanupObjectURLs();
@@ -457,11 +464,11 @@ onBeforeUnmount(() => {
 
                             <el-form-item :label="t('tour.form.type')" prop="type"
                                 class="[&_.el-form-item\_\_label]:dark:text-white">
-                                <el-select v-model="formData.type" multiple
+                                <el-select v-model="formData.type" multiple clearable
                                     :placeholder="t('tour.form.typePlaceholder')" size="large"
                                     class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
-                                    <el-option v-for="(label, value) in t('tour.types' as any)" :key="value"
-                                        :label="label" :value="value" />
+                                    <el-option v-for="option in optionsType" :key="option.value" :label="option.label"
+                                        :value="option.value" />
                                 </el-select>
                             </el-form-item>
 
