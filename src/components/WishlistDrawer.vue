@@ -57,7 +57,7 @@ const viewTour = (id: string) => {
                         <div class="flex items-center gap-2">
                             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                             <p class="text-xs font-medium text-slate-500 dark:text-slate-400 capitalize">{{ tours.length
-                                }} {{ t('nav.tours') }}</p>
+                            }} {{ t('nav.tours') }}</p>
                         </div>
                     </div>
                 </div>
@@ -176,7 +176,7 @@ const viewTour = (id: string) => {
                                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
                             </div>
-                            <span class="font-medium">{{ t('tour.departFromLabel') }} {{ tour.departFrom }}</span>
+                            <span class="font-medium">{{ t('tour.form.departFromLabel') }} {{ tour.departFrom }}</span>
                         </div>
                         <div v-if="tour.routes"
                             class="flex items-start gap-3 text-xs text-slate-500 dark:text-slate-400">
