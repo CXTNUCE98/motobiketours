@@ -993,47 +993,6 @@
         ]
       }
     },
-    "/blog/upload-image": {
-      "post": {
-        "operationId": "BlogController_uploadImage",
-        "summary": "Upload image for blog content",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Image uploaded successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadImageResponseDto"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "No file uploaded or invalid file"
-          }
-        },
-        "tags": [
-          "blog"
-        ]
-      }
-    },
     "/blog/{id}": {
       "get": {
         "operationId": "BlogController_findOne",
@@ -1058,6 +1017,47 @@
         },
         "tags": [
           "blog"
+        ]
+      }
+    },
+    "/upload": {
+      "post": {
+        "operationId": "UploadController_uploadImage",
+        "summary": "Tải một ảnh lên",
+        "parameters": [
+          {
+            "name": "folder",
+            "required": false,
+            "in": "query",
+            "description": "Tên thư mục trên Cloudinary (ví dụ: blog, tours, profile)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Upload"
         ]
       }
     },
@@ -2169,28 +2169,6 @@
           "category",
           "status",
           "author"
-        ]
-      },
-      "UploadImageResponseDto": {
-        "type": "object",
-        "properties": {
-          "imageId": {
-            "type": "string",
-            "example": "image-j_muyWVa"
-          },
-          "url": {
-            "type": "string",
-            "example": "https://res.cloudinary.com/..."
-          },
-          "secureUrl": {
-            "type": "string",
-            "example": "https://res.cloudinary.com/..."
-          }
-        },
-        "required": [
-          "imageId",
-          "url",
-          "secureUrl"
         ]
       },
       "CreateCommentDto": {
