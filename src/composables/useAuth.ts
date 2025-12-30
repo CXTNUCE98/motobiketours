@@ -34,7 +34,8 @@ export function useAuth() {
   const user = useState<User | null>('auth_user', () => null);
   const isFetchingProfile = useState<boolean>('auth_isFetchingProfile', () => false);
 
-  const isAuthenticated = computed(() => !!accessToken.value);
+  // Kiểm tra token hợp lệ (không rỗng và không phải chuỗi "undefined")
+  const isAuthenticated = computed(() => !!accessToken.value && accessToken.value !== 'undefined');
 
   // Helper to save profile to cache
   const saveProfileToCache = (userData: User) => {
@@ -67,7 +68,8 @@ export function useAuth() {
    * Get auth headers for API requests
    */
   const getAuthHeaders = (): HeadersInit => {
-    if (!accessToken.value) {
+    // Chỉ trả về header Authorization nếu token thực sự hợp lệ
+    if (!accessToken.value || accessToken.value === 'undefined') {
       return {};
     }
 
@@ -80,11 +82,11 @@ export function useAuth() {
    * Fetch full user profile from API
    */
   const fetchUserProfile = async (force = false) => {
-    if (!accessToken.value || (isFetchingProfile.value && !force)) return;
+    if (!isAuthenticated.value || (isFetchingProfile.value && !force)) return;
 
     try {
       isFetchingProfile.value = true;
-      const decoded = parseJwt(accessToken.value);
+      const decoded = parseJwt(accessToken.value as string);
       const userId = decoded?.sub || decoded?.id;
 
       if (userId) {
@@ -135,6 +137,11 @@ export function useAuth() {
    * Login user and update auth state
    */
   const login = (token: string) => {
+    if (!token || token === 'undefined') {
+      console.warn('Attempted to login with invalid token');
+      return;
+    }
+
     if (process.client) {
       localStorage.setItem(TOKEN_KEY, token);
     }
@@ -166,7 +173,7 @@ export function useAuth() {
         initUserFromToken();
       }
     }
-    return !!accessToken.value;
+    return isAuthenticated.value;
   };
 
   // Initialize on client side if needed
