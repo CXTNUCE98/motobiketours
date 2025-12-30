@@ -256,7 +256,7 @@ watch(() => props.tourData, (newVal) => {
     }
 }, { immediate: true });
 
-const { mutateAsync: uploadImageMutation } = useUploadImageMutation();
+const { mutateAsync: uploadImageMutation } = useUploadMutation();
 const { formatPrice } = useCurrency();
 
 const handleThumbnailChange = async (event: Event) => {
@@ -270,7 +270,7 @@ const handleThumbnailChange = async (event: Event) => {
 
         try {
             isUploading.value = true;
-            const res = await uploadImageMutation(file);
+            const res = await uploadImageMutation({ file, folder: 'tours' });
             formData.thumbnail = res.url;
             thumbnailPreview.value = res.url;
             ElMessage.success(t('tour.message.thumbnailSuccess'));
@@ -301,7 +301,7 @@ const handleGalleryChange = async (event: Event) => {
         try {
             isUploading.value = true;
             for (const file of validFiles) {
-                const res = await uploadImageMutation(file);
+                const res = await uploadImageMutation({ file, folder: 'tours' });
                 formData.images.push(res.url);
                 galleryPreviews.value.push(res.url);
             }
@@ -566,7 +566,7 @@ onBeforeUnmount(() => {
                                         <Loading />
                                     </el-icon>
                                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('common.uploading')
-                                        }}</span>
+                                    }}</span>
                                 </div>
                             </div>
                             <input type="file" ref="galleryInput" accept="image/*" multiple class="hidden"
@@ -679,7 +679,7 @@ onBeforeUnmount(() => {
                                 </div>
                                 <div><span class="font-semibold">{{ t('tour.form.priceLabel') }}</span> {{
                                     formatPrice(formData.priceUsd)
-                                    }}</div>
+                                }}</div>
                                 <div><span class="font-semibold">{{ t('tour.form.duration') }}:</span> {{
                                     formData.duration }}</div>
                                 <div><span class="font-semibold">{{ t('tour.form.type') }}:</span> {{ formData.type }}
@@ -725,7 +725,7 @@ onBeforeUnmount(() => {
                                         </div>
                                         <span v-if="galleryPreviews.length === 0" class="text-gray-400 italic">{{
                                             t('tour.form.noGallery')
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                 </div>
                             </div>

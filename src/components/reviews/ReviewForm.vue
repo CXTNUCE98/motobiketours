@@ -18,12 +18,12 @@ const form = ref({
 const fileList = ref<any[]>([]);
 const isSubmitting = ref(false);
 
-const { mutateAsync: uploadImage } = useUploadImageMutation();
+const { mutateAsync: uploadImage } = useUploadMutation();
 const createReviewMutation = useCreateReviewMutation(props.tourId);
 
 const handleFileUpload = async (file: any) => {
     try {
-        const response = await uploadImage(file.file);
+        const response = await uploadImage({ file: file.file, folder: 'reviews' });
         form.value.images.push(response.url);
         ElMessage.success(t('review.imageUploadSuccess') || 'Image uploaded successfully');
     } catch (err) {

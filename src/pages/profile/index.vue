@@ -136,7 +136,7 @@ const passwordRules = {
 }
 
 // Upload Avatar Mutation
-const { mutateAsync: uploadAvatarAsync, isPending: isUploadingAvatar } = useUploadImageMutation()
+const { mutateAsync: uploadAvatarAsync, isPending: isUploadingAvatar } = useUploadMutation()
 
 // Update Profile Mutation
 const { mutateAsync: updateProfileAsync, isPending: isUpdatingProfile } = useUpdateUserMutation()
@@ -195,7 +195,7 @@ const handleUpdateInfo = async () => {
             // If there's a new avatar file, upload it first, then update profile with URL
             if (avatarFile.value) {
                 // Upload avatar và lấy URL
-                const avatarUrl = await uploadAvatarAsync(avatarFile.value)
+                const avatarUrl = await uploadAvatarAsync({ file: avatarFile.value, folder: 'profile' })
                 // Sau khi upload thành công, update profile với URL và userName
                 await updateProfile({
                     userName: infoForm.userName,

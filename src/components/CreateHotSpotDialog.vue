@@ -14,7 +14,7 @@ const emit = defineEmits(['update:modelValue', 'success']);
 const { t } = useI18n();
 const { mutateAsync: createHotSpot, isPending: isCreating } = useCreateHotSpot();
 const { mutateAsync: updateHotSpot, isPending: isUpdating } = useUpdateHotSpot();
-const { mutateAsync: uploadImage } = useUploadImageMutation();
+const { mutateAsync: uploadImage } = useUploadMutation();
 
 const dialogVisible = computed({
     get: () => props.modelValue,
@@ -111,7 +111,7 @@ const handleImageUpload = async (event: Event) => {
     isUploading.value = true;
     try {
         for (const file of Array.from(input.files)) {
-            const res = await uploadImage(file);
+            const res = await uploadImage({ file, folder: 'hotspots' });
             formData.images.push(res.url);
         }
     } catch (error) {

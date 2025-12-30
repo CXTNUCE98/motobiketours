@@ -1,23 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
 
 /**
- * Mutation upload ảnh cho blog
- */
-export const useUploadImageMutation = () => {
-  return useMutation({
-    mutationFn: async (file: File): Promise<any> => {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      return await $motobikertoursApi('/blog/upload-image', {
-        method: 'POST',
-        body: formData as any,
-      });
-    },
-  });
-};
-
-/**
  * Mutation tạo bài viết blog mới
  */
 export const useCreateBlogMutation = () => {

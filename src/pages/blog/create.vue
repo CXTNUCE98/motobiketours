@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCreateBlogMutation, useUploadImageMutation } from '~/composables/useBlogMutation'
+import { useCreateBlogMutation } from '~/composables/useBlogMutation'
+import { useUploadMutation } from '~/composables/useUploadMutation'
 
 const countWords = (html: string) => {
     const text = html.replace(/<[^>]*>/g, ' ');
@@ -27,7 +28,7 @@ const thumbnailPreview = ref<string | null>(null)
 const thumbnailImageId = ref<string>('')
 const quillEditorRef = ref<any>(null)
 
-const { mutateAsync: uploadImageAsync } = useUploadImageMutation()
+const { mutateAsync: uploadImageAsync } = useUploadMutation()
 const { mutateAsync: createBlogAsync } = useCreateBlogMutation()
 
 // Loading states
@@ -113,13 +114,13 @@ const handleQuillImageUpload = () => {
 
         try {
             ElMessage.info('Uploading image...')
-            const result = await uploadImageAsync(file)
+            const result = await uploadImageAsync({ file, folder: 'blog' })
 
             // Insert image into editor using secureUrl for preview
             const quill = quillEditorRef.value?.getQuill?.()
             if (quill) {
                 const range = quill.getSelection(true)
-                quill.insertEmbed(range.index, 'image', result.secureUrl)
+                quill.insertEmbed(range.index, 'image', result.url)
                 quill.setSelection(range.index + 1)
             }
 
@@ -167,13 +168,13 @@ const processFile = async (file: File) => {
     // Upload thumbnail to server
     uploadingThumbnail.value = true
     try {
-        const result = await uploadImageAsync(file)
+        const result = await uploadImageAsync({ file, folder: 'blog' })
 
         // Save imageId for blog creation
-        thumbnailImageId.value = result.imageId
+        thumbnailImageId.value = result.publicId
 
         // Show preview using secureUrl
-        thumbnailPreview.value = result.secureUrl
+        thumbnailPreview.value = result.url
         post.thumbnail = file
 
         ElMessage.success('Thumbnail uploaded successfully!')
