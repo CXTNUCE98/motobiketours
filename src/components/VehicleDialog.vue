@@ -16,7 +16,7 @@ const emit = defineEmits(['update:modelValue', 'success']);
 const { t } = useI18n();
 const { mutateAsync: createVehicle, isPending: isCreating } = useCreateVehicleMutation();
 const { mutateAsync: updateVehicle, isPending: isUpdating } = useUpdateVehicleMutation();
-const { mutateAsync: uploadImage } = useUploadImageMutation();
+const { mutateAsync: uploadImage } = useUploadMutation();
 
 const dialogVisible = computed({
     get: () => props.modelValue,
@@ -149,7 +149,7 @@ const onCrop = async () => {
                         lastModified: Date.now()
                     });
 
-                    const res = await uploadImage(file);
+                    const res = await uploadImage({ file, folder: 'vehicles' });
                     formData.thumbnail = res.url;
                     ElMessage.success('Thumbnail uploaded successfully');
                     showCropper.value = false;
