@@ -16,7 +16,7 @@ const categories = [
     { label: t('hotSpots.categories.checkin'), value: 'Check-in' },
     { label: t('hotSpots.categories.nature'), value: 'Cảnh đẹp' },
     { label: t('hotSpots.categories.spiritual'), value: 'Vãn cảnh' },
-    { label: t('hotSpots.categories.food'), value: 'Ăn uống' },
+    { label: t('hotSpots.categories.food'), value: 'Ẩm thực' },
 ];
 
 const selectedSpotId = ref<string | null>(null);
