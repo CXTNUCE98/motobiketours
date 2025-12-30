@@ -109,8 +109,8 @@ const formData = reactive<TourForm>({
     discount: 0
 });
 
-const { data: vehicles } = useVehiclesQuery();
-const { data: hotSpots } = useHotSpotsQuery(ref({}));
+const { data: vehicles } = useVehiclesQuery({ enabled: dialogVisible });
+const { data: hotSpots } = useHotSpotsQuery(ref({}), { enabled: dialogVisible });
 
 const addItineraryItem = () => {
     formData.itineraries.push({
@@ -573,7 +573,7 @@ onBeforeUnmount(() => {
                                         <Loading />
                                     </el-icon>
                                     <span class="text-xs text-gray-500 dark:text-gray-400">{{ t('common.uploading')
-                                    }}</span>
+                                        }}</span>
                                 </div>
                             </div>
                             <input type="file" ref="galleryInput" accept="image/*" multiple class="hidden"
@@ -686,7 +686,7 @@ onBeforeUnmount(() => {
                                 </div>
                                 <div><span class="font-semibold">{{ t('tour.form.priceLabel') }}</span> {{
                                     formatPrice(formData.priceUsd)
-                                }}</div>
+                                    }}</div>
                                 <div><span class="font-semibold">{{ t('tour.form.duration') }}:</span> {{
                                     formData.duration }}</div>
                                 <div><span class="font-semibold">{{ t('tour.form.type') }}:</span> {{ formData.type }}
@@ -732,7 +732,7 @@ onBeforeUnmount(() => {
                                         </div>
                                         <span v-if="galleryPreviews.length === 0" class="text-gray-400 italic">{{
                                             t('tour.form.noGallery')
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                 </div>
                             </div>

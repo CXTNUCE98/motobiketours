@@ -4,7 +4,7 @@ import type { Vehicle } from '~/types/api';
 /**
  * Query lấy danh sách tất cả xe
  */
-export const useVehiclesQuery = () => {
+export const useVehiclesQuery = (options: { enabled?: MaybeRef<boolean> } = {}) => {
   return useQuery({
     queryKey: ['vehicles'],
     queryFn: async (): Promise<Vehicle[]> => {
@@ -12,6 +12,7 @@ export const useVehiclesQuery = () => {
         method: 'GET',
       })) as Vehicle[];
     },
+    enabled: options.enabled,
   });
 };
 

@@ -515,7 +515,7 @@ onMounted(() => {
                                                             </svg>
                                                             <span><strong>{{ t('tour.list.departure') }}:</strong> {{
                                                                 tour.departFrom
-                                                                }}</span>
+                                                            }}</span>
                                                         </div>
                                                         <div class="flex items-start gap-2">
                                                             <svg class="w-5 h-5 text-green-500 mt-0.5"
@@ -536,7 +536,7 @@ onMounted(() => {
                                                                     clip-rule="evenodd" />
                                                             </svg>
                                                             <span class="line-clamp-2"><strong>{{ t('tour.list.type')
-                                                            }}:</strong> {{
+                                                                    }}:</strong> {{
                                                                         tour.type }}</span>
                                                         </div>
                                                     </div>
@@ -603,7 +603,7 @@ onMounted(() => {
                             </svg>
                         </div>
                         <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">{{ t('tour.list.emptyTitle')
-                            }}</h3>
+                        }}</h3>
                         <p class="text-gray-600 dark:text-gray-400 mb-6">{{ t('tour.list.emptyDesc') }}
                         </p>
                         <button @click="handleClearFilters"
@@ -616,8 +616,8 @@ onMounted(() => {
         </div>
 
         <!-- Create Tour Dialog -->
-        <LazyCreateTourDialog v-model:visible="showCreateDialog" :tour-data="selectedTour"
-            @success="handleCreateSuccess" />
+        <LazyCreateTourDialog v-if="isAdmin && showCreateDialog" v-model:visible="showCreateDialog"
+            :tour-data="selectedTour" @success="handleCreateSuccess" />
     </div>
     <!-- Mobile Filter Dialog -->
     <Transition enter-active-class="transition duration-300 ease-out" enter-from-class="translate-y-full opacity-0"

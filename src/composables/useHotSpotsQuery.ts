@@ -5,7 +5,7 @@ import { cleanObject } from '~/utils/api';
 /**
  * Query lấy danh sách địa điểm Hot
  */
-export const useHotSpotsQuery = (params: MaybeRef<GetHotSpotsQuery>) => {
+export const useHotSpotsQuery = (params: MaybeRef<GetHotSpotsQuery>, options: { enabled?: MaybeRef<boolean> } = {}) => {
   return useQuery({
     queryKey: ['hot-spots', computed(() => JSON.stringify(unref(params)))],
     queryFn: async (): Promise<HotSpot[]> => {
@@ -14,6 +14,7 @@ export const useHotSpotsQuery = (params: MaybeRef<GetHotSpotsQuery>) => {
       })) as HotSpot[];
     },
     placeholderData: keepPreviousData,
+    enabled: options.enabled,
   });
 };
 
