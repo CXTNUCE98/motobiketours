@@ -17,7 +17,7 @@ const initMap = () => {
 
     // Calculate center based on hotspots
     const validSpots = props.itineraries
-        .map(it => it.hot_spot)
+        .map(it => it.hotSpot)
         .filter(spot => spot && spot.lat != null && spot.lng != null)
         .map(spot => ({
             ...spot,
@@ -65,7 +65,7 @@ const updateItinerary = () => {
     const points: [number, number][] = [];
 
     props.itineraries.forEach((item, index) => {
-        const spot = item.hot_spot;
+        const spot = item.hotSpot;
         if (spot && spot.lat != null && spot.lng != null) {
             const latlng: [number, number] = [Number(spot.lat), Number(spot.lng)];
             points.push(latlng);
