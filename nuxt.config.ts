@@ -72,6 +72,7 @@ export default defineNuxtConfig({
     // client
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
+      crispWebsiteId: process.env.NUXT_PUBLIC_CRISP_WEBSITE_ID, // Thay bằng ID của bạn
     },
   },
 });
