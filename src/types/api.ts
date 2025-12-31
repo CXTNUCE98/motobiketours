@@ -9,6 +9,7 @@ export interface User {
   provider: string | null;
   createdAt: string;
   avatar: string;
+  crispSignature?: string;
 }
 
 export interface TourItinerary {
