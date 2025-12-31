@@ -17,6 +17,7 @@ const { data, isLoading } = useQuery({
     }) as { data: Tour[]; total: number };
     return res;
   },
+  refetchOnWindowFocus: false,
 });
 
 // Filter featured tours and limit to 4

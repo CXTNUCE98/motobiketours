@@ -16,6 +16,7 @@ const { data, isLoading } = useQuery({
         });
         return res;
     },
+    refetchOnWindowFocus: false,
 });
 
 // Transform tours for display
