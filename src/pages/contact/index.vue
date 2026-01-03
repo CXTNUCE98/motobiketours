@@ -460,7 +460,7 @@ onMounted(() => {
                         class="bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-xl shadow-gray-200/50 dark:shadow-none p-2 h-80 border border-transparent dark:border-gray-700">
                         <iframe
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.4275425111296!2d108.18603187583106!3d16.04328864013049!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3142197539244d27%3A0x98059ce4eb00cc95!2zNTMgxJAuIFBo4bqhbSBOZ-G7jWMgTeG6rXUsIEFuIEtow6osIFRoYW5oIEtow6osIMSQw6AgTuG6tW5nLCBWaeG7h3QgTmFt!5e0!3m2!1svi!2s!4v1766401819853!5m2!1svi!2s"
-                            width="560" height="450" style="border:0;" allowfullscreen loading="lazy"
+                            width="100%" height="100%" style="border:0;" allowfullscreen loading="lazy"
                             referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
