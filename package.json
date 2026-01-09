@@ -21,6 +21,7 @@
     "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.6.8",
     "boxicons": "^2.1.4",
+    "canvas-confetti": "^1.9.4",
     "dayjs": "^1.11.19",
     "dompurify": "^3.3.0",
     "leaflet": "^1.9.4",

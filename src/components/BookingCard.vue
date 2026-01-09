@@ -35,9 +35,15 @@ const toggleWishlist = async () => {
 };
 
 const handleBookNow = () => {
-    // Navigate to contact or booking page
-    router.push(localePath('/contact'));
+    if (!isAuthenticated.value) {
+        ElMessage.warning(t('review.loginRequired'));
+        router.push(localePath(`/login?redirect=/booking/${props.tourId}`));
+        return;
+    }
+    // Navigate to booking flow
+    router.push(localePath(`/booking/${props.tourId}`));
 };
+
 
 const shareOn = (platform: string) => {
     const url = window.location.href;

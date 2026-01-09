@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed, watchEffect } from 'vue'
-import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useMutation, useQueryClient, useQuery } from '@tanstack/vue-query'
 import type { User, UpdateUserDto } from '~/types/api'
 import { validateForm, validationRules, type ValidationErrors } from '~/utils/validation'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
@@ -20,6 +20,7 @@ onMounted(() => {
 
 // Tabs
 const activeTab = ref('info') // 'info' | 'security'
+const router = useRouter()
 
 // Fetch fresh user data
 const { data: userData, isLoading } = useUserProfileQuery(computed(() => authUser.value?.id))
@@ -411,6 +412,7 @@ const { data: wishlistCount } = useWishlistCountQuery()
                                     class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#1A71C7] to-transparent dark:via-sky-400">
                                 </div>
                             </button>
+
                             <button @click="activeTab = 'security'"
                                 class="flex-1 py-4 px-6 text-sm font-medium text-center transition-all relative group"
                                 :class="activeTab === 'security' ? 'text-[#1A71C7] dark:text-sky-400 bg-white dark:bg-slate-800' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
