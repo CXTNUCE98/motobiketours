@@ -19,7 +19,7 @@ export default defineNuxtConfig({
       ],
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Motobike Tours' },
+        { name: 'description', content: 'Andago Tours' },
         { name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent' },
       ],
     },
@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   apiParty: {
     endpoints: {
       motobikertoursApi: {
-        url: 'https://motobikertours-api.vercel.app', // process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
+        url: 'http://localhost:3001', // process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3001',
         schema: resolve('./src/schemas/motobikertoursApi.json'),
       },
     },

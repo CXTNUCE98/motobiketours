@@ -357,7 +357,7 @@ const error = computed(() => isSignUp.value ? registerError.value : loginError.v
               <h3 class="text-2xl font-bold text-slate-900 dark:text-white font-display">{{ isSignUp ?
                 t('auth.createAccount')
                 : t('auth.signIn') }}</h3>
-              <p class="text-sm text-slate-400 mt-2">Welcome to Motobike Tours</p>
+              <p class="text-sm text-slate-400 mt-2">Welcome to Andago Tours</p>
             </div>
 
             <!-- Simplified Forms for Mobile -->

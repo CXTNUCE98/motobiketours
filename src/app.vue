@@ -6,7 +6,7 @@ onMounted(() => {
 });
 
 useHead({
-  title: 'Motobike Tours'
+  title: 'Andago Tours'
 })
 </script>
 
