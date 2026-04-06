@@ -13,6 +13,8 @@ export const useVehiclesQuery = (options: { enabled?: MaybeRef<boolean> } = {}) 
       })) as Vehicle[];
     },
     enabled: options.enabled,
+    staleTime: 10 * 60 * 1000,  // 10 min — vehicles change rarely
+    gcTime: 30 * 60 * 1000,    // 30 min — keep in memory longer
   });
 };
 
@@ -29,5 +31,6 @@ export const useVehicleQuery = (id: string | Ref<string>) => {
       })) as Vehicle;
     },
     enabled: computed(() => !!unref(id)),
+    staleTime: 10 * 60 * 1000, // 10 min — vehicle detail
   });
 };

@@ -4,6 +4,7 @@ const { t } = useI18n();
 import { useQuery } from '@tanstack/vue-query';
 import type { Tour } from '@/types/api';
 import { transformTourToCardProps } from '@/utils/tourHelpers';
+import { useWishlistBulkQuery } from '~/composables/useWishlist';
 
 // Fetch top destination tours
 const { data, isLoading } = useQuery({
@@ -24,6 +25,13 @@ const topDestinationsTours = computed(() => {
     const tours = (data.value?.data || []) as Tour[];
     return tours.map(transformTourToCardProps);
 });
+
+// Batch wishlist check
+const topDestTourIds = computed(() => topDestinationsTours.value.map((t) => t.id).filter(Boolean));
+const { data: wishlistStatus } = useWishlistBulkQuery(topDestTourIds);
+
+const getWishlistStatus = (tourId: string) =>
+    wishlistStatus.value?.[tourId] ?? false;
 </script>
 
 <template>
@@ -50,7 +58,12 @@ const topDestinationsTours = computed(() => {
             <!-- Top Destinations Tours Grid -->
             <div v-else-if="topDestinationsTours.length > 0"
                 class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <TourCard v-for="tour in topDestinationsTours" :key="tour.id" :tour="tour" />
+                <TourCard
+                    v-for="tour in topDestinationsTours"
+                    :key="tour.id"
+                    :tour="tour"
+                    :is-wishlisted-override="getWishlistStatus(tour.id)"
+                />
             </div>
 
             <!-- Empty State -->

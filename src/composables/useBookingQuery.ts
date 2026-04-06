@@ -9,13 +9,15 @@ export function useBookingListQuery(filters: FilterBookingDto) {
 
   return useQuery({
     queryKey: ['bookings', filters],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const response = await $motobikertoursApi('/bookings', {
         query: filters,
         headers: getAuthHeaders(),
+        signal,
       });
       return response;
     },
+    staleTime: 30 * 1000, // 30 sec — bookings change on user action
   });
 }
 
@@ -28,16 +30,18 @@ export function useBookingDetailQuery(id: Ref<string> | string) {
 
   return useQuery({
     queryKey: ['booking', bookingId],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!bookingId.value) return null;
 
       const response = await $motobikertoursApi('/bookings/{id}', {
         path: { id: bookingId.value },
         headers: getAuthHeaders(),
+        signal,
       });
       return response;
     },
     enabled: computed(() => !!bookingId.value),
+    staleTime: 30 * 1000, // 30 sec — booking detail
   });
 }
 
@@ -53,14 +57,16 @@ export function useMyBookingsQuery(
   const filtersRef = isRef(filters) ? filters : ref(filters);
 
   return useQuery({
-    queryKey: ['my-bookings', filtersRef],
-    queryFn: async () => {
+    queryKey: ['my-bookings', computed(() => JSON.stringify(unref(filtersRef)))],
+    queryFn: async ({ signal }) => {
       const response = await $motobikertoursApi('/bookings/my-bookings', {
         query: filtersRef.value,
         headers: getAuthHeaders(),
+        signal,
       });
       return response;
     },
     enabled: isAuthenticated,
+    staleTime: 30 * 1000, // 30 sec — my bookings
   });
 }

@@ -10,6 +10,8 @@ type Props = {
     to?: string;
     tags?: string[];
     originalPrice?: number;
+    /** If provided, skip the individual wishlist check and use this value */
+    isWishlistedOverride?: boolean;
 };
 
 const props = withDefaults(defineProps<Props>(), {
@@ -17,7 +19,8 @@ const props = withDefaults(defineProps<Props>(), {
     showPeulisLabel: true,
     variant: 'default',
     to: undefined,
-    tags: () => []
+    tags: () => [],
+    isWishlistedOverride: undefined,
 });
 
 const router = useRouter();
@@ -29,10 +32,17 @@ const localePath = useLocalePath();
 const tourId = computed(() => props.tour?.id || '');
 
 // Wishlist Logic
-const { data: wishlistStatus } = useIsWishlistedQuery(tourId);
+// Use override if provided, otherwise fall back to individual check
+const { data: wishlistStatus } = props.isWishlistedOverride === undefined
+    ? useIsWishlistedQuery(tourId)
+    : { data: ref(null) };
 const toggleWishlistMutation = useToggleWishlistMutation();
 
-const isWishlisted = computed(() => wishlistStatus.value?.isWishlisted || false);
+const isWishlisted = computed(() =>
+    props.isWishlistedOverride !== undefined
+        ? props.isWishlistedOverride
+        : (wishlistStatus.value?.isWishlisted ?? false),
+);
 
 const toggleWishlist = async (e: Event) => {
     e.stopPropagation();

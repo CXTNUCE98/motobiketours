@@ -15,6 +15,7 @@ export const useHotSpotsQuery = (params: MaybeRef<GetHotSpotsQuery>, options: { 
     },
     placeholderData: keepPreviousData,
     enabled: options.enabled,
+    staleTime: 10 * 60 * 1000, // 10 min — hot spots change rarely
   });
 };
 
@@ -30,5 +31,6 @@ export const useHotSpotByIdQuery = (id: string | Ref<string>) => {
       })) as HotSpot;
     },
     enabled: computed(() => !!unref(id)),
+    staleTime: 10 * 60 * 1000, // 10 min — hot spot detail
   });
 };

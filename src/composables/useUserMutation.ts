@@ -6,6 +6,7 @@ import type { User, UpdateUserDto } from '~/types/api';
  */
 export const useUpdateUserMutation = () => {
   const queryClient = useQueryClient();
+  const { handleApiError } = useErrorHandler();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateUserDto }): Promise<User> => {
@@ -18,6 +19,9 @@ export const useUpdateUserMutation = () => {
     onSuccess: (data, variables) => {
       const updatedUser = { ...data };
       queryClient.setQueryData(['user-profile', variables.id], updatedUser);
+    },
+    onError: (error) => {
+      handleApiError(error, 'Update User');
     },
   });
 };

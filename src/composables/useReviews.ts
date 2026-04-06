@@ -14,6 +14,7 @@ export const useTourReviewsQuery = (tourId: string | Ref<string>) => {
       })) as Review[];
     },
     enabled: computed(() => !!unref(tourId)),
+    staleTime: 60 * 1000, // 1 min — reviews change moderately
   });
 };
 
@@ -24,6 +25,7 @@ export const useTourReviewsQuery = (tourId: string | Ref<string>) => {
 export const useCreateReviewMutation = (tourId: string) => {
   const queryClient = useQueryClient();
   const { getAuthHeaders } = useAuth();
+  const { handleApiError } = useErrorHandler();
 
   return useMutation({
     mutationFn: async (data: CreateReviewDto) => {
@@ -36,8 +38,10 @@ export const useCreateReviewMutation = (tourId: string) => {
     onSuccess: () => {
       // Làm mới dữ liệu đánh giá và thông tin tour
       queryClient.invalidateQueries({ queryKey: ['reviews', tourId] });
-      queryClient.invalidateQueries({ queryKey: ['tour', tourId] });
-      queryClient.invalidateQueries({ queryKey: ['tours'] });
+      queryClient.invalidateQueries({ queryKey: ['tour', tourId], exact: true });
+    },
+    onError: (error) => {
+      handleApiError(error, 'Create Review');
     },
   });
 };

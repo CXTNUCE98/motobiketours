@@ -16,6 +16,7 @@ export const useWishlistQuery = () => {
       })) as Tour[];
     },
     enabled: computed(() => isAuthenticated.value),
+    staleTime: 2 * 60 * 1000, // 2 min — wishlist
   });
 };
 
@@ -34,6 +35,7 @@ export const useIsWishlistedQuery = (tourId: string | Ref<string>) => {
       })) as { isWishlisted: boolean };
     },
     enabled: computed(() => !!unref(tourId) && isAuthenticated.value),
+    staleTime: 5 * 60 * 1000, // 5 min — wishlist check status
   });
 };
 
@@ -78,5 +80,31 @@ export const useWishlistCountQuery = () => {
       return res.count;
     },
     enabled: computed(() => isAuthenticated.value),
+    staleTime: 60 * 1000, // 1 min — wishlist count
+  });
+};
+
+/**
+ * Hook kiểm tra trạng thái wishlist cho nhiều tour cùng lúc (batch)
+ * @param tourIds Danh sách ID tour cần kiểm tra
+ */
+export const useWishlistBulkQuery = (tourIds: string[] | Ref<string[]>) => {
+  const { isAuthenticated } = useAuth();
+
+  return useQuery({
+    queryKey: ['wishlist-bulk', computed(() => unref(tourIds))],
+    queryFn: async (): Promise<Record<string, boolean>> => {
+      const { getAuthHeaders } = useAuth();
+      const res = (await $motobikertoursApi('/wishlist/check-bulk', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: { tourIds: unref(tourIds) },
+      })) as { wishlistStatus: Record<string, boolean> };
+      return res.wishlistStatus;
+    },
+    enabled: computed(
+      () => !!unref(tourIds).length && isAuthenticated.value,
+    ),
+    staleTime: 2 * 60 * 1000, // 2 min — bulk wishlist check
   });
 };
