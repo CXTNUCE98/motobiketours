@@ -183,9 +183,9 @@ function formLogin() {
                                 class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
                                 <div
                                     class="w-8 h-8 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-sky-600 dark:text-cyan-400 font-bold text-sm">
-                                    <NuxtImg
-                                        class="w-full h-full rounded-full object-cover border border-gray-200 [image-rendering:-webkit-optimize-contrast] image-crisp"
-                                        :src="user?.avatar" format="webp" alt="avatar" />
+                                    <img
+                                        class="w-full h-full rounded-full object-cover border border-gray-200"
+                                        :src="user?.avatar" alt="avatar" />
                                 </div>
                                 <span class="hidden md:block font-medium text-sm max-w-[100px] truncate">
                                     {{ user?.userName || 'User' }}

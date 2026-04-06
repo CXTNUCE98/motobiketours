@@ -126,7 +126,7 @@ const viewTour = (id: string) => {
                         <!-- Thumbnail -->
                         <div
                             class="relative w-24 h-24 flex-shrink-0 group-hover:scale-102 transition-transform duration-500">
-                            <NuxtImg :src="tour.image" class="w-full h-full object-cover rounded-2xl shadow-md"
+                            <img :src="tour.image" class="w-full h-full object-cover rounded-2xl shadow-md"
                                 loading="lazy" />
                             <div
                                 class="absolute top-2 left-2 px-2 py-0.5 rounded-lg bg-black/50 backdrop-blur-md text-[10px] font-bold text-white flex items-center gap-1">

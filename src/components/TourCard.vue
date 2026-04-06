@@ -80,7 +80,7 @@ const handleCardClick = () => {
         @click="handleCardClick" style="backdrop-filter: blur(10px);">
         <!-- Image Container with Gradient Overlay -->
         <div class="relative h-64 overflow-hidden">
-            <NuxtImg :src="tour?.image" :alt="tour?.title" loading="lazy" format="webp"
+            <img :src="tour?.image" :alt="tour?.title" loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
 
             <!-- Gradient Overlay -->

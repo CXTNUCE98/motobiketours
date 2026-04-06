@@ -51,8 +51,53 @@ const serviceList = {
 </script>
 
 <template>
-    <div class="bg-white dark:bg-gray-900 min-h-screen transition-colors duration-300">
-        <!-- Spacer for fixed header -->
+    <div class="bg-gradient-to-br from-gray-50 via-emerald-50/20 to-teal-50/20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen transition-colors duration-300">
+        <!-- Hero Section -->
+        <div class="relative py-20 md:py-28 overflow-hidden">
+            <!-- Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-950">
+                <!-- Subtle geometric pattern -->
+                <div class="absolute inset-0 opacity-[0.03]"
+                    style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                <!-- Soft glow accents -->
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[128px]"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-teal-500/10 rounded-full blur-[128px]"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="container mx-auto px-4 relative z-10">
+                <div class="max-w-3xl mx-auto text-center">
+                    <!-- Badge -->
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-emerald-300 text-sm font-semibold mb-8 hero-animate">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                        </span>
+                        {{ t('about.title') }}
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-tight hero-animate-delay-1">
+                        <span class="block text-white">ANDAGO</span>
+                        <span class="block bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+                            {{ t('about.title') }}
+                        </span>
+                    </h1>
+
+                    <p class="text-lg text-slate-300/80 max-w-xl mx-auto leading-relaxed hero-animate-delay-2">
+                        {{ t('about.introDesc1') }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Bottom wave -->
+            <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
+                <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+                    <path d="M0 80L48 72C96 64 192 48 288 40C384 32 480 32 576 36C672 40 768 48 864 52C960 56 1056 56 1152 52C1248 48 1344 40 1392 36L1440 32V80H0Z"
+                        class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
+                </svg>
+            </div>
+        </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20">
             <!-- Main Content Grid -->

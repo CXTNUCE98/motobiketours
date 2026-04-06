@@ -43,6 +43,33 @@ export default defineNuxtConfig({
     preference: 'system',
     fallback: 'light',
   },
+  image: {
+    // Dùng ipx (built-in) làm provider mặc định để hỗ trợ external URLs
+    provider: 'ipx',
+    cloudinary: {
+      baseURL: 'https://res.cloudinary.com/daok0blh9/image/upload/',
+    },
+    // Cho phép load ảnh từ các domain ngoài
+    domains: [
+      'danangfantasticity.com',
+      's3-ap-southeast-1.amazonaws.com',
+      'cdn-media.sforum.vn',
+      'vivuvietnam.org',
+      'pystravel.vn',
+      'drt.danang.vn',
+      'tourdanangcity.vn',
+      'encrypted-tbn0.gstatic.com',
+      'daivietourist.vn',
+      'res.cloudinary.com',
+    ],
+    screens: {
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    },
+    format: ['webp', 'jpeg'],
+  },
   i18n: {
     defaultLocale: 'vi',
     langDir: 'locales',

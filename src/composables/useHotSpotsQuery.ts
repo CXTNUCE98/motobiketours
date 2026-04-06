@@ -11,7 +11,7 @@ export const useHotSpotsQuery = (params: MaybeRef<GetHotSpotsQuery>, options: { 
     queryFn: async (): Promise<HotSpot[]> => {
       return (await $motobikertoursApi('/hot-spots', {
         query: cleanObject(unref(params)),
-      })) as HotSpot[];
+      }))?.data as HotSpot[];
     },
     placeholderData: keepPreviousData,
     enabled: options.enabled,
