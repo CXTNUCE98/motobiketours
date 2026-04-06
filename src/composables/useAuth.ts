@@ -1,9 +1,13 @@
 import { ref, computed, onMounted } from 'vue';
+import { useQueryClient } from '@tanstack/vue-query';
 import type { User } from '~/types/api';
 
 // Token storage key
 const TOKEN_KEY = 'accessToken';
 const PROFILE_KEY = 'userProfile';
+
+// Deduplication guard for fetchUserProfile
+let fetchProfilePromise: Promise<void> | null = null;
 
 // Helper to decode JWT
 function parseJwt(token: string) {
@@ -79,30 +83,38 @@ export function useAuth() {
   };
 
   /**
-   * Fetch full user profile from API
+   * Fetch full user profile from API (deduplicated to prevent race conditions)
    */
   const fetchUserProfile = async (force = false) => {
     if (!isAuthenticated.value || (isFetchingProfile.value && !force)) return;
 
-    try {
-      isFetchingProfile.value = true;
-      const decoded = parseJwt(accessToken.value as string);
-      const userId = decoded?.sub || decoded?.id;
+    // Return existing promise if already fetching (deduplication)
+    if (fetchProfilePromise && !force) return fetchProfilePromise;
 
-      if (userId) {
-        const userData = await $motobikertoursApi('/users/{id}', {
-          headers: getAuthHeaders(),
-          path: { id: userId },
-        });
-        const updatedUser = userData as unknown as User;
-        user.value = updatedUser;
-        saveProfileToCache(updatedUser);
+    fetchProfilePromise = (async () => {
+      try {
+        isFetchingProfile.value = true;
+        const decoded = parseJwt(accessToken.value as string);
+        const userId = decoded?.sub || decoded?.id;
+
+        if (userId) {
+          const userData = await $motobikertoursApi('/users/{id}', {
+            headers: getAuthHeaders(),
+            path: { id: userId },
+          });
+          const updatedUser = userData as unknown as User;
+          user.value = updatedUser;
+          saveProfileToCache(updatedUser);
+        }
+      } catch (error) {
+        console.log('Failed to fetch user profile', error);
+      } finally {
+        isFetchingProfile.value = false;
+        fetchProfilePromise = null;
       }
-    } catch (error) {
-      console.log('Failed to fetch user profile', error);
-    } finally {
-      isFetchingProfile.value = false;
-    }
+    })();
+
+    return fetchProfilePromise;
   };
 
   // Initial state from token (client-side only)
@@ -151,7 +163,7 @@ export function useAuth() {
   };
 
   /**
-   * Logout user and clear auth state
+   * Logout user and clear all auth state + query cache
    */
   const logout = () => {
     if (process.client) {
@@ -160,6 +172,14 @@ export function useAuth() {
     }
     accessToken.value = null;
     user.value = null;
+
+    // Clear TanStack Query cache to prevent stale user data leakage
+    try {
+      const queryClient = useQueryClient();
+      queryClient.clear();
+    } catch {
+      // QueryClient may not be available during SSR
+    }
   };
 
   /**

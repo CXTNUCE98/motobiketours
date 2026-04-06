@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useQuery } from '@tanstack/vue-query';
 import type { Tour } from '@/types/api';
 import { transformTourToCardProps } from '@/utils/tourHelpers';
+import { useWishlistBulkQuery } from '~/composables/useWishlist';
 
 const { t } = useI18n();
 
@@ -28,6 +29,13 @@ const featuredTours = computed(() => {
     .slice(0, 4)
     .map(transformTourToCardProps);
 });
+
+// Batch wishlist check for featured tours
+const featuredTourIds = computed(() => featuredTours.value.map((t) => t.id).filter(Boolean));
+const { data: wishlistStatus } = useWishlistBulkQuery(featuredTourIds);
+
+const getWishlistStatus = (tourId: string) =>
+    wishlistStatus.value?.[tourId] ?? false;
 </script>
 
 <template>
@@ -46,7 +54,12 @@ const featuredTours = computed(() => {
       </div>
 
       <div v-else-if="featuredTours.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <TourCard v-for="tour in featuredTours" :key="tour.id" :tour="tour" />
+        <TourCard
+          v-for="tour in featuredTours"
+          :key="tour.id"
+          :tour="tour"
+          :is-wishlisted-override="getWishlistStatus(tour.id)"
+        />
       </div>
 
       <div v-else class="text-center py-12">

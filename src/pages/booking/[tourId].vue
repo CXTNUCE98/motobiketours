@@ -7,6 +7,7 @@ import DatePeoplePicker from '~/components/DatePeoplePicker.vue';
 import CustomerInfoForm from '~/components/CustomerInfoForm.vue';
 import PaymentMethodSelector from '~/components/PaymentMethodSelector.vue';
 import BookingSummary from '~/components/BookingSummary.vue';
+import { useTourByIdQuery } from '~/composables/useToursQuery';
 
 definePageMeta({
     middleware: ['auth'],
@@ -20,8 +21,8 @@ const { formatPrice } = useCurrency();
 // Get tour ID from route
 const tourId = computed(() => route.params.tourId as string);
 
-// Fetch tour data
-const { data: tourData, isLoading: isLoadingTour } = useTourQuery(tourId.value);
+// Fetch tour data (light mode — only need price, title, thumbnail)
+const { data: tourData, isLoading: isLoadingTour } = useTourByIdQuery(tourId, { light: true });
 
 // Booking state
 const currentStep = ref(1);

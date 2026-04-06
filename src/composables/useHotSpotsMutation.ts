@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import { ElMessage } from 'element-plus';
 import type { HotSpot } from '~/types/api';
 
 export const useCreateHotSpot = () => {
     const queryClient = useQueryClient();
+    const { handleApiError } = useErrorHandler();
 
     return useMutation({
         mutationFn: async (data: Partial<HotSpot>) => {
@@ -14,16 +14,16 @@ export const useCreateHotSpot = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['hot-spots'] });
-            ElMessage.success('Create hot spot successfully');
         },
-        onError: (error: any) => {
-            ElMessage.error(error.message || 'Failed to create hot spot');
+        onError: (error) => {
+            handleApiError(error, 'Create HotSpot');
         },
     });
 };
 
 export const useUpdateHotSpot = () => {
     const queryClient = useQueryClient();
+    const { handleApiError } = useErrorHandler();
 
     return useMutation({
         mutationFn: async ({ id, data }: { id: string; data: Partial<HotSpot> }) => {
@@ -35,16 +35,16 @@ export const useUpdateHotSpot = () => {
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['hot-spots'] });
             queryClient.invalidateQueries({ queryKey: ['hot-spot', variables.id] });
-            ElMessage.success('Update hot spot successfully');
         },
-        onError: (error: any) => {
-            ElMessage.error(error.message || 'Failed to update hot spot');
+        onError: (error) => {
+            handleApiError(error, 'Update HotSpot');
         },
     });
 };
 
 export const useDeleteHotSpot = () => {
     const queryClient = useQueryClient();
+    const { handleApiError } = useErrorHandler();
 
     return useMutation({
         mutationFn: async (id: string) => {
@@ -54,10 +54,9 @@ export const useDeleteHotSpot = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['hot-spots'] });
-            ElMessage.success('Delete hot spot successfully');
         },
-        onError: (error: any) => {
-            ElMessage.error(error.message || 'Failed to delete hot spot');
+        onError: (error) => {
+            handleApiError(error, 'Delete HotSpot');
         },
     });
 };

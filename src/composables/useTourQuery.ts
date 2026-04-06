@@ -1,14 +1,6 @@
-import { useQuery } from '@tanstack/vue-query';
-
-export function useTourQuery(tourId: string) {
-  return useQuery({
-    queryKey: ['tour', tourId],
-    queryFn: async () => {
-      const response = await $motobikertoursApi('/tours/{id}', {
-        path: { id: tourId },
-      });
-      return response;
-    },
-    enabled: !!tourId,
-  });
-}
+/**
+ * @deprecated Use `useTourByIdQuery` from `useToursQuery` instead.
+ * This file is kept as a re-export for backward compatibility.
+ * TODO: Migrate all usages to `import { useTourByIdQuery } from './useToursQuery'`
+ */
+export { useTourByIdQuery as useTourQuery } from './useToursQuery';

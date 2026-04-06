@@ -12,6 +12,8 @@ export interface UploadResponse {
  * @returns Đối tượng mutation từ TanStack Query
  */
 export const useUploadMutation = () => {
+  const { handleApiError } = useErrorHandler();
+
   return useMutation({
     mutationFn: async ({ file, folder }: { file: File; folder: string }): Promise<UploadResponse> => {
       const formData = new FormData();
@@ -24,6 +26,9 @@ export const useUploadMutation = () => {
         query: { folder },
         body: formData as any,
       });
+    },
+    onError: (error) => {
+      handleApiError(error, 'Upload Image');
     },
   });
 };

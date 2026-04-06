@@ -1,5 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { tourDaNangTours } from '@/data/homeData';
+import { useWishlistBulkQuery } from '~/composables/useWishlist';
+
+const tourIds = computed(() => tourDaNangTours.map((t) => t.id).filter(Boolean));
+const { data: wishlistStatus } = useWishlistBulkQuery(tourIds);
+
+const getWishlistStatus = (tourId: string) =>
+    wishlistStatus.value?.[tourId] ?? false;
 </script>
 
 <template>
@@ -15,7 +23,12 @@ import { tourDaNangTours } from '@/data/homeData';
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <TourCard v-for="tour in tourDaNangTours" :key="tour.id" :tour="tour" />
+                <TourCard
+                    v-for="tour in tourDaNangTours"
+                    :key="tour.id"
+                    :tour="tour"
+                    :is-wishlisted-override="getWishlistStatus(tour.id)"
+                />
             </div>
         </div>
     </section>

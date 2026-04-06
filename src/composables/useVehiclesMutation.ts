@@ -7,6 +7,7 @@ import type { CreateVehicleDto, UpdateVehicleDto, Vehicle } from '~/types/api';
 export const useCreateVehicleMutation = () => {
   const queryClient = useQueryClient();
   const { getAuthHeaders } = useAuth();
+  const { handleApiError } = useErrorHandler();
 
   return useMutation({
     mutationFn: async (data: CreateVehicleDto): Promise<Vehicle> => {
@@ -19,6 +20,9 @@ export const useCreateVehicleMutation = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
     },
+    onError: (error) => {
+      handleApiError(error, 'Create Vehicle');
+    },
   });
 };
 
@@ -28,6 +32,7 @@ export const useCreateVehicleMutation = () => {
 export const useUpdateVehicleMutation = () => {
   const queryClient = useQueryClient();
   const { getAuthHeaders } = useAuth();
+  const { handleApiError } = useErrorHandler();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateVehicleDto }): Promise<Vehicle> => {
@@ -42,6 +47,9 @@ export const useUpdateVehicleMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
       queryClient.invalidateQueries({ queryKey: ['vehicle', data.id] });
     },
+    onError: (error) => {
+      handleApiError(error, 'Update Vehicle');
+    },
   });
 };
 
@@ -51,6 +59,7 @@ export const useUpdateVehicleMutation = () => {
 export const useDeleteVehicleMutation = () => {
   const queryClient = useQueryClient();
   const { getAuthHeaders } = useAuth();
+  const { handleApiError } = useErrorHandler();
 
   return useMutation({
     mutationFn: async (id: string): Promise<void> => {
@@ -62,6 +71,9 @@ export const useDeleteVehicleMutation = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] });
+    },
+    onError: (error) => {
+      handleApiError(error, 'Delete Vehicle');
     },
   });
 };
