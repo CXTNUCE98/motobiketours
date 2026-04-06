@@ -304,9 +304,11 @@ useHead({
                             </div>
                         </div>
                         <div v-else key="grid-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" :is-locating="isLocating"
-                                @click="selectSpot(spot.id)" @edit="handleEdit" @delete="handleDelete"
-                                class="cursor-pointer" />
+                            <template v-if="spots?.length > 0">
+                                <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" :is-locating="isLocating"
+                                    @click="selectSpot(spot.id)" @edit="handleEdit" @delete="handleDelete"
+                                    class="cursor-pointer" />
+                            </template>
                         </div>
                     </transition>
                 </div>

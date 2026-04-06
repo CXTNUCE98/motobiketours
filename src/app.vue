@@ -146,4 +146,61 @@ a {
 .text-gradient-secondary {
   @apply bg-gradient-to-r from-[#FF6B35] to-[#FBBF24] bg-clip-text text-transparent;
 }
+
+/* Hero entrance animations */
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-animate {
+  opacity: 0;
+  animation: hero-fade-in 0.6s ease-out forwards;
+}
+
+.hero-animate-delay-1 {
+  opacity: 0;
+  animation: hero-fade-in 0.6s ease-out 0.15s forwards;
+}
+
+.hero-animate-delay-2 {
+  opacity: 0;
+  animation: hero-fade-in 0.6s ease-out 0.3s forwards;
+}
+
+.hero-animate-delay-3 {
+  opacity: 0;
+  animation: hero-fade-in 0.6s ease-out 0.45s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse,
+  .animate-fade-in,
+  .animate-fade-in-top,
+  .animate-fade-in-left,
+  .animate-ping,
+  .hero-animate,
+  .hero-animate-delay-1,
+  .hero-animate-delay-2,
+  .hero-animate-delay-3 {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>

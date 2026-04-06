@@ -43,6 +43,10 @@ watch(searchQuery, (newVal) => {
     activeFilters.value.searchQuery = newVal;
 });
 
+watch(sortBy, () => {
+    currentPage.value = 1;
+});
+
 // Construct API filters
 const apiFilters = computed(() => {
     const filters: any = {
@@ -62,6 +66,19 @@ const apiFilters = computed(() => {
         filters.type = activeFilters.value.tourTypes; // useToursQuery expects array for type if schema says so
     }
 
+    // Map UI sort values to API sort params
+    if (sortBy.value === 'price-low') {
+        filters.sortBy = 'priceUsd';
+        filters.sortOrder = 'ASC';
+    } else if (sortBy.value === 'price-high') {
+        filters.sortBy = 'priceUsd';
+        filters.sortOrder = 'DESC';
+    } else if (sortBy.value === 'duration') {
+        filters.sortBy = 'durationRange';
+        filters.sortOrder = 'ASC';
+    }
+    // 'default' → no sortBy/sortOrder (use API defaults)
+
     return filters;
 });
 
@@ -71,38 +88,8 @@ const { data, isLoading, isError, error, isFetching } = useToursQuery(apiFilters
 const tours = computed(() => (data.value as any)?.data || []);
 const totalPages = computed(() => (data.value as any)?.totalPages || 1);
 
-const getDurationDays = (durationStr: string): number => {
-    if (!durationStr) return 0;
-    if (durationStr.includes('1/2')) return 0.5;
-    const match = durationStr.match(/(\d+)\s*day/);
-    return match ? parseInt(match[1], 10) : 0;
-};
-
 const processedTours = computed(() => {
-    let result = [...tours.value];
-
-    // Sort
-    if (sortBy.value === 'price-low') {
-        result.sort((a, b) => {
-            const priceA = typeof a.priceUsd === 'number' ? a.priceUsd : 0;
-            const priceB = typeof b.priceUsd === 'number' ? b.priceUsd : 0;
-            return priceA - priceB;
-        });
-    } else if (sortBy.value === 'price-high') {
-        result.sort((a, b) => {
-            const priceA = typeof a.priceUsd === 'number' ? a.priceUsd : 0;
-            const priceB = typeof b.priceUsd === 'number' ? b.priceUsd : 0;
-            return priceB - priceA;
-        });
-    } else if (sortBy.value === 'duration') {
-        result.sort((a, b) => {
-            const rangeA = a.durationRange || 0;
-            const rangeB = b.durationRange || 0;
-            return rangeA - rangeB;
-        });
-    }
-
-    return result;
+    return tours.value;
 });
 
 const changePage = (page: number) => {
@@ -214,89 +201,64 @@ onMounted(() => {
 
 <template>
     <div
-        class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-pink-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
+        class="min-h-screen bg-gradient-to-br from-gray-50 via-sky-50/20 to-blue-50/20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300 overflow-x-hidden">
         <!-- Hero Section -->
-        <div class="relative py-24 md:py-32 overflow-hidden">
-            <!-- Background Elements -->
-            <div class="absolute inset-0 bg-[#0f172a]">
-                <!-- Animated Mesh Gradient -->
-                <div class="absolute inset-0 opacity-40">
-                    <div
-                        class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600 blur-[120px] animate-pulse">
-                    </div>
-                    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600 blur-[120px] animate-pulse"
-                        style="animation-delay: 2s"></div>
-                    <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-cyan-500 blur-[100px] animate-pulse"
-                        style="animation-delay: 4s"></div>
-                </div>
-                <!-- Grid Pattern -->
-                <div class="absolute inset-0 opacity-10"
-                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 40px 40px;">
-                </div>
+        <div class="relative py-20 md:py-28 overflow-hidden">
+            <!-- Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-sky-950 to-blue-950">
+                <!-- Subtle geometric pattern -->
+                <div class="absolute inset-0 opacity-[0.03]"
+                    style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                <!-- Soft glow accents -->
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-[128px]"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-[128px]"></div>
             </div>
 
             <div class="container mx-auto px-4 relative z-10">
-                <div class="max-w-4xl mx-auto text-center">
+                <div class="max-w-3xl mx-auto text-center">
+                    <!-- Badge -->
                     <div
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-blue-300 text-sm font-bold mb-8 animate-fade-in">
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-sky-300 text-sm font-semibold mb-8 hero-animate">
                         <span class="relative flex h-2 w-2">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-sky-400"></span>
                         </span>
                         {{ t('tour.journeyOfDiscovery') }}
                     </div>
 
-                    <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
-                        style="animation-delay: 0.2s">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-tight hero-animate-delay-1">
                         <span class="block text-white">{{ t('tour.experience') }}</span>
-                        <span
-                            class="block bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent filter drop-shadow-sm">
+                        <span class="block bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
                             {{ t('tour.peakTour') }}
                         </span>
                     </h1>
 
-                    <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
-                        style="animation-delay: 0.4s">
+                    <p class="text-lg text-slate-300/80 max-w-xl mx-auto leading-relaxed mb-12 hero-animate-delay-2">
                         {{ t('tour.peakTourDesc') }}
                     </p>
 
                     <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16 max-w-3xl mx-auto animate-fade-in"
-                        style="animation-delay: 0.6s">
-                        <div
-                            class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
-                            <div
-                                class="text-4xl font-black text-white mb-1 group-hover:text-blue-400 transition-colors">
-                                {{ data?.total || 0 }}+</div>
-                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{
-                                t('tour.readyTour') }}</div>
+                    <div class="grid grid-cols-3 gap-3 max-w-2xl mx-auto hero-animate-delay-3">
+                        <div class="group bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div class="text-2xl font-black text-white mb-0.5 group-hover:text-sky-400 transition-colors">{{ data?.total || 0 }}+</div>
+                            <div class="text-xs font-semibold text-sky-200/60 uppercase tracking-wider">{{ t('tour.readyTour') }}</div>
                         </div>
-                        <div
-                            class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
-                            <div
-                                class="text-4xl font-black text-white mb-1 group-hover:text-cyan-400 transition-colors">
-                                1.2k+</div>
-                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{
-                                t('tour.customers') }}</div>
+                        <div class="group bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div class="text-2xl font-black text-white mb-0.5 group-hover:text-blue-400 transition-colors">1.2k+</div>
+                            <div class="text-xs font-semibold text-sky-200/60 uppercase tracking-wider">{{ t('tour.customers') }}</div>
                         </div>
-                        <div
-                            class="group bg-white/5 backdrop-blur-xl rounded-2xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-500 hover:-translate-y-2">
-                            <div
-                                class="text-4xl font-black text-white mb-1 group-hover:text-indigo-400 transition-colors">
-                                4.9/5</div>
-                            <div class="text-sm font-bold text-blue-200/60 uppercase tracking-widest">{{
-                                t('tour.evaluate') }}</div>
+                        <div class="group bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 hover:bg-white/10 transition-all duration-300">
+                            <div class="text-2xl font-black text-white mb-0.5 group-hover:text-sky-400 transition-colors">4.9/5</div>
+                            <div class="text-xs font-semibold text-sky-200/60 uppercase tracking-wider">{{ t('tour.evaluate') }}</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Decorative Bottom Wave -->
+            <!-- Bottom wave -->
             <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
-                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-                    <path
-                        d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+                <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+                    <path d="M0 80L48 72C96 64 192 48 288 40C384 32 480 32 576 36C672 40 768 48 864 52C960 56 1056 56 1152 52C1248 48 1344 40 1392 36L1440 32V80H0Z"
                         class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
                 </svg>
             </div>
@@ -382,8 +344,28 @@ onMounted(() => {
                         </div>
                     </div>
 
+                    <!-- Skeleton Loading -->
+                    <template v-if="isLoading">
+                        <div
+                            :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'space-y-6'">
+                            <div v-for="i in 6" :key="i"
+                                class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden animate-pulse border border-gray-100 dark:border-gray-700">
+                                <div class="h-56 bg-gray-200 dark:bg-gray-700" />
+                                <div class="p-5 space-y-3">
+                                    <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+                                    <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+                                    <div class="pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                                        <div class="h-7 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                                        <div class="h-9 bg-gray-200 dark:bg-gray-700 rounded w-20" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
                     <!-- Tours Grid/List -->
-                    <div v-loading="isFetching" v-if="processedTours.length > 0">
+                    <div v-else-if="processedTours.length > 0">
                         <div
                             :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6' : 'space-y-6'">
                             <div v-for="(tour, index) in processedTours" :key="tour.id" class="animate-fade-in"
@@ -396,6 +378,7 @@ onMounted(() => {
                                         <!-- Image -->
                                         <div class="relative h-56 overflow-hidden">
                                             <img :src="tour.thumbnail" :alt="tour.title"
+                                                loading="lazy"
                                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                             <div
                                                 class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500">
@@ -480,6 +463,7 @@ onMounted(() => {
                                             <!-- Image -->
                                             <div class="relative md:w-80 h-56 md:h-auto overflow-hidden flex-shrink-0">
                                                 <img :src="tour.thumbnail" :alt="tour.title"
+                                                    loading="lazy"
                                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                                                 <div
                                                     class="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg flex items-center gap-2">

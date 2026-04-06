@@ -155,6 +155,7 @@ const contactMethods = [
         icon: 'bx bxs-chat',
         color: 'text-sky-500',
         bgColor: 'bg-sky-50 dark:bg-sky-900/30',
+        borderColor: 'bg-sky-500',
         shadow: 'shadow-sky-500/10',
         link: 'https://zalo.me/84854242357',
         value: t('contact.chatWithUs'),
@@ -165,6 +166,7 @@ const contactMethods = [
         icon: 'bx bx-phone-call',
         color: 'text-purple-500',
         bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+        borderColor: 'bg-purple-500',
         shadow: 'shadow-purple-500/10',
         link: 'https://viber.click/84854242357',
         value: t('contact.chatWithUs'),
@@ -175,6 +177,7 @@ const contactMethods = [
         icon: 'bx bx-phone',
         color: 'text-green-500',
         bgColor: 'bg-green-50 dark:bg-green-900/30',
+        borderColor: 'bg-green-500',
         shadow: 'shadow-green-500/10',
         link: 'https://line.me/ti/p/~84854242357',
         value: t('contact.chatWithUs'),
@@ -185,6 +188,7 @@ const contactMethods = [
         icon: 'bx bxl-whatsapp',
         color: 'text-emerald-500',
         bgColor: 'bg-emerald-50 dark:bg-emerald-900/30',
+        borderColor: 'bg-emerald-500',
         shadow: 'shadow-emerald-500/10',
         link: 'https://wa.me/84854242357',
         value: t('contact.chatWithUs'),
@@ -195,6 +199,7 @@ const contactMethods = [
         icon: 'bx bxl-messenger',
         color: 'text-blue-600',
         bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+        borderColor: 'bg-blue-600',
         shadow: 'shadow-blue-600/10',
         link: 'https://m.me/61579936051310',
         value: t('contact.chatWithUs'),
@@ -205,6 +210,7 @@ const contactMethods = [
         icon: 'bx bxs-conversation',
         color: 'text-yellow-500',
         bgColor: 'bg-yellow-50 dark:bg-yellow-900/30',
+        borderColor: 'bg-yellow-500',
         shadow: 'shadow-yellow-500/10',
         link: 'https://open.kakao.com/o/+84854242357',
         value: t('contact.chatWithUs'),
@@ -226,95 +232,121 @@ onMounted(() => {
     <div
         class="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
         <!-- Hero Section -->
-        <div class="relative py-24 md:py-32 overflow-hidden">
-            <!-- Background with Mesh Gradient -->
-            <div class="absolute inset-0 bg-[#0f172a]">
-                <!-- Animated Mesh Gradient -->
-                <div class="absolute inset-0 opacity-40">
-                    <div
-                        class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600 blur-[120px] animate-pulse">
-                    </div>
-                    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-purple-600 blur-[120px] animate-pulse"
-                        style="animation-delay: 2s"></div>
-                    <div class="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-cyan-500 blur-[100px] animate-pulse"
-                        style="animation-delay: 4s"></div>
-                </div>
-                <!-- Grid Pattern -->
-                <div class="absolute inset-0 opacity-10"
-                    style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 40px 40px;">
-                </div>
+        <div class="relative py-28 md:py-36 overflow-hidden">
+            <!-- Background -->
+            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950">
+                <!-- Subtle geometric pattern -->
+                <div class="absolute inset-0 opacity-[0.03]"
+                    style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                <!-- Soft glow accents -->
+                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-[128px]"></div>
+                <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-indigo-500/10 rounded-full blur-[128px]"></div>
             </div>
 
             <!-- Content -->
             <div class="container mx-auto px-4 relative z-10">
-                <div class="max-w-4xl mx-auto text-center">
+                <div class="max-w-3xl mx-auto text-center">
                     <!-- Badge -->
                     <div
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-blue-300 text-sm font-bold mb-8 animate-fade-in">
+                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-blue-300 text-sm font-semibold mb-8 hero-animate">
                         <span class="relative flex h-2 w-2">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
                         </span>
                         {{ t('contact.contactUs') }}
                     </div>
 
-                    <h1 class="text-5xl md:text-7xl font-black mb-8 leading-tight animate-fade-in"
-                        style="animation-delay: 0.2s">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-tight hero-animate-delay-1">
                         <span class="block text-white">{{ t('contact.connect') }}</span>
-                        <span
-                            class="block bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 bg-clip-text text-transparent filter drop-shadow-sm">
+                        <span class="block bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
                             {{ t('contact.yourJourney') }}
                         </span>
                     </h1>
 
-                    <p class="text-xl md:text-2xl mb-12 text-blue-100/80 max-w-2xl mx-auto leading-relaxed animate-fade-in"
-                        style="animation-delay: 0.4s">
+                    <p class="text-lg text-slate-300/80 max-w-xl mx-auto leading-relaxed hero-animate-delay-2">
                         {{ t('contact.desc') }}
                     </p>
                 </div>
             </div>
 
-            <!-- Decorative Bottom Wave -->
+            <!-- Bottom wave -->
             <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
-                <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-                    <path
-                        d="M0 120L60 105C120 90 240 60 360 45C480 30 600 30 720 37.5C840 45 960 60 1080 67.5C1200 75 1320 75 1380 75L1440 75V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z"
+                <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
+                    <path d="M0 80L48 72C96 64 192 48 288 40C384 32 480 32 576 36C672 40 768 48 864 52C960 56 1056 56 1152 52C1248 48 1344 40 1392 36L1440 32V80H0Z"
                         class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
                 </svg>
             </div>
         </div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 relative z-20 pb-20">
-            <!-- Contact Quick Info Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-7 gap-6 mb-16">
-                <a v-for="method in contactMethods" :key="method.key" :href="method.link"
-                    :target="method.link.startsWith('http') ? '_blank' : undefined"
-                    class="group relative bg-white/90 dark:bg-gray-800/90 backdrop-blur-xl rounded-[2.5rem] p-8 shadow-2xl border border-white dark:border-gray-700 hover:shadow-indigo-500/10 hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center"
-                    :class="method.shadow">
+            <!-- Contact Methods Section -->
+            <div class="mb-16">
 
-                    <div
-                        :class="['w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:rotate-6', method.bgColor]">
-                        <i :class="[method.icon, 'text-3xl', method.color]"></i>
+                <!-- Hotline Hero Card -->
+                <a href="tel:+84854242357"
+                    class="group relative block mb-8 overflow-hidden rounded-3xl">
+                    <!-- Animated gradient border -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-3xl p-[2px] animate-gradient-shift">
+                        <div class="absolute inset-[2px] bg-white dark:bg-gray-900 rounded-[22px]"></div>
                     </div>
-
-                    <h3
-                        class="text-sm font-black uppercase tracking-widest text-gray-400 mb-3 group-hover:text-indigo-500 transition-colors">
-                        {{ t(`contact.quickInfo.${method.key}`) }}
-                    </h3>
-
-                    <p class="text-lg font-bold text-gray-900 dark:text-white mb-2 leading-tight">
-                        {{ method.value }}
-                    </p>
-
-                    <p class="text-xs font-medium text-gray-400">
-                        {{ method.sub }}
-                    </p>
-
-                    <!-- Subtle Decorative Element -->
-                    <div class="absolute top-4 right-4 w-2 h-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                        :class="method.bgColor"></div>
+                    <div class="relative flex flex-col sm:flex-row items-center gap-6 px-8 py-7">
+                        <!-- Animated phone icon -->
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                            <div class="relative w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                <i class="bx bx-phone-call text-3xl text-white group-hover:animate-bounce"></i>
+                            </div>
+                        </div>
+                        <!-- Info -->
+                        <div class="text-center sm:text-left flex-1">
+                            <p class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-1">{{ t('contact.quickInfo.call') }}</p>
+                            <p class="text-3xl font-black text-gray-900 dark:text-white tracking-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">+84 854.242.357</p>
+                        </div>
+                        <!-- Status badge -->
+                        <div class="flex items-center gap-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-full px-5 py-2.5">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                            </span>
+                            <span class="text-green-700 dark:text-green-400 text-sm font-semibold whitespace-nowrap">Mon-Sun, 8am-8pm</span>
+                        </div>
+                    </div>
                 </a>
+
+                <!-- Chat Platform Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-5">
+                    <a v-for="method in contactMethods.filter(m => m.key !== 'call')" :key="method.key"
+                        :href="method.link" target="_blank" rel="noopener noreferrer"
+                        class="contact-card group relative bg-white dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-gray-100 dark:border-gray-700 transition-all duration-400 hover:-translate-y-2 flex flex-col items-center text-center overflow-hidden">
+
+                        <!-- Hover gradient background -->
+                        <div class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl"
+                            :class="method.bgColor"></div>
+
+                        <!-- Icon with glow -->
+                        <div class="relative mb-4">
+                            <div class="absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-400"
+                                :class="method.bgColor"></div>
+                            <div :class="['relative w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-400 group-hover:scale-110 group-hover:shadow-lg', method.bgColor]">
+                                <i :class="[method.icon, 'text-3xl transition-transform duration-300 group-hover:scale-110', method.color]"></i>
+                            </div>
+                        </div>
+
+                        <!-- Platform name -->
+                        <h3 class="relative text-base font-bold text-gray-800 dark:text-white mb-1.5 transition-colors">
+                            {{ t(`contact.quickInfo.${method.key}`) }}
+                        </h3>
+
+                        <!-- Subtitle -->
+                        <p class="relative text-xs text-gray-400 dark:text-gray-500 font-medium">
+                            {{ method.sub }}
+                        </p>
+
+                        <!-- Bottom accent line -->
+                        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 group-hover:w-2/3 transition-all duration-400 rounded-full"
+                            :class="method.borderColor"></div>
+                    </a>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-20">
@@ -485,6 +517,20 @@ onMounted(() => {
 .animate-fade-in {
     animation: fadeIn 0.6s ease-out forwards;
     opacity: 0;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+}
+
+.contact-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 :deep(.contact-country-select .el-select-v2__wrapper) {
