@@ -44,6 +44,7 @@ export const useIsWishlistedQuery = (tourId: string | Ref<string>) => {
  */
 export const useToggleWishlistMutation = () => {
   const queryClient = useQueryClient();
+  const { t } = useI18n();
 
   return useMutation({
     mutationFn: async (tourId: string) => {
@@ -54,11 +55,46 @@ export const useToggleWishlistMutation = () => {
         headers: getAuthHeaders(),
       });
     },
+    onMutate: async (tourId) => {
+      // Cancel outgoing refetches to avoid race conditions
+      await queryClient.cancelQueries({ queryKey: ['wishlist-check', tourId] });
+      await queryClient.cancelQueries({ queryKey: ['wishlist-bulk'] });
+
+      // Snapshot current cache
+      const previousIndividual = queryClient.getQueryData(['wishlist-check', tourId]);
+      const previousBulk = queryClient.getQueryData(['wishlist-bulk']);
+
+      // Optimistically update individual query
+      queryClient.setQueryData(['wishlist-check', tourId], (old: { isWishlisted: boolean } | undefined) => {
+        if (!old) return old;
+        return { ...old, isWishlisted: !old.isWishlisted };
+      });
+
+      // Optimistically update bulk query
+      if (previousBulk) {
+        queryClient.setQueryData(['wishlist-bulk'], (old: Record<string, boolean> | undefined) => {
+          if (!old) return old;
+          return { ...old, [tourId]: !old[tourId] };
+        });
+      }
+
+      return { previousIndividual, previousBulk };
+    },
+    onError: (_, tourId, context: any) => {
+      // Roll back on error
+      if (context?.previousIndividual) {
+        queryClient.setQueryData(['wishlist-check', tourId], context.previousIndividual);
+      }
+      if (context?.previousBulk) {
+        queryClient.setQueryData(['wishlist-bulk'], context.previousBulk);
+      }
+    },
     onSuccess: (_, tourId) => {
-      // Làm mới danh sách và trạng thái check
+      // Invalidate all related queries to sync with server
       queryClient.invalidateQueries({ queryKey: ['wishlist'] });
       queryClient.invalidateQueries({ queryKey: ['wishlist-check', tourId] });
       queryClient.invalidateQueries({ queryKey: ['wishlist-count'] });
+      queryClient.invalidateQueries({ queryKey: ['wishlist-bulk'] });
     },
   });
 };

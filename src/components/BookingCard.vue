@@ -28,7 +28,15 @@ const toggleWishlist = async () => {
     }
 
     try {
+        const wasWishlisted = isWishlisted.value;
         await toggleWishlistMutation.mutateAsync(props.tourId);
+        
+        // Show success message based on previous state
+        if (wasWishlisted) {
+            ElMessage.success(t('wishlist.removeSuccess'));
+        } else {
+            ElMessage.success(t('wishlist.addSuccess'));
+        }
     } catch (err) {
         ElMessage.error(t('review.error'));
     }
