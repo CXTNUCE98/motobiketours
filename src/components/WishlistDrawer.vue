@@ -8,6 +8,14 @@ const localePath = useLocalePath();
 const router = useRouter();
 const toggleMutation = useToggleWishlistMutation();
 
+// Responsive drawer size
+const drawerSize = computed(() => {
+    if (typeof window !== 'undefined') {
+        return window.innerWidth < 640 ? '100vw' : '440px'
+    }
+    return '440px'
+})
+
 const tours = computed(() => {
     return (wishlist.value || []).map(tour => ({
         id: tour.id,
@@ -38,7 +46,7 @@ const viewTour = (id: string) => {
 </script>
 
 <template>
-    <el-drawer v-model="isWishlistDrawerVisible" direction="rtl" :size="440" :show-close="false" class="wishlist-drawer"
+    <el-drawer v-model="isWishlistDrawerVisible" direction="rtl" :size="drawerSize" :show-close="false" class="wishlist-drawer"
         append-to-body>
         <template #header>
             <div class="flex items-center justify-between w-full px-2">
@@ -233,8 +241,14 @@ const viewTour = (id: string) => {
 <style>
 .wishlist-drawer {
     --el-drawer-padding-primary: 0;
-    border-radius: 2rem 0 0 2rem;
     overflow: hidden;
+}
+
+/* Responsive border radius for mobile */
+@media (min-width: 640px) {
+    .wishlist-drawer {
+        border-radius: 2rem 0 0 2rem;
+    }
 }
 
 .wishlist-drawer .el-drawer__header {

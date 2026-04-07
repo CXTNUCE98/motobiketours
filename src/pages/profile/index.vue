@@ -237,6 +237,14 @@ const currentAvatar = computed(() => {
     return null
 })
 
+// Responsive dialog width for mobile
+const dialogWidth = computed(() => {
+    if (typeof window !== 'undefined') {
+        return window.innerWidth < 640 ? '90vw' : '500px'
+    }
+    return '500px'
+})
+
 const userInitial = computed(() => {
     return userData.value?.userName?.charAt(0).toUpperCase() ||
         authUser.value?.userName?.charAt(0).toUpperCase() || 'U'
@@ -781,7 +789,7 @@ const { data: wishlistCount } = useWishlistCountQuery()
         </div>
 
         <!-- Image Cropper Modal -->
-        <el-dialog v-model="showCropper" title="Crop Image" width="500px" :close-on-click-modal="false" destroy-on-close
+        <el-dialog v-model="showCropper" title="Crop Image" :width="dialogWidth" :close-on-click-modal="false" destroy-on-close
             :lock-scroll="true">
             <div
                 class="h-96 w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden rounded-lg">

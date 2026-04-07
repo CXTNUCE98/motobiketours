@@ -109,11 +109,25 @@ const commonAmenities = [
 const isUploading = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
 
+// Responsive dialog width
+const dialogWidth = computed(() => {
+    if (typeof window !== 'undefined') {
+        return window.innerWidth < 640 ? '95vw' : '500px'
+    }
+    return '500px'
+})
+
 // Cropper State
 const showCropper = ref(false);
 const cropperImage = ref<string | null>(null);
 const cropperRef = ref<any>(null);
 const selectedFile = ref<File | null>(null);
+const cropperDialogWidth = computed(() => {
+    if (typeof window !== 'undefined') {
+        return window.innerWidth < 640 ? '95vw' : '600px'
+    }
+    return '600px'
+})
 
 const handleThumbnailUpload = (event: Event) => {
     const input = event.target as HTMLInputElement;
@@ -192,7 +206,7 @@ const handleClose = () => {
 </script>
 
 <template>
-    <el-dialog v-model="dialogVisible" :title="isEditMode ? t('vehicles.edit') : t('vehicles.create')" width="500px"
+    <el-dialog v-model="dialogVisible" :title="isEditMode ? t('vehicles.edit') : t('vehicles.create')" :width="dialogWidth"
         class="rounded-2xl dark:bg-zinc-900 shadow-2xl [&_.el-dialog\_\_title]:dark:text-white"
         :before-close="handleClose">
         <el-form ref="formRef" :model="formData" :rules="rules" label-position="top" class="mt-4">
@@ -272,7 +286,7 @@ const handleClose = () => {
     </el-dialog>
 
     <!-- Image Cropper Modal -->
-    <el-dialog v-model="showCropper" title="Crop Image" width="600px" append-to-body :close-on-click-modal="false"
+    <el-dialog v-model="showCropper" title="Crop Image" :width="cropperDialogWidth" append-to-body :close-on-click-modal="false"
         destroy-on-close>
         <div
             class="h-96 w-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden rounded-lg">
