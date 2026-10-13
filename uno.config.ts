@@ -5,14 +5,43 @@ import {
   presetIcons,
   presetTypography,
   presetUno,
-  presetWebFonts,
   transformerDirectives,
   transformerVariantGroup,
 } from 'unocss';
 
 export const unoConfig: UserConfig = {
   theme: {
+    // Font, bo góc và màu của design system — giá trị thật nằm ở src/assets/css/tokens.css
+    fontFamily: {
+      sans: 'var(--font-sans)',
+      serif: 'var(--font-serif)',
+    },
+    borderRadius: {
+      sm: 'var(--radius-sm)',
+      DEFAULT: 'var(--radius-md)',
+      md: 'var(--radius-md)',
+      lg: 'var(--radius-lg)',
+      full: 'var(--radius-pill)',
+    },
     colors: {
+      // Dùng: text-ink, text-muted, bg-page, bg-subtle, bg-surface, border-line, text-accent, bg-accent...
+      page: 'var(--color-bg)',
+      subtle: 'var(--color-bg-subtle)',
+      surface: 'var(--color-surface)',
+      ink: 'var(--color-text)',
+      muted: 'var(--color-text-muted)',
+      line: 'var(--color-border)',
+      accent: {
+        DEFAULT: 'var(--color-accent)',
+        hover: 'var(--color-accent-hover)',
+        on: 'var(--color-on-accent)',
+      },
+      inverse: {
+        DEFAULT: 'var(--color-inverse-bg)',
+        text: 'var(--color-inverse-text)',
+        muted: 'var(--color-inverse-muted)',
+        accent: 'var(--color-inverse-accent)',
+      },
       primary: {
         DEFAULT: 'var(--el-color-primary)',
         light: {
@@ -158,22 +187,6 @@ export const unoConfig: UserConfig = {
     ['text-helper', 'text-13px leading-20px mb-4px font-medium'],
     ['flex-center', 'flex items-center justify-center'],
     ['el-form-label', '[&_.el-form-item\\_\\_label]:(mb-2px! font-semibold!)'],
-    [
-      'btn-primary',
-      'bg-gradient-to-r from-brand-primary to-brand-primary-dark text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase text-sm tracking-wide',
-    ],
-    [
-      'btn-secondary',
-      'bg-gradient-to-r from-brand-secondary to-brand-secondary-dark text-white px-6 py-3 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 uppercase text-sm tracking-wide',
-    ],
-    [
-      'card',
-      'bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 border border-gray-100 dark:border-gray-700',
-    ],
-    [
-      'section-title',
-      'flex items-center gap-2 mb-4 text-gray-900 dark:text-white before:content-[""] before:w-1 before:h-8 before:bg-[#FFB800]',
-    ],
   ],
   presets: [
     presetTypography(),
@@ -186,46 +199,6 @@ export const unoConfig: UserConfig = {
       },
     }),
     presetUno(),
-    presetWebFonts({
-      provider: 'google',
-      fonts: {
-        sans: {
-          name: 'Inter',
-          weights: ['200', '300', '400', '500', '600', '700', '800', '900'],
-          italic: true,
-        },
-        jakarta: {
-          name: 'Plus Jakarta Sans',
-          weights: ['200', '300', '400', '500', '600', '700', '800', '900'],
-          italic: true,
-        },
-        serif: {
-          name: 'DM Serif Display',
-          weights: ['400'],
-          italic: true,
-        },
-        jost: {
-          name: 'Jost',
-          weights: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-          italic: true,
-        },
-        playfair: {
-          name: 'Playfair Display',
-          weights: ['400', '500', '600', '700', '800', '900'],
-          italic: true,
-        },
-        roboto: {
-          name: 'Roboto',
-          weights: ['100', '300', '400', '500', '700', '900'],
-          italic: true,
-        },
-        opensans: {
-          name: 'Open Sans',
-          weights: ['300', '400', '500', '600', '700', '800'],
-          italic: true,
-        },
-      },
-    }),
   ],
   safelist: [],
   rules: [

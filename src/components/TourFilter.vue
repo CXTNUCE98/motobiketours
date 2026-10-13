@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 
-const { currencySymbol, convertToVnd, locale, formatPrice } = useCurrency();
+const { locale, formatPrice } = useCurrency();
 const { t } = useI18n();
 
 type FilterOptions = {
@@ -115,169 +115,223 @@ const clearFilters = () => {
 </script>
 
 <template>
-    <div :class="[
-        'bg-white dark:bg-gray-800 transition-colors duration-300',
-        props.showMobile ? 'flex-1 w-full flex flex-col min-h-0' : 'rounded-2xl shadow-lg p-6 sticky top-24'
-    ]">
-        <!-- Header -->
-        <div v-if="!props.showMobile" class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                {{ t('tour.filter.title') }}
-            </h3>
-            <span v-if="activeFilterCount > 0"
-                class="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold rounded-full">
-                {{ activeFilterCount }}
-            </span>
+    <div class="tour-filter" :class="{ 'tour-filter--sheet': props.showMobile }">
+        <div v-if="!props.showMobile" class="tour-filter__head">
+            <p class="tour-filter__title">{{ t('tour.filter.title') }}</p>
+            <span v-if="activeFilterCount > 0" class="tour-filter__count">{{ activeFilterCount }}</span>
         </div>
 
-        <!-- Scrollable Content -->
-        <div :class="props.showMobile ? 'flex-1 overflow-y-auto p-4' : ''">
+        <div class="tour-filter__body">
             <!-- Search -->
-            <div class="mb-6">
-                <div class="relative">
-                    <input v-model="searchQuery" type="text" :placeholder="t('tour.filter.searchPlaceholder')"
-                        class="w-full px-4 py-3 pr-12 rounded-xl text-gray-800 dark:text-white bg-gray-50 dark:bg-gray-700 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-400" />
-                    <button @click="applyFilters"
-                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-2 rounded-lg hover:scale-105 transition-transform duration-300 shadow-md">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
+            <form class="tour-filter__group" role="search" @submit.prevent="applyFilters">
+                <UiField :label="t('tour.filter.search')">
+                    <template #default="{ id }">
+                        <input :id="id" v-model="searchQuery" type="search" class="ui-control"
+                            :placeholder="t('tour.filter.searchPlaceholder')" />
+                    </template>
+                </UiField>
+            </form>
 
             <!-- Duration Filter -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.duration')
-                    }}</label>
-                <div class="space-y-0 flex flex-wrap justify-between gap-1 md:space-y-2">
-                    <button v-for="option in durationOptions" :key="option.value" @click="toggleDuration(option.value)"
-                        class="w-3/10 md:w-full px-4 py-3 rounded-xl text-left text-sm font-medium transition-all duration-300 flex items-center justify-between"
-                        :class="selectedDuration === option.value
-                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md'
-                            : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600'
-                            ">
-                        <span>{{ option.label }}</span>
-                        <svg v-if="selectedDuration === option.value" class="w-5 h-5" fill="currentColor"
-                            viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </button>
+            <fieldset class="tour-filter__group">
+                <legend class="tour-filter__legend">{{ t('tour.duration') }}</legend>
+                <div class="tour-filter__chips">
+                    <UiChip v-for="option in durationOptions" :key="option.value"
+                        :active="selectedDuration === option.value" @click="toggleDuration(option.value)">
+                        {{ option.label }}
+                    </UiChip>
                 </div>
-            </div>
+            </fieldset>
 
             <!-- Price Range Filter -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.priceRange')
-                    }}
-                    ({{ locale === 'vi' ? 'VND' : 'USD' }})</label>
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">{{ t('tour.from') }}</label>
-                        <input v-model.number="priceMin" type="range" min="0" max="2000" step="50"
-                            class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                        <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                            {{ formatPrice(priceMin) }}
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">{{ t('tour.to') }}</label>
-                        <input v-model.number="priceMax" type="range" min="0" max="2000" step="50"
-                            class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-                        <div class="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                            {{ formatPrice(priceMax) }}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <fieldset class="tour-filter__group">
+                <legend class="tour-filter__legend">
+                    {{ t('tour.priceRange') }} ({{ locale === 'vi' ? 'VND' : 'USD' }})
+                </legend>
+                <label class="tour-filter__range">
+                    <span class="tour-filter__range-label">
+                        {{ t('tour.from') }} <strong>{{ formatPrice(priceMin) }}</strong>
+                    </span>
+                    <input v-model.number="priceMin" type="range" min="0" max="2000" step="50" />
+                </label>
+                <label class="tour-filter__range">
+                    <span class="tour-filter__range-label">
+                        {{ t('tour.to') }} <strong>{{ formatPrice(priceMax) }}</strong>
+                    </span>
+                    <input v-model.number="priceMax" type="range" min="0" max="2000" step="50" />
+                </label>
+            </fieldset>
 
             <!-- Tour Type Filter -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">{{ t('tour.tourType')
-                    }}</label>
-                <div class="space-y-0 flex flex-wrap gap-2 md:space-y-2">
-                    <label v-for="option in tourTypeOptions" :key="option.value"
-                        class="flex items-center w-130px gap-3 px-4 py-3 rounded-xl cursor-pointer transition-all duration-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <input type="checkbox" :value="option.value" v-model="selectedTypes"
-                            class="w-5 h-5 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 cursor-pointer bg-white dark:bg-gray-700" />
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">{{ option.label }}</span>
+            <fieldset class="tour-filter__group">
+                <legend class="tour-filter__legend">{{ t('tour.tourType') }}</legend>
+                <div class="tour-filter__checks">
+                    <label v-for="option in tourTypeOptions" :key="option.value" class="tour-filter__check">
+                        <input v-model="selectedTypes" type="checkbox" :value="option.value" />
+                        <span>{{ option.label }}</span>
                     </label>
                 </div>
-            </div>
+            </fieldset>
 
             <!-- Depart From Filter -->
-            <div class="mb-6">
-                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3 ">{{
-                    t('tour.departFrom') }}</label>
-                <el-select v-model="selectedDepartFrom" :placeholder="t('tour.all')"
-                    class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 ">
-                    <el-option v-for="item in departFromOptions" :key="item.value" :label="item.label"
-                        :value="item.value" />
-                </el-select>
-
+            <div class="tour-filter__group">
+                <UiField :label="t('tour.departFrom')">
+                    <template #default="{ id }">
+                        <select :id="id" v-model="selectedDepartFrom" class="ui-control">
+                            <option v-for="item in departFromOptions" :key="item.value" :value="item.value">
+                                {{ item.label }}
+                            </option>
+                        </select>
+                    </template>
+                </UiField>
             </div>
         </div>
 
         <!-- Action Buttons -->
-        <div :class="props.showMobile
-            ? 'p-4 border-t border-gray-100 dark:border-gray-700 flex gap-3'
-            : 'space-y-3'">
-            <button @click="applyFilters"
-                class="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                <span>{{ props.showMobile ? t('common.apply') : t('tour.applyFilter') }}</span>
-            </button>
-            <button @click="clearFilters"
-                class="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span>{{ props.showMobile ? t('common.clear') : t('tour.clearFilter') }}</span>
-            </button>
+        <div class="tour-filter__actions">
+            <UiButton block @click="applyFilters">
+                {{ props.showMobile ? t('common.apply') : t('tour.applyFilter') }}
+            </UiButton>
+            <UiButton variant="ghost" @click="clearFilters">
+                {{ props.showMobile ? t('common.clear') : t('tour.clearFilter') }}
+            </UiButton>
         </div>
     </div>
 </template>
 
 <style scoped>
-/* Custom range slider styling */
-input[type='range']::-webkit-slider-thumb {
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+.tour-filter {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+}
+
+.tour-filter__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-strong);
+}
+
+.tour-filter__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+}
+
+.tour-filter__count {
+    min-width: 1.5rem;
+    padding: 0.125rem var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    text-align: center;
+}
+
+.tour-filter__group {
+    min-width: 0;
+    margin: 0;
+    padding: var(--space-5) 0;
+    border: 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+/* float để legend nằm trong khung như nhãn thường, không đè lên đường kẻ */
+.tour-filter__legend {
+    float: left;
+    width: 100%;
+    margin-bottom: var(--space-3);
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.tour-filter__legend + * {
+    clear: both;
+}
+
+.tour-filter__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.tour-filter__range {
+    display: grid;
+    gap: 0.375rem;
+}
+
+.tour-filter__range + .tour-filter__range {
+    margin-top: var(--space-4);
+}
+
+.tour-filter__range-label {
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
+}
+
+.tour-filter__range-label strong {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+}
+
+.tour-filter__range input,
+.tour-filter__check input {
+    accent-color: var(--color-accent);
+}
+
+.tour-filter__range input {
+    width: 100%;
+}
+
+.tour-filter__checks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8rem), 1fr));
+    gap: var(--space-2) var(--space-4);
+}
+
+.tour-filter__check {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 2.25rem;
+    font-size: var(--text-ui);
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
-    transition: all 0.3s ease;
 }
 
-input[type='range']::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+.tour-filter__check input {
+    width: 1.125rem;
+    height: 1.125rem;
 }
 
-input[type='range']::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
-    transition: all 0.3s ease;
-    border: none;
+.tour-filter__actions {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    padding-top: var(--space-5);
 }
 
-input[type='range']::-moz-range-thumb:hover {
-    transform: scale(1.2);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+/* Dạng bottom sheet trên mobile: phần thân cuộn, nút cố định ở dưới */
+.tour-filter--sheet {
+    position: static;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.tour-filter--sheet .tour-filter__body {
+    flex: 1;
+    overflow-y: auto;
+    padding-inline: var(--gutter);
+}
+
+.tour-filter--sheet .tour-filter__actions {
+    padding: var(--space-4) var(--gutter);
+    border-top: 1px solid var(--color-border);
 }
 </style>

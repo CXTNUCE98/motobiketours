@@ -1,224 +1,140 @@
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n';
+import { CONTACT_INFO } from '~/constants/contact';
+
 const { t } = useI18n();
+const localePath = useLocalePath();
 
-// Tour guides data
-const tourGuides = [
-    {
-        id: 1,
-        name: 'Jane Cooper',
-        image: 'https://tte.edu.vn/public/upload/2025/01/avatar-cho39.webp',
-        description: t('about.guidesDesc')
-    },
-    {
-        id: 2,
-        name: 'Wade Warren',
-        image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQH7wZvz7hnx8d5vw-S4y-jQNTAzrHICXvM8A&s',
-        description: t('about.guidesDesc')
-    },
-    {
-        id: 3,
-        name: 'Jenny Wilson',
-        image: 'https://maunailxinh.com/wp-content/uploads/2025/06/avatar-meo-ngau%E2%80%8B-2.jpg',
-        description: t('about.guidesDesc')
-    },
-    {
-        id: 4,
-        name: 'Mamnun Khan',
-        image: 'https://cellphones.com.vn/sforum/wp-content/uploads/2024/02/avatar-anh-meo-cute-7.jpg',
-        description: t('about.guidesDesc')
-    }
-]
+useSeoMeta({
+    title: () => t('about.introTitle'),
+    description: () => t('about.introDesc1'),
+});
 
-const serviceList = {
-    services: [
-        t('about.services.flights'),
-        t('about.services.hotels'),
-        t('about.services.tours'),
-        t('about.services.visa'),
-        t('about.services.rentals'),
-        t('about.services.insurance')
-    ],
-    advantages: [
-        t('about.advantages.price'),
-        t('about.advantages.quality'),
-        t('about.advantages.diversity'),
-        t('about.advantages.speed'),
-        t('about.advantages.support'),
-        t('about.advantages.promotions')
-    ]
-}
+// focus: điểm lấy nét khi cắt ảnh ngang 705x400 thành khung dọc 3:4
+const heroPhotos = computed(() => [
+    { src: '/photos/taynguyen.jpg', place: t('about.places.taynguyen'), focus: '92% 50%' },
+    { src: '/photos/mytho1.jpg', place: t('about.places.mytho'), focus: '62% 50%' },
+    { src: '/photos/cungdinhhue.jpg', place: t('about.places.hue'), focus: '35% 50%' },
+]);
+
+const serviceKeys = ['flights', 'hotels', 'tours', 'visa', 'rentals', 'insurance'];
+const advantageKeys = ['price', 'quality', 'diversity', 'speed', 'support', 'promotions'];
+
+// Ảnh chân dung thật: đặt file vào src/public/guides/ rồi điền đường dẫn vào `photo`,
+// ví dụ '/guides/jane-cooper.jpg'. Khi chưa có ảnh, thẻ hiển thị chữ cái đầu của tên.
+const guides = [
+    { name: 'Jane Cooper', photo: '' },
+    { name: 'Wade Warren', photo: '' },
+    { name: 'Jenny Wilson', photo: '' },
+    { name: 'Mamnun Khan', photo: '' },
+];
+
+const padNumber = (index: number) => String(index + 1).padStart(2, '0');
+const initials = (name: string) => name.split(' ').map((word) => word[0]).join('');
 </script>
 
 <template>
-    <div class="bg-gradient-to-br from-gray-50 via-emerald-50/20 to-teal-50/20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen transition-colors duration-300">
-        <!-- Hero Section -->
-        <div class="relative py-20 md:py-28 overflow-hidden">
-            <!-- Background -->
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-emerald-950 to-teal-950">
-                <!-- Subtle geometric pattern -->
-                <div class="absolute inset-0 opacity-[0.03]"
-                    style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-                <!-- Soft glow accents -->
-                <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[128px]"></div>
-                <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-teal-500/10 rounded-full blur-[128px]"></div>
+    <div class="about">
+        <UiPageHero size="xl" :eyebrow="t('nav.about')" title="ANDAGO" :emphasis="t('about.title')"
+            :intro="t('about.introDesc1')">
+            <template #actions>
+                <UiButton :to="localePath('/tour')">{{ t('about.exploreTours') }}</UiButton>
+                <UiButton :href="CONTACT_INFO.phoneHref" variant="outline">{{ t('about.callAdvice') }}</UiButton>
+            </template>
+
+            <ul class="hero-gallery" role="list">
+                <li v-for="photo in heroPhotos" :key="photo.src">
+                    <figure class="hero-photo">
+                        <img :src="photo.src" :alt="photo.place" :style="{ objectPosition: photo.focus }" width="705"
+                            height="400" />
+                        <figcaption aria-hidden="true">{{ photo.place }}</figcaption>
+                    </figure>
+                </li>
+            </ul>
+        </UiPageHero>
+
+        <!-- Dịch vụ -->
+        <section class="services" aria-labelledby="services-title">
+            <div class="shell split">
+                <UiSectionHeading id="services-title" :title="t('about.servicesTitle')"
+                    :lead="t('about.introDesc3')" />
+
+                <ol class="service-list" role="list">
+                    <li v-for="(key, index) in serviceKeys" :key="key">
+                        <span class="service-number" aria-hidden="true">{{ padNumber(index) }}</span>
+                        <span class="service-name">{{ t(`about.services.${key}`) }}</span>
+                    </li>
+                </ol>
             </div>
+        </section>
 
-            <!-- Content -->
-            <div class="container mx-auto px-4 relative z-10">
-                <div class="max-w-3xl mx-auto text-center">
-                    <!-- Badge -->
-                    <div
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-emerald-300 text-sm font-semibold mb-8 hero-animate">
-                        <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-                        </span>
-                        {{ t('about.title') }}
-                    </div>
+        <!-- Ưu điểm -->
+        <section class="advantages" aria-labelledby="advantages-title">
+            <div class="shell">
+                <UiSectionHeading id="advantages-title" class="advantages__heading"
+                    :title="t('about.advantagesTitle')" emphasis="ANDAGO" />
 
-                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-black mb-6 leading-tight hero-animate-delay-1">
-                        <span class="block text-white">ANDAGO</span>
-                        <span class="block bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-                            {{ t('about.title') }}
-                        </span>
-                    </h1>
+                <ul class="advantage-grid" role="list">
+                    <li v-for="key in advantageKeys" :key="key" class="advantage">
+                        <span class="advantage-dot" aria-hidden="true"></span>
+                        {{ t(`about.advantages.${key}`) }}
+                    </li>
+                </ul>
+            </div>
+        </section>
 
-                    <p class="text-lg text-slate-300/80 max-w-xl mx-auto leading-relaxed hero-animate-delay-2">
-                        {{ t('about.introDesc1') }}
-                    </p>
+        <!-- Hướng dẫn viên -->
+        <section class="guides" aria-labelledby="guides-title">
+            <div class="shell">
+                <div class="split guides-head">
+                    <UiSectionHeading id="guides-title" :eyebrow="t('about.guidesSub')"
+                        :title="t('about.guidesTitle')" />
+                    <p class="guides-desc">{{ t('about.guidesDesc') }}</p>
                 </div>
+
+                <ul class="guide-grid" role="list">
+                    <li v-for="guide in guides" :key="guide.name">
+                        <div class="guide-photo">
+                            <img v-if="guide.photo" :src="guide.photo" :alt="guide.name" loading="lazy"
+                                decoding="async" />
+                            <span v-else class="guide-initials" aria-hidden="true">{{ initials(guide.name) }}</span>
+                        </div>
+                        <h3 class="guide-name">{{ guide.name }}</h3>
+                        <p class="guide-role">{{ t('about.guidesSub') }}</p>
+                    </li>
+                </ul>
             </div>
+        </section>
 
-            <!-- Bottom wave -->
-            <div class="absolute bottom-0 left-0 right-0 pointer-events-none">
-                <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto">
-                    <path d="M0 80L48 72C96 64 192 48 288 40C384 32 480 32 576 36C672 40 768 48 864 52C960 56 1056 56 1152 52C1248 48 1344 40 1392 36L1440 32V80H0Z"
-                        class="fill-gray-50 dark:fill-gray-900 transition-colors duration-300" />
-                </svg>
-            </div>
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 md:py-16 lg:py-20">
-            <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
-                <!-- Left Side - Text Content -->
-                <div class="space-y-6 sm:space-y-8 order-2 lg:order-1">
-                    <!-- Main Title -->
-                    <h1
-                        class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white mb-4 sm:mb-6 leading-tight">
-                        ANDAGO || {{ t('about.title') }}
-                    </h1>
-
-                    <!-- Section 1: Giới thiệu về ANDAGO -->
-                    <div class="space-y-3 sm:space-y-4">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{{ t('about.introTitle')
-                        }}
+        <!-- CTA + liên hệ -->
+        <section class="cta" aria-labelledby="cta-title">
+            <div class="shell">
+                <div class="cta-card">
+                    <div>
+                        <h2 id="cta-title" class="cta-title">
+                            <UiEmphasis :text="t('about.ctaTitle')" match="ANDAGO" />
                         </h2>
-                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            {{ t('about.introDesc1') }}
-                        </p>
-
-                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            {{ t('about.introDesc2') }}
-                        </p>
-
-                        <ul
-                            class="space-y-1.5 sm:space-y-2 text-gray-700 dark:text-gray-300 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">
-                            <li v-for="(val, key) in serviceList.services" :key="key">
-                                {{ val
-                                }}</li>
-                        </ul>
-
-                        <p class="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                            {{ t('about.introDesc3') }}
-                        </p>
+                        <UiButton :to="localePath('/tour')" variant="ink" class="cta-button">
+                            {{ t('nav.bookTour') }}
+                        </UiButton>
                     </div>
 
-                    <!-- Section 2: Ưu điểm -->
-                    <div class="space-y-3 sm:space-y-4">
-                        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white">{{
-                            t('about.advantagesTitle') }}</h2>
-
-                        <ul
-                            class="space-y-1.5 sm:space-y-2 text-gray-700 dark:text-gray-300 list-disc list-inside ml-3 sm:ml-4 text-sm sm:text-base">
-                            <li v-for="(val, key) in serviceList.advantages" :key="key">{{
-                                val }}</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Right Side - Image Collage -->
-                <div class="flex flex-col gap-3 sm:gap-4 order-1 lg:order-2">
-                    <!-- Top Image (Larger) -->
-                    <div class="w-full h-64 sm:h-80 lg:h-96 rounded-lg overflow-hidden shadow-lg">
-                        <img src="/photos/taynguyen.jpg" alt="Mountain adventure"
-                            class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                    </div>
-
-                    <!-- Bottom Two Images -->
-                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
-                        <!-- Bottom Left Image -->
-                        <div class="w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden shadow-lg">
-                            <img src="/photos/mytho1.jpg" alt="Beach relaxation"
-                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                    <dl class="cta-contacts">
+                        <div>
+                            <dt>{{ t('contact.quickInfo.visit') }}</dt>
+                            <dd>{{ CONTACT_INFO.address }}</dd>
                         </div>
-
-                        <!-- Bottom Right Image -->
-                        <div class="w-full h-48 sm:h-56 md:h-64 rounded-lg overflow-hidden shadow-lg">
-                            <img src="/photos/cungdinhhue.jpg" alt="Cultural tour"
-                                class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                        <div>
+                            <dt>{{ t('contact.quickInfo.email') }}</dt>
+                            <dd><a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a></dd>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Hướng dẫn viên du lịch Section -->
-        <section class="bg-gray-50 dark:bg-gray-800 py-12 sm:py-16 md:py-20 lg:py-24 transition-colors duration-300">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <!-- Section Header -->
-                <div class="text-center mb-8 sm:mb-12 md:mb-16">
-                    <p
-                        class="text-red-600 dark:text-red-400 text-xs sm:text-sm font-semibold mb-2 uppercase tracking-wide">
-                        {{ t('about.guidesSub') }}
-                    </p>
-                    <h2
-                        class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 dark:text-white leading-tight">
-                        {{ t('about.guidesTitle') }}
-                    </h2>
-                </div>
-
-                <!-- Tour Guides Grid -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-                    <div v-for="guide in tourGuides" :key="guide.id"
-                        class="bg-white dark:bg-gray-700 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-                        <!-- Profile Image -->
-                        <div class="relative h-64 sm:h-72 md:h-80 overflow-hidden">
-                            <img :src="guide.image" :alt="guide.name"
-                                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <div>
+                            <dt>{{ t('contact.quickInfo.call') }}</dt>
+                            <dd>
+                                <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phone }}</a>
+                                <span class="cta-person">{{ CONTACT_INFO.phonePerson }}</span>
+                            </dd>
                         </div>
-
-                        <!-- Card Content -->
-                        <div class="p-4 sm:p-5 md:p-6">
-                            <!-- Category/Role -->
-                            <p
-                                class="text-red-600 dark:text-red-400 text-xs sm:text-sm font-bold uppercase tracking-wide mb-2">
-                                {{ t('about.guidesSub') }}
-                            </p>
-
-                            <!-- Name -->
-                            <h3
-                                class="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 dark:text-white mb-3 sm:mb-4">
-                                {{ guide.name }}
-                            </h3>
-
-                            <!-- Description -->
-                            <p class="text-gray-600 dark:text-gray-300 text-xs sm:text-sm leading-relaxed line-clamp-4">
-                                {{ guide.description }}
-                            </p>
-                        </div>
-                    </div>
+                    </dl>
                 </div>
             </div>
         </section>
@@ -226,56 +142,277 @@ const serviceList = {
 </template>
 
 <style scoped>
-/* ============================================
-   Image Hover Effects
-   ============================================ */
-img {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
+.split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
 }
 
-/* Prevent layout shift on image hover */
-div[class*="overflow-hidden"] {
+/* Hero */
+.hero-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: var(--space-fluid-sm);
+    align-items: start;
+    margin-top: var(--space-fluid-lg);
+}
+
+.hero-photo {
+    position: relative;
+    aspect-ratio: 3 / 4;
     overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-border);
 }
 
-/* ============================================
-   Responsive Typography
-   ============================================ */
-@media (max-width: 640px) {
-    h1 {
-        line-height: 1.2;
+.hero-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.hero-photo:hover img {
+    transform: scale(1.03);
+}
+
+.hero-photo::after {
+    content: '';
+    position: absolute;
+    inset: 55% 0 0;
+    background: linear-gradient(to top, var(--color-scrim), transparent);
+    pointer-events: none;
+}
+
+.hero-photo figcaption {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.875rem;
+    left: 1rem;
+    z-index: 1;
+    color: var(--color-inverse-text);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+@media (min-width: 45rem) {
+    .hero-gallery li:nth-child(2) {
+        margin-top: 32px;
     }
-
-    h2 {
-        line-height: 1.3;
-    }
 }
 
-/* ============================================
-   List Styling Improvements
-   ============================================ */
-ul {
-    line-height: 1.6;
+/* Dịch vụ */
+.services {
+    padding-block: var(--section-space);
 }
 
-/* ============================================
-   Spacing Utilities
-   ============================================ */
-@media (max-width: 640px) {
-    .space-y-6>*+* {
-        margin-top: 1rem;
-    }
+.service-list {
+    border-bottom: 1px solid var(--color-border);
 }
 
-/* ============================================
-   Line Clamp Utility
-   ============================================ */
-.line-clamp-4 {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
-    -webkit-box-orient: vertical;
+.service-list li {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: var(--space-4);
+    align-items: baseline;
+    padding-block: 1.375rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.service-number {
+    color: var(--color-accent);
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-style: italic;
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.service-name {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    line-height: var(--leading-snug);
+}
+
+/* Ưu điểm: section nền tối */
+.advantages {
+    --em-color: var(--color-inverse-accent);
+    padding-block: var(--section-space);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
+}
+
+.advantages__heading {
+    max-width: 44rem;
+    margin-bottom: var(--space-fluid-lg);
+}
+
+/* Đường kẻ chỉ nằm giữa các ô: viền trên/trái của hàng, cột đầu bị cắt bởi overflow */
+.advantage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
     overflow: hidden;
+    border-block: 1px solid var(--color-inverse-border);
+}
+
+.advantage {
+    margin: -1px 0 0 -1px;
+    padding: var(--space-fluid-md) var(--space-fluid-sm);
+    border-top: 1px solid var(--color-inverse-border);
+    border-left: 1px solid var(--color-inverse-border);
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    line-height: var(--leading-snug);
+}
+
+.advantage-dot {
+    display: block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-bottom: var(--space-6);
+    border-radius: 50%;
+    background: var(--color-inverse-accent);
+}
+
+/* Hướng dẫn viên */
+.guides {
+    padding-block: var(--section-space);
+}
+
+.guides-head {
+    align-items: end;
+    margin-bottom: var(--space-fluid-lg);
+}
+
+.guides-desc {
+    max-width: 36rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-lead);
+    line-height: var(--leading-body);
+}
+
+.guide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr));
+    gap: var(--space-fluid-md) var(--space-fluid-sm);
+}
+
+.guide-photo {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+    border: 1px solid var(--color-border);
+}
+
+.guide-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.guide-initials {
+    color: var(--color-text-muted);
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-style: italic;
+}
+
+.guide-name {
+    margin-top: var(--space-4);
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-snug);
+}
+
+.guide-role {
+    margin-top: 0.375rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+/* CTA + liên hệ */
+.cta {
+    padding-bottom: var(--section-space);
+}
+
+.cta-card {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-fluid-lg);
+    padding: var(--space-panel);
+    border-radius: var(--radius-lg);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    --em-color: currentColor;
+    --focus-color: var(--color-on-accent);
+}
+
+.cta-card a:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 3px;
+}
+
+.cta-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h2);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    text-wrap: balance;
+}
+
+.cta-button {
+    margin-top: var(--space-8);
+}
+
+.cta-contacts {
+    display: grid;
+    gap: var(--space-6);
+    align-content: end;
+}
+
+.cta-contacts > div {
+    padding-top: var(--space-5);
+    border-top: 1px solid color-mix(in srgb, currentColor 40%, transparent);
+}
+
+.cta-contacts dt {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.cta-contacts dd {
+    margin-top: 0.375rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    line-height: var(--leading-snug);
+    overflow-wrap: anywhere;
+}
+
+.cta-contacts a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+}
+
+.cta-contacts a:hover {
+    text-decoration-thickness: 2px;
+}
+
+.cta-person {
+    margin-left: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--text-ui);
 }
 </style>

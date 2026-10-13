@@ -8,7 +8,13 @@
     "blog": "BLOG",
     "contact": "LIÊN HỆ",
     "hotSpots": "ĐỊA ĐIỂM HOT",
-    "customTour": "TỰ CHỌN XE"
+    "customTour": "TỰ CHỌN XE",
+    "mainMenu": "Menu chính",
+    "menu": "Menu",
+    "closeMenu": "Đóng",
+    "bookTour": "Đặt tour",
+    "darkMode": "Chế độ tối",
+    "lightMode": "Chế độ sáng"
   },
   "about": {
     "title": "Đại Lý Du Lịch & Đặt Tour",
@@ -35,7 +41,16 @@
     },
     "guidesSub": "HƯỚNG DẪN VIÊN DU LỊCH",
     "guidesTitle": "Gặp Gỡ Hướng Dẫn Viên Xuất Sắc Của Chúng Tôi",
-    "guidesDesc": "Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách."
+    "guidesDesc": "Hướng dẫn viên du lịch đóng vai trò quan trọng trong ngành du lịch Việt Nam, góp phần giới thiệu hình ảnh đất nước, con người Việt Nam đến với bạn bè quốc tế. Với nhiều năm kinh nghiệm và kiến thức sâu rộng về văn hóa, lịch sử, hướng dẫn viên của chúng tôi cam kết mang đến những trải nghiệm đáng nhớ cho du khách.",
+    "servicesTitle": "Các dịch vụ chính của chúng tôi",
+    "exploreTours": "Khám phá tour",
+    "callAdvice": "Gọi tư vấn",
+    "ctaTitle": "Lên kế hoạch cho chuyến đi tiếp theo cùng ANDAGO",
+    "places": {
+      "taynguyen": "Tây Nguyên",
+      "mytho": "Mỹ Tho",
+      "hue": "Cung đình Huế"
+    }
   },
   "contact": {
     "sendMailSuccess": "Yêu cầu đã được gửi thành công! Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.",
@@ -121,7 +136,10 @@
       "answerDrivingLicense": "Có, bạn cần có giấy phép lái xe hợp lệ để lái xe máy hợp pháp tại Việt Nam.",
       "customTour": "Tôi có thể tùy chỉnh tour không?",
       "answerCustomTour": "Chắc chắn! Chúng tôi chuyên cung cấp các tour du lịch tùy chỉnh. Hãy liên hệ với chúng tôi để thiết kế một chương trình du lịch độc đáo cho bạn."
-    }
+    },
+    "hours": "Thứ 2 – Chủ nhật, 8:00 – 20:00",
+    "channelsTitle": "Kênh liên hệ",
+    "mapTitle": "Bản đồ văn phòng ANDAGO"
   },
   "auth": {
     "login": "Đăng nhập",
@@ -149,7 +167,8 @@
     "passwordRequired": "Mật khẩu là bắt buộc",
     "usernameRequired": "Tên người dùng là bắt buộc",
     "usernameMin": "Tên người dùng phải có ít nhất 2 ký tự",
-    "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự"
+    "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
+    "myBookings": "Tour đã đặt"
   },
   "common": {
     "language": "Ngôn ngữ",
@@ -200,7 +219,11 @@
     "upload": "Tải lên",
     "remove": "Xóa",
     "edit": "Sửa",
-    "save": "Lưu"
+    "save": "Lưu",
+    "pagination": "Phân trang",
+    "previousPage": "Trang trước",
+    "nextPage": "Trang sau",
+    "close": "Đóng"
   },
   "booking": {
     "bookNow": "Đặt bây giờ"
@@ -276,7 +299,8 @@
         "priceLow": "Giá thấp nhất",
         "priceHigh": "Giá cao nhất",
         "duration": "Thời gian"
-      }
+      },
+      "search": "Tìm kiếm"
     },
     "duration": "Thời lượng",
     "durationOptions": {
@@ -447,11 +471,15 @@
     "map": "Sơ đồ lộ trình",
     "reviews": "Đánh giá",
     "itinerary": "Lịch trình",
-    "allTours": "Tất cả tour"
+    "allTours": "Tất cả tour",
+    "count": "{count} tour",
+    "viewMode": "Kiểu hiển thị",
+    "viewGrid": "Lưới",
+    "viewList": "Danh sách"
   },
   "footer": {
     "address": "Địa chỉ",
-    "email": "Nhận email",
+    "email": "Email",
     "phone": "Số điện thoại",
     "featuredTours": "Tour Nổi Bật",
     "noItinerary": "Chưa có lịch trình chi tiết cho tour này",
@@ -507,7 +535,12 @@
       "food": "Ẩm thực",
       "adventure": "Du lịch phiêu lưu",
       "guides": "Hướng dẫn"
-    }
+    },
+    "featured": "Câu chuyện nổi bật",
+    "readArticle": "Đọc bài viết",
+    "readTime": "{count} phút đọc",
+    "emptyTitle": "Không tìm thấy câu chuyện nào",
+    "emptyDesc": "Hãy thử thể loại hoặc từ khóa khác"
   },
   "hotSpots": {
     "title": "Địa điểm Hot",
@@ -606,5 +639,20 @@
     "removeSuccess": "Đã xóa khỏi danh sách yêu thích",
     "myWishlist": "Tour yêu thích của tôi",
     "savedItems": "Tour đã lưu"
+  },
+  "news": {
+    "badge": "TIN TỨC & SỰ KIỆN",
+    "titleLine1": "Khám Phá",
+    "titleLine2": "Những Câu Chuyện Mới",
+    "desc": "Cập nhật những tin tức mới nhất về các cung đường, kinh nghiệm đi phượt và những câu chuyện truyền cảm hứng.",
+    "searchLabel": "Tìm kiếm tin tức",
+    "searchPlaceholder": "Tìm kiếm tin tức, điểm đến...",
+    "featured": "Tin nổi bật",
+    "readFull": "Đọc toàn bài",
+    "moreStories": "Thêm câu chuyện",
+    "articleCount": "{count} bài viết",
+    "readMore": "Đọc tiếp",
+    "emptyTitle": "Không tìm thấy tin tức",
+    "emptyDesc": "Hãy thử điều chỉnh từ khóa tìm kiếm"
   }
 }

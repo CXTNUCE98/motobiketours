@@ -16,6 +16,13 @@ export default defineNuxtConfig({
         // { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         // Add fallbacks for older browsers
         // { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png' }
+        // Font của design system (biến --font-* trong src/assets/css/tokens.css), cả hai đều hỗ trợ tiếng Việt
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        {
+          rel: 'stylesheet',
+          href: 'https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,300..600;1,6..72,300..600&display=swap',
+        },
       ],
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -92,7 +99,7 @@ export default defineNuxtConfig({
   },
   sitemap: {},
 
-  css: ['@unocss/reset/tailwind.css', 'boxicons/css/boxicons.min.css'],
+  css: ['@unocss/reset/tailwind.css', 'boxicons/css/boxicons.min.css', '~/assets/css/tokens.css', '~/assets/css/base.css'],
 
   compatibilityDate: '2025-04-15',
   runtimeConfig: {

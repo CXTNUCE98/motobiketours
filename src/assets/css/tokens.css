@@ -1,0 +1,155 @@
+/*
+ * DESIGN TOKENS — nguồn duy nhất cho màu, chữ, khoảng cách, bo góc, đổ bóng, chuyển động.
+ * Muốn đổi giao diện toàn site: chỉ sửa file này.
+ *
+ * - Component dùng trực tiếp: color: var(--color-text);
+ * - UnoCSS (uno.config.ts) và Element Plus (base.css) đều trỏ về các biến ở đây.
+ * - Dark mode: chỉ ghi đè nhóm màu trong khối :root.dark bên dưới.
+ */
+:root {
+    /* ---------- Màu: nền & bề mặt ---------- */
+    --color-bg: #ffffff;               /* nền trang */
+    --color-bg-subtle: #f6f5f2;        /* section xen kẽ, khung ảnh chờ, skeleton */
+    --color-surface: #ffffff;          /* thẻ, ô nhập, popover */
+
+    /* ---------- Màu: chữ & đường kẻ ---------- */
+    --color-text: #1c1a17;
+    --color-text-muted: #5f5a52;
+    --color-border: #e7e3dc;           /* đường kẻ mảnh */
+    --color-border-strong: var(--color-text); /* đường kẻ nhấn dưới tiêu đề, toolbar */
+
+    /* ---------- Màu: nhấn & trạng thái ---------- */
+    --color-accent: #af5331;           /* đất nung, fallback cho trình duyệt cũ */
+    --color-accent-hover: #944123;
+    --color-on-accent: #ffffff;        /* chữ trên nền màu nhấn */
+    --color-danger: #b3261e;
+    --color-success: #2f7d4f;
+    --color-warning: #a86a12;
+
+    /* ---------- Màu: section nền tối (giữ tối ở cả hai chế độ) ---------- */
+    --color-inverse-bg: #1c1a17;
+    --color-inverse-text: #f5f1ea;
+    --color-inverse-muted: #bdb5a8;
+    --color-inverse-border: rgb(245 241 234 / 0.16);
+    --color-inverse-accent: #e6996d;
+
+    /* ---------- Màu: lớp phủ ---------- */
+    --color-scrim: rgb(20 16 12 / 0.55);    /* gradient dưới chú thích ảnh */
+    --color-backdrop: rgb(20 16 12 / 0.5);  /* nền mờ sau dialog / bottom sheet */
+
+    /* ---------- Chữ ---------- */
+    --font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+    --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+    --text-micro: 0.625rem;    /* 10px — số đếm trên icon */
+    --text-2xs: 0.6875rem;     /* 11px — nhãn trên thẻ */
+    --text-xs: 0.75rem;        /* 12px — nhãn viết hoa, eyebrow */
+    --text-sm: 0.8125rem;      /* 13px — meta, lỗi form */
+    --text-md: 0.875rem;       /* 14px — chip, nút nhỏ */
+    --text-ui: 0.9375rem;      /* 15px — menu, nút, nội dung phụ */
+    --text-base: 1rem;
+    --text-lead: 1.0625rem;    /* đoạn dẫn dưới tiêu đề */
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.375rem;
+    --text-3xl: 1.5rem;
+    --text-4xl: 1.75rem;
+    --text-intro: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);   /* đoạn giới thiệu ở hero */
+    --text-title: clamp(1.25rem, 1.15rem + 0.4vw, 1.5rem);    /* tiêu đề thẻ */
+    --text-title-lg: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);     /* tiêu đề thẻ dạng danh sách */
+    --text-h3: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+    --text-h2: clamp(2rem, 1.3rem + 2.6vw, 3.5rem);           /* tiêu đề section */
+    --text-display: clamp(2.5rem, 1.4rem + 4.4vw, 5rem);      /* tiêu đề trang */
+    --text-display-xl: clamp(2.75rem, 1.4rem + 5.6vw, 6.25rem);
+
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+
+    --leading-display: 1.04;
+    --leading-tight: 1.1;
+    --leading-snug: 1.3;
+    --leading-body: 1.65;
+
+    --tracking-display: -0.025em;
+    --tracking-tight: -0.02em;
+    --tracking-wide: 0.08em;
+    --tracking-label: 0.14em;
+
+    /* ---------- Khoảng cách ---------- */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+    --space-fluid-sm: clamp(1rem, 2vw, 1.5rem);       /* khoảng cách cột trong lưới thẻ */
+    --space-fluid-md: clamp(1.5rem, 3vw, 2.5rem);     /* khoảng cách trước nội dung chính */
+    --space-fluid-lg: clamp(2.5rem, 5vw, 4rem);       /* khoảng cách hàng trong lưới, giữa khối */
+    --space-fluid-xl: clamp(3rem, 6vw, 6rem);         /* khoảng cách hai cột lớn */
+    --space-block: clamp(3rem, 6vw, 5rem);            /* tách các khối lớn trong cùng section */
+    --space-panel: clamp(2rem, 1.25rem + 4vw, 4.5rem); /* padding khối màu (CTA) */
+    --space-page-top: clamp(3rem, 2rem + 5vw, 6.5rem); /* khoảng trên tiêu đề trang */
+    --space-page-bottom: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+
+    /* ---------- Bố cục ---------- */
+    --content-max: 1240px;
+    --gutter: clamp(1rem, 4vw, 2.5rem);
+    --section-space: clamp(4.5rem, 3rem + 6vw, 8.5rem);
+    --header-height: 4.5rem;
+
+    /* ---------- Bo góc ---------- */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 10px;
+    --radius-pill: 999px;
+
+    /* ---------- Đổ bóng (chỉ dùng cho lớp nổi: menu, popover, dialog) ---------- */
+    --shadow-popover: 0 12px 32px rgb(28 26 23 / 0.12);
+
+    /* ---------- Chuyển động ---------- */
+    --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.2s ease;
+    --transition-slow: 0.8s var(--ease-out);   /* phóng ảnh khi hover */
+
+    /* ---------- Focus ---------- */
+    --focus-ring: 2px solid var(--focus-color, var(--color-accent));
+}
+
+/* Màu nhấn chuẩn theo brief (oklch) cho trình duyệt hỗ trợ */
+@supports (color: oklch(0 0 0)) {
+    :root {
+        --color-accent: oklch(0.55 0.13 40);
+        --color-accent-hover: oklch(0.48 0.12 40);
+        --color-inverse-accent: oklch(0.75 0.11 50);
+    }
+}
+
+/* ---------- Dark mode: chỉ ghi đè màu ---------- */
+:root.dark {
+    --color-bg: #141210;
+    --color-bg-subtle: #1c1a17;
+    --color-surface: #1f1c19;
+    --color-text: #ece7df;
+    --color-text-muted: #a7a093;
+    --color-border: #35302a;
+    --color-accent: #e6996d;
+    --color-accent-hover: #f0ad86;
+    --color-on-accent: #1a1714;
+    --color-danger: #f2b8b5;
+    --color-success: #8fd1a6;
+    --color-warning: #f0c27a;
+    --color-inverse-bg: #0b0a09;
+    --shadow-popover: 0 12px 32px rgb(0 0 0 / 0.4);
+}
+
+@supports (color: oklch(0 0 0)) {
+    :root.dark {
+        --color-accent: oklch(0.75 0.11 50);
+        --color-accent-hover: oklch(0.81 0.09 52);
+    }
+}

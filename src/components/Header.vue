@@ -5,11 +5,17 @@ const router = useRouter()
 const { theme, toggleTheme } = useTheme()
 const localePath = useLocalePath()
 const { isAuthenticated, user, logout } = useAuth()
-const { locale, locales, t } = useI18n()
+const { locale, t } = useI18n()
 const switchLocalePath = useSwitchLocalePath()
-const isScrolled = ref(false)
 const showLoginPopup = ref(false)
+const showMobileMenu = ref(false)
+const showAccountMenu = ref(false)
+const accountMenuRef = ref<HTMLElement | null>(null)
+
+const languages = ['vi', 'en'] as const
+
 const handleLogout = () => {
+    showAccountMenu.value = false
     ElMessageBox.confirm(
         t('auth.logoutConfirm'),
         t('common.warning'),
@@ -32,59 +38,28 @@ const handleLogout = () => {
 
 }
 
-// Handle scroll event with throttling
-let scrollTimeout: ReturnType<typeof setTimeout> | null = null
-
-const handleScroll = () => {
-    if (process.client) {
-        // Clear existing timeout
-        if (scrollTimeout) {
-            clearTimeout(scrollTimeout)
-        }
-
-        // Throttle scroll event
-        scrollTimeout = setTimeout(() => {
-            isScrolled.value = window.scrollY > 10
-        }, 10)
-    }
-}
-
 // Menu items với i18n
 const menuItems = computed(() => [
-    { name: t('nav.home'), path: localePath('/'), icon: '' },
-    { name: t('nav.about'), path: localePath('/about'), icon: '' },
-    { name: t('nav.tours'), path: localePath('/tour'), hasDropdown: true, icon: '' },
-    { name: t('nav.hotSpots'), path: localePath('/hot-spots'), icon: '' },
-    // { name: t('nav.services'), path: localePath('/service'), hasDropdown: true, icon: '' },
-    { name: t('nav.news'), path: localePath('/news'), hasDropdown: true, icon: '' },
-    { name: t('nav.blog'), path: localePath('/blog'), hasDropdown: true, icon: '' },
-    { name: t('nav.contact'), path: localePath('/contact'), icon: '' },
+    { name: t('nav.home'), path: localePath('/') },
+    { name: t('nav.about'), path: localePath('/about') },
+    { name: t('nav.tours'), path: localePath('/tour') },
+    { name: t('nav.hotSpots'), path: localePath('/hot-spots') },
+    // { name: t('nav.services'), path: localePath('/service') },
+    { name: t('nav.news'), path: localePath('/news') },
+    { name: t('nav.blog'), path: localePath('/blog') },
+    { name: t('nav.contact'), path: localePath('/contact') },
 ])
 
-// Language options
-const languageOptions = computed(() =>
-    locales.value.map((loc: any) => ({
-        code: loc.code,
-        name: loc.name,
-        flag: loc.code === 'vi' ? '🇻🇳' : '🇬🇧'
-    }))
-)
-
-const currentLanguage = computed(() =>
-    languageOptions.value.find((lang: any) => lang.code === locale.value) || languageOptions.value[0]
-)
-
-const switchLanguage = (langCode: 'en' | 'vi') => {
-    const path = switchLocalePath(langCode)
-    router.push(path)
-}
-
-const cartCount = ref(0)
-const showMobileMenu = ref(false)
 const { openDrawer: openWishlistDrawer } = useWishlistDrawer();
 
 const { data: wishlistCount } = useWishlistCountQuery();
 const wishlistCountDisplay = computed(() => wishlistCount.value || 0);
+
+// Server không biết theme của người dùng (color-mode = system), chỉ hiển thị theo theme sau khi mount
+// để HTML server và lần render đầu ở client giống nhau.
+const isMounted = ref(false)
+const isDark = computed(() => isMounted.value && theme.value === 'dark')
+const themeLabel = computed(() => (isDark.value ? t('nav.lightMode') : t('nav.darkMode')))
 
 const isActive = (path: string) => {
     const homePath = localePath('/')
@@ -94,320 +69,499 @@ const isActive = (path: string) => {
     return route.path.startsWith(path)
 }
 
-onMounted(() => {
-    // Setup scroll listener
-    if (process.client) {
-        window.addEventListener('scroll', handleScroll)
-        handleScroll() // Check initial scroll position
-    }
-})
-
-onBeforeUnmount(() => {
-    // Cleanup scroll listener
-    if (process.client) {
-        window.removeEventListener('scroll', handleScroll)
-        if (scrollTimeout) {
-            clearTimeout(scrollTimeout)
-        }
-    }
-})
+const openWishlist = () => {
+    showAccountMenu.value = false
+    showMobileMenu.value = false
+    openWishlistDrawer()
+}
 
 function formLogin() {
+    showMobileMenu.value = false
     showLoginPopup.value = true
 }
+
+onClickOutside(accountMenuRef, () => {
+    showAccountMenu.value = false
+})
+
+watch(() => route.fullPath, () => {
+    showMobileMenu.value = false
+    showAccountMenu.value = false
+})
+
+const onKeydown = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+        showMobileMenu.value = false
+        showAccountMenu.value = false
+    }
+}
+
+onMounted(() => {
+    isMounted.value = true
+    window.addEventListener('keydown', onKeydown)
+})
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <template>
-    <!-- Main Header - Fixed at top -->
-    <header
-        class="fixed top-0 left-0 right-0 z-[999] border-b border-slate-200 dark:border-slate-700 transition-all duration-300 bg-white dark:bg-slate-900"
-        :class="isScrolled ? 'shadow-lg' : 'shadow-sm'" style="will-change: transform;">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-between h-16 md:h-20">
-                <!-- Logo -->
-                <NuxtLink to="/" class="flex items-center">
-                    <img src="/logo.png" class="h-80px object-cover dark:hidden" alt="logo">
-                    <img src="/logo_dark.png" class="h-80px object-cover hidden dark:block" alt="logo">
-                </NuxtLink>
+    <header class="site-header">
+        <div class="shell site-header__bar">
+            <NuxtLink :to="localePath('/')" class="site-header__logo">
+                <img src="/logo.png" class="dark:hidden" alt="ANDAGO" width="976" height="557">
+                <img src="/logo_dark.png" class="hidden dark:block" alt="ANDAGO" width="976" height="557">
+            </NuxtLink>
 
-                <!-- Desktop Navigation -->
-                <nav class="hidden lg:flex items-center space-x-1">
-                    <NuxtLink v-for="item in menuItems" :key="item.path" :to="item.path" :class="[
-                        'px-3 py-2 text-sm font-medium transition-colors duration-200 flex items-center gap-1',
-                        isActive(item.path)
-                            ? 'text-sky-500 dark:text-cyan-400'
-                            : 'text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400'
-                    ]">
-                        {{ item.name }}
+            <!-- Desktop Navigation -->
+            <nav class="site-nav" :aria-label="t('nav.mainMenu')">
+                <ul role="list">
+                    <li v-for="item in menuItems" :key="item.path">
+                        <NuxtLink :to="item.path" class="nav-link"
+                            :aria-current="isActive(item.path) ? 'page' : undefined">
+                            {{ item.name }}
+                        </NuxtLink>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="site-header__actions">
+                <div class="lang-switch site-header__wide" role="group" :aria-label="t('common.language')">
+                    <NuxtLink v-for="code in languages" :key="code" :to="switchLocalePath(code)" :lang="code"
+                        :aria-current="locale === code ? 'true' : undefined">
+                        {{ code.toUpperCase() }}
                     </NuxtLink>
+                </div>
+
+                <button type="button" class="icon-btn site-header__wide" :aria-label="themeLabel" :title="themeLabel"
+                    @click="toggleTheme">
+                    <svg v-if="isDark" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.5" aria-hidden="true">
+                        <circle cx="12" cy="12" r="4" />
+                        <path stroke-linecap="round"
+                            d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41" />
+                    </svg>
+                    <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                        aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z" />
+                    </svg>
+                </button>
+
+                <button v-if="isAuthenticated" type="button" class="icon-btn site-header__wide"
+                    :aria-label="t('wishlist.title')" :title="t('wishlist.title')" @click="openWishlist">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z" />
+                    </svg>
+                    <span v-if="wishlistCountDisplay > 0" class="icon-btn__count">{{ wishlistCountDisplay }}</span>
+                </button>
+
+                <!-- Tài khoản -->
+                <button v-if="!isAuthenticated" type="button" class="text-btn site-header__wide" @click="formLogin">
+                    {{ t('auth.login') }}
+                </button>
+                <div v-else ref="accountMenuRef" class="account site-header__wide">
+                    <button type="button" class="account__trigger" aria-haspopup="true"
+                        :aria-expanded="showAccountMenu" @click="showAccountMenu = !showAccountMenu">
+                        <img v-if="user?.avatar" :src="user.avatar" alt="" class="account__avatar">
+                        <span class="account__name">{{ user?.userName || 'User' }}</span>
+                    </button>
+                    <div v-show="showAccountMenu" class="account__menu">
+                        <div class="account__identity">
+                            <p class="account__identity-name">{{ user?.userName }}</p>
+                            <p class="account__identity-email">{{ user?.email }}</p>
+                        </div>
+                        <NuxtLink :to="localePath('/profile')">{{ t('auth.profile') }}</NuxtLink>
+                        <NuxtLink :to="localePath('/profile/bookings')">{{ t('auth.myBookings') }}</NuxtLink>
+                        <button type="button" @click="openWishlist">{{ t('wishlist.myWishlist') }}</button>
+                        <button type="button" class="account__logout" @click="handleLogout">{{ t('auth.logout')
+                            }}</button>
+                    </div>
+                </div>
+
+                <UiButton :to="localePath('/tour')" variant="ink" size="sm">{{ t('nav.bookTour') }}</UiButton>
+
+                <button type="button" class="menu-toggle" aria-controls="site-mobile-menu"
+                    :aria-expanded="showMobileMenu" @click="showMobileMenu = !showMobileMenu">
+                    {{ showMobileMenu ? t('nav.closeMenu') : t('nav.menu') }}
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div v-show="showMobileMenu" id="site-mobile-menu" class="mobile-menu">
+            <div class="shell">
+                <nav :aria-label="t('nav.mainMenu')">
+                    <ul role="list" class="mobile-menu__nav">
+                        <li v-for="item in menuItems" :key="item.path">
+                            <NuxtLink :to="item.path" class="nav-link"
+                                :aria-current="isActive(item.path) ? 'page' : undefined">
+                                {{ item.name }}
+                            </NuxtLink>
+                        </li>
+                    </ul>
                 </nav>
 
-                <!-- Right Icons -->
-                <div class="flex items-center gap-3 md:gap-4">
-                    <!-- Search Icon -->
-                    <!-- <button
-                        class="text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </button> -->
-
-                    <!-- Wishlist Icon -->
-                    <button v-if="isAuthenticated" @click="openWishlistDrawer"
-                        class="relative text-slate-700 dark:text-slate-300 hover:text-red-500 transition-colors group">
-                        <svg class="w-5 h-5 md:w-6 md:h-6 transition-transform group-hover:scale-110" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        <span v-if="wishlistCountDisplay > 0"
-                            class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] rounded-full min-w-4 h-4 px-1 flex items-center justify-center font-bold shadow-sm">
-                            {{ wishlistCountDisplay }}
-                        </span>
+                <div class="mobile-menu__account">
+                    <button v-if="!isAuthenticated" type="button" class="text-btn" @click="formLogin">
+                        {{ t('auth.login') }}
                     </button>
-
-                    <!-- User Icon / Profile Menu -->
-                    <div class="relative">
-                        <button v-if="!isAuthenticated" @click="formLogin"
-                            class="text-slate-700 mt-1 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
+                    <template v-else>
+                        <NuxtLink :to="localePath('/profile')">{{ t('auth.profile') }}</NuxtLink>
+                        <NuxtLink :to="localePath('/profile/bookings')">{{ t('auth.myBookings') }}</NuxtLink>
+                        <button type="button" @click="openWishlist">
+                            {{ t('wishlist.myWishlist') }} ({{ wishlistCountDisplay }})
                         </button>
+                        <button type="button" class="account__logout" @click="handleLogout">{{ t('auth.logout')
+                            }}</button>
+                    </template>
+                </div>
 
-                        <!-- Authenticated User Dropdown -->
-                        <div v-else class="group relative">
-                            <button
-                                class="flex items-center gap-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                                <div
-                                    class="w-8 h-8 rounded-full bg-sky-100 dark:bg-slate-700 flex items-center justify-center text-sky-600 dark:text-cyan-400 font-bold text-sm">
-                                    <img
-                                        class="w-full h-full rounded-full object-cover border border-gray-200"
-                                        :src="user?.avatar" alt="avatar" />
-                                </div>
-                                <span class="hidden md:block font-medium text-sm max-w-[100px] truncate">
-                                    {{ user?.userName || 'User' }}
-                                </span>
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-                            <!-- Dropdown Menu -->
-                            <div
-                                class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
-                                <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-                                    <p class="text-sm font-medium text-slate-900 dark:text-white truncate">{{
-                                        user?.userName
-                                        }}</p>
-                                    <p class="text-xs text-slate-500 dark:text-slate-400 truncate">{{ user?.email }}</p>
-                                </div>
-
-                                <NuxtLink :to="localePath('/profile')"
-                                    class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                                    {{ t('auth.profile') }}
-                                </NuxtLink>
-
-                                <NuxtLink :to="localePath('/profile/bookings')"
-                                    class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                                    My Bookings
-                                </NuxtLink>
-
-                                <button @click="openWishlistDrawer"
-                                    class="w-full text-left block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                                    {{ t('wishlist.myWishlist') }}
-                                </button>
-
-                                <button @click="handleLogout"
-                                    class="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
-                                    {{ t('auth.logout') }}
-                                </button>
-                            </div>
-                        </div>
+                <div class="mobile-menu__prefs">
+                    <div class="lang-switch" role="group" :aria-label="t('common.language')">
+                        <NuxtLink v-for="code in languages" :key="code" :to="switchLocalePath(code)" :lang="code"
+                            :aria-current="locale === code ? 'true' : undefined">
+                            {{ code.toUpperCase() }}
+                        </NuxtLink>
                     </div>
-
-                    <!-- Cart Icon with Badge -->
-                    <!-- <button
-                        class="relative text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                        <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span
-                            class="absolute -top-2 -right-2 bg-gradient-to-r from-sky-500 to-blue-600 dark:from-cyan-500 dark:to-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                            {{ cartCount }}
-                        </span>
-                    </button> -->
-
-                    <!-- Language Selector -->
-                    <div class="hidden md:block relative group">
-                        <button
-                            class="flex items-center gap-1 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                            </svg>
-                            <span class="text-sm font-medium">{{ currentLanguage.code }}</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </button>
-                        <!-- Dropdown Menu -->
-                        <div
-                            class="absolute right-0 mt-2 w-40 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right z-50">
-                            <button v-for="lang in languageOptions" :key="lang.code" @click="switchLanguage(lang.code)"
-                                :class="[
-                                    'w-full text-left px-4 py-2 text-sm transition-colors flex items-center gap-2',
-                                    locale === lang.code
-                                        ? 'text-sky-500 dark:text-cyan-400 bg-sky-50 dark:bg-slate-700 font-medium'
-                                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 dark:hover:text-cyan-400'
-                                ]">
-                                <span class="text-lg pb-1">{{ lang.code }}</span>
-                                <span>{{ lang.name }}</span>
-                                <svg v-if="locale === lang.code" class="w-4 h-4 ml-auto" fill="currentColor"
-                                    viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Dark | Light theme -->
-                    <button @click="toggleTheme"
-                        class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-700 dark:text-slate-300">
-                        <!-- Sun icon for light mode -->
-                        <svg v-if="theme === 'dark'" class="w-5 h-5" fill="none" stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                        <!-- Moon icon for dark mode -->
-                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                        </svg>
-                    </button>
-
-
-                    <!-- Mobile Menu Toggle -->
-                    <button @click="showMobileMenu = !showMobileMenu"
-                        class="lg:hidden relative z-50 p-2 text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-cyan-400 focus:outline-none transition-colors"
-                        aria-label="Toggle Menu">
-                        <div class="w-6 h-6 flex flex-col justify-center gap-[5px]">
-                            <span
-                                class="block w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-out origin-center"
-                                :class="{ 'rotate-45 translate-y-[7px]': showMobileMenu }"></span>
-                            <span
-                                class="block w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-out"
-                                :class="{ 'opacity-0 translate-x-4': showMobileMenu }"></span>
-                            <span
-                                class="block w-full h-0.5 bg-current rounded-full transition-all duration-300 ease-out origin-center"
-                                :class="{ '-rotate-45 -translate-y-[7px]': showMobileMenu }"></span>
-                        </div>
-                    </button>
+                    <button type="button" class="text-btn" @click="toggleTheme">{{ themeLabel }}</button>
                 </div>
             </div>
-
-            <!-- Mobile Menu -->
-            <Transition enter-active-class="animate-fade-in-down" leave-active-class="transition duration-200 ease-in"
-                leave-from-class="transform translate-y-0 opacity-100"
-                leave-to-class="transform -translate-y-5 opacity-0">
-                <div v-if="showMobileMenu"
-                    class="lg:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-t border-slate-100 dark:border-slate-800 shadow-xl overflow-hidden">
-                    <nav class="flex flex-col p-4 space-y-2 max-h-[80vh] overflow-y-auto">
-                        <NuxtLink v-for="(item, index) in menuItems" :key="item.path" :to="item.path"
-                            @click="showMobileMenu = false" :style="{ transitionDelay: `${index * 50}ms` }"
-                            class="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
-                            :class="[
-                                isActive(item.path)
-                                    ? 'bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400'
-                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-sky-500 dark:hover:text-sky-400'
-                            ]">
-                            <span class="text-base">{{ item.name }}</span>
-                            <svg class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 5l7 7-7 7" />
-                            </svg>
-                        </NuxtLink>
-
-                        <!-- Mobile Wishlist -->
-                        <button v-if="isAuthenticated" @click="openWishlistDrawer(); showMobileMenu = false"
-                            class="group flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-sky-500 dark:hover:text-sky-400">
-                            <div class="flex items-center gap-3">
-                                <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path
-                                        d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                                <span>{{ t('wishlist.myWishlist') }}</span>
-                            </div>
-                            <span
-                                class="px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-[10px] text-red-600 dark:text-red-400 font-bold">
-                                {{ wishlistCountDisplay }}
-                            </span>
-                        </button>
-
-                        <!-- Mobile Language Switcher -->
-                        <div
-                            class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between px-2">
-                            <div class="flex items-center gap-2">
-                                <button v-for="lang in languageOptions" :key="lang.code"
-                                    @click="switchLanguage(lang.code)"
-                                    class="w-10 h-10 flex items-center justify-center rounded-lg border transition-all duration-200"
-                                    :class="locale === lang.code
-                                        ? 'border-sky-500 bg-sky-50 dark:bg-sky-900/20 text-sky-600 dark:text-sky-400'
-                                        : 'border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-sky-500'">
-                                    <span class="text-sm font-bold uppercase">{{ lang.code }}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
-            </Transition>
         </div>
+
         <LoginPopup v-model="showLoginPopup" />
         <WishlistDrawer />
     </header>
 </template>
 
 <style scoped>
-/* Custom scrollbar for dropdowns */
-select {
-    scrollbar-width: thin;
-    scrollbar-color: #1A71C7 #f1f1f1;
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background: var(--color-bg);
+    background: color-mix(in srgb, var(--color-bg) 84%, transparent);
+    -webkit-backdrop-filter: saturate(140%) blur(14px);
+    backdrop-filter: saturate(140%) blur(14px);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-sans);
 }
 
-select::-webkit-scrollbar {
-    width: 8px;
+.site-header__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-fluid-sm);
+    min-height: var(--header-height);
 }
 
-select::-webkit-scrollbar-track {
-    background: #f1f1f1;
+.site-header__logo {
+    display: flex;
+    flex-shrink: 0;
 }
 
-select::-webkit-scrollbar-thumb {
-    background: #1A71C7;
-    border-radius: 4px;
+.site-header__logo img {
+    height: 3.25rem;
+    width: auto;
 }
 
-select::-webkit-scrollbar-thumb:hover {
-    background: #C2185B;
+/* nav.* trong i18n viết hoa toàn bộ; hiển thị lại dạng câu: "Trang chủ", "Giới thiệu"... */
+.nav-link {
+    display: inline-block;
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+    text-decoration: none;
+    text-transform: lowercase;
 }
 
-.image-crisp {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    image-rendering: high-quality;
+.nav-link::first-letter {
+    text-transform: uppercase;
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+.nav-link:hover,
+.nav-link[aria-current='page'] {
+    color: var(--color-text);
+}
+
+.nav-link[aria-current='page'] {
+    font-weight: var(--weight-medium);
+}
+
+.site-nav {
+    display: none;
+    margin-inline: auto;
+}
+
+.site-nav ul {
+    display: flex;
+    gap: var(--space-fluid-sm);
+}
+
+.site-nav .nav-link {
+    padding-block: var(--space-2);
+    border-bottom: 1px solid transparent;
+}
+
+.site-nav .nav-link[aria-current='page'] {
+    border-bottom-color: var(--color-accent);
+}
+
+.site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-left: auto;
+}
+
+.site-header__wide {
+    display: none !important;
+}
+
+.lang-switch {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+}
+
+.lang-switch a {
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-decoration: none;
+}
+
+.lang-switch a:hover {
+    color: var(--color-text);
+}
+
+.lang-switch a[aria-current='true'] {
+    background: var(--color-text);
+    color: var(--color-bg);
+}
+
+.icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    transition: color var(--transition-base), background-color var(--transition-base);
+}
+
+.icon-btn:hover {
+    color: var(--color-text);
+    background: var(--color-bg-subtle);
+}
+
+.icon-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.icon-btn__count {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.1rem;
+    min-width: 1rem;
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    font-size: var(--text-micro);
+    font-weight: var(--weight-semibold);
+    line-height: 1rem;
+}
+
+.text-btn,
+.menu-toggle {
+    min-height: 2.5rem;
+    padding: 0 var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-ui);
+    font-weight: var(--weight-medium);
+}
+
+.text-btn:hover {
+    color: var(--color-accent);
+}
+
+.menu-toggle {
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-underline-offset: 0.35em;
+}
+
+/* Tài khoản */
+.account {
+    position: relative;
+}
+
+.account__trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.5rem;
+    padding: 0 var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-ui);
+}
+
+.account__avatar {
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.account__name {
+    max-width: 7rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.account__menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    z-index: 10;
+    display: grid;
+    min-width: 14rem;
+    padding: var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-popover);
+}
+
+.account__menu a,
+.account__menu button {
+    padding: 0.625rem var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    font-size: var(--text-ui);
+    text-align: left;
+    text-decoration: none;
+}
+
+.account__menu a:hover,
+.account__menu button:hover {
+    background: var(--color-bg-subtle);
+}
+
+.account__identity {
+    padding: var(--space-2) var(--space-3) var(--space-3);
+    margin-bottom: var(--space-1);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.account__identity-name {
+    font-weight: var(--weight-medium);
+}
+
+.account__identity-email {
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-overflow: ellipsis;
+}
+
+.account__logout {
+    color: var(--color-danger) !important;
+}
+
+/* Mobile menu */
+.mobile-menu {
+    max-height: calc(100vh - var(--header-height));
+    overflow-y: auto;
+    border-top: 1px solid var(--color-border);
+    padding-block: var(--space-2) var(--space-6);
+}
+
+.mobile-menu__nav li + li {
+    border-top: 1px solid var(--color-border);
+}
+
+.mobile-menu__nav .nav-link {
+    display: block;
+    padding-block: 0.875rem;
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+}
+
+.mobile-menu__nav .nav-link[aria-current='page'] {
+    color: var(--color-accent);
+    font-style: italic;
+}
+
+.mobile-menu__account {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-1);
+    margin-top: var(--space-2);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+}
+
+.mobile-menu__account a,
+.mobile-menu__account button {
+    padding-block: var(--space-2);
+    color: var(--color-text);
+    font-size: var(--text-base);
+    text-decoration: none;
+}
+
+.mobile-menu__account .text-btn {
+    padding-inline: 0;
+}
+
+.mobile-menu__prefs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+}
+
+.site-header a:focus-visible,
+.site-header button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+@media (min-width: 40rem) {
+    .site-header__wide {
+        display: inline-flex !important;
+        align-items: center;
+    }
+
+    .mobile-menu__account,
+    .mobile-menu__prefs {
+        display: none;
+    }
+}
+
+@media (min-width: 75rem) {
+    .site-nav {
+        display: block;
+    }
+
+    .site-header__actions {
+        margin-left: 0;
+    }
+
+    .menu-toggle,
+    .mobile-menu {
+        display: none !important;
+    }
 }
 </style>

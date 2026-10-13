@@ -282,11 +282,11 @@ const handleClose = () => {
 
 /* :deep(.el-dialog) {
     border-radius: 1rem;
-    background-color: var(--color-bg-primary);
+    background-color: var(--color-surface);
 }
 
 .dark :deep(.el-dialog__title) {
-    color: var(--color-text-primary);
+    color: var(--color-text);
 }
 
 :deep(.el-dialog__header) {
@@ -297,30 +297,30 @@ const handleClose = () => {
 
 :deep(.el-dialog__body) {
     padding: 0;
-    background-color: var(--color-bg-primary);
+    background-color: var(--color-surface);
 }
 
 :deep(.el-dialog__footer) {
     padding: 1.5rem;
     border-top: 1px solid var(--color-border);
-    background-color: var(--color-bg-primary);
+    background-color: var(--color-surface);
 }
 
 :deep(.el-form-item__label) {
-    color: var(--color-text-secondary);
+    color: var(--color-text-muted);
     font-weight: 600;
 }
 
 .dark :deep(.el-input__wrapper),
 .dark :deep(.el-textarea__inner),
 .dark :deep(.el-input-number__wrapper) {
-    background-color: var(--color-bg-secondary);
+    background-color: var(--color-bg-subtle);
     box-shadow: 0 0 0 1px var(--color-border) inset;
 }
 
 .dark :deep(.el-input__inner),
 .dark :deep(.el-textarea__inner) {
-    color: var(--color-text-primary);
+    color: var(--color-text);
 }
 
 .dark :deep(.el-checkbox.is-bordered) {
@@ -328,6 +328,6 @@ const handleClose = () => {
 }
 
 .dark :deep(.el-checkbox__label) {
-    color: var(--color-text-primary);
+    color: var(--color-text);
 } */
 </style>

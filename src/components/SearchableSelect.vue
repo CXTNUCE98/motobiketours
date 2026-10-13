@@ -13,6 +13,7 @@ const props = defineProps<{
     loading?: boolean
     icon?: string
     hasError?: boolean
+    inputId?: string
 }>()
 
 const emit = defineEmits<{
@@ -70,61 +71,39 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative w-full" ref="selectRef">
+    <div class="searchable-select" ref="selectRef">
         <!-- Input Display -->
-        <div class="relative cursor-pointer" @click="toggleDropdown">
-            <i v-if="icon" :class="[icon, 'absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400 z-10']"></i>
-            <input type="text" :value="isOpen ? searchQuery : displayedValue"
+        <div class="searchable-select__trigger" @click="toggleDropdown">
+            <i v-if="icon" :class="[icon, 'searchable-select__icon']" aria-hidden="true"></i>
+            <input :id="inputId" type="text" :value="isOpen ? searchQuery : displayedValue"
                 @input="searchQuery = ($event.target as HTMLInputElement).value" :placeholder="placeholder" readonly
-                class="w-full pl-12 pr-10 py-3.5 bg-gray-50 dark:bg-zinc-800/50 border border-gray-200 dark:border-gray-600 rounded-xl focus:bg-white dark:focus:bg-gray-600 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all text-gray-900 dark:text-white placeholder-gray-400 cursor-pointer"
-                :class="{
-                    'ring-4 ring-indigo-500/10 border-indigo-500 bg-white dark:bg-zinc-800/50': isOpen,
-                    'border-red-500 focus:border-red-500 focus:ring-red-500/10': hasError
-                }" @mousedown.prevent />
+                class="ui-control searchable-select__input"
+                :class="{ 'has-icon': icon, 'is-open': isOpen }"
+                :aria-invalid="hasError ? 'true' : undefined" aria-haspopup="listbox" :aria-expanded="isOpen"
+                @mousedown.prevent @keydown.enter.prevent="toggleDropdown" @keydown.space.prevent="toggleDropdown" />
             <!-- Custom Arrow -->
-            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-transform duration-300"
-                :class="{ 'rotate-180': isOpen }">
-                <i class="bx bx-chevron-down text-xl text-gray-400"></i>
-            </div>
+            <span class="searchable-select__arrow" :class="{ 'is-open': isOpen }" aria-hidden="true"></span>
 
             <!-- Loading Spinner -->
-            <div v-if="loading" class="absolute right-10 top-1/2 -translate-y-1/2">
-                <i class="bx bx-loader-alt animate-spin text-indigo-500"></i>
-            </div>
+            <span v-if="loading" class="searchable-select__loading" aria-hidden="true">
+                <i class="bx bx-loader-alt animate-spin"></i>
+            </span>
         </div>
 
         <!-- Dropdown Panel -->
-        <transition enter-active-class="transition duration-200 ease-out"
-            enter-from-class="transform scale-95 opacity-0 -translate-y-2"
-            enter-to-class="transform scale-100 opacity-100 translate-y-0"
-            leave-active-class="transition duration-150 ease-in"
-            leave-from-class="transform scale-100 opacity-100 translate-y-0"
-            leave-to-class="transform scale-95 opacity-0 -translate-y-2">
-            <div v-if="isOpen"
-                class="absolute z-50 w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-2xl overflow-hidden backdrop-blur-xl bg-opacity-95 dark:bg-opacity-95">
-
-                <!-- Search box for mobile or accessibility if needed, currently reusing main input -->
-                <div v-if="isOpen" class="p-2 border-b border-gray-100 dark:border-gray-700">
-                    <div class="relative">
-                        <i class="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                        <input v-model="searchQuery" type="text"
-                            class="w-full pl-9 pr-4 py-2 bg-gray-50 dark:bg-gray-700/50 border-none outline-none rounded-lg focus:ring-0 text-sm dark:text-white"
-                            placeholder="Gõ để tìm kiếm..." @click.stop />
-                    </div>
+        <transition name="searchable-select">
+            <div v-if="isOpen" class="searchable-select__panel">
+                <div class="searchable-select__search">
+                    <input v-model="searchQuery" type="search" class="ui-control"
+                        :placeholder="$t('common.searchPlaceholder')" @click.stop />
                 </div>
 
-                <ul
-                    class="max-h-60 overflow-y-auto py-1 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-600">
-                    <li v-for="option in filteredOptions" :key="option.value" @click="selectOption(option)"
-                        class="px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer transition-colors flex items-center justify-between group"
-                        :class="{ 'bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400': modelValue === option.value }">
-                        <span
-                            class="text-gray-700 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                            {{ option.label }}
-                        </span>
-                        <i v-if="modelValue === option.value" class="bx bx-check text-lg"></i>
+                <ul class="searchable-select__options" role="listbox">
+                    <li v-for="option in filteredOptions" :key="option.value" role="option"
+                        :aria-selected="modelValue === option.value" @click="selectOption(option)">
+                        {{ option.label }}
                     </li>
-                    <li v-if="filteredOptions.length === 0" class="px-4 py-8 text-center text-gray-400 text-sm">
+                    <li v-if="filteredOptions.length === 0" class="searchable-select__empty">
                         {{ $t('contact.notFound') }}
                     </li>
                 </ul>
@@ -134,15 +113,125 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
+.searchable-select {
+    position: relative;
+    width: 100%;
 }
 
-.scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
+.searchable-select__trigger {
+    position: relative;
+    cursor: pointer;
 }
 
-.scrollbar-thin::-webkit-scrollbar-thumb {
-    @apply bg-gray-200 dark:bg-gray-700 rounded-full;
+.searchable-select__input {
+    padding-right: 2.75rem;
+    cursor: pointer;
+}
+
+.searchable-select__input.has-icon {
+    padding-left: 2.75rem;
+}
+
+.searchable-select__input.is-open {
+    border-color: var(--color-accent);
+}
+
+.searchable-select__icon {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    z-index: 1;
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    transform: translateY(-50%);
+}
+
+/* Mũi tên vẽ bằng viền, đồng bộ với select.ui-control */
+.searchable-select__arrow {
+    position: absolute;
+    top: 50%;
+    right: 1.125rem;
+    width: 0.45rem;
+    height: 0.45rem;
+    border-right: 1.5px solid var(--color-text-muted);
+    border-bottom: 1.5px solid var(--color-text-muted);
+    transform: translateY(-70%) rotate(45deg);
+    transition: transform var(--transition-base);
+    pointer-events: none;
+}
+
+.searchable-select__arrow.is-open {
+    transform: translateY(-30%) rotate(-135deg);
+}
+
+.searchable-select__loading {
+    position: absolute;
+    top: 50%;
+    right: 2.5rem;
+    color: var(--color-accent);
+    transform: translateY(-50%);
+}
+
+.searchable-select__panel {
+    position: absolute;
+    z-index: 50;
+    width: 100%;
+    margin-top: var(--space-2);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-popover);
+}
+
+.searchable-select__search {
+    padding: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.searchable-select__search .ui-control {
+    min-height: 2.5rem;
+    padding-block: var(--space-2);
+    font-size: var(--text-ui);
+}
+
+.searchable-select__options {
+    max-height: 15rem;
+    overflow-y: auto;
+    padding-block: var(--space-1);
+}
+
+.searchable-select__options li[role='option'] {
+    padding: 0.625rem var(--space-4);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+}
+
+.searchable-select__options li[role='option']:hover {
+    background: var(--color-bg-subtle);
+}
+
+.searchable-select__options li[aria-selected='true'] {
+    color: var(--color-accent);
+    font-weight: var(--weight-medium);
+}
+
+.searchable-select__empty {
+    padding: var(--space-8) var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
+    text-align: center;
+}
+
+.searchable-select-enter-active,
+.searchable-select-leave-active {
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.searchable-select-enter-from,
+.searchable-select-leave-to {
+    opacity: 0;
+    transform: translateY(-0.25rem);
 }
 </style>

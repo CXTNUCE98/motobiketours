@@ -8,7 +8,13 @@
     "blog": "BLOG",
     "contact": "CONTACT",
     "hotSpots": "HOT SPOTS",
-    "customTour": "SMART CAR"
+    "customTour": "SMART CAR",
+    "mainMenu": "Main menu",
+    "menu": "Menu",
+    "closeMenu": "Close",
+    "bookTour": "Book a tour",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
   },
   "about": {
     "title": "Travel Agency & Tour Booking",
@@ -35,7 +41,16 @@
     },
     "guidesSub": "TOUR GUIDES",
     "guidesTitle": "Meet Our Excellent Tour Guides",
-    "guidesDesc": "Tour guides play an important role in Vietnam's tourism industry, contributing to introducing the image of the country and people of Vietnam to international friends. With many years of experience and extensive knowledge of culture and history, our guides are committed to bringing memorable experiences to visitors."
+    "guidesDesc": "Tour guides play an important role in Vietnam's tourism industry, contributing to introducing the image of the country and people of Vietnam to international friends. With many years of experience and extensive knowledge of culture and history, our guides are committed to bringing memorable experiences to visitors.",
+    "servicesTitle": "Our main services",
+    "exploreTours": "Explore tours",
+    "callAdvice": "Call for advice",
+    "ctaTitle": "Plan your next trip with ANDAGO",
+    "places": {
+      "taynguyen": "Central Highlands",
+      "mytho": "My Tho",
+      "hue": "Hue Imperial City"
+    }
   },
   "contact": {
     "sendMailSuccess": "Request sent successfully! We will contact you as soon as possible.",
@@ -121,7 +136,10 @@
       "answerDrivingLicense": "Yes, a valid international driving permit (IDP) or a Vietnamese driving license is required to operate a motorbike legally in Vietnam.",
       "customTour": "Can I customize my tour?",
       "answerCustomTour": "Absolutely! We specialize in tailor-made tours. Contact us with your preferences, and we'll design a unique itinerary just for you."
-    }
+    },
+    "hours": "Mon–Sun, 8am–8pm",
+    "channelsTitle": "Ways to reach us",
+    "mapTitle": "ANDAGO office map"
   },
   "auth": {
     "login": "Login",
@@ -149,7 +167,8 @@
     "passwordRequired": "Password is required",
     "usernameRequired": "Username is required",
     "usernameMin": "Username must be at least 2 characters",
-    "passwordMin": "Password must be at least 6 characters"
+    "passwordMin": "Password must be at least 6 characters",
+    "myBookings": "My bookings"
   },
   "common": {
     "language": "Language",
@@ -200,7 +219,11 @@
     "upload": "Upload",
     "remove": "Remove",
     "edit": "Edit",
-    "save": "Save"
+    "save": "Save",
+    "pagination": "Pagination",
+    "previousPage": "Previous",
+    "nextPage": "Next",
+    "close": "Close"
   },
   "booking": {
     "bookNow": "Book Now"
@@ -276,7 +299,8 @@
         "priceLow": "Price: Low to High",
         "priceHigh": "Price: High to Low",
         "duration": "Duration"
-      }
+      },
+      "search": "Search"
     },
     "duration": "Duration",
     "durationOptions": {
@@ -447,7 +471,11 @@
     "map": "Itinerary Map",
     "reviews": "Reviews",
     "itinerary": "Itinerary",
-    "allTours": "All Tours"
+    "allTours": "All Tours",
+    "count": "{count} tour | {count} tours",
+    "viewMode": "View",
+    "viewGrid": "Grid",
+    "viewList": "List"
   },
   "footer": {
     "address": "Address",
@@ -506,7 +534,12 @@
       "food": "Food",
       "adventure": "Adventure",
       "guides": "Guides"
-    }
+    },
+    "featured": "Featured story",
+    "readArticle": "Read article",
+    "readTime": "{count} min read",
+    "emptyTitle": "No stories found",
+    "emptyDesc": "Try another category or keyword"
   },
   "hotSpots": {
     "title": "Hot Spots",
@@ -605,5 +638,20 @@
     "removeSuccess": "Removed from wishlist",
     "myWishlist": "My Favorite Tours",
     "savedItems": "Saved Tours"
+  },
+  "news": {
+    "badge": "NEWS & EVENTS",
+    "titleLine1": "Discover",
+    "titleLine2": "New Stories",
+    "desc": "The latest news on riding routes, road-trip tips and inspiring stories.",
+    "searchLabel": "Search news",
+    "searchPlaceholder": "Search news, destinations...",
+    "featured": "Featured story",
+    "readFull": "Read full story",
+    "moreStories": "More stories",
+    "articleCount": "{count} article | {count} articles",
+    "readMore": "Read more",
+    "emptyTitle": "No news found",
+    "emptyDesc": "Try adjusting your search"
   }
 }

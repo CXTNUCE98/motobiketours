@@ -1,4 +1,6 @@
 <script setup>
+import { CONTACT_INFO } from '~/constants/contact';
+
 const { t } = useI18n();
 const localePath = useLocalePath();
 
@@ -9,112 +11,115 @@ const tourLinks = computed(() => [
     { title: t('footer.tourCategories.domestic'), url: localePath('/tour') },
     { title: t('footer.tourCategories.asia'), url: localePath('/tour') }
 ]);
-
-const galleryImages = [
-    '/carousel/1.jpg',
-    '/carousel/2.jpg',
-    '/carousel/3.jpg',
-    '/carousel/4.jpg',
-    '/carousel/5.jpg',
-    '/carousel/6.jpg'
-];
 </script>
 
 <template>
-    <footer
-        class="bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 relative overflow-hidden border-t border-slate-200 dark:border-slate-800">
-        <div class="container mx-auto px-6 py-12 relative z-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-10 gap-8">
-                <!-- Logo and Contact Info -->
-                <div class="lg:col-span-3">
-                    <div class="mb-6">
-                        <NuxtLink :to="localePath('/')" class="text-3xl font-bold">
-                            <span class="text-black dark:text-white">AN</span><span
-                                class="text-sky-500 dark:text-cyan-400">DAGO</span>
-                        </NuxtLink>
+    <footer class="site-footer">
+        <div class="shell site-footer__grid">
+            <div>
+                <NuxtLink :to="localePath('/')" class="site-footer__brand">ANDAGO</NuxtLink>
+                <dl class="site-footer__contact">
+                    <div>
+                        <dt>{{ t('footer.address') }}</dt>
+                        <dd>{{ CONTACT_INFO.address }}</dd>
                     </div>
-
-                    <div class="space-y-4 text-sm">
-                        <div>
-                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">{{ t('footer.address') }}</h3>
-                            <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
-                                53 Phạm Ngọc Mậu, Thanh Khê, Đà Nẵng
-                            </p>
-                        </div>
-
-                        <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
-                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">{{ t('footer.email') }}</h3>
-                            <a href="mailto:contact.andago@gmail.com"
-                                class="text-sky-600 dark:text-cyan-400 hover:text-sky-800 dark:hover:text-cyan-300 transition-colors">
-                                contact.andago@gmail.com
-                            </a>
-                        </div>
-
-                        <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
-                            <h3 class="font-semibold text-slate-800 dark:text-white mb-2">{{ t('footer.phone') }}</h3>
-                            <a href="tel:0854242357"
-                                class="text-slate-700 dark:text-slate-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors font-medium">
-                                0854.242.357 (Mr An)
-                            </a>
-                        </div>
+                    <div>
+                        <dt>{{ t('footer.email') }}</dt>
+                        <dd><a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a></dd>
                     </div>
-                </div>
-
-                <!-- Tour Menu -->
-                <div class="lg:col-span-3">
-                    <div class="space-y-6">
-                        <!-- Tour Nội Bật -->
-                        <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white mb-4 text-lg">{{
-                                t('footer.featuredTours')
-                                }}</h3>
-                            <ul class="space-y-2">
-                                <li v-for="(link, index) in tourLinks.slice(0, 3)" :key="index">
-                                    <NuxtLink :to="link.url"
-                                        class="text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-cyan-400 transition-colors text-sm flex items-center">
-                                        <span class="mr-2">›</span>
-                                        {{ link.title }}
-                                    </NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <!-- Thư Viện Ảnh -->
-                        <div>
-                            <h3 class="font-bold text-slate-800 dark:text-white mb-4 text-lg">{{ t('footer.tourGallery')
-                                }}
-                            </h3>
-                            <ul class="space-y-2">
-                                <li v-for="(link, index) in tourLinks.slice(3)" :key="index">
-                                    <NuxtLink :to="link.url"
-                                        class="text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-cyan-400 transition-colors text-sm flex items-center">
-                                        <span class="mr-2">›</span>
-                                        {{ link.title }}
-                                    </NuxtLink>
-                                </li>
-                            </ul>
-                        </div>
+                    <div>
+                        <dt>{{ t('footer.phone') }}</dt>
+                        <dd>
+                            <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phone }}</a>
+                            ({{ CONTACT_INFO.phonePerson }})
+                        </dd>
                     </div>
-                </div>
-
-                <!-- Gallery -->
-                <div class="lg:col-span-4">
-                    <div class="grid grid-cols-3 gap-2">
-                        <div v-for="(image, index) in galleryImages" :key="index"
-                            class="aspect-square overflow-hidden rounded">
-                            <img :src="image" :alt="`Gallery ${index + 1}`"
-                                class="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-                        </div>
-                    </div>
-                </div>
-
+                </dl>
             </div>
+
+            <nav aria-labelledby="footer-tours-title">
+                <p id="footer-tours-title" class="site-footer__label">{{ t('footer.featuredTours') }}</p>
+                <ul role="list" class="site-footer__links">
+                    <li v-for="(link, index) in tourLinks" :key="index">
+                        <NuxtLink :to="link.url">{{ link.title }}</NuxtLink>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </footer>
 </template>
 
 <style scoped>
-.container {
-    max-width: 1400px;
+.site-footer {
+    padding-block: var(--space-fluid-lg);
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+}
+
+.site-footer__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-8) var(--space-fluid-xl);
+}
+
+.site-footer__brand {
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: var(--text-4xl);
+    letter-spacing: var(--tracking-wide);
+    text-decoration: none;
+}
+
+.site-footer__contact {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+}
+
+.site-footer__contact dt,
+.site-footer__label {
+    color: var(--color-text-muted);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.site-footer__contact dd {
+    color: var(--color-text);
+}
+
+.site-footer__label {
+    margin-bottom: var(--space-3);
+}
+
+.site-footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) 1.75rem;
+}
+
+.site-footer a {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.site-footer a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+}
+
+.site-footer__links a {
+    color: var(--color-text-muted);
+}
+
+.site-footer a:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
 }
 </style>
