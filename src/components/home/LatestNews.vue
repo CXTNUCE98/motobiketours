@@ -1,27 +1,36 @@
 <script setup lang="ts">
 const { t } = useI18n();
+const localePath = useLocalePath();
 import { latestNews } from '@/data/homeData';
 </script>
 
 <template>
-    <section class="fade-in-section py-12 md:py-16 bg-gray-50 dark:bg-gray-900">
-        <div class="max-w-7xl mx-auto px-4 md:px-6">
-            <!-- Header Text -->
-            <div class="text-center mb-8 md:mb-12">
-                <p class="text-red-600 dark:text-red-400 text-sm md:text-base font-medium mb-2">
-                    {{ t('home.latestNewsSubtitle') }}
-                </p>
-                <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174] dark:text-blue-400">
-                    {{ t('home.latestNewsTitle') }}
-                </h2>
-            </div>
+    <section class="latest-news" aria-labelledby="latest-news-title">
+        <div class="shell">
+            <UiSectionHeading id="latest-news-title" :eyebrow="t('home.latestNewsSubtitle')"
+                :title="t('home.latestNewsTitle')" />
 
-            <!-- News Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <NewsCard v-for="newsItem in latestNews" :key="newsItem.id" :id="newsItem.id"
-                    :image="newsItem.image || ''" :title="newsItem.title" :date="newsItem.date"
-                    :views="newsItem.views || 0" :description="newsItem.description || ''" :to="newsItem.to || ''" />
-            </div>
+            <ul class="latest-news__grid" role="list">
+                <li v-for="item in latestNews" :key="item.id">
+                    <ArticleCard :to="localePath(`/news/${item.id}`)" :image="item.image || ''" :title="item.title"
+                        :excerpt="item.description"
+                        :meta="[item.date, t('home.newsViews', { count: item.views })]" />
+                </li>
+            </ul>
         </div>
     </section>
 </template>
+
+<style scoped>
+.latest-news {
+    padding-block: var(--section-space);
+    background: var(--color-bg-subtle);
+}
+
+.latest-news__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-fluid-lg) var(--space-fluid-sm);
+    margin-top: var(--space-fluid-lg);
+}
+</style>

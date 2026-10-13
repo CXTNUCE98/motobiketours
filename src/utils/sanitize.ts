@@ -6,6 +6,13 @@
 import DOMPurify from 'dompurify';
 
 /**
+ * Escape plain text before interpolating it into an HTML string (e.g. Leaflet divIcon markup)
+ */
+export function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch] as string);
+}
+
+/**
  * Sanitize HTML content to prevent XSS attacks
  * @param dirty - The potentially unsafe HTML string
  * @param options - Optional DOMPurify configuration

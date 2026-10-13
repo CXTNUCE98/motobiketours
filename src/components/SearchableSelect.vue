@@ -61,7 +61,11 @@ const handleClickOutside = (event: MouseEvent) => {
     }
 }
 
+// Trạng thái tải chỉ hiện sau khi mount: server và client có thể khác nhau về `loading`
+const isMounted = ref(false)
+
 onMounted(() => {
+    isMounted.value = true
     document.addEventListener('click', handleClickOutside)
 })
 
@@ -85,7 +89,7 @@ onUnmounted(() => {
             <span class="searchable-select__arrow" :class="{ 'is-open': isOpen }" aria-hidden="true"></span>
 
             <!-- Loading Spinner -->
-            <span v-if="loading" class="searchable-select__loading" aria-hidden="true">
+            <span v-if="loading && isMounted" class="searchable-select__loading" aria-hidden="true">
                 <i class="bx bx-loader-alt animate-spin"></i>
             </span>
         </div>

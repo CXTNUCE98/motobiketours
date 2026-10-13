@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-const { t } = useI18n();
 import { locations } from '@/data/homeData';
 import { logger } from '~/utils/logger';
 
+const { t } = useI18n();
 const router = useRouter();
+
 const searchForm = ref({
     keyword: '',
     location: 'all',
@@ -24,6 +25,9 @@ const durationOptions = computed(() => [
     { value: '8+', label: `8+ ${t('tour.durationUnit')}` },
 ]);
 
+// "Tìm kiếm..." dùng chung với placeholder ô tìm kiếm, bỏ dấu "..." để làm nhãn nút.
+const searchCta = computed(() => t('common.searchPlaceholder').replace('...', ''));
+
 const handleSearch = () => {
     logger.log('Search:', searchForm.value);
     router.push({
@@ -38,103 +42,67 @@ const handleSearch = () => {
 </script>
 
 <template>
-    <section class="py-16 md:py-20 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <div class="max-w-6xl mx-auto px-4">
-            <!-- Header Text -->
-            <div class="text-center mb-10 md:mb-14">
-                <p
-                    class="text-red-600 dark:text-red-400 font-semibold mb-3 tracking-wide uppercase text-sm md:text-base">
-                    {{ t('home.discoverVN') }}
-                </p>
-                <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                    {{ t('home.searchBestTrip').split(t('home.best'))[0] }}<span
-                        class="text-blue-600 dark:text-blue-400">{{
-                            t('home.best') }}</span>{{ t('home.searchBestTrip').split(t('home.best'))[1] }}
-                </h2>
-                <p class="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-                    {{ t('home.searchExp') }}
-                </p>
-            </div>
+    <section class="search-section" aria-labelledby="search-title">
+        <div class="shell">
+            <UiSectionHeading id="search-title" :eyebrow="t('home.discoverVN')" :title="t('home.searchBestTrip')"
+                :emphasis="t('home.best')" :lead="t('home.searchExp')" />
 
-            <!-- Search Bar Container -->
-            <div
-                class="bg-white dark:bg-gray-800 rounded-2xl md:rounded-full shadow-xl shadow-gray-200/50 dark:shadow-none p-2 border border-gray-100 dark:border-gray-700">
-                <div
-                    class="flex flex-col md:flex-row items-stretch divide-y md:divide-y-0 md:divide-x divide-gray-100 dark:divide-gray-700">
+            <form class="search-form" @submit.prevent="handleSearch">
+                <UiField :label="t('home.searchKeyword')" v-slot="{ id }">
+                    <input :id="id" v-model="searchForm.keyword" type="text" class="ui-control"
+                        :placeholder="t('home.searchPlaceholder')">
+                </UiField>
 
-                    <!-- Keyword Input -->
-                    <div class="flex-1 relative group px-2 md:px-4 py-2">
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">{{
-                            t('home.searchKeyword') }}</label>
-                        <div class="relative flex items-center">
-                            <div class="absolute left-2 text-gray-400 transition-colors">
-                                <i class="i-carbon-search text-xl"></i>
-                            </div>
-                            <input v-model="searchForm.keyword" type="text" :placeholder="t('home.searchPlaceholder')"
-                                class="w-full h-10 pl-10 pr-4 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-400 font-medium"
-                                @keyup.enter="handleSearch" />
-                        </div>
-                    </div>
+                <UiField :label="t('home.searchDest')" v-slot="{ id }">
+                    <select :id="id" v-model="searchForm.location" class="ui-control">
+                        <option v-for="loc in translatedLocations" :key="loc.value" :value="loc.value">
+                            {{ loc.label }}
+                        </option>
+                    </select>
+                </UiField>
 
-                    <!-- Location Dropdown -->
-                    <div class="flex-1 relative group px-2 md:px-4 py-2">
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">{{
-                            t('home.searchDest') }}</label>
-                        <div class="relative flex items-center">
-                            <div class="absolute left-2 text-gray-400 transition-colors">
-                                <i class="i-carbon-map text-xl"></i>
-                            </div>
-                            <select v-model="searchForm.location"
-                                class="w-full h-10 pl-10 pr-8 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
-                                <option v-for="loc in translatedLocations" :key="loc.value" :value="loc.value"
-                                    class="dark:bg-gray-800">
-                                    {{ loc.label }}
-                                </option>
-                            </select>
-                            <div class="absolute right-2 pointer-events-none text-gray-400">
-                                <i class="i-carbon-chevron-down text-sm"></i>
-                            </div>
-                        </div>
-                    </div>
+                <UiField :label="t('tour.duration')" v-slot="{ id }">
+                    <select :id="id" v-model="searchForm.duration" class="ui-control">
+                        <option v-for="option in durationOptions" :key="option.value" :value="option.value">
+                            {{ option.label }}
+                        </option>
+                    </select>
+                </UiField>
 
-                    <!-- Duration Dropdown -->
-                    <div class="flex-1 relative group px-2 md:px-4 py-2">
-                        <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 mb-1 ml-9">{{
-                            t('tour.duration') }}</label>
-                        <div class="relative flex items-center">
-                            <div class="absolute left-2 text-gray-400 transition-colors">
-                                <i class="i-carbon-calendar text-xl"></i>
-                            </div>
-                            <select v-model="searchForm.duration"
-                                class="w-full h-10 pl-10 pr-8 bg-transparent outline-none rounded-2 focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white font-medium appearance-none cursor-pointer">
-                                <option v-for="option in durationOptions" :key="option.value" :value="option.value"
-                                    class="dark:bg-gray-800">
-                                    {{ option.label }}
-                                </option>
-                            </select>
-                            <div class="absolute right-2 pointer-events-none text-gray-400">
-                                <i class="i-carbon-chevron-down text-sm"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Search Button -->
-                    <div class="p-1 pl-2 md:pl-4 flex items-center justify-center md:justify-end">
-                        <button @click="handleSearch"
-                            class="w-full md:w-auto h-12 md:h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white rounded-xl md:rounded-full font-bold shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 flex items-center justify-center gap-2">
-                            <i class="i-carbon-search text-xl"></i>
-                            <span>{{ t('common.searchPlaceholder').replace('...', '') }}</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+                <UiButton type="submit" class="search-form__submit">{{ searchCta }}</UiButton>
+            </form>
         </div>
     </section>
 </template>
 
 <style scoped>
-/* Remove default select arrows */
-select::-ms-expand {
-    display: none;
+.search-section {
+    padding-bottom: var(--section-space);
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: var(--space-4) var(--space-fluid-sm);
+    margin-top: var(--space-fluid-lg);
+    padding: var(--space-fluid-sm) var(--space-fluid-md);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-subtle);
+}
+
+.search-form :deep(.ui-field) {
+    flex: 1 1 14rem;
+}
+
+.search-form__submit {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 36rem) {
+    .search-form__submit {
+        flex-basis: 100%;
+    }
 }
 </style>

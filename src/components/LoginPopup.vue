@@ -15,6 +15,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const { login: setAuthState } = useAuth()
 
+const dialogTitleId = useId()
+
 const close = () => {
   emit('update:modelValue', false)
   resetForms()
@@ -22,10 +24,13 @@ const close = () => {
 
 const isSignUp = ref(false)
 
-const toggleMode = () => {
-  isSignUp.value = !isSignUp.value
+const setMode = (value: boolean) => {
+  if (isSignUp.value === value) return
+  isSignUp.value = value
   resetForms()
 }
+
+const toggleMode = () => setMode(!isSignUp.value)
 
 const showLoginPassword = ref(false)
 const showRegisterPassword = ref(false)
@@ -46,7 +51,8 @@ const registerForm = reactive<RegisterDto>({
 const loginErrors = ref<ValidationErrors>({})
 const registerErrors = ref<ValidationErrors>({})
 
-const loginValidationRules: ValidationRules = {
+// computed để thông báo lỗi luôn theo đúng ngôn ngữ hiện tại
+const loginValidationRules = computed<ValidationRules>(() => ({
   email: [
     validationRules.required(t('auth.emailRequired')),
     validationRules.email(),
@@ -54,9 +60,9 @@ const loginValidationRules: ValidationRules = {
   password: [
     validationRules.required(t('auth.passwordRequired')),
   ],
-}
+}))
 
-const registerValidationRules: ValidationRules = {
+const registerValidationRules = computed<ValidationRules>(() => ({
   userName: [
     validationRules.required(t('auth.usernameRequired')),
     validationRules.minLength(2, t('auth.usernameMin')),
@@ -69,7 +75,7 @@ const registerValidationRules: ValidationRules = {
     validationRules.required(t('auth.passwordRequired')),
     validationRules.minLength(6, t('auth.passwordMin')),
   ],
-}
+}))
 
 const resetForms = () => {
   loginForm.email = ''
@@ -98,7 +104,7 @@ const {
 } = useRegisterMutation();
 
 const handleLogin = () => {
-  const errors = validateForm(loginForm, loginValidationRules)
+  const errors = validateForm(loginForm, loginValidationRules.value)
   loginErrors.value = errors
   if (Object.keys(errors).length > 0) return
   loginMutate(loginForm, {
@@ -120,7 +126,7 @@ const handleLogin = () => {
 }
 
 const handleRegister = () => {
-  const errors = validateForm(registerForm, registerValidationRules)
+  const errors = validateForm(registerForm, registerValidationRules.value)
   registerErrors.value = errors
   if (Object.keys(errors).length > 0) return
   registerMutate(registerForm, {
@@ -151,291 +157,296 @@ const getErrorMessage = (error: any): string => {
 const isPending = computed(() => isSignUp.value ? isRegisterPending.value : isLoginPending.value)
 const isError = computed(() => isSignUp.value ? isRegisterError.value : isLoginError.value)
 const error = computed(() => isSignUp.value ? registerError.value : loginError.value)
+
+const socialProviders = computed(() => [
+  { key: 'google', label: t('auth.social.google') },
+  { key: 'facebook', label: t('auth.social.facebook') },
+  { key: 'twitter', label: t('auth.social.twitter') },
+])
 </script>
 
 <template>
   <Teleport to="body">
-    <Transition enter-active-class="transition duration-500 cubic-bezier(0.16, 1, 0.3, 1)" enter-from-class="opacity-0"
-      enter-to-class="opacity-100" leave-active-class="transition duration-300 ease-in" leave-from-class="opacity-100"
-      leave-to-class="opacity-0">
-      <div v-if="modelValue" class="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6" role="dialog"
-        aria-modal="true">
-        <!-- Modern Blur Backdrop -->
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md transition-all" @click="close"></div>
+    <Transition name="login-fade">
+      <div v-if="modelValue" class="login-dialog" role="dialog" aria-modal="true" :aria-labelledby="dialogTitleId">
+        <div class="login-dialog__backdrop" @click="close" />
 
-        <!-- Main Card Container -->
-        <div
-          class="relative w-full max-w-[1000px] bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl overflow-hidden min-h-[650px] md:h-[650px] transition-all transform hover:shadow-indigo-500/10 hidden md:block">
+        <div class="login-dialog__panel">
+          <button type="button" class="login-dialog__close" @click="close">{{ t('common.close') }}</button>
 
-          <!-- Close Button -->
-          <button @click="close"
-            class="absolute top-6 right-6 z-50 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors">
-            <div class="i-carbon-close text-2xl"></div>
-          </button>
+          <h2 :id="dialogTitleId" class="login-dialog__title">
+            {{ isSignUp ? t('auth.createAccount') : t('auth.signInToAndago') }}
+          </h2>
+          <p class="login-dialog__lead">
+            {{ isSignUp ? t('auth.keepConnected') : t('auth.enterDetails') }}
+          </p>
 
-          <!-- OVERLAY PANEL (The "Art" side that moves) -->
-          <div
-            class="absolute top-0 w-5/12 h-full bg-slate-900 text-white overflow-hidden flex flex-col justify-between p-12 transition-all duration-700 ease-in-out z-20"
-            :class="isSignUp ? 'left-0' : 'left-[58.333333%]'">
-            <!-- Animated Background Gradient -->
-            <div class="absolute inset-0 z-0">
-              <div class="absolute inset-0 bg-gradient-to-br from-#1A71C1 via-indigo-600 to-#1A71C1 opacity-90">
-              </div>
-              <div
-                class="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent animate-slow-spin">
-              </div>
-              <div class="absolute inset-0 bg-noise opacity-10 mix-blend-overlay"></div>
-            </div>
-
-            <!-- Content -->
-            <div class="relative z-10 h-full flex flex-col justify-center text-center">
-              <Transition mode="out-in" enter-active-class="transition duration-500 ease-out delay-100"
-                enter-from-class="opacity-0 translate-y-4" enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition duration-300 ease-in" leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 -translate-y-4">
-                <div :key="isSignUp ? 'signup-msg' : 'signin-msg'">
-                  <h2 class="text-4xl font-bold mb-6 font-display tracking-tight leading-tight">
-                    {{ isSignUp ? t('auth.welcomeBack') : t('auth.startJourney') }}
-                  </h2>
-                  <p class="text-indigo-100 text-lg font-light leading-relaxed mb-8 opacity-90">
-                    {{ isSignUp
-                      ? t('auth.keepConnected')
-                      : t('auth.enterDetails')
-                    }}
-                  </p>
-                  <button @click="toggleMode"
-                    class="inline-block px-10 py-3 border-2 border-white rounded-full font-semibold uppercase tracking-widest text-sm hover:bg-white hover:text-indigo-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    {{ isSignUp ? t('auth.signIn') : t('auth.signUp') }}
-                  </button>
-                </div>
-              </Transition>
-            </div>
+          <div class="login-dialog__tabs">
+            <UiChip :active="!isSignUp" @click="setMode(false)">{{ t('auth.signIn') }}</UiChip>
+            <UiChip :active="isSignUp" @click="setMode(true)">{{ t('auth.signUp') }}</UiChip>
           </div>
 
-          <!-- FORM PANEL (The "Content" side that moves) -->
-          <div
-            class="absolute top-0 w-7/12 h-full bg-white dark:bg-slate-900 p-14 flex flex-col justify-center transition-all duration-700 ease-in-out z-10"
-            :class="isSignUp ? 'left-[41.666667%]' : 'left-0'">
-            <div class="w-full max-w-md mx-auto text-center" :class="isSignUp ? 'opacity-100' : 'opacity-100'">
-              <!-- The content here switches based on mode too -->
-              <div class="mb-8">
-                <h3 class="text-3xl font-bold text-slate-900 dark:text-white mb-2 font-display">
-                  {{ isSignUp ? t('auth.createAccount') : t('auth.signInToAndago') }}
-                </h3>
-                <!-- Social Icons -->
-                <div class="flex justify-center gap-4 my-6">
-                  <button v-for="icon in ['bxl-google', 'bxl-facebook-circle', 'bxl-twitter']" :key="icon"
-                    class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:border-indigo-500 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all duration-300 group">
-                    <i :class="['bx text-xl', icon, 'group-hover:scale-110 transition-transform']"></i>
-                  </button>
-                </div>
-                <p class="text-xs uppercase text-slate-400 tracking-wider">
-                  {{ isSignUp ? t('auth.orUseEmail') : t('auth.orUseEmailAccount') }}
-                </p>
-              </div>
+          <p v-if="isError" class="login-dialog__alert">{{ getErrorMessage(error) }}</p>
 
-              <!-- Alert -->
-              <Transition enter-active-class="transition duration-300 ease-out"
-                enter-from-class="opacity-0 -translate-y-2" enter-to-class="opacity-100 translate-y-0">
-                <div v-if="isError"
-                  class="mb-6 p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 flex gap-3 text-red-600 dark:text-red-400 text-sm text-left">
-                  <div class="i-carbon-warning-filled text-lg shrink-0 mt-0.5"></div>
-                  <p>{{ getErrorMessage(error) }}</p>
-                </div>
-              </Transition>
+          <Transition name="login-fade" mode="out-in">
+            <form v-if="isSignUp" key="signup" class="login-form" novalidate @submit.prevent="handleRegister">
+              <UiField :label="t('auth.name')" :error="registerErrors.userName">
+                <template #default="{ id, describedBy, invalid }">
+                  <input :id="id" v-model="registerForm.userName" type="text" class="ui-control" autocomplete="name"
+                    :aria-describedby="describedBy" :aria-invalid="invalid">
+                </template>
+              </UiField>
 
-              <!-- Forms with Transition -->
-              <Transition mode="out-in" enter-active-class="transition duration-300 ease-out"
-                enter-from-class="opacity-0 scale-95" enter-to-class="opacity-100 scale-100"
-                leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 scale-100"
-                leave-to-class="opacity-0 scale-95">
-                <form v-if="isSignUp" key="signup-form" @submit.prevent="handleRegister" class="space-y-4 text-left">
-                  <div class="space-y-1">
-                    <div class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <div class="i-carbon-user text-slate-400"></div>
-                      </div>
-                      <input v-model="registerForm.userName" type="text"
-                        class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        :placeholder="t('auth.name')" />
-                    </div>
-                    <p v-if="registerErrors.userName" class="text-xs text-red-500 ml-1">{{ registerErrors.userName }}
-                    </p>
+              <UiField :label="t('auth.email')" :error="registerErrors.email">
+                <template #default="{ id, describedBy, invalid }">
+                  <input :id="id" v-model="registerForm.email" type="email" class="ui-control" autocomplete="email"
+                    :aria-describedby="describedBy" :aria-invalid="invalid">
+                </template>
+              </UiField>
+
+              <UiField :label="t('auth.password')" :error="registerErrors.password">
+                <template #default="{ id, describedBy, invalid }">
+                  <div class="password-control">
+                    <input :id="id" v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
+                      class="ui-control" autocomplete="new-password" :aria-describedby="describedBy"
+                      :aria-invalid="invalid">
+                    <button type="button" class="password-control__toggle"
+                      :aria-label="showRegisterPassword ? t('auth.hidePassword') : t('auth.showPassword')"
+                      @click="showRegisterPassword = !showRegisterPassword">
+                      {{ showRegisterPassword ? t('auth.hide') : t('auth.show') }}
+                    </button>
                   </div>
+                </template>
+              </UiField>
 
-                  <div class="space-y-1">
-                    <div class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <div class="i-carbon-email text-slate-400"></div>
-                      </div>
-                      <input v-model="registerForm.email" type="email"
-                        class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        :placeholder="t('auth.email')" />
-                    </div>
-                    <p v-if="registerErrors.email" class="text-xs text-red-500 ml-1">{{ registerErrors.email }}</p>
+              <UiButton type="submit" block :disabled="isPending">
+                {{ isPending ? t('auth.processing') : t('auth.signUp') }}
+              </UiButton>
+            </form>
+
+            <form v-else key="signin" class="login-form" novalidate @submit.prevent="handleLogin">
+              <UiField :label="t('auth.email')" :error="loginErrors.email">
+                <template #default="{ id, describedBy, invalid }">
+                  <input :id="id" v-model="loginForm.email" type="email" class="ui-control" autocomplete="email"
+                    :aria-describedby="describedBy" :aria-invalid="invalid">
+                </template>
+              </UiField>
+
+              <UiField :label="t('auth.password')" :error="loginErrors.password">
+                <template #default="{ id, describedBy, invalid }">
+                  <div class="password-control">
+                    <input :id="id" v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
+                      class="ui-control" autocomplete="current-password" :aria-describedby="describedBy"
+                      :aria-invalid="invalid">
+                    <button type="button" class="password-control__toggle"
+                      :aria-label="showLoginPassword ? t('auth.hidePassword') : t('auth.showPassword')"
+                      @click="showLoginPassword = !showLoginPassword">
+                      {{ showLoginPassword ? t('auth.hide') : t('auth.show') }}
+                    </button>
                   </div>
+                </template>
+              </UiField>
 
-                  <div class="space-y-1">
-                    <div class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <div class="i-carbon-password text-slate-400"></div>
-                      </div>
-                      <input v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
-                        class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 pr-12 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        :placeholder="t('auth.password')" />
-                      <button type="button" @click="showRegisterPassword = !showRegisterPassword"
-                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors">
-                        <div :class="showRegisterPassword ? 'i-carbon-view-off' : 'i-carbon-view'" class="text-xl">
-                        </div>
-                      </button>
-                    </div>
-                    <p v-if="registerErrors.password" class="text-xs text-red-500 ml-1">{{ registerErrors.password }}
-                    </p>
-                  </div>
+              <p class="login-form__forgot">
+                <a href="#" class="login-dialog__link">{{ t('auth.forgotPassword') }}</a>
+              </p>
 
-                  <button type="submit" :disabled="isPending"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 active:scale-[0.99] transition-all duration-300 disabled:opacity-70 mt-2 uppercase tracking-wider text-sm">
-                    <span v-if="!isPending">{{ t('auth.signUp') }}</span>
-                    <span v-else>{{ t('auth.processing') }}</span>
-                  </button>
-                </form>
+              <UiButton type="submit" block :disabled="isPending">
+                {{ isPending ? t('auth.processing') : t('auth.signIn') }}
+              </UiButton>
+            </form>
+          </Transition>
 
-                <form v-else key="signin-form" @submit.prevent="handleLogin" class="space-y-4 text-left">
-                  <div class="space-y-1">
-                    <div class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <div class="i-carbon-email text-slate-400"></div>
-                      </div>
-                      <input v-model="loginForm.email" type="email"
-                        class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        :placeholder="t('auth.email')" />
-                    </div>
-                    <p v-if="loginErrors.email" class="text-xs text-red-500 ml-1">{{ loginErrors.email }}</p>
-                  </div>
+          <p class="login-dialog__divider">
+            <span>{{ isSignUp ? t('auth.orUseEmail') : t('auth.orUseEmailAccount') }}</span>
+          </p>
 
-                  <div class="space-y-1">
-                    <div class="relative bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <div class="i-carbon-password text-slate-400"></div>
-                      </div>
-                      <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
-                        class="w-full bg-transparent border-none rounded-xl px-4 py-3.5 pl-11 pr-12 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                        :placeholder="t('auth.password')" />
-                      <button type="button" @click="showLoginPassword = !showLoginPassword"
-                        class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-indigo-600 transition-colors">
-                        <div :class="showLoginPassword ? 'i-carbon-view-off' : 'i-carbon-view'" class="text-xl"></div>
-                      </button>
-                    </div>
-                    <p v-if="loginErrors.password" class="text-xs text-red-500 ml-1">{{ loginErrors.password }}</p>
-                  </div>
-
-                  <div class="text-right">
-                    <a href="#" class="text-xs font-medium text-slate-400 hover:text-indigo-600 transition-colors">{{
-                      t('auth.forgotPassword') }}</a>
-                  </div>
-
-                  <button type="submit" :disabled="isPending"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/40 active:scale-[0.99] transition-all duration-300 disabled:opacity-70 mt-2 uppercase tracking-wider text-sm">
-                    <span v-if="!isPending">{{ t('auth.signIn') }}</span>
-                    <span v-else>{{ t('auth.processing') }}</span>
-                  </button>
-                </form>
-              </Transition>
-            </div>
+          <div class="login-dialog__social">
+            <UiButton v-for="provider in socialProviders" :key="provider.key" type="button" variant="outline" block>
+              {{ provider.label }}
+            </UiButton>
           </div>
+
+          <p class="login-dialog__switch">
+            {{ isSignUp ? t('auth.alreadyHaveAccount') : t('auth.noAccount') }}
+            <button type="button" class="login-dialog__link" @click="toggleMode">
+              {{ isSignUp ? t('auth.signIn') : t('auth.signUp') }}
+            </button>
+          </p>
         </div>
-
-        <!-- Mobile Layout (Stack, no sliding) -->
-        <div
-          class="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-[2rem] shadow-2xl overflow-hidden md:hidden">
-          <button @click="close" class="absolute top-4 right-4 z-50 p-2 text-slate-400 hover:text-indigo-600">
-            <div class="i-carbon-close text-xl"></div>
-          </button>
-
-          <div class="p-8">
-            <div class="text-center mb-8">
-              <h3 class="text-2xl font-bold text-slate-900 dark:text-white font-display">{{ isSignUp ?
-                t('auth.createAccount')
-                : t('auth.signIn') }}</h3>
-              <p class="text-sm text-slate-400 mt-2">Welcome to Andago Tours</p>
-            </div>
-
-            <!-- Simplified Forms for Mobile -->
-            <Transition mode="out-in" enter-active-class="transition duration-300 ease-out"
-              enter-from-class="opacity-0 translate-y-8" enter-to-class="opacity-100 translate-y-0"
-              leave-active-class="transition duration-200 ease-in" leave-from-class="opacity-100 translate-y-0"
-              leave-to-class="opacity-0 -translate-y-8">
-              <form v-if="isSignUp" key="mobile-signup" @submit.prevent="handleRegister" class="space-y-4">
-                <input v-model="registerForm.userName" type="text" :placeholder="t('auth.name')"
-                  class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                <input v-model="registerForm.email" type="email" :placeholder="t('auth.email')"
-                  class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                <div class="relative">
-                  <input v-model="registerForm.password" :type="showRegisterPassword ? 'text' : 'password'"
-                    :placeholder="t('auth.password')"
-                    class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                  <button type="button" @click="showRegisterPassword = !showRegisterPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    <div :class="showRegisterPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
-                  </button>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">{{
-                  t('auth.signUp') }}</button>
-                <p class="text-center text-sm text-slate-500 mt-4">
-                  Already have an account? <a href="#" @click.prevent="toggleMode"
-                    class="text-indigo-600 font-bold">Sign
-                    In</a>
-                </p>
-              </form>
-
-              <form v-else key="mobile-signin" @submit.prevent="handleLogin" class="space-y-4">
-                <input v-model="loginForm.email" type="email" :placeholder="t('auth.email')"
-                  class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                <div class="relative">
-                  <input v-model="loginForm.password" :type="showLoginPassword ? 'text' : 'password'"
-                    :placeholder="t('auth.password')"
-                    class="w-full px-4 py-3 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800 border-none focus:ring-2 focus:ring-indigo-500/20" />
-                  <button type="button" @click="showLoginPassword = !showLoginPassword"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">
-                    <div :class="showLoginPassword ? 'i-carbon-view-off' : 'i-carbon-view'"></div>
-                  </button>
-                </div>
-                <button type="submit" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">{{
-                  t('auth.signIn') }}</button>
-                <p class="text-center text-sm text-slate-500 mt-4">
-                  Don't have an account? <a href="#" @click.prevent="toggleMode" class="text-indigo-600 font-bold">Sign
-                    Up</a>
-                </p>
-              </form>
-            </Transition>
-          </div>
-        </div>
-
       </div>
     </Transition>
   </Teleport>
 </template>
 
 <style scoped>
-.font-display {
-  font-family: 'Outfit', sans-serif;
+.login-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gutter);
 }
 
-.animate-slow-spin {
-  animation: spin 15s linear infinite;
+.login-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--color-backdrop);
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
+.login-dialog__panel {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  max-height: calc(100vh - 2 * var(--gutter));
+  overflow-y: auto;
+  padding: var(--space-fluid-lg) var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-popover);
 }
 
-.bg-noise {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+.login-dialog__close {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-decoration-color: var(--color-border);
+  text-underline-offset: 0.25em;
+}
+
+.login-dialog__close:hover {
+  color: var(--color-text);
+}
+
+.login-dialog__title {
+  padding-right: var(--space-10);
+  font-family: var(--font-serif);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-tight);
+}
+
+.login-dialog__lead {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-ui);
+  line-height: var(--leading-body);
+}
+
+.login-dialog__tabs {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+.login-dialog__alert {
+  margin-top: var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.login-form {
+  display: grid;
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.password-control {
+  position: relative;
+}
+
+.password-control .ui-control {
+  padding-right: 4rem;
+}
+
+.password-control__toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--space-4);
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.password-control__toggle:hover {
+  color: var(--color-accent);
+}
+
+.login-form__forgot {
+  margin-top: -0.75rem;
+  text-align: right;
+}
+
+/* Chữ ở giữa, hai đường kẻ hai bên co lại khi chữ xuống dòng */
+.login-dialog__divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.login-dialog__divider::before,
+.login-dialog__divider::after {
+  content: '';
+  flex: 1 1 var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.login-dialog__divider span {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.login-dialog__social {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+.login-dialog__switch {
+  margin-top: var(--space-6);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+.login-dialog__link {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+  text-decoration: underline;
+  text-decoration-color: var(--color-accent);
+  text-underline-offset: 0.3em;
+}
+
+.login-dialog__link:hover {
+  color: var(--color-accent);
+}
+
+.login-dialog :focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.login-fade-enter-active,
+.login-fade-leave-active {
+  transition: opacity var(--transition-base);
+}
+
+.login-fade-enter-from,
+.login-fade-leave-to {
+  opacity: 0;
 }
 </style>

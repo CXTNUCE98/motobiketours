@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import type { HotSpot } from '~/types/api';
+import { escapeHtml } from '~/utils/sanitize';
+import { readCssVar } from '~/utils/cssVar';
 
 // Leaflet instance (loaded dynamically)
 let L: any = null;
@@ -60,9 +62,9 @@ const updateRoute = async () => {
             const coordinates = polyline.decode(props.routeGeometry);
 
             routeLine = L.polyline(coordinates, {
-                color: '#3b82f6', // blue-500
+                color: readCssVar('--color-accent'),
                 weight: 5,
-                opacity: 0.7,
+                opacity: 0.85,
                 lineJoin: 'round'
             }).addTo(map);
 
@@ -86,13 +88,12 @@ const updateMarkers = () => {
         const userIcon = L.divIcon({
             className: 'custom-div-icon',
             html: `
-                <div class="user-position-marker">
-                    <div class="user-ping"></div>
+                <div class="user-position-marker" role="img" aria-label="Vị trí của bạn">
                     <div class="user-dot"></div>
                 </div>
             `,
-            iconSize: [24, 24],
-            iconAnchor: [12, 12],
+            iconSize: [16, 16],
+            iconAnchor: [8, 8],
         });
         L.marker(props.center, { icon: userIcon, zIndexOffset: 1000 }).addTo(map!);
     }
@@ -100,17 +101,16 @@ const updateMarkers = () => {
     props.spots.forEach(spot => {
         if (spot.lat && spot.lng) {
             const isSelected = spot.id === props.selectedSpotId;
+            const safeName = escapeHtml(spot.name || '');
 
             const icon = L.divIcon({
                 className: 'custom-div-icon',
                 html: `
-                    <div class="marker-container ${isSelected ? 'selected' : ''}">
-                        <div class="marker-label shadow-xl">
-                            ${spot.name}
-                        </div>
+                    <div class="marker-container ${isSelected ? 'selected' : ''}" role="img" aria-label="${safeName}">
+                        <div class="marker-label">${safeName}</div>
                         <div class="marker-pin-wrapper">
-                            <div class="marker-pin shadow-lg">
-                                <i class='bx bxs-map-pin'></i>
+                            <div class="marker-pin">
+                                <i class='bx bxs-map-pin' aria-hidden="true"></i>
                             </div>
                         </div>
                     </div>
@@ -200,18 +200,48 @@ defineExpose({
 </script>
 
 <template>
-    <div ref="mapContainer" class="w-full h-full rounded-2xl overflow-hidden shadow-inner bg-zinc-100 dark:bg-zinc-800">
-    </div>
+    <div ref="mapContainer" class="leaflet-frame"></div>
 </template>
 
-<style>
-/* Leaflet custom styles */
-.custom-div-icon {
+<style scoped>
+.leaflet-frame {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-subtle);
+}
+
+/* Điều khiển zoom của Leaflet */
+:deep(.leaflet-control-zoom) {
+    overflow: hidden;
+    border: 1px solid var(--color-border) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-popover) !important;
+}
+
+:deep(.leaflet-control-zoom a) {
+    border-bottom: 1px solid var(--color-border) !important;
+    background: var(--color-surface) !important;
+    color: var(--color-text) !important;
+}
+
+:deep(.leaflet-control-zoom a:last-child) {
+    border-bottom: 0 !important;
+}
+
+:deep(.leaflet-control-zoom a:hover) {
+    background: var(--color-bg-subtle) !important;
+}
+
+/* Popup/marker tuỳ biến: HTML được Leaflet chèn trực tiếp vào trong khung bản đồ này */
+:deep(.custom-div-icon) {
     background: none !important;
     border: none !important;
 }
 
-.marker-container {
+:deep(.marker-container) {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -220,107 +250,89 @@ defineExpose({
     height: 48px;
 }
 
-.marker-pin-wrapper {
+:deep(.marker-pin-wrapper) {
     position: relative;
     width: 30px;
     height: 30px;
     margin-bottom: 8px;
-    /* Space for the triangle tip */
-    animation: markerDrop 0.5s ease-out forwards;
+    animation: marker-drop 0.3s var(--ease-out) forwards;
 }
 
-.marker-pin {
-    width: 30px;
-    height: 30px;
-    background: white;
-    border-radius: 50%;
+:deep(.marker-pin) {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #3b82f6;
-    border: 2px solid #3b82f6;
-    transition: all 0.3s ease;
-    z-index: 2;
+    width: 30px;
+    height: 30px;
+    border: 1.5px solid var(--color-accent);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-accent);
+    box-shadow: var(--shadow-popover);
+    transition: background-color var(--transition-base), color var(--transition-base), transform var(--transition-base);
 }
 
-/* The triangle tip */
-.marker-pin::after {
+:deep(.marker-pin::after) {
     content: '';
     position: absolute;
-    bottom: -8px;
+    bottom: -7px;
     left: 50%;
-    transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid #3b82f6;
-    z-index: 1;
+    border-top: 9px solid var(--color-accent);
+    border-right: 7px solid transparent;
+    border-left: 7px solid transparent;
+    transform: translateX(-50%);
 }
 
-.dark .marker-pin {
-    background: #18181b;
-    border-color: #60a5fa;
-    color: #60a5fa;
+:deep(.marker-pin i) {
+    font-size: 16px;
 }
 
-.dark .marker-pin::after {
-    border-top-color: #60a5fa;
-}
-
-.marker-pin i {
-    font-size: 18px;
-}
-
-.marker-container.selected .marker-pin {
-    background: #3b82f6;
-    color: white;
+:deep(.marker-container.selected .marker-pin) {
     transform: scale(1.1);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
 }
 
-.marker-label {
+:deep(.marker-label) {
     position: absolute;
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(4px);
-    background: white;
-    padding: 4px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #18181b;
-    white-space: nowrap;
-    margin-bottom: 8px;
-    opacity: 0;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    pointer-events: none;
     z-index: 1000;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    margin-bottom: 8px;
+    padding: 4px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-popover);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(4px);
+    transition: opacity var(--transition-base), transform var(--transition-base);
 }
 
-.dark .marker-label {
-    background: #27272a;
-    color: #f4f4f5;
-    border-color: rgba(255, 255, 255, 0.05);
-}
-
-.marker-container:hover .marker-label,
-.marker-container.selected .marker-label {
+:deep(.marker-container:hover .marker-label),
+:deep(.marker-container.selected .marker-label) {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
 }
 
-.marker-container.selected .marker-label {
-    background: #3b82f6;
-    color: white;
+:deep(.marker-container.selected .marker-label) {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-on-accent);
 }
 
-/* Animations */
-@keyframes markerDrop {
+@keyframes marker-drop {
     from {
         opacity: 0;
-        transform: translateY(-20px);
+        transform: translateY(-16px);
     }
 
     to {
@@ -329,40 +341,19 @@ defineExpose({
     }
 }
 
-
-/* User position marker */
-.user-position-marker {
+/* Vị trí người dùng: chấm tĩnh, không hiệu ứng nhấp nháy */
+:deep(.user-position-marker) {
     display: flex;
     align-items: center;
     justify-content: center;
-    position: relative;
 }
 
-.user-dot {
+:deep(.user-dot) {
     width: 12px;
     height: 12px;
-    background: #3b82f6;
-    border: 2px solid white;
+    border: 2px solid var(--color-surface);
     border-radius: 50%;
-    z-index: 10;
-}
-
-.user-ping {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    background: #3b82f6;
-    border-radius: 50%;
-    opacity: 0.4;
-    animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-@keyframes ping {
-
-    75%,
-    100% {
-        transform: scale(2.5);
-        opacity: 0;
-    }
+    background: var(--color-accent);
+    box-shadow: var(--shadow-popover);
 }
 </style>

@@ -5,11 +5,8 @@ type PaymentMethod = 'vnpay' | 'momo' | 'stripe' | 'cash';
 
 interface PaymentOption {
     value: PaymentMethod;
-    label: string;
-    icon: string;
-    description: string;
-    color: string;
-    badge?: string;
+    labelKey: string;
+    descKey: string;
 }
 
 const props = defineProps<{
@@ -20,37 +17,13 @@ const emit = defineEmits<{
     (e: 'update:modelValue', value: PaymentMethod): void;
 }>();
 
+const { t } = useI18n();
+
 const paymentOptions: PaymentOption[] = [
-    {
-        value: 'vnpay',
-        label: 'VNPay',
-        icon: 'bx-credit-card',
-        description: 'Thanh toán qua VNPay - Hỗ trợ mọi ngân hàng',
-        color: 'from-blue-500 to-cyan-500',
-        badge: 'Phổ biến',
-    },
-    {
-        value: 'momo',
-        label: 'MoMo',
-        icon: 'bx-wallet',
-        description: 'Thanh toán qua ví điện tử MoMo',
-        color: 'from-pink-500 to-rose-500',
-        badge: 'Nhanh chóng',
-    },
-    {
-        value: 'stripe',
-        label: 'Stripe',
-        icon: 'bxl-stripe',
-        description: 'Thanh toán quốc tế qua Stripe',
-        color: 'from-purple-500 to-indigo-500',
-    },
-    {
-        value: 'cash',
-        label: 'Tiền mặt',
-        icon: 'bx-money',
-        description: 'Thanh toán trực tiếp khi khởi hành',
-        color: 'from-green-500 to-emerald-500',
-    },
+    { value: 'vnpay', labelKey: 'booking.payment.methods.vnpay', descKey: 'booking.payment.methods.vnpayDesc' },
+    { value: 'momo', labelKey: 'booking.payment.methods.momo', descKey: 'booking.payment.methods.momoDesc' },
+    { value: 'stripe', labelKey: 'booking.payment.methods.stripe', descKey: 'booking.payment.methods.stripeDesc' },
+    { value: 'cash', labelKey: 'booking.payment.methods.cash', descKey: 'booking.payment.methods.cashDesc' },
 ];
 
 const selectedMethod = ref<PaymentMethod>(props.modelValue);
@@ -63,132 +36,127 @@ const selectMethod = (method: PaymentMethod) => {
 
 <template>
     <div class="payment-method-selector">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button v-for="option in paymentOptions" :key="option.value" @click="selectMethod(option.value)"
-                class="payment-option relative p-6 rounded-2xl border-2 transition-all duration-300 text-left group"
-                :class="{
-                    'border-blue-500 bg-blue-50 dark:bg-blue-900/20 shadow-lg shadow-blue-500/20':
-                        selectedMethod === option.value,
-                    'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md':
-                        selectedMethod !== option.value,
-                }">
-                <!-- Selected Indicator -->
-                <div v-if="selectedMethod === option.value"
-                    class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center animate-scale-in">
-                    <i class="bx bx-check text-white text-xl"></i>
-                </div>
+        <fieldset class="payment-fieldset">
+            <legend class="visually-hidden">{{ t('booking.payment.title') }}</legend>
 
-                <!-- Badge -->
-                <div v-if="option.badge"
-                    class="absolute top-4 right-4 px-3 py-1 bg-gradient-to-r text-white text-xs font-bold rounded-full"
-                    :class="`bg-gradient-to-r ${option.color}`">
-                    {{ option.badge }}
-                </div>
+            <label v-for="option in paymentOptions" :key="option.value" class="payment-row"
+                :class="{ 'is-selected': selectedMethod === option.value }">
+                <input type="radio" name="booking-payment-method" class="payment-row__radio" :value="option.value"
+                    :checked="selectedMethod === option.value" @change="selectMethod(option.value)">
+                <span class="payment-row__text">
+                    <span class="payment-row__label">{{ t(option.labelKey) }}</span>
+                    <span class="payment-row__desc">{{ t(option.descKey) }}</span>
+                </span>
+            </label>
+        </fieldset>
 
-                <!-- Icon -->
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 transition-all" :class="{
-                    [`bg-gradient-to-br ${option.color} text-white`]: selectedMethod === option.value,
-                    'bg-gray-100 dark:bg-gray-800 text-gray-500 group-hover:bg-gray-200 dark:group-hover:bg-gray-700':
-                        selectedMethod !== option.value,
-                }">
-                    <i :class="`bx ${option.icon} text-3xl`"></i>
-                </div>
-
-                <!-- Content -->
-                <div>
-                    <h3 class="text-lg font-bold mb-2 transition-colors" :class="{
-                        'text-blue-600 dark:text-blue-400': selectedMethod === option.value,
-                        'text-gray-900 dark:text-white': selectedMethod !== option.value,
-                    }">
-                        {{ option.label }}
-                    </h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ option.description }}
-                    </p>
-                </div>
-
-                <!-- Hover Effect -->
-                <div class="absolute inset-0 rounded-2xl bg-gradient-to-br opacity-0 transition-opacity pointer-events-none"
-                    :class="`${option.color} group-hover:opacity-5`"></div>
-            </button>
+        <div v-if="selectedMethod && selectedMethod !== 'cash'" class="payment-info">
+            <p class="payment-info__title">{{ t('booking.payment.infoTitle') }}</p>
+            <p class="payment-info__text">
+                {{ t('booking.payment.infoRedirect', { method: t(`booking.payment.methods.${selectedMethod}`) }) }}
+            </p>
+            <ul class="payment-info__list" role="list">
+                <li>{{ t('booking.payment.infoSsl') }}</li>
+                <li>{{ t('booking.payment.infoSecure') }}</li>
+            </ul>
         </div>
 
-        <!-- Payment Info -->
-        <div v-if="selectedMethod && selectedMethod !== 'cash'"
-            class="mt-6 p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-2xl border border-blue-200 dark:border-blue-800">
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                    <i class="bx bx-info-circle text-white text-xl"></i>
-                </div>
-                <div class="flex-1">
-                    <h4 class="font-bold text-gray-900 dark:text-white mb-2">Thông tin thanh toán</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        Bạn sẽ được chuyển đến cổng thanh toán {{paymentOptions.find(o => o.value ===
-                        selectedMethod)?.label }} để hoàn tất giao dịch.
-                    </p>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                            <i class="bx bx-check-circle text-green-500"></i>
-                            <span>Giao dịch được mã hóa SSL</span>
-                        </li>
-                        <li class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                            <i class="bx bx-check-circle text-green-500"></i>
-                            <span>Thông tin thanh toán được bảo mật tuyệt đối</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Cash Payment Info -->
-        <div v-if="selectedMethod === 'cash'"
-            class="mt-6 p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border border-green-200 dark:border-green-800">
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
-                    <i class="bx bx-money text-white text-xl"></i>
-                </div>
-                <div class="flex-1">
-                    <h4 class="font-bold text-gray-900 dark:text-white mb-2">Thanh toán tiền mặt</h4>
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        Bạn sẽ thanh toán trực tiếp cho hướng dẫn viên khi bắt đầu tour.
-                    </p>
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                            <i class="bx bx-info-circle text-blue-500"></i>
-                            <span>Vui lòng chuẩn bị đủ tiền mặt</span>
-                        </li>
-                        <li class="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                            <i class="bx bx-info-circle text-blue-500"></i>
-                            <span>Booking sẽ được xác nhận sau khi thanh toán</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <div v-if="selectedMethod === 'cash'" class="payment-info">
+            <p class="payment-info__title">{{ t('booking.payment.cashTitle') }}</p>
+            <p class="payment-info__text">{{ t('booking.payment.cashInfo') }}</p>
+            <ul class="payment-info__list" role="list">
+                <li>{{ t('booking.payment.cashPrepare') }}</li>
+                <li>{{ t('booking.payment.cashConfirm') }}</li>
+            </ul>
         </div>
     </div>
 </template>
 
 <style scoped>
-@keyframes scale-in {
-    0% {
-        transform: scale(0);
-    }
-
-    50% {
-        transform: scale(1.2);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+.payment-fieldset {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-top: 1px solid var(--color-border-strong);
 }
 
-.animate-scale-in {
-    animation: scale-in 0.5s ease-out;
+.payment-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-4);
+    margin-inline: calc(-1 * var(--space-4));
+    border-bottom: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background-color var(--transition-base);
 }
 
-.payment-option {
-    position: relative;
-    overflow: hidden;
+.payment-row__radio {
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.1875rem;
+    accent-color: var(--color-accent);
+}
+
+.payment-row__radio:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.payment-row__text {
+    min-width: 0;
+}
+
+.payment-row__label {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    transition: color var(--transition-base);
+}
+
+.payment-row__desc {
+    display: block;
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+}
+
+.payment-row.is-selected {
+    background: var(--color-bg-subtle);
+}
+
+.payment-row.is-selected .payment-row__label {
+    color: var(--color-accent);
+}
+
+.payment-info {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+}
+
+.payment-info__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+}
+
+.payment-info__text {
+    margin-top: var(--space-2);
+    max-width: 36rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+}
+
+.payment-info__list {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 </style>

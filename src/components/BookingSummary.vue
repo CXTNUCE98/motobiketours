@@ -14,211 +14,271 @@ const emit = defineEmits<{
     (e: 'confirm'): void;
 }>();
 
+const { t } = useI18n();
 const { formatPrice } = useCurrency();
 
 const formattedDate = computed(() => {
     return dayjs(props.bookingData.startDate).format('DD/MM/YYYY');
 });
 
-const paymentMethodLabel = computed(() => {
-    const methods = {
-        vnpay: 'VNPay',
-        momo: 'MoMo',
-        stripe: 'Stripe',
-        cash: 'Tiền mặt',
-    };
-    return methods[props.bookingData.paymentMethod] || props.bookingData.paymentMethod;
-});
+const paymentMethodLabel = computed(() => t(`booking.payment.methods.${props.bookingData.paymentMethod}`));
 </script>
 
 <template>
-    <div class="booking-summary">
-        <!-- Header -->
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                Xác nhận đặt chỗ
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400">
-                Vui lòng kiểm tra lại thông tin trước khi xác nhận
-            </p>
-        </div>
+    <div class="booking-confirm">
+        <UiSectionHeading :title="t('booking.confirmStep.title')" :lead="t('booking.confirmStep.lead')" />
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Details Section -->
-            <div class="lg:col-span-2 space-y-6">
+        <div class="booking-confirm__layout">
+            <div class="booking-confirm__main">
                 <!-- Tour Info -->
-                <div class="card p-6">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="bx bx-map text-blue-500 text-2xl"></i>
-                        Thông tin chuyến đi
+                <section class="confirm-block" aria-labelledby="confirm-trip-title">
+                    <h3 id="confirm-trip-title" class="confirm-block__title">{{ t('booking.confirmStep.tripInfo') }}
                     </h3>
 
-                    <div class="space-y-4">
-                        <div class="flex gap-4">
-                            <img :src="tourData.thumbnail" :alt="tourData.title"
-                                class="w-24 h-24 rounded-xl object-cover flex-shrink-0" />
-                            <div class="flex-1">
-                                <h4 class="font-bold text-gray-900 dark:text-white mb-1">
-                                    {{ tourData.title }}
-                                </h4>
-                                <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                                    <i class="bx bx-time-five"></i>
-                                    <span>{{ tourData.duration }}</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                            <div>
-                                <div class="text-sm text-gray-500 mb-1">Ngày khởi hành</div>
-                                <div class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <i class="bx bx-calendar text-blue-500"></i>
-                                    {{ formattedDate }}
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-500 mb-1">Số người</div>
-                                <div class="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                    <i class="bx bx-group text-purple-500"></i>
-                                    {{ bookingData.numberOfPeople }} người
-                                </div>
-                            </div>
+                    <div class="confirm-trip">
+                        <img :src="tourData.thumbnail" :alt="tourData.title" class="confirm-trip__image" />
+                        <div>
+                            <p class="confirm-trip__name">{{ tourData.title }}</p>
+                            <p class="confirm-trip__duration">{{ tourData.duration }}</p>
                         </div>
                     </div>
-                </div>
+
+                    <dl class="confirm-dl">
+                        <div>
+                            <dt>{{ t('booking.confirmStep.startDate') }}</dt>
+                            <dd>{{ formattedDate }}</dd>
+                        </div>
+                        <div>
+                            <dt>{{ t('booking.confirmStep.people') }}</dt>
+                            <dd>{{ t('booking.confirmStep.peopleCount', { count: bookingData.numberOfPeople }) }}
+                            </dd>
+                        </div>
+                    </dl>
+                </section>
 
                 <!-- Customer Info -->
-                <div class="card p-6">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="bx bx-user text-blue-500 text-2xl"></i>
-                        Thông tin khách hàng
+                <section v-if="bookingData.customerInfo" class="confirm-block" aria-labelledby="confirm-customer-title">
+                    <h3 id="confirm-customer-title" class="confirm-block__title">
+                        {{ t('booking.confirmStep.customerInfo') }}
                     </h3>
 
-                    <div v-if="bookingData.customerInfo" class="space-y-3">
-                        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                            <i class="bx bx-user text-gray-500"></i>
-                            <div class="flex-1">
-                                <div class="text-xs text-gray-500">Họ tên</div>
-                                <div class="font-semibold text-gray-900 dark:text-white">
-                                    {{ bookingData.customerInfo?.name }}
-                                </div>
-                            </div>
+                    <dl class="confirm-dl">
+                        <div>
+                            <dt>{{ t('booking.confirmStep.fullName') }}</dt>
+                            <dd>{{ bookingData.customerInfo.name }}</dd>
                         </div>
-
-                        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                            <i class="bx bx-envelope text-gray-500"></i>
-                            <div class="flex-1">
-                                <div class="text-xs text-gray-500">Email</div>
-                                <div class="font-semibold text-gray-900 dark:text-white">
-                                    {{ bookingData.customerInfo?.email }}
-                                </div>
-                            </div>
+                        <div>
+                            <dt>{{ t('booking.confirmStep.email') }}</dt>
+                            <dd>{{ bookingData.customerInfo.email }}</dd>
                         </div>
-
-                        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                            <i class="bx bx-phone text-gray-500"></i>
-                            <div class="flex-1">
-                                <div class="text-xs text-gray-500">Số điện thoại</div>
-                                <div class="font-semibold text-gray-900 dark:text-white">
-                                    {{ bookingData.customerInfo?.phone }}
-                                </div>
-                            </div>
+                        <div>
+                            <dt>{{ t('booking.confirmStep.phone') }}</dt>
+                            <dd>{{ bookingData.customerInfo.phone }}</dd>
                         </div>
-
-                        <div v-if="bookingData.customerInfo?.address"
-                            class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                            <i class="bx bx-map text-gray-500"></i>
-                            <div class="flex-1">
-                                <div class="text-xs text-gray-500">Địa chỉ</div>
-                                <div class="font-semibold text-gray-900 dark:text-white">
-                                    {{ bookingData.customerInfo?.address }}
-                                </div>
-                            </div>
+                        <div v-if="bookingData.customerInfo.address">
+                            <dt>{{ t('booking.confirmStep.address') }}</dt>
+                            <dd>{{ bookingData.customerInfo.address }}</dd>
                         </div>
-                    </div>
-                </div>
+                    </dl>
+                </section>
 
                 <!-- Special Requests -->
-                <div v-if="bookingData.specialRequests" class="card p-6">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                        <i class="bx bx-message-square-detail text-blue-500 text-2xl"></i>
-                        Yêu cầu đặc biệt
+                <section v-if="bookingData.specialRequests" class="confirm-block"
+                    aria-labelledby="confirm-requests-title">
+                    <h3 id="confirm-requests-title" class="confirm-block__title">
+                        {{ t('booking.confirmStep.specialRequests') }}
                     </h3>
-                    <p class="text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
-                        {{ bookingData.specialRequests }}
-                    </p>
-                </div>
+                    <p class="confirm-block__text">{{ bookingData.specialRequests }}</p>
+                </section>
             </div>
 
             <!-- Summary Sidebar -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Price Summary -->
-                <div
-                    class="card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-2 border-blue-200 dark:border-blue-800 sticky top-24">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tổng quan thanh toán</h3>
-
-                    <div class="space-y-3 mb-6">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 dark:text-gray-400">Giá tour</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">
-                                {{ formatPrice(tourData.priceUsd) }}
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 dark:text-gray-400">Số người</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">
-                                × {{ bookingData.numberOfPeople }}
-                            </span>
-                        </div>
-
-                        <div v-if="bookingData.voucherCode" class="flex justify-between items-center text-green-600">
-                            <span>Giảm giá</span>
-                            <span class="font-semibold">- {{ formatPrice(0) }}</span>
-                        </div>
-
-                        <div class="h-px bg-gray-300 dark:bg-gray-600"></div>
-
-                        <div class="flex justify-between items-center pt-2">
-                            <span class="text-lg font-bold text-gray-900 dark:text-white">Tổng cộng</span>
-                            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                {{ formatPrice(totalPrice) }}
-                            </span>
-                        </div>
+            <aside class="booking-confirm__aside">
+                <dl class="confirm-summary">
+                    <div>
+                        <dt>{{ t('booking.summary.pricePerPerson') }}</dt>
+                        <dd>{{ formatPrice(tourData.priceUsd) }}</dd>
                     </div>
-
-                    <!-- Payment Method -->
-                    <div class="p-4 bg-white dark:bg-gray-800 rounded-xl mb-6">
-                        <div class="text-sm text-gray-500 mb-1">Phương thức thanh toán</div>
-                        <div class="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <i class="bx bx-credit-card text-blue-500"></i>
-                            {{ paymentMethodLabel }}
-                        </div>
+                    <div>
+                        <dt>{{ t('booking.summary.people') }}</dt>
+                        <dd>&times; {{ bookingData.numberOfPeople }}</dd>
                     </div>
-
-                    <!-- Action Buttons -->
-                    <div class="space-y-3">
-                        <button @click="emit('confirm')" class="w-full btn-primary py-4 text-lg">
-                            <i class="bx bx-check-circle text-xl mr-2"></i>
-                            <span>Xác nhận đặt chỗ</span>
-                        </button>
-
-                        <button @click="emit('back')"
-                            class="w-full px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold transition-all hover:border-gray-400 dark:hover:border-gray-500">
-                            <i class="bx bx-left-arrow-alt text-xl mr-2"></i>
-                            <span>Quay lại</span>
-                        </button>
+                    <div v-if="bookingData.voucherCode" class="confirm-summary__discount">
+                        <dt>{{ t('booking.summary.discount') }}</dt>
+                        <dd>&minus; {{ formatPrice(0) }}</dd>
                     </div>
+                </dl>
 
-                    <!-- Terms -->
-                    <p class="mt-6 text-xs text-gray-500 text-center">
-                        Bằng việc xác nhận, bạn đồng ý với
-                        <a href="#" class="text-blue-500 hover:underline">Điều khoản dịch vụ</a>
-                        và
-                        <a href="#" class="text-blue-500 hover:underline">Chính sách bảo mật</a>
-                    </p>
+                <div class="confirm-summary__total">
+                    <span>{{ t('booking.summary.total') }}</span>
+                    <span class="confirm-summary__amount">{{ formatPrice(totalPrice) }}</span>
                 </div>
-            </div>
+
+                <p class="confirm-summary__method">
+                    <span>{{ t('booking.summary.paymentMethod') }}</span>
+                    <strong>{{ paymentMethodLabel }}</strong>
+                </p>
+
+                <div class="confirm-summary__actions">
+                    <UiButton block @click="emit('confirm')">{{ t('booking.confirmStep.confirmButton') }}</UiButton>
+                    <UiButton variant="outline" block @click="emit('back')">{{ t('common.prevStep') }}</UiButton>
+                </div>
+
+                <p class="confirm-summary__terms">{{ t('booking.confirmStep.terms') }}</p>
+            </aside>
         </div>
     </div>
 </template>
+
+<style scoped>
+.booking-confirm__layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
+    margin-top: var(--space-fluid-md);
+}
+
+@media (min-width: 64rem) {
+    .booking-confirm__layout {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+.booking-confirm__main {
+    display: grid;
+    gap: var(--space-fluid-md);
+}
+
+.confirm-block {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+}
+
+.confirm-block__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+}
+
+.confirm-trip {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+}
+
+.confirm-trip__image {
+    width: 6rem;
+    height: 6rem;
+    flex-shrink: 0;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+}
+
+.confirm-trip__name {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+}
+
+.confirm-trip__duration {
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.confirm-dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+}
+
+.confirm-dl dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.confirm-dl dd {
+    margin-top: 0.375rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    overflow-wrap: anywhere;
+}
+
+.confirm-block__text {
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    line-height: var(--leading-body);
+}
+
+.booking-confirm__aside {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-strong);
+}
+
+.confirm-summary>div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-2);
+    color: var(--color-text-muted);
+}
+
+.confirm-summary dd {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+}
+
+.confirm-summary__discount {
+    color: var(--color-success);
+}
+
+.confirm-summary__discount dd {
+    color: var(--color-success);
+}
+
+.confirm-summary__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: var(--space-4);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-serif);
+}
+
+.confirm-summary__amount {
+    font-size: var(--text-h3);
+    color: var(--color-accent);
+}
+
+.confirm-summary__method {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.confirm-summary__actions {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.confirm-summary__terms {
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+    text-align: center;
+}
+</style>

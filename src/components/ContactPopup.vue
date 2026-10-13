@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useCountriesQuery } from '@/composables/useCountriesQuery'
 import isEmail from 'validator/lib/isEmail';
 import isMobilePhone from 'validator/lib/isMobilePhone';
+import { CONTACT_INFO } from '~/constants/contact';
 
 const props = defineProps<{
     modelValue: boolean
@@ -125,170 +126,288 @@ watch(() => props.modelValue, (val) => {
     }
 }, { immediate: true })
 
-// Social platforms configuration
-
-const socialPlatforms = [
-    { name: 'Zalo', icon: 'bx bxs-chat', color: '#0068FF', link: `https://zalo.me/84854242357` },
-    { name: 'WhatsApp', icon: 'bx bxl-whatsapp', color: '#25D366', link: `https://wa.me/84854242357` },
-    { name: 'Messenger', icon: 'bx bxl-messenger', color: '#0084FF', link: `https://m.me/61579936051310` },
-    { name: 'Viber', icon: 'bx bx-phone', color: '#7360F2', link: `https://viber.click/84854242357` },
-    { name: 'Line', icon: 'bx bxs-message-rounded-dots', color: '#00C300', link: `https://line.me/ti/p/+84854242357` },
-    { name: 'KakaoTalk', icon: 'bx bxs-conversation', color: '#FEE500', link: `https://open.kakao.com/o/+84854242357` },
-    { name: "Fanpage", icon: 'bx bxl-facebook', color: '#1877F2', link: `https://www.facebook.com/profile.php?id=61579936051310` }
-]
+// Kênh chat nhanh; cùng danh mục với trang Liên hệ (contact.quickInfo.*)
+const chatChannels = computed(() => [
+    { key: 'zalo', link: 'https://zalo.me/84854242357' },
+    { key: 'whatsapp', link: 'https://wa.me/84854242357' },
+    { key: 'messenger', link: 'https://m.me/61579936051310' },
+    { key: 'viber', link: 'https://viber.click/84854242357' },
+    { key: 'line', link: 'https://line.me/ti/p/+84854242357' },
+    { key: 'kakaotalk', link: 'https://open.kakao.com/o/+84854242357' },
+    { key: 'fanpage', link: 'https://www.facebook.com/profile.php?id=61579936051310' },
+])
 </script>
 
 <template>
     <el-dialog v-model="isOpen" width="900px" align-center destroy-on-close :show-close="false"
-        class="contact-popup-dialog overflow-hidden rounded-[2rem] bg-transparent border-none">
-        <template #default>
-            <div
-                class="relative bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-white/20 dark:border-zinc-800 rounded-[2rem] overflow-hidden shadow-2xl flex flex-col md:flex-row">
-                <!-- Close Button -->
-                <button @click="isOpen = false"
-                    class="absolute top-4 right-4 z-50 w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-all active:scale-95">
-                    <i class='bx bx-x text-2xl'></i>
+        class="contact-popup-dialog">
+        <div class="contact-popup">
+            <header class="contact-popup__head">
+                <div>
+                    <p class="contact-popup__eyebrow">{{ t('contact.contactUs') }}</p>
+                    <h2 class="contact-popup__title">{{ t('contact.connect') }}</h2>
+                    <p class="contact-popup__desc">{{ t('contact.desc') }}</p>
+                </div>
+                <button type="button" class="contact-popup__close" @click="isOpen = false">
+                    {{ t('common.close') }}
                 </button>
+            </header>
 
-                <!-- Left Panel: Social Channels -->
-                <div
-                    class="md:w-1/3 bg-zinc-50/50 dark:bg-zinc-800/30 p-8 border-r border-zinc-100 dark:border-zinc-800">
-                    <div class="mb-8">
-                        <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-2">{{ t('contact.connect') }}
-                        </h2>
-                        <p class="text-sm text-zinc-500">{{ t('contact.desc') }}</p>
+            <div class="contact-popup__body">
+                <aside class="contact-popup__channels" aria-labelledby="contact-popup-channels-title">
+                    <h3 id="contact-popup-channels-title">{{ t('contact.channelsTitle') }}</h3>
+
+                    <dl class="contact-popup__direct">
+                        <dt>{{ t('contact.quickInfo.call') }}</dt>
+                        <dd>
+                            <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phoneIntl }}</a>
+                            <span class="contact-popup__sub">{{ t('contact.hours') }}</span>
+                        </dd>
+                    </dl>
+
+                    <ul class="contact-popup__chats" role="list">
+                        <li v-for="channel in chatChannels" :key="channel.key">
+                            <a :href="channel.link" target="_blank" rel="noopener noreferrer">
+                                <span>{{ t(`contact.quickInfo.${channel.key}`) }}</span>
+                                <span aria-hidden="true">↗</span>
+                            </a>
+                        </li>
+                    </ul>
+                </aside>
+
+                <form class="contact-popup__form" novalidate @submit.prevent="submit">
+                    <p class="contact-popup__lead">{{ t('contact.fillOut') }}</p>
+
+                    <UiField :label="t('contact.fullName')" :error="errors.fullName">
+                        <template #default="{ id, describedBy, invalid }">
+                            <input :id="id" v-model="form.fullName" type="text" class="ui-control"
+                                autocomplete="name" :placeholder="t('contact.form.placeholders.fullName')"
+                                :aria-describedby="describedBy" :aria-invalid="invalid"
+                                @input="validateField('fullName')" @blur="validateField('fullName')">
+                        </template>
+                    </UiField>
+
+                    <UiField :label="t('contact.email')" :error="errors.email">
+                        <template #default="{ id, describedBy, invalid }">
+                            <input :id="id" v-model="form.email" type="email" class="ui-control" autocomplete="email"
+                                placeholder="example@mail.com" :aria-describedby="describedBy" :aria-invalid="invalid"
+                                @input="validateField('email')" @blur="validateField('email')">
+                        </template>
+                    </UiField>
+
+                    <UiField :label="t('contact.phone')" :error="errors.phone">
+                        <template #default="{ id, describedBy, invalid }">
+                            <input :id="id" v-model="form.phone" type="tel" class="ui-control" autocomplete="tel"
+                                :placeholder="t('contact.form.placeholders.phone')" :aria-describedby="describedBy"
+                                :aria-invalid="invalid" @input="validateField('phone')" @blur="validateField('phone')">
+                        </template>
+                    </UiField>
+
+                    <UiField :label="t('contact.country')" :error="errors.country">
+                        <template #default="{ id }">
+                            <SearchableSelect v-model="form.country" :input-id="id" :options="countryOptions"
+                                :placeholder="t('contact.yourCountry')" :loading="isLoadingCountries"
+                                :has-error="!!errors.country" @update:model-value="validateField('country')"
+                                @blur="validateField('country')" />
+                        </template>
+                    </UiField>
+
+                    <UiField class="contact-popup__wide" :label="t('contact.subject')" :error="errors.title">
+                        <template #default="{ id, describedBy, invalid }">
+                            <input :id="id" v-model="form.title" type="text" class="ui-control"
+                                :placeholder="t('contact.howCanHelp')" :aria-describedby="describedBy"
+                                :aria-invalid="invalid" @input="validateField('title')" @blur="validateField('title')">
+                        </template>
+                    </UiField>
+
+                    <UiField class="contact-popup__wide" :label="t('contact.message')" :error="errors.content">
+                        <template #default="{ id, describedBy, invalid }">
+                            <textarea :id="id" v-model="form.content" rows="4" class="ui-control"
+                                :placeholder="t('contact.tellUsAboutYourTrip')" :aria-describedby="describedBy"
+                                :aria-invalid="invalid" @input="validateField('content')"
+                                @blur="validateField('content')"></textarea>
+                        </template>
+                    </UiField>
+
+                    <div class="contact-popup__wide">
+                        <UiButton type="submit" block :disabled="isSubmitting">
+                            {{ isSubmitting ? t('contact.sendingMessage') : t('contact.sendMessage') }}
+                        </UiButton>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <a v-for="social in socialPlatforms" :key="social.name" :href="social.link"
-                            :target="social.link.startsWith('http') ? '_blank' : undefined"
-                            class="group relative flex flex-col items-center justify-center p-4 rounded-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300">
-                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-transform group-hover:scale-110"
-                                :style="{ backgroundColor: social.color + '10', color: social.color }">
-                                <i v-if="!social.icon.startsWith('custom-')" :class="social.icon" class="text-2xl"></i>
-                                <span v-else class="text-[10px] font-bold uppercase tracking-tighter">{{ social.name[0]
-                                }}</span>
-                            </div>
-                            <span
-                                class="text-[10px] font-black text-zinc-400 uppercase tracking-widest group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
-                                {{ social.name }}
-                            </span>
-                        </a>
-                    </div>
-
-                    <div class="mt-8 pt-8 border-t border-zinc-100 dark:border-zinc-800">
-                        <div class="flex items-center gap-4 text-zinc-600 dark:text-zinc-400">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center text-blue-600">
-                                <i class='bx bxs-phone-call text-xl'></i>
-                            </div>
-                            <div>
-                                <p class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Direct Call</p>
-                                <p class="font-bold">+84854242357</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right Panel: Email Form -->
-                <div class="md:w-2/3 p-8 md:p-12">
-                    <div class="mb-8">
-                        <h2 class="text-2xl font-black text-zinc-900 dark:text-white mb-2">{{
-                            t('contact.sendUsAMessage')
-                            }}</h2>
-                        <p class="text-sm text-zinc-500">{{ t('contact.fillOut') }}</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <label class="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">{{
-                                t('contact.fullName') }}</label>
-                            <input v-model="form.fullName" type="text"
-                                class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all dark:text-white"
-                                :placeholder="t('contact.form.placeholders.fullName')"
-                                @blur="validateField('fullName')">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">{{
-                                t('contact.email') }}</label>
-                            <input v-model="form.email" type="email"
-                                class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all dark:text-white"
-                                placeholder="example@mail.com" @blur="validateField('email')">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        <div class="space-y-2">
-                            <label class="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">{{
-                                t('contact.phone') }}</label>
-                            <input v-model="form.phone" type="text"
-                                class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all dark:text-white"
-                                :placeholder="t('contact.form.placeholders.phone')" @blur="validateField('phone')">
-                        </div>
-                        <div class="space-y-2">
-                            <label class="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">{{
-                                t('contact.country') }}</label>
-                            <SearchableSelect class="dark:!bg-zinc-800/50" v-model="form.country"
-                                @update:model-value="validateField('country')" @blur="validateField('country')"
-                                :options="countryOptions" :placeholder="t('contact.yourCountry')"
-                                :loading="isLoadingCountries" icon="bx bx-world" :has-error="!!errors.country" />
-                            <p v-if="errors.country" class="text-red-500 text-xs ml-1 mt-1">{{ errors.country }}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 space-y-2">
-                        <label class="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">{{
-                            t('contact.subject') }}</label>
-                        <input v-model="form.title" type="text"
-                            class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all dark:text-white"
-                            :placeholder="t('contact.subject')" @blur="validateField('title')">
-                    </div>
-
-                    <div class="mt-6 space-y-2">
-                        <label class="text-xs font-black uppercase tracking-widest text-zinc-400 ml-1">{{
-                            t('contact.message') }}</label>
-                        <textarea v-model="form.content" rows="4"
-                            class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all dark:text-white resize-none"
-                            :placeholder="t('contact.tellUsAboutYourTrip')" @blur="validateField('content')"></textarea>
-                    </div>
-
-                    <button @click="submit" :disabled="isSubmitting"
-                        class="w-full mt-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-xl hover:shadow-lg hover:scale-[1.02] transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50">
-                        <i v-if="isSubmitting" class='bx bx-loader-alt animate-spin'></i>
-                        {{ isSubmitting ? t('contact.sendingMessage') : t('contact.sendMessage') }}
-                    </button>
-                </div>
+                </form>
             </div>
-        </template>
+        </div>
     </el-dialog>
 </template>
 
-<style>
-.contact-popup-dialog {
-    padding: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
+<style scoped>
+.contact-popup-dialog :deep(.el-dialog) {
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
 }
 
-.contact-popup-dialog .el-dialog__header {
+.contact-popup-dialog :deep(.el-dialog__header) {
     display: none;
 }
 
-.custom-contact-select .el-input__wrapper {
-    @apply rounded-xl bg-zinc-50 dark:bg-zinc-800/50 border-none shadow-none px-4 py-2 !important;
+.contact-popup-dialog :deep(.el-dialog__body) {
+    max-height: 85vh;
+    padding: 0;
+    overflow-y: auto;
 }
 
-.custom-contact-select .el-input__inner {
-    @apply h-8 dark:text-white !important;
+.contact-popup {
+    padding: var(--space-fluid-md);
 }
 
-body.dark .el-select-dropdown__item {
-    color: #cbd5e1;
+.contact-popup__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-fluid-md);
+    border-bottom: 1px solid var(--color-border-strong);
 }
 
-body.dark .el-select-dropdown__item.hover,
-body.dark .el-select-dropdown__item:hover {
-    background-color: #334155;
+.contact-popup__eyebrow {
+    margin-bottom: var(--space-2);
+    color: var(--color-accent);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.contact-popup__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
+}
+
+.contact-popup__desc {
+    max-width: 32rem;
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+}
+
+.contact-popup__close {
+    flex-shrink: 0;
+    min-height: 2.5rem;
+    padding-inline: var(--space-2);
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-underline-offset: 0.35em;
+}
+
+.contact-popup__close:hover {
+    color: var(--color-accent);
+}
+
+.contact-popup__body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
+}
+
+.contact-popup__channels h3 {
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: var(--weight-regular);
+}
+
+.contact-popup__direct {
+    padding-bottom: var(--space-4);
+    margin-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.contact-popup__direct dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.contact-popup__direct dd {
+    margin-top: 0.375rem;
+}
+
+.contact-popup__direct a {
+    color: inherit;
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 0.2em;
+}
+
+.contact-popup__direct a:hover {
+    text-decoration-color: var(--color-accent);
+}
+
+.contact-popup__sub {
+    display: block;
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.contact-popup__chats a {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: var(--text-md);
+    text-decoration: none;
+    transition: color var(--transition-base);
+}
+
+.contact-popup__chats a:hover {
+    color: var(--color-accent);
+}
+
+.contact-popup__lead {
+    grid-column: 1 / -1;
+    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+}
+
+.contact-popup__form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    align-content: start;
+    gap: var(--space-5) var(--space-4);
+}
+
+.contact-popup__wide {
+    grid-column: 1 / -1;
+}
+
+.contact-popup button:focus-visible,
+.contact-popup a:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+@media (max-width: 48rem) {
+    .contact-popup__body {
+        grid-template-columns: 1fr;
+    }
 }
 </style>

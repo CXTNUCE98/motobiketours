@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 interface CustomerInfo {
     name: string;
@@ -18,6 +18,7 @@ const emit = defineEmits<{
 }>();
 
 const { user } = useAuth();
+const { t } = useI18n();
 
 // Form data
 const form = ref<CustomerInfo>({
@@ -36,19 +37,19 @@ const validateForm = (): boolean => {
     errors.value = {};
 
     if (!form.value.name.trim()) {
-        errors.value.name = 'Vui lòng nhập họ tên';
+        errors.value.name = t('booking.customerInfo.validation.nameRequired');
     }
 
     if (!form.value.email.trim()) {
-        errors.value.email = 'Vui lòng nhập email';
+        errors.value.email = t('booking.customerInfo.validation.emailRequired');
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.email)) {
-        errors.value.email = 'Email không hợp lệ';
+        errors.value.email = t('booking.customerInfo.validation.emailInvalid');
     }
 
     if (!form.value.phone.trim()) {
-        errors.value.phone = 'Vui lòng nhập số điện thoại';
+        errors.value.phone = t('booking.customerInfo.validation.phoneRequired');
     } else if (!/^[0-9]{10,11}$/.test(form.value.phone.replace(/\s/g, ''))) {
-        errors.value.phone = 'Số điện thoại không hợp lệ';
+        errors.value.phone = t('booking.customerInfo.validation.phoneInvalid');
     }
 
     return Object.keys(errors.value).length === 0;
@@ -66,151 +67,131 @@ const handleNext = () => {
 
 <template>
     <div class="customer-info-form">
-        <!-- Header -->
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                Thông tin khách hàng
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400">
-                Vui lòng điền đầy đủ thông tin liên hệ để chúng tôi có thể hỗ trợ bạn tốt nhất
-            </p>
-        </div>
+        <UiSectionHeading :title="t('booking.customerInfo.title')" :lead="t('booking.customerInfo.lead')" />
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Form Section -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="card p-6 md:p-8">
-                    <div class="space-y-6">
-                        <!-- Full Name -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                <i class="bx bx-user text-blue-500 mr-2"></i>
-                                Họ và tên
-                                <span class="text-red-500">*</span>
-                            </label>
-                            <input v-model="form.name" type="text" placeholder="Nguyễn Văn A"
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                                :class="{ 'border-red-500': errors.name }" />
-                            <p v-if="errors.name" class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                <i class="bx bx-error-circle"></i>
-                                {{ errors.name }}
-                            </p>
-                        </div>
+        <form class="customer-info-form__layout" novalidate @submit.prevent="handleNext">
+            <div class="customer-form">
+                <UiField :label="t('booking.customerInfo.fullName')" :error="errors.name">
+                    <template #default="{ id, describedBy, invalid }">
+                        <input :id="id" v-model="form.name" type="text" class="ui-control" autocomplete="name"
+                            :placeholder="t('booking.customerInfo.fullNamePlaceholder')"
+                            :aria-describedby="describedBy" :aria-invalid="invalid">
+                    </template>
+                </UiField>
 
-                        <!-- Email -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                <i class="bx bx-envelope text-blue-500 mr-2"></i>
-                                Email
-                                <span class="text-red-500">*</span>
-                            </label>
-                            <input v-model="form.email" type="email" placeholder="email@example.com"
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                                :class="{ 'border-red-500': errors.email }" />
-                            <p v-if="errors.email" class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                <i class="bx bx-error-circle"></i>
-                                {{ errors.email }}
-                            </p>
-                        </div>
+                <UiField :label="t('booking.customerInfo.email')" :error="errors.email">
+                    <template #default="{ id, describedBy, invalid }">
+                        <input :id="id" v-model="form.email" type="email" class="ui-control" autocomplete="email"
+                            :placeholder="t('booking.customerInfo.emailPlaceholder')"
+                            :aria-describedby="describedBy" :aria-invalid="invalid">
+                    </template>
+                </UiField>
 
-                        <!-- Phone -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                <i class="bx bx-phone text-blue-500 mr-2"></i>
-                                Số điện thoại
-                                <span class="text-red-500">*</span>
-                            </label>
-                            <input v-model="form.phone" type="tel" placeholder="0901234567"
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                                :class="{ 'border-red-500': errors.phone }" />
-                            <p v-if="errors.phone" class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                <i class="bx bx-error-circle"></i>
-                                {{ errors.phone }}
-                            </p>
-                        </div>
+                <UiField :label="t('booking.customerInfo.phone')" :error="errors.phone">
+                    <template #default="{ id, describedBy, invalid }">
+                        <input :id="id" v-model="form.phone" type="tel" class="ui-control" autocomplete="tel"
+                            :placeholder="t('booking.customerInfo.phonePlaceholder')" :aria-describedby="describedBy"
+                            :aria-invalid="invalid">
+                    </template>
+                </UiField>
 
-                        <!-- Address -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                <i class="bx bx-map text-blue-500 mr-2"></i>
-                                Địa chỉ
-                                <span class="text-gray-400 text-xs ml-1">(Tùy chọn)</span>
-                            </label>
-                            <input v-model="form.address" type="text" placeholder="Số nhà, đường, quận/huyện, thành phố"
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
-                        </div>
+                <UiField :label="`${t('booking.customerInfo.address')} ${t('booking.customerInfo.addressOptional')}`">
+                    <template #default="{ id }">
+                        <input :id="id" v-model="form.address" type="text" class="ui-control"
+                            autocomplete="address-line1" :placeholder="t('booking.customerInfo.addressPlaceholder')">
+                    </template>
+                </UiField>
 
-                        <!-- Special Requests -->
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                <i class="bx bx-message-square-detail text-blue-500 mr-2"></i>
-                                Yêu cầu đặc biệt
-                                <span class="text-gray-400 text-xs ml-1">(Tùy chọn)</span>
-                            </label>
-                            <textarea v-model="specialRequests" rows="4"
-                                placeholder="Ví dụ: Cần xe số tự động, muốn ngồi chỗ nào, có yêu cầu đặc biệt gì..."
-                                class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-colors resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"></textarea>
-                            <p class="mt-2 text-xs text-gray-500">
-                                Chúng tôi sẽ cố gắng đáp ứng mọi yêu cầu của bạn
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                <UiField class="customer-form__wide"
+                    :label="`${t('booking.customerInfo.specialRequests')} ${t('booking.customerInfo.addressOptional')}`">
+                    <template #default="{ id }">
+                        <textarea :id="id" v-model="specialRequests" rows="4" class="ui-control"
+                            :placeholder="t('booking.customerInfo.specialRequestsPlaceholder')"></textarea>
+                    </template>
+                </UiField>
+                <p class="customer-form__hint">{{ t('booking.customerInfo.specialRequestsHint') }}</p>
             </div>
 
-            <!-- Info Card -->
-            <div class="lg:col-span-1 space-y-6">
-                <!-- Tips Card -->
-                <div
-                    class="card p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-200 dark:border-amber-800">
-                    <div class="flex items-start gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center flex-shrink-0">
-                            <i class="bx bx-info-circle text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 dark:text-white mb-1">Lưu ý</h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Thông tin quan trọng
-                            </p>
-                        </div>
-                    </div>
-
-                    <ul class="space-y-3 text-sm">
-                        <li class="flex items-start gap-2">
-                            <i class="bx bx-check-circle text-green-500 mt-0.5"></i>
-                            <span class="text-gray-700 dark:text-gray-300">
-                                Email sẽ được dùng để gửi xác nhận booking
-                            </span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <i class="bx bx-check-circle text-green-500 mt-0.5"></i>
-                            <span class="text-gray-700 dark:text-gray-300">
-                                Số điện thoại để liên hệ khi cần thiết
-                            </span>
-                        </li>
-                        <li class="flex items-start gap-2">
-                            <i class="bx bx-check-circle text-green-500 mt-0.5"></i>
-                            <span class="text-gray-700 dark:text-gray-300">
-                                Thông tin được bảo mật tuyệt đối
-                            </span>
-                        </li>
+            <aside class="customer-info-form__aside">
+                <div class="customer-tips">
+                    <p class="customer-tips__title">{{ t('booking.customerInfo.tipsTitle') }}</p>
+                    <ul role="list">
+                        <li>{{ t('booking.customerInfo.tip1') }}</li>
+                        <li>{{ t('booking.customerInfo.tip2') }}</li>
+                        <li>{{ t('booking.customerInfo.tip3') }}</li>
                     </ul>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="space-y-3">
-                    <button @click="handleNext" class="w-full btn-primary py-4 text-lg">
-                        <span>Tiếp tục</span>
-                        <i class="bx bx-right-arrow-alt text-xl ml-2"></i>
-                    </button>
-
-                    <button @click="emit('back')"
-                        class="w-full px-6 py-4 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold transition-all hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800">
-                        <i class="bx bx-left-arrow-alt text-xl mr-2"></i>
-                        <span>Quay lại</span>
-                    </button>
+                <div class="customer-info-form__actions">
+                    <UiButton type="submit" block>{{ t('common.nextStep') }}</UiButton>
+                    <UiButton type="button" variant="outline" block @click="emit('back')">{{ t('common.prevStep')
+                        }}</UiButton>
                 </div>
-            </div>
-        </div>
+            </aside>
+        </form>
     </div>
 </template>
+
+<style scoped>
+.customer-info-form__layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
+    margin-top: var(--space-fluid-md);
+}
+
+@media (min-width: 64rem) {
+    .customer-info-form__layout {
+        grid-template-columns: 3fr 2fr;
+    }
+}
+
+.customer-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-6) var(--space-5);
+}
+
+.customer-form__wide {
+    grid-column: 1 / -1;
+}
+
+.customer-form__hint {
+    grid-column: 1 / -1;
+    margin-top: calc(-1 * var(--space-4));
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.customer-tips {
+    padding-top: var(--space-2);
+}
+
+.customer-tips__title {
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--color-border-strong);
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+}
+
+.customer-tips ul {
+    display: grid;
+    gap: 0;
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+}
+
+.customer-tips li {
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.customer-info-form__actions {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+</style>

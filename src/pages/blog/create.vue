@@ -1,8 +1,18 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useCreateBlogMutation } from '~/composables/useBlogMutation'
 import { useUploadMutation } from '~/composables/useUploadMutation'
+import { logger } from '~/utils/logger'
+
+definePageMeta({
+    middleware: ['auth'],
+})
+
+const router = useRouter()
+const { t } = useI18n()
+const { user } = useAuth()
 
 const countWords = (html: string) => {
     const text = html.replace(/<[^>]*>/g, ' ');
@@ -11,17 +21,13 @@ const countWords = (html: string) => {
 
 const validateBlogForm = (data: any) => {
     const errors = [];
-    if (!data.title) errors.push('Title is required');
-    if (!data.language) errors.push('Language is required');
-    if (!data.category) errors.push('Category is required');
-    if (!data.content) errors.push('Content is required');
-    if (!data.shortDescription) errors.push('Short description is required');
+    if (!data.title) errors.push(t('blog.editor.validation.titleRequired'));
+    if (!data.language) errors.push(t('blog.editor.validation.languageRequired'));
+    if (!data.category) errors.push(t('blog.editor.validation.categoryRequired'));
+    if (!data.content) errors.push(t('blog.editor.validation.contentRequired'));
+    if (!data.shortDescription) errors.push(t('blog.editor.validation.shortDescriptionRequired'));
     return errors;
 };
-import { logger } from '~/utils/logger'
-
-const router = useRouter()
-const { user } = useAuth()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const thumbnailPreview = ref<string | null>(null)
@@ -37,23 +43,24 @@ const publishing = ref(false)
 const savingDraft = ref(false)
 
 // Language options
-const languages = [
-    { label: 'English', value: 'en' },
-    { label: 'Tiếng Việt', value: 'vi' },
-    // { label: '中文', value: 'zh' },
-    // { label: '日本語', value: 'ja' },
-    // { label: '한국어', value: 'ko' },
-]
+const languages = computed(() => [
+    { label: t('blog.editor.langEn'), value: 'en' },
+    { label: t('blog.editor.langVi'), value: 'vi' },
+])
 
-// Category options
-const categories = [
-    { label: 'Travel Tips', value: 'travel-tips' },
-    { label: 'Destination', value: 'destination' },
-    { label: 'Culture', value: 'culture' },
-    { label: 'Food', value: 'food' },
-    { label: 'Adventure', value: 'adventure' },
-    { label: 'Guides', value: 'guides' },
-]
+// Category options (khớp với bộ lọc trang danh sách blog)
+const categories = computed(() => [
+    { label: t('blog.type.travelTips'), value: 'travel-tips' },
+    { label: t('blog.type.destination'), value: 'destination' },
+    { label: t('blog.type.culture'), value: 'culture' },
+    { label: t('blog.type.food'), value: 'food' },
+    { label: t('blog.type.adventure'), value: 'adventure' },
+    { label: t('blog.type.guides'), value: 'guides' },
+])
+
+// Thẻ phổ biến gợi ý nhanh (giống trang danh sách blog); người dùng vẫn có thể thêm thẻ tự do
+const popularTags = ['Motorbike', 'Vietnam', 'Food', 'Culture', 'Adventure', 'Tips', 'Routes', 'Ha Giang', 'Safety']
+const customTagInput = ref('')
 
 const post = reactive({
     title: '',
@@ -70,12 +77,32 @@ const post = reactive({
     }
 })
 
+const toggleTag = (tag: string) => {
+    const idx = post.tags.indexOf(tag)
+    if (idx >= 0) post.tags.splice(idx, 1)
+    else post.tags.push(tag)
+}
+
+const removeTag = (tag: string) => {
+    const idx = post.tags.indexOf(tag)
+    if (idx >= 0) post.tags.splice(idx, 1)
+}
+
+const addCustomTag = () => {
+    const tag = customTagInput.value.trim()
+    if (tag && !post.tags.includes(tag)) post.tags.push(tag)
+    customTagInput.value = ''
+}
+
 const isPreview = ref(false)
 const editorLoaded = ref(false)
 
+const wordCount = computed(() => post.content ? post.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w).length : 0)
+const charCount = computed(() => post.content ? post.content.replace(/<[^>]*>/g, '').length : 0)
+
 // Sanitized content for safe rendering
 const sanitizedContent = computed(() => {
-    const content = post?.content || '<p class=\'text-gray-400 italic\'>No content yet...</p>';
+    const content = post?.content || `<p>${t('blog.editor.noContent')}</p>`;
     return sanitizeHtmlForPreview(content);
 })
 
@@ -113,7 +140,7 @@ const handleQuillImageUpload = () => {
         if (!file) return
 
         try {
-            ElMessage.info('Uploading image...')
+            ElMessage.info(t('blog.editor.message.uploadingImage'))
             const result = await uploadImageAsync({ file, folder: 'blog' })
 
             // Insert image into editor using secureUrl for preview
@@ -124,11 +151,10 @@ const handleQuillImageUpload = () => {
                 quill.setSelection(range.index + 1)
             }
 
-            ElMessage.success('Image uploaded successfully!')
+            ElMessage.success(t('blog.editor.message.uploadSuccess'))
         } catch (error: unknown) {
             logger.error('Image upload failed:', error)
-            const message = error instanceof Error ? error.message : 'Failed to upload image';
-            ElMessage.error(message)
+            ElMessage.error(t('blog.editor.message.uploadError'))
         }
     }
 }
@@ -161,7 +187,7 @@ const handleDragOver = (event: DragEvent) => {
 
 const processFile = async (file: File) => {
     if (!file.type.startsWith('image/')) {
-        ElMessage.error('Please upload an image file')
+        ElMessage.error(t('blog.editor.message.imageOnly'))
         return
     }
 
@@ -177,11 +203,10 @@ const processFile = async (file: File) => {
         thumbnailPreview.value = result.url
         post.thumbnail = file
 
-        ElMessage.success('Thumbnail uploaded successfully!')
+        ElMessage.success(t('blog.editor.message.thumbnailSuccess'))
     } catch (error: unknown) {
         logger.error('Thumbnail upload failed:', error)
-        const message = error instanceof Error ? error.message : 'Failed to upload thumbnail';
-        ElMessage.error(message)
+        ElMessage.error(t('blog.editor.message.uploadError'))
         thumbnailImageId.value = ''
         thumbnailPreview.value = null
         post.thumbnail = null
@@ -259,9 +284,9 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
 
         // Show success message
         if (status === 'draft') {
-            ElMessage.success('Draft saved successfully!')
+            ElMessage.success(t('blog.editor.message.draftSaved'))
         } else {
-            ElMessage.success('Post published successfully!')
+            ElMessage.success(t('blog.editor.message.published'))
         }
 
         // Redirect to blog detail page
@@ -271,8 +296,7 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
 
     } catch (error: unknown) {
         logger.error('Failed to create blog:', error)
-        const message = error instanceof Error ? error.message : 'Failed to create blog post';
-        ElMessage.error(message)
+        ElMessage.error(t('blog.editor.message.createError'))
     } finally {
         savingDraft.value = false
         publishing.value = false
@@ -281,283 +305,457 @@ const submitBlog = async (status: 'draft' | 'waiting' | 'published') => {
 </script>
 
 <template>
-    <div
-        class="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4 sm:px-6 lg:px-8 font-sans transition-colors duration-300">
-        <div class="max-w-7xl mx-auto">
-            <!-- Header / Actions -->
-            <div
-                class="flex justify-between items-center mb-6 px-6 py-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm transition-colors duration-300">
-                <div class="flex items-center space-x-4">
-                    <NuxtLink to="/blog"
-                        class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
-                        <i class='bx bx-arrow-back text-2xl'></i>
-                    </NuxtLink>
-                    <h1 class="text-2xl font-bold text-gray-800 dark:text-white transition-colors duration-300">
-                        {{ isPreview ? 'Preview Post' : 'Create New Post' }}
+    <div class="create-blog">
+        <template v-if="user">
+            <header class="shell create-blog__head">
+                <NuxtLink to="/blog" class="create-blog__back">{{ t('blog.detail.backToBlog') }}</NuxtLink>
+                <div class="create-blog__head-row">
+                    <h1 class="create-blog__title">
+                        {{ isPreview ? t('blog.editor.titlePreview') : t('blog.editor.titleCreate') }}
                     </h1>
+                    <div class="create-blog__actions">
+                        <UiButton variant="outline" size="sm" @click="togglePreview">
+                            {{ isPreview ? t('blog.editor.backToEdit') : t('blog.editor.preview') }}
+                        </UiButton>
+                        <UiButton variant="outline" size="sm" :disabled="publishing" @click="saveDraft">
+                            {{ savingDraft ? t('blog.editor.savingDraft') : t('blog.editor.saveDraft') }}
+                        </UiButton>
+                        <UiButton size="sm" :disabled="savingDraft" @click="publishPost">
+                            {{ publishing ? t('blog.editor.publishing') : t('blog.editor.publish') }}
+                        </UiButton>
+                    </div>
                 </div>
-                <div class="flex space-x-3">
-                    <el-button class="dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600" @click="togglePreview">
-                        {{ isPreview ? 'Back to Edit' : 'Preview' }}
-                    </el-button>
-                    <el-button class="dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600" @click="saveDraft"
-                        :loading="savingDraft" :disabled="publishing">
-                        Save as draft
-                    </el-button>
-                    <el-button color="#FF6B35" class="bg-#FF6B35 text-white hover:bg-#FF5722" @click="publishPost"
-                        :loading="publishing" :disabled="savingDraft">
-                        Create
-                    </el-button>
-                </div>
-            </div>
+            </header>
 
             <!-- Editor Mode -->
-            <div v-if="!isPreview" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Left Column: Rich Text Editor (2/3 width) -->
-                <div
-                    class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6 transition-colors duration-300">
-                    <div class="prose dark:prose-invert max-w-none editor-container">
+            <div v-if="!isPreview" class="shell create-blog__layout">
+                <div class="create-blog__editor-col">
+                    <div class="create-blog__editor">
                         <ClientOnly>
                             <QuillEditor v-if="editorLoaded" ref="quillEditorRef" v-model:content="post.content"
-                                contentType="html" theme="snow" toolbar="full"
-                                class="min-h-[500px] text-lg dark:text-gray-100"
-                                placeholder="Type or paste your content here!" />
-                            <div v-else
-                                class="min-h-[500px] flex items-center dark:bg-slate-900 justify-center text-gray-400">
-                                <i class='bx bx-loader-alt bx-spin text-4xl'></i>
-                            </div>
+                                content-type="html" theme="snow" toolbar="full"
+                                :placeholder="t('blog.editor.contentPlaceholder')" />
+                            <div v-else class="create-blog__editor-loading">{{ t('common.loadingData') }}</div>
                         </ClientOnly>
                     </div>
-                    <div class="mt-4 text-sm text-gray-500 dark:text-gray-400 flex justify-between">
-                        <span>Words: {{post?.content ? post?.content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w =>
-                            w).length : 0}}</span>
-                        <span>Characters: {{ post?.content ? post?.content.replace(/<[^>]*>/g, '').length : 0 }}</span>
-                    </div>
+                    <p class="create-blog__counts">
+                        <span>{{ t('blog.editor.wordsCount', { count: wordCount }) }}</span>
+                        <span>{{ t('blog.editor.charsCount', { count: charCount }) }}</span>
+                    </p>
                 </div>
 
-                <!-- Right Column: Metadata (1/3 width) -->
-                <div class="space-y-2 bg-white dark:bg-gray-800">
-                    <!-- Post Name -->
-                    <div class="p-2 transition-colors duration-300">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Post name <span class="text-red-500">*</span>
-                        </label>
-                        <el-input v-model="post.title" placeholder="Input post name" maxlength="80" show-word-limit
-                            class="w-full [&_.el-input\_\_wrapper]:dark:!bg-gray-800 [&_.el-input\_\_count-inner]:dark:!bg-gray-800" />
-                    </div>
+                <div class="create-blog__meta-col">
+                    <UiField :label="t('blog.editor.postNameLabel')">
+                        <template #default="{ id }">
+                            <input :id="id" v-model="post.title" type="text" class="ui-control" maxlength="80"
+                                :placeholder="t('blog.editor.postNamePlaceholder')">
+                        </template>
+                    </UiField>
+                    <p class="create-blog__counter">{{ post.title.length }}/80</p>
 
-                    <!-- Language -->
-                    <div class="p-2 transition-colors duration-300">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Language <span class="text-red-500">*</span>
-                        </label>
-                        <el-select v-model="post.language" placeholder="Select language"
-                            class="w-full [&_.el-select\_\_wrapper]:dark:!bg-gray-800">
-                            <el-option v-for="lang in languages" :key="lang.value" :label="lang.label"
-                                :value="lang.value" />
-                        </el-select>
-                    </div>
-                    <!-- Category -->
-                    <div class="p-2 transition-colors duration-300">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Category <span class="text-red-500">*</span>
-                        </label>
-                        <el-select v-model="post.category" placeholder="Select category"
-                            class="w-full [&_.el-select\_\_wrapper]:dark:!bg-gray-800">
-                            <el-option v-for="category in categories" :key="category.value" :label="category.label"
-                                :value="category.value" />
-                        </el-select>
-                    </div>
+                    <UiField :label="t('blog.editor.languageLabel')">
+                        <template #default="{ id }">
+                            <select :id="id" v-model="post.language" class="ui-control">
+                                <option value="" disabled>{{ t('blog.editor.languagePlaceholder') }}</option>
+                                <option v-for="lang in languages" :key="lang.value" :value="lang.value">
+                                    {{ lang.label }}
+                                </option>
+                            </select>
+                        </template>
+                    </UiField>
 
-                    <!-- Tags -->
-                    <div class="p-2 transition-colors duration-300">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Tags <i class='bx bx-info-circle text-gray-400 cursor-help'
-                                title="Add relevant tags to help readers find your post"></i>
-                        </label>
-                        <el-select v-model="post.tags" multiple filterable allow-create default-first-option
-                            placeholder="Input tag" class="w-full [&_.el-select\_\_wrapper]:dark:!bg-gray-800"
-                            maxlength="30">
-                        </el-select>
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">0/30</p>
-                    </div>
-
-                    <!-- Short Description -->
-                    <div class="p-2 transition-colors duration-300">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Short description <span class="text-red-500">*</span>
-                        </label>
-                        <el-input v-model="post.shortDescription" type="textarea" :rows="4"
-                            class="[&_.el-textarea\_\_inner]:dark:!bg-gray-800 [&_.el-input\_\_count]:dark:!bg-gray-800"
-                            placeholder="Input short description" maxlength="400" show-word-limit />
-                    </div>
-
-                    <!-- Thumbnail -->
-                    <div class="p-2 transition-colors duration-300">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Thumbnail
-                        </label>
-                        <div v-if="!thumbnailPreview" @click="triggerFileInput" @drop="handleDrop"
-                            @dragover="handleDragOver"
-                            class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 transition-colors"
-                            :class="{ 'opacity-50 pointer-events-none': uploadingThumbnail }">
-                            <i class='bx text-4xl text-gray-400 dark:text-gray-500 mb-2'
-                                :class="uploadingThumbnail ? 'bx-loader-alt bx-spin' : 'bx-cloud-upload'"></i>
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                <span class="text-blue-500 font-medium">{{ uploadingThumbnail ? 'Uploading...' :
-                                    'Upload' }}</span> {{ uploadingThumbnail ? '' : 'or drag drop' }}
-                            </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-500">
-                                Recommend size is 1280 × 720 pixels (≤ 2MB)
-                            </p>
+                    <div class="create-blog__field">
+                        <p class="create-blog__label">{{ t('blog.editor.categoryLabel') }}</p>
+                        <div class="create-blog__chips" role="group" :aria-label="t('blog.editor.categoryLabel')">
+                            <UiChip v-for="cat in categories" :key="cat.value" :active="post.category === cat.value"
+                                @click="post.category = cat.value">
+                                {{ cat.label }}
+                            </UiChip>
                         </div>
-                        <div v-else class="relative">
-                            <img :src="thumbnailPreview" class="w-full h-48 object-cover rounded-lg" alt="Thumbnail" />
-                            <button @click="removeThumbnail"
-                                class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 transition-colors">
-                                <i class='bx bx-x text-xl'></i>
-                            </button>
+                    </div>
+
+                    <div class="create-blog__field">
+                        <p class="create-blog__label">{{ t('blog.editor.tagsLabel') }}</p>
+                        <p class="create-blog__hint">{{ t('blog.editor.tagsHint') }}</p>
+                        <div class="create-blog__chips" role="group" :aria-label="t('blog.editor.tagsLabel')">
+                            <UiChip v-for="tag in post.tags" :key="`sel-${tag}`" active @click="removeTag(tag)">
+                                {{ tag }} ×
+                            </UiChip>
+                            <UiChip v-for="tag in popularTags.filter((pt) => !post.tags.includes(pt))" :key="`pop-${tag}`"
+                                @click="toggleTag(tag)">
+                                {{ tag }}
+                            </UiChip>
                         </div>
-                        <input ref="fileInput" type="file" accept="image/*" @change="handleFileChange" class="hidden" />
+                        <form class="create-blog__tag-form" @submit.prevent="addCustomTag">
+                            <label class="visually-hidden" for="custom-tag">{{ t('blog.editor.tagsPlaceholder') }}</label>
+                            <input id="custom-tag" v-model="customTagInput" type="text" class="ui-control"
+                                :placeholder="t('blog.editor.tagsPlaceholder')">
+                            <UiButton type="submit" variant="outline" size="sm">{{ t('blog.editor.addTag') }}</UiButton>
+                        </form>
+                    </div>
+
+                    <UiField :label="t('blog.editor.shortDescriptionLabel')">
+                        <template #default="{ id }">
+                            <textarea :id="id" v-model="post.shortDescription" class="ui-control" rows="4"
+                                maxlength="400" :placeholder="t('blog.editor.shortDescriptionPlaceholder')"></textarea>
+                        </template>
+                    </UiField>
+                    <p class="create-blog__counter">{{ post.shortDescription.length }}/400</p>
+
+                    <div class="create-blog__field">
+                        <p class="create-blog__label">{{ t('blog.editor.thumbnailLabel') }}</p>
+                        <div v-if="!thumbnailPreview" class="create-blog__dropzone"
+                            :class="{ 'is-uploading': uploadingThumbnail }" role="button" tabindex="0"
+                            @click="triggerFileInput" @keydown.enter="triggerFileInput" @drop="handleDrop"
+                            @dragover="handleDragOver">
+                            <p class="create-blog__dropzone-label">
+                                <span>{{ uploadingThumbnail ? t('blog.editor.thumbnailUploading') : t('blog.editor.thumbnailUpload') }}</span>
+                                <template v-if="!uploadingThumbnail"> {{ t('blog.editor.thumbnailDrag') }}</template>
+                            </p>
+                            <p class="create-blog__dropzone-rule">{{ t('blog.editor.thumbnailRule') }}</p>
+                        </div>
+                        <div v-else class="create-blog__thumb-preview">
+                            <img :src="thumbnailPreview" :alt="t('blog.editor.thumbnailLabel')">
+                            <button type="button" class="create-blog__thumb-remove"
+                                :aria-label="t('blog.editor.removeThumbnail')" @click="removeThumbnail">×</button>
+                        </div>
+                        <input ref="fileInput" type="file" accept="image/*" class="visually-hidden"
+                            @change="handleFileChange">
                     </div>
                 </div>
             </div>
 
             <!-- Preview Mode -->
-            <div v-else class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-8 transition-colors duration-300">
-                <!-- Cover Image Preview -->
-                <div v-if="thumbnailPreview" class="w-full h-64 md:h-96 rounded-xl overflow-hidden mb-8">
-                    <img :src="thumbnailPreview" class="w-full h-full object-cover" alt="Cover Image" />
+            <div v-else class="shell create-blog__preview">
+                <div v-if="thumbnailPreview" class="create-blog__preview-cover">
+                    <img :src="thumbnailPreview" :alt="post.title">
                 </div>
 
-                <div class="max-w-4xl mx-auto">
-                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                        {{ post?.title || 'Untitled Post' }}
-                    </h1>
+                <div class="create-blog__preview-measure">
+                    <h2 class="create-blog__preview-title">{{ post.title || t('blog.editor.untitledPost') }}</h2>
 
-                    <div class="flex items-center gap-4 mb-6 text-sm text-gray-600 dark:text-gray-400">
-                        <span v-if="post?.language">
-                            <i class='bx bx-world'></i> {{languages.find(l => l.value === post?.language)?.label}}
-                        </span>
-                        <span v-if="post?.tags?.length">
-                            <i class='bx bx-purchase-tag'></i> {{ post?.tags.join(', ') }}
-                        </span>
-                    </div>
-
-                    <p v-if="post?.shortDescription" class="text-lg text-gray-600 dark:text-gray-300 mb-8 italic">
-                        {{ post?.shortDescription }}
+                    <p v-if="post.language || post.tags.length" class="create-blog__preview-meta">
+                        <span v-if="post.language">{{ languages.find((l) => l.value === post.language)?.label }}</span>
+                        <span v-if="post.tags.length">{{ post.tags.join(', ') }}</span>
                     </p>
 
-                    <div class="prose dark:prose-invert max-w-none" v-html="sanitizedContent"></div>
+                    <p v-if="post.shortDescription" class="create-blog__preview-lead">{{ post.shortDescription }}</p>
+
+                    <div class="prose" v-html="sanitizedContent" />
                 </div>
             </div>
+        </template>
+
+        <div v-else class="shell create-blog__login">
+            <UiEmptyState :title="t('blog.editor.loginRequiredTitle')" :description="t('blog.editor.loginRequiredDesc')">
+                <UiButton to="/">{{ t('blog.detail.backToBlog') }}</UiButton>
+            </UiEmptyState>
         </div>
     </div>
 </template>
 
 <style scoped>
-/* Customizing Quill Editor */
-:deep(.ql-toolbar.ql-snow) {
-    border: 1px solid #e5e7eb;
-    border-radius: 8px 8px 0 0;
-    padding: 12px;
-    transition: background-color 0.3s, border-color 0.3s;
+.create-blog__head {
+    padding-top: var(--space-fluid-md);
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-fluid-lg);
+    border-bottom: 1px solid var(--color-border-strong);
 }
 
-:global(.dark) :deep(.ql-toolbar.ql-snow) {
-    background-color: #1f2937;
-    border-color: #374151;
+.create-blog__back {
+    display: inline-block;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-decoration: underline;
+    text-decoration-color: var(--color-accent);
+    text-underline-offset: 0.3em;
 }
 
-:global(.dark) :deep(.ql-toolbar.ql-snow .ql-stroke) {
-    stroke: #9ca3af;
+.create-blog__head-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
 }
 
-:global(.dark) :deep(.ql-toolbar.ql-snow .ql-fill) {
-    fill: #9ca3af;
+.create-blog__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
 }
 
-:global(.dark) :deep(.ql-toolbar.ql-snow .ql-picker) {
-    color: #9ca3af;
+.create-blog__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
 }
 
-:global(.dark) :deep(.ql-toolbar.ql-snow .ql-picker-options) {
-    background-color: #1f2937;
-    border-color: #374151;
+.create-blog__layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
+    padding-bottom: var(--section-space);
 }
 
-:deep(.ql-container.ql-snow) {
-    border: 1px solid #e5e7eb;
+@media (min-width: 64rem) {
+    .create-blog__layout {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+.create-blog__editor :deep(.ql-toolbar.ql-snow) {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.create-blog__editor :deep(.ql-container.ql-snow) {
+    border: 1px solid var(--color-border);
     border-top: none;
-    border-radius: 0 0 8px 8px;
-    font-family: inherit;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    font-family: var(--font-sans);
 }
 
-:global(.dark) :deep(.ql-container.ql-snow) {
-    border-color: #374151;
-    background-color: #111827;
+.create-blog__editor :deep(.ql-editor) {
+    min-height: 24rem;
+    padding: var(--space-5);
+    color: var(--color-text);
+    font-size: var(--text-base);
+    line-height: var(--leading-body);
 }
 
-:deep(.ql-editor) {
-    min-height: 500px;
-    font-size: 1.125rem;
-    line-height: 1.75;
-    padding: 1.5rem;
+.create-blog__editor :deep(.ql-editor.ql-blank::before) {
+    color: var(--color-text-muted);
+    font-style: normal;
 }
 
-:global(.dark) :deep(.ql-editor) {
-    color: #e5e7eb;
+.create-blog__editor :deep(.ql-stroke) {
+    stroke: var(--color-text-muted);
 }
 
-:global(.dark) :deep(.ql-editor.ql-blank::before) {
-    color: #6b7280;
+.create-blog__editor :deep(.ql-fill) {
+    fill: var(--color-text-muted);
 }
 
-/* Element Plus Dark Mode Overrides */
-:global(.dark) :deep(.el-input__wrapper) {
-    background-color: #1f2937;
-    box-shadow: 0 0 0 1px #374151 inset;
+.create-blog__editor :deep(.ql-picker) {
+    color: var(--color-text-muted);
 }
 
-:global(.dark) :deep(.el-input__inner) {
-    color: #e5e7eb;
+.create-blog__editor-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
 }
 
-:global(.dark) :deep(.el-textarea__inner) {
-    background-color: #1f2937;
-    border-color: #374151;
-    color: #e5e7eb;
+.create-blog__counts {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 
-:global(.dark) :deep(.el-select__wrapper) {
-    background-color: #1f2937;
-    box-shadow: 0 0 0 1px #374151 inset;
+.create-blog__meta-col {
+    display: grid;
+    gap: var(--space-5);
+    align-content: start;
 }
 
-:global(.dark) :deep(.el-select__placeholder) {
-    color: #6b7280;
+.create-blog__counter {
+    margin-top: calc(var(--space-3) * -1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: right;
 }
 
-:global(.dark) :deep(.el-tag) {
-    background-color: #374151;
-    border-color: #4b5563;
-    color: #e5e7eb;
+.create-blog__field {
+    display: grid;
+    gap: var(--space-2);
 }
 
-/* Animations */
-.animate-fade-in {
-    animation: fadeIn 0.3s ease-in-out;
+.create-blog__label {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
 }
 
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
+.create-blog__hint {
+    margin-top: calc(var(--space-2) * -1);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.create-blog__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.create-blog__tag-form {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-2);
+}
+
+.create-blog__tag-form .ui-control {
+    min-height: 2.5rem;
+}
+
+.create-blog__dropzone {
+    padding: var(--space-8) var(--space-5);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color var(--transition-base);
+}
+
+.create-blog__dropzone:hover,
+.create-blog__dropzone:focus-visible {
+    border-color: var(--color-accent);
+}
+
+.create-blog__dropzone:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.create-blog__dropzone.is-uploading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.create-blog__dropzone-label span {
+    color: var(--color-accent);
+    font-weight: var(--weight-medium);
+}
+
+.create-blog__dropzone-rule {
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.create-blog__thumb-preview {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.create-blog__thumb-preview img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.create-blog__thumb-remove {
+    position: absolute;
+    top: var(--space-2);
+    right: var(--space-2);
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: var(--text-lg);
+    line-height: 1;
+}
+
+.create-blog__thumb-remove:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Preview mode */
+.create-blog__preview {
+    padding-bottom: var(--section-space);
+}
+
+.create-blog__preview-cover {
+    margin-bottom: var(--space-block);
+}
+
+.create-blog__preview-cover img {
+    width: 100%;
+    max-height: 28rem;
+    border-radius: var(--radius-md);
+    object-fit: cover;
+}
+
+.create-blog__preview-measure {
+    max-width: 42rem;
+    margin-inline: auto;
+}
+
+.create-blog__preview-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-display);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-display);
+}
+
+.create-blog__preview-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin-top: var(--space-5);
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+}
+
+.create-blog__preview-meta > * + *::before {
+    content: '·';
+    margin-right: var(--space-3);
+}
+
+.create-blog__preview-lead {
+    margin-top: var(--space-6);
+    color: var(--color-text-muted);
+    font-family: var(--font-serif);
+    font-size: var(--text-lead);
+    font-style: italic;
+}
+
+.prose {
+    margin-top: var(--space-8);
+}
+
+.prose :deep(h1),
+.prose :deep(h2),
+.prose :deep(h3) {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-3);
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-snug);
+}
+
+.prose :deep(p) {
+    margin-bottom: var(--space-5);
+    line-height: var(--leading-body);
+}
+
+.prose :deep(a) {
+    color: var(--color-accent);
+    text-decoration: underline;
+}
+
+.prose :deep(img) {
+    width: 100% !important;
+    height: auto !important;
+    border-radius: var(--radius-md);
+}
+
+.create-blog__login {
+    padding-block: var(--section-space);
 }
 </style>

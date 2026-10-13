@@ -1,121 +1,88 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router';
-
+// Dải bước đặt chỗ dạng tối giản: số thứ tự serif in nghiêng, bước hiện tại tô màu nhấn.
 interface Step {
     number: number;
-    title: string;
-    icon: string;
-    path: string;
+    titleKey: string;
 }
 
 const props = defineProps<{
     currentStep: number;
 }>();
 
-const router = useRouter();
-const route = useRoute();
+const { t } = useI18n();
 
 const steps: Step[] = [
-    { number: 1, title: 'Chọn ngày', icon: 'bx-calendar', path: 'date' },
-    { number: 2, title: 'Thông tin', icon: 'bx-user', path: 'info' },
-    { number: 3, title: 'Thanh toán', icon: 'bx-credit-card', path: 'payment' },
-    { number: 4, title: 'Xác nhận', icon: 'bx-check-circle', path: 'confirm' },
+    { number: 1, titleKey: 'booking.steps.date' },
+    { number: 2, titleKey: 'booking.steps.info' },
+    { number: 3, titleKey: 'booking.steps.payment' },
+    { number: 4, titleKey: 'booking.steps.confirm' },
 ];
 
 const isStepCompleted = (stepNumber: number) => stepNumber < props.currentStep;
 const isStepActive = (stepNumber: number) => stepNumber === props.currentStep;
+const padNumber = (value: number) => String(value).padStart(2, '0');
 </script>
 
 <template>
-    <div class="booking-steps-container">
-        <!-- Desktop Stepper -->
-        <div class="stepper-desktop hidden md:flex items-center justify-between max-w-4xl mx-auto">
-            <template v-for="(step, index) in steps" :key="step.number">
-                <div class="step-item flex-1 relative">
-                    <div class="flex flex-col items-center">
-                        <!-- Step Circle -->
-                        <div class="step-circle w-16 h-16 rounded-full flex items-center justify-center transition-all duration-500 transform"
-                            :class="{
-                                'bg-gradient-to-br from-blue-500 to-cyan-500 text-white scale-110 shadow-lg shadow-blue-500/50':
-                                    isStepActive(step.number),
-                                'bg-gradient-to-br from-green-500 to-emerald-500 text-white':
-                                    isStepCompleted(step.number),
-                                'bg-gray-200 dark:bg-gray-700 text-gray-400': !isStepActive(step.number) && !isStepCompleted(step.number),
-                            }">
-                            <i v-if="isStepCompleted(step.number)" class="bx bx-check text-3xl animate-scale-in"></i>
-                            <i v-else :class="`bx ${step.icon} text-2xl`"></i>
-                        </div>
-
-                        <!-- Step Label -->
-                        <div class="mt-3 text-center">
-                            <div class="text-sm font-bold transition-colors" :class="{
-                                'text-blue-600 dark:text-blue-400': isStepActive(step.number),
-                                'text-green-600 dark:text-green-400': isStepCompleted(step.number),
-                                'text-gray-500 dark:text-gray-400': !isStepActive(step.number) && !isStepCompleted(step.number),
-                            }">
-                                {{ step.title }}
-                            </div>
-                            <div class="text-xs text-gray-400 mt-1">Bước {{ step.number }}</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Connector Line -->
-                <div v-if="index < steps.length - 1" class="flex-1 h-1 mx-4 rounded-full transition-all duration-500"
-                    :class="{
-                        'bg-gradient-to-r from-green-500 to-emerald-500': isStepCompleted(step.number),
-                        'bg-gray-200 dark:bg-gray-700': !isStepCompleted(step.number),
-                    }"></div>
-            </template>
-        </div>
-
-        <!-- Mobile Stepper -->
-        <div class="stepper-mobile md:hidden">
-            <div class="flex items-center justify-between px-4 py-3 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-12 h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white">
-                        <i :class="`bx ${steps[currentStep - 1].icon} text-xl`"></i>
-                    </div>
-                    <div>
-                        <div class="text-sm font-bold text-gray-900 dark:text-white">
-                            {{ steps[currentStep - 1].title }}
-                        </div>
-                        <div class="text-xs text-gray-500">Bước {{ currentStep }} / {{ steps.length }}</div>
-                    </div>
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="text-sm font-bold text-blue-600">
-                    {{ Math.round((currentStep / steps.length) * 100) }}%
-                </div>
-            </div>
-
-            <!-- Mini Progress Bar -->
-            <div class="h-2 bg-gray-200 dark:bg-gray-700 rounded-full mt-3 overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-500 rounded-full"
-                    :style="{ width: `${(currentStep / steps.length) * 100}%` }"></div>
-            </div>
-        </div>
-    </div>
+    <nav class="booking-steps" :aria-label="t('booking.steps.ariaLabel')">
+        <ol class="booking-steps__list" role="list">
+            <li v-for="step in steps" :key="step.number" class="booking-steps__item" :class="{
+                'is-active': isStepActive(step.number),
+                'is-done': isStepCompleted(step.number),
+            }" :aria-current="isStepActive(step.number) ? 'step' : undefined">
+                <span class="booking-steps__index" aria-hidden="true">{{ padNumber(step.number) }}</span>
+                <span class="booking-steps__label">{{ t(step.titleKey) }}</span>
+            </li>
+        </ol>
+    </nav>
 </template>
 
 <style scoped>
-@keyframes scale-in {
-    0% {
-        transform: scale(0);
-    }
-
-    50% {
-        transform: scale(1.2);
-    }
-
-    100% {
-        transform: scale(1);
-    }
+.booking-steps__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2) var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border-strong);
 }
 
-.animate-scale-in {
-    animation: scale-in 0.5s ease-out;
+.booking-steps__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+}
+
+.booking-steps__item:not(:first-child)::before {
+    content: '·';
+    margin-right: var(--space-4);
+    color: var(--color-border);
+}
+
+.booking-steps__index {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: var(--text-lg);
+    font-variant-numeric: lining-nums tabular-nums;
+}
+
+.booking-steps__label {
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.booking-steps__item.is-done {
+    color: var(--color-text);
+}
+
+.booking-steps__item.is-active {
+    color: var(--color-accent);
+}
+
+.booking-steps__item.is-active .booking-steps__index {
+    color: var(--color-accent);
 }
 </style>

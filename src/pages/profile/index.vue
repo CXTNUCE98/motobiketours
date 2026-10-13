@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed, watchEffect } from 'vue'
-import { useMutation, useQueryClient, useQuery } from '@tanstack/vue-query'
+import { reactive, ref, computed, watchEffect } from 'vue'
 import type { User, UpdateUserDto } from '~/types/api'
 import { validateForm, validationRules, type ValidationErrors } from '~/utils/validation'
 import { Cropper, CircleStencil } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 import { logger } from '~/utils/logger'
 
-const { isAuthenticated, user: authUser, getAuthHeaders, fetchUserProfile, updateUserLocal } = useAuth()
-const queryClient = useQueryClient()
+const { isAuthenticated, user: authUser, updateUserLocal } = useAuth()
 const { t } = useI18n()
+const route = useRoute()
+const localePath = useLocalePath()
 
 // Redirect if not authenticated
 onMounted(() => {
@@ -18,12 +18,8 @@ onMounted(() => {
     }
 })
 
-// Tabs
-const activeTab = ref('info') // 'info' | 'security'
-const router = useRouter()
-
 // Fetch fresh user data
-const { data: userData, isLoading } = useUserProfileQuery(computed(() => authUser.value?.id))
+const { data: userData } = useUserProfileQuery(computed(() => authUser.value?.id))
 
 // Avatar Upload
 const avatarPreview = ref<string | null>(null)
@@ -42,13 +38,13 @@ const handleAvatarChange = (event: Event) => {
     if (file) {
         // Validate file type
         if (!file.type.startsWith('image/')) {
-            ElMessage.error('Please select an image file')
+            ElMessage.error(t('profile.messages.avatarInvalidType'))
             return
         }
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-            ElMessage.error('Image size should be less than 5MB')
+            ElMessage.error(t('profile.messages.avatarTooLarge'))
             return
         }
 
@@ -114,27 +110,27 @@ watchEffect(() => {
     }
 })
 
-// Validation
+// Validation — computed so messages follow the active locale
 const infoErrors = ref<ValidationErrors>({})
 const passwordErrors = ref<ValidationErrors>({})
 
-const infoRules = {
-    userName: [validationRules.required('Username is required')],
-}
+const infoRules = computed(() => ({
+    userName: [validationRules.required(t('profile.validation.usernameRequired'))],
+}))
 
-const passwordRules = {
+const passwordRules = computed(() => ({
     currentPassword: [
-        validationRules.required('Current password is required')
+        validationRules.required(t('profile.validation.currentPasswordRequired'))
     ],
     newPassword: [
-        validationRules.required('New password is required'),
-        validationRules.minLength(6, 'Password must be at least 6 characters')
+        validationRules.required(t('profile.validation.newPasswordRequired')),
+        validationRules.minLength(6, t('profile.validation.passwordMinLength'))
     ],
     confirmPassword: [
-        validationRules.required('Please confirm your password'),
-        validationRules.match(computed(() => passwordForm.newPassword), 'Passwords do not match')
+        validationRules.required(t('profile.validation.confirmPasswordRequired')),
+        validationRules.match(computed(() => passwordForm.newPassword), t('profile.validation.passwordMismatch'))
     ]
-}
+}))
 
 // Upload Avatar Mutation
 const { mutateAsync: uploadAvatarAsync, isPending: isUploadingAvatar } = useUploadMutation()
@@ -155,10 +151,10 @@ const updateProfile = async (data: UpdateUserDto) => {
 
         updateUserLocal(updatedUser as unknown as User) // Update global auth state directly
         removeAvatar() // Clear avatar preview after successful update
-        ElMessage.success('Profile updated successfully!')
+        ElMessage.success(t('profile.messages.updateSuccess'))
         return updatedUser
     } catch (error: any) {
-        const message = error.message || 'Failed to update profile'
+        const message = error.message || t('profile.messages.updateError')
         ElMessage.error(message)
         throw error
     }
@@ -174,9 +170,9 @@ const changePassword = async (data: UpdateUserDto) => {
         passwordForm.newPassword = ''
         passwordForm.confirmPassword = ''
         passwordErrors.value = {}
-        ElMessage.success('Password changed successfully!')
+        ElMessage.success(t('profile.messages.passwordSuccess'))
     } catch (error: any) {
-        const message = error.message || 'Failed to change password'
+        const message = error.message || t('profile.messages.passwordError')
         ElMessage.error(message)
     } finally {
         isChangingPassword.value = false
@@ -188,7 +184,7 @@ const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const handleUpdateInfo = async () => {
-    const errors = validateForm(infoForm, infoRules)
+    const errors = validateForm(infoForm, infoRules.value)
     infoErrors.value = errors
 
     if (Object.keys(errors).length === 0) {
@@ -214,7 +210,7 @@ const handleUpdateInfo = async () => {
 }
 
 const handleChangePassword = () => {
-    const errors = validateForm(passwordForm, passwordRules)
+    const errors = validateForm(passwordForm, passwordRules.value)
     passwordErrors.value = errors
 
     if (Object.keys(errors).length === 0) {
@@ -257,553 +253,377 @@ const displayName = computed(() => {
 // Check if profile is being updated (either uploading avatar or updating profile)
 const isUpdating = computed(() => isUploadingAvatar.value || isUpdatingProfile.value)
 
-// Wishlist
-const { openDrawer: openWishlistDrawer } = useWishlistDrawer()
-const { data: wishlistCount } = useWishlistCountQuery()
+// Điều hướng tài khoản: đánh dấu mục đang hoạt động theo đường dẫn hiện tại
+const isNavActive = (path: string, exact = false) => {
+    const target = localePath(path)
+    return exact ? route.path === target : route.path === target || route.path.startsWith(`${target}/`)
+}
 </script>
 
 <template>
-    <div
-        class="min-h-screen pt-10 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Page Header -->
-            <div class="my-8">
-                <h1 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">My Profile</h1>
-                <p class="text-slate-600 dark:text-slate-400">Manage your account settings and preferences</p>
-            </div>
+    <div class="account-page">
+        <header class="shell account-head">
+            <UiEyebrow>{{ t('profile.eyebrow') }}</UiEyebrow>
+            <h1 class="account-head__title">{{ t('profile.title') }}</h1>
+        </header>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Sidebar Profile Card -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden sticky top-28">
-                        <!-- Profile Header with Gradient -->
-                        <div
-                            class="bg-gradient-to-br from-[#1A71C7] via-[#1e88e5] to-[#1565c0] p-8 text-white relative overflow-hidden">
-                            <div
-                                class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl">
-                            </div>
-                            <div
-                                class="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl">
-                            </div>
+        <div class="shell account-layout">
+            <nav class="account-nav" :aria-label="t('profile.nav.ariaLabel')">
+                <ul role="list">
+                    <li>
+                        <NuxtLink :to="localePath('/profile')" :aria-current="isNavActive('/profile', true) ? 'page' : undefined">
+                            {{ t('profile.nav.info') }}
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink :to="localePath('/profile/bookings')" :aria-current="isNavActive('/profile/bookings') ? 'page' : undefined">
+                            {{ t('profile.nav.bookings') }}
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink :to="localePath('/profile/wishlist')" :aria-current="isNavActive('/profile/wishlist') ? 'page' : undefined">
+                            {{ t('profile.nav.wishlist') }}
+                        </NuxtLink>
+                    </li>
+                </ul>
+            </nav>
 
-                            <div class="relative z-10 flex flex-col items-center">
-                                <!-- Avatar -->
-                                <div class="relative group mb-4">
-                                    <div
-                                        class="w-24 h-24 rounded-full bg-white text-[#1A71C7] flex items-center justify-center text-3xl font-bold shadow-2xl ring-4 ring-white/20 overflow-hidden">
-                                        <img v-if="currentAvatar" :src="currentAvatar" alt="Avatar"
-                                            class="w-full h-full object-cover" />
-                                        <span v-else>{{ userInitial }}</span>
-                                    </div>
-                                    <div
-                                        class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                    </div>
-                                </div>
+            <div class="account-main">
+                <!-- Ảnh đại diện -->
+                <section class="account-section" aria-labelledby="account-identity-title">
+                    <h2 id="account-identity-title" class="account-section__title">{{ t('profile.sections.identity') }}</h2>
 
-                                <h2 class="text-xl font-bold text-center mb-1">{{ displayName }}</h2>
-                                <p class="text-white/80 text-sm mb-3">{{ userData?.email || authUser?.email }}</p>
-                                <div
-                                    class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-medium backdrop-blur-sm">
-                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    {{ userData?.role || authUser?.role || 'USER' }}
-                                </div>
-                            </div>
+                    <div class="account-identity">
+                        <div class="account-identity__avatar">
+                            <img v-if="currentAvatar" :src="currentAvatar" :alt="displayName">
+                            <span v-else aria-hidden="true">{{ userInitial }}</span>
                         </div>
 
-                        <!-- Quick Stats -->
-                        <div class="p-6 border-t border-slate-200 dark:border-slate-700">
-                            <div class="space-y-3">
-                                <div
-                                    class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">Email Status</p>
-                                            <p class="text-sm font-semibold text-slate-900 dark:text-white">Verified</p>
-                                        </div>
-                                    </div>
-                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
+                        <div class="account-identity__body">
+                            <p class="account-identity__name">{{ displayName }}</p>
+                            <p class="account-identity__email">{{ userData?.email || authUser?.email }}</p>
 
-                                <div
-                                    class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-700/50">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">Account Security</p>
-                                            <p class="text-sm font-semibold text-slate-900 dark:text-white">Protected
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <svg class="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-
-                                <button @click="openWishlistDrawer"
-                                    class="w-full flex items-center justify-between p-3 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors group">
-                                    <div class="flex items-center gap-3">
-                                        <div
-                                            class="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                                            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                            </svg>
-                                        </div>
-                                        <div class="text-left">
-                                            <p class="text-xs text-slate-500 dark:text-slate-400">{{
-                                                t('wishlist.savedItems') }} ({{ wishlistCount }})</p>
-                                            <p class="text-sm font-semibold text-slate-900 dark:text-white">{{
-                                                t('wishlist.myWishlist') }}</p>
-                                        </div>
-                                    </div>
-                                    <svg class="w-5 h-5 text-red-400 group-hover:translate-x-1 transition-transform"
-                                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 5l7 7-7 7" />
-                                    </svg>
-                                </button>
+                            <input ref="fileInputRef" type="file" accept="image/*" class="visually-hidden"
+                                @change="handleAvatarChange">
+                            <div class="account-identity__actions">
+                                <UiButton type="button" variant="outline" size="sm" @click="triggerFileInput">
+                                    {{ t('profile.avatar.upload') }}
+                                </UiButton>
+                                <UiButton v-if="avatarPreview" type="button" variant="ghost" size="sm" @click="removeAvatar">
+                                    {{ t('profile.avatar.remove') }}
+                                </UiButton>
                             </div>
+                            <p class="account-identity__hint">{{ t('profile.avatar.hint') }}</p>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <!-- Main Content Area -->
-                <div class="lg:col-span-2">
-                    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl overflow-hidden">
-                        <!-- Tabs -->
-                        <div
-                            class="flex border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-                            <button @click="activeTab = 'info'"
-                                class="flex-1 py-4 px-6 text-sm font-medium text-center transition-all relative group"
-                                :class="activeTab === 'info' ? 'text-[#1A71C7] dark:text-sky-400 bg-white dark:bg-slate-800' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                    </svg>
-                                    <span>Personal Information</span>
-                                </div>
-                                <div v-if="activeTab === 'info'"
-                                    class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#1A71C7] to-transparent dark:via-sky-400">
-                                </div>
-                            </button>
+                <!-- Thông tin cá nhân -->
+                <section class="account-section" aria-labelledby="account-details-title">
+                    <h2 id="account-details-title" class="account-section__title">{{ t('profile.sections.details') }}</h2>
 
-                            <button @click="activeTab = 'security'"
-                                class="flex-1 py-4 px-6 text-sm font-medium text-center transition-all relative group"
-                                :class="activeTab === 'security' ? 'text-[#1A71C7] dark:text-sky-400 bg-white dark:bg-slate-800' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'">
-                                <div class="flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                    </svg>
-                                    <span>Security & Password</span>
-                                </div>
-                                <div v-if="activeTab === 'security'"
-                                    class="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-[#1A71C7] to-transparent dark:via-sky-400">
-                                </div>
-                            </button>
+                    <form class="account-form" novalidate @submit.prevent="handleUpdateInfo">
+                        <UiField :label="t('profile.form.username')" :error="infoErrors.userName">
+                            <template #default="{ id, describedBy, invalid }">
+                                <input :id="id" v-model="infoForm.userName" type="text" class="ui-control"
+                                    autocomplete="nickname" :aria-describedby="describedBy" :aria-invalid="invalid">
+                            </template>
+                        </UiField>
+
+                        <UiField :label="t('profile.form.email')">
+                            <template #default="{ id }">
+                                <input :id="id" v-model="infoForm.email" type="email" class="ui-control" disabled>
+                            </template>
+                        </UiField>
+                        <p class="account-form__hint">{{ t('profile.form.emailLocked') }}</p>
+
+                        <div class="account-form__actions">
+                            <UiButton type="submit" :disabled="isUpdating">
+                                {{ isUpdating ? t('profile.form.saving') : t('profile.form.save') }}
+                            </UiButton>
                         </div>
+                    </form>
+                </section>
 
-                        <!-- Content -->
-                        <div class="p-8">
-                            <!-- Personal Info Tab -->
-                            <div v-if="activeTab === 'info'" class="space-y-8">
-                                <!-- Avatar Upload Section -->
-                                <div class="pb-6 border-b border-slate-200 dark:border-slate-700">
-                                    <h3
-                                        class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#1A71C7] dark:text-sky-400" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        Profile Picture
-                                    </h3>
+                <!-- Mật khẩu -->
+                <section class="account-section" aria-labelledby="account-security-title">
+                    <h2 id="account-security-title" class="account-section__title">{{ t('profile.sections.security') }}</h2>
 
-                                    <div class="flex items-center gap-6">
-                                        <!-- Avatar Preview -->
-                                        <div class="relative">
-                                            <div
-                                                class="w-24 h-24 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 flex items-center justify-center text-3xl font-bold text-slate-600 dark:text-slate-300 shadow-lg overflow-hidden ring-4 ring-slate-100 dark:ring-slate-700">
-                                                <img v-if="currentAvatar" :src="currentAvatar" alt="Avatar Preview"
-                                                    class="w-full h-full object-cover" />
-                                                <span v-else>{{ userInitial }}</span>
-                                            </div>
-                                            <div v-if="avatarPreview"
-                                                class="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
-                                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        </div>
-
-                                        <!-- Upload Controls -->
-                                        <div class="flex-1">
-                                            <input ref="fileInputRef" type="file" accept="image/*"
-                                                @change="handleAvatarChange" class="hidden" />
-                                            <div class="flex flex-wrap gap-3">
-                                                <button @click="triggerFileInput" type="button"
-                                                    class="px-4 py-2 bg-[#1A71C7] text-white rounded-lg font-medium hover:bg-[#155a9f] transition-all shadow-md hover:shadow-lg flex items-center gap-2">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                                    </svg>
-                                                    Upload Photo
-                                                </button>
-                                                <button v-if="avatarPreview" @click="removeAvatar" type="button"
-                                                    class="px-4 py-2 bg-red-500 text-white rounded-lg font-medium hover:bg-red-600 transition-all shadow-md hover:shadow-lg flex items-center gap-2">
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                    Remove
-                                                </button>
-                                            </div>
-                                            <p class="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                                                JPG, PNG or GIF. Max size 5MB. Recommended 400x400px.
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Personal Details Form -->
-                                <div>
-                                    <h3
-                                        class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#1A71C7] dark:text-sky-400" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                        Personal Details
-                                    </h3>
-
-                                    <div class="space-y-5">
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                                User name
-                                            </label>
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <svg class="w-5 h-5 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                    </svg>
-                                                </div>
-                                                <input v-model="infoForm.userName" type="text"
-                                                    placeholder="Enter your userName"
-                                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
-                                                    :class="{ 'border-red-500 focus:ring-red-500': infoErrors.userName }" />
-                                            </div>
-                                            <p v-if="infoErrors.userName"
-                                                class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ infoErrors?.userName }}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                                Email Address
-                                            </label>
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <svg class="w-5 h-5 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                                    </svg>
-                                                </div>
-                                                <input v-model="infoForm.email" type="email" disabled
-                                                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-not-allowed" />
-                                                <div
-                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
-                                                    <svg class="w-5 h-5 text-slate-400" fill="currentColor"
-                                                        viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd"
-                                                            d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                </div>
-                                            </div>
-                                            <p
-                                                class="mt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                Email address cannot be changed for security reasons
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Save Button -->
-                                <div class="pt-4">
-                                    <button @click="handleUpdateInfo" :disabled="isUpdating"
-                                        class="w-full px-6 py-3.5 bg-gradient-to-r from-[#1A71C7] to-[#1e88e5] text-white rounded-xl font-semibold hover:from-[#155a9f] hover:to-[#1565c0] transition-all shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:scale-[1.02] active:scale-[0.98]">
-                                        <svg v-if="isUpdating" class="animate-spin h-5 w-5"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        {{ isUpdating ? 'Saving Changes...' : 'Save Changes' }}
+                    <form class="account-form" novalidate @submit.prevent="handleChangePassword">
+                        <UiField :label="t('profile.form.currentPassword')" :error="passwordErrors.currentPassword">
+                            <template #default="{ id, describedBy, invalid }">
+                                <div class="password-control">
+                                    <input :id="id" v-model="passwordForm.currentPassword"
+                                        :type="showCurrentPassword ? 'text' : 'password'" class="ui-control"
+                                        autocomplete="current-password" :aria-describedby="describedBy" :aria-invalid="invalid">
+                                    <button type="button" class="password-control__toggle"
+                                        :aria-label="showCurrentPassword ? t('auth.hidePassword') : t('auth.showPassword')"
+                                        @click="showCurrentPassword = !showCurrentPassword">
+                                        {{ showCurrentPassword ? t('auth.hide') : t('auth.show') }}
                                     </button>
                                 </div>
-                            </div>
+                            </template>
+                        </UiField>
 
-                            <!-- Security Tab -->
-                            <div v-if="activeTab === 'security'" class="space-y-6">
-                                <div>
-                                    <h3
-                                        class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                        <svg class="w-5 h-5 text-[#1A71C7] dark:text-sky-400" fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                        </svg>
-                                        Change Password
-                                    </h3>
-
-                                    <div class="space-y-5">
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                                Current Password
-                                            </label>
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <svg class="w-5 h-5 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                                                    </svg>
-                                                </div>
-                                                <input v-model="passwordForm.currentPassword"
-                                                    :type="showCurrentPassword ? 'text' : 'password'"
-                                                    placeholder="Enter your current password"
-                                                    class="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all" />
-                                                <button @click="showCurrentPassword = !showCurrentPassword"
-                                                    type="button"
-                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                                    <i class="bx"
-                                                        :class="showCurrentPassword ? 'bx-hide' : 'bx-show'"></i>
-                                                </button>
-                                            </div>
-                                            <p v-if="passwordErrors.currentPassword"
-                                                class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ passwordErrors.currentPassword }}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                                New Password
-                                            </label>
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <svg class="w-5 h-5 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                                    </svg>
-                                                </div>
-                                                <input v-model="passwordForm.newPassword"
-                                                    :type="showNewPassword ? 'text' : 'password'"
-                                                    placeholder="Enter new password (min 6 characters)"
-                                                    class="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
-                                                    :class="{ 'border-red-500 focus:ring-red-500': passwordErrors.newPassword }" />
-                                                <button @click="showNewPassword = !showNewPassword" type="button"
-                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                                    <i class="bx" :class="showNewPassword ? 'bx-hide' : 'bx-show'"></i>
-                                                </button>
-                                            </div>
-                                            <p v-if="passwordErrors.newPassword"
-                                                class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ passwordErrors.newPassword }}
-                                            </p>
-                                        </div>
-
-                                        <div>
-                                            <label
-                                                class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                                                Confirm New Password
-                                            </label>
-                                            <div class="relative">
-                                                <div
-                                                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <svg class="w-5 h-5 text-slate-400" fill="none"
-                                                        stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                </div>
-                                                <input v-model="passwordForm.confirmPassword"
-                                                    :type="showConfirmPassword ? 'text' : 'password'"
-                                                    placeholder="Confirm your new password"
-                                                    class="w-full pl-12 pr-12 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-[#1A71C7] focus:border-transparent outline-none transition-all"
-                                                    :class="{ 'border-red-500 focus:ring-red-500': passwordErrors.confirmPassword }" />
-                                                <button @click="showConfirmPassword = !showConfirmPassword"
-                                                    type="button"
-                                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-                                                    <i class="bx"
-                                                        :class="showConfirmPassword ? 'bx-hide' : 'bx-show'"></i>
-                                                </button>
-                                            </div>
-                                            <p v-if="passwordErrors.confirmPassword"
-                                                class="mt-2 text-sm text-red-500 flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
-                                                        clip-rule="evenodd" />
-                                                </svg>
-                                                {{ passwordErrors.confirmPassword }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Security Tips -->
-                                <div
-                                    class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                    <div class="flex gap-3">
-                                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
-                                            fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                                                clip-rule="evenodd" />
-                                        </svg>
-                                        <div>
-                                            <h4 class="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-1">
-                                                Password Security Tips</h4>
-                                            <ul class="text-xs text-blue-800 dark:text-blue-400 space-y-1">
-                                                <li>• Use at least 6 characters</li>
-                                                <li>• Include uppercase and lowercase letters</li>
-                                                <li>• Add numbers and special characters</li>
-                                                <li>• Avoid common words or personal information</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Update Button -->
-                                <div class="pt-4">
-                                    <button @click="handleChangePassword" :disabled="isChangingPassword"
-                                        class="w-full px-6 py-3.5 bg-gradient-to-r from-[#1A71C7] to-[#1e88e5] text-white rounded-xl font-semibold hover:from-[#155a9f] hover:to-[#1565c0] transition-all shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transform hover:scale-[1.02] active:scale-[0.98]">
-                                        <svg v-if="isChangingPassword" class="animate-spin h-5 w-5"
-                                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
-                                                stroke-width="4"></circle>
-                                            <path class="opacity-75" fill="currentColor"
-                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                                            </path>
-                                        </svg>
-                                        <svg v-else class="w-5 h-5" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                                        </svg>
-                                        {{ isChangingPassword ? 'Updating Password...' : 'Update Password' }}
+                        <UiField :label="t('profile.form.newPassword')" :error="passwordErrors.newPassword">
+                            <template #default="{ id, describedBy, invalid }">
+                                <div class="password-control">
+                                    <input :id="id" v-model="passwordForm.newPassword"
+                                        :type="showNewPassword ? 'text' : 'password'" class="ui-control"
+                                        autocomplete="new-password" :aria-describedby="describedBy" :aria-invalid="invalid">
+                                    <button type="button" class="password-control__toggle"
+                                        :aria-label="showNewPassword ? t('auth.hidePassword') : t('auth.showPassword')"
+                                        @click="showNewPassword = !showNewPassword">
+                                        {{ showNewPassword ? t('auth.hide') : t('auth.show') }}
                                     </button>
                                 </div>
-                            </div>
+                            </template>
+                        </UiField>
+
+                        <UiField :label="t('profile.form.confirmPassword')" :error="passwordErrors.confirmPassword">
+                            <template #default="{ id, describedBy, invalid }">
+                                <div class="password-control">
+                                    <input :id="id" v-model="passwordForm.confirmPassword"
+                                        :type="showConfirmPassword ? 'text' : 'password'" class="ui-control"
+                                        autocomplete="new-password" :aria-describedby="describedBy" :aria-invalid="invalid">
+                                    <button type="button" class="password-control__toggle"
+                                        :aria-label="showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')"
+                                        @click="showConfirmPassword = !showConfirmPassword">
+                                        {{ showConfirmPassword ? t('auth.hide') : t('auth.show') }}
+                                    </button>
+                                </div>
+                            </template>
+                        </UiField>
+
+                        <div class="account-form__actions">
+                            <UiButton type="submit" :disabled="isChangingPassword">
+                                {{ isChangingPassword ? t('profile.form.updatingPassword') : t('profile.form.updatePassword') }}
+                            </UiButton>
                         </div>
-                    </div>
-                </div>
+                    </form>
+                </section>
             </div>
         </div>
 
-        <!-- Image Cropper Modal -->
-        <el-dialog v-model="showCropper" title="Crop Image" :width="dialogWidth" :close-on-click-modal="false" destroy-on-close
-            :lock-scroll="true">
-            <div
-                class="h-96 w-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center overflow-hidden rounded-lg">
-                <cropper ref="cropperRef" class="h-full w-full" :src="cropperImage" :stencil-component="CircleStencil"
-                    :stencil-props="{
-                        aspectRatio: 1 / 1
-                    }" />
+        <!-- Cắt ảnh đại diện -->
+        <el-dialog v-model="showCropper" :title="t('profile.avatar.cropTitle')" :width="dialogWidth"
+            :close-on-click-modal="false" destroy-on-close :lock-scroll="true">
+            <div class="cropper-frame">
+                <cropper ref="cropperRef" class="cropper-frame__area" :src="cropperImage" :stencil-component="CircleStencil"
+                    :stencil-props="{ aspectRatio: 1 / 1 }" />
             </div>
             <template #footer>
-                <div class="flex justify-end gap-3">
-                    <el-button @click="showCropper = false">Cancel</el-button>
-                    <el-button type="primary" @click="onCrop">Crop & Save</el-button>
-                </div>
+                <UiButton variant="outline" @click="showCropper = false">{{ t('profile.avatar.cropCancel') }}</UiButton>
+                <UiButton @click="onCrop">{{ t('profile.avatar.cropSave') }}</UiButton>
             </template>
         </el-dialog>
     </div>
 </template>
+
+<style scoped>
+.account-head {
+    padding-top: var(--space-page-top);
+    padding-bottom: var(--space-fluid-lg);
+}
+
+.account-head__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
+}
+
+.account-layout {
+    display: grid;
+    gap: var(--space-fluid-lg);
+    align-items: start;
+    padding-bottom: var(--section-space);
+}
+
+@media (min-width: 64rem) {
+    .account-layout {
+        grid-template-columns: minmax(12rem, 1fr) 3fr;
+    }
+}
+
+/* Điều hướng tài khoản */
+.account-nav ul {
+    border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 64rem) {
+    .account-nav {
+        position: sticky;
+        top: calc(var(--header-height) + 1.5rem);
+    }
+}
+
+.account-nav a {
+    display: block;
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+    text-decoration: none;
+}
+
+.account-nav a:hover {
+    color: var(--color-text);
+}
+
+.account-nav a[aria-current='page'] {
+    color: var(--color-accent);
+    font-weight: var(--weight-medium);
+}
+
+/* Các khối nội dung */
+.account-section {
+    padding-block: var(--space-fluid-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.account-section:first-child {
+    padding-top: 0;
+}
+
+.account-section:last-child {
+    border-bottom: 0;
+}
+
+.account-section__title {
+    margin-bottom: var(--space-6);
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+}
+
+/* Ảnh đại diện */
+.account-identity {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+}
+
+.account-identity__avatar {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 5.5rem;
+    height: 5.5rem;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-bg-subtle);
+    color: var(--color-text-muted);
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-style: italic;
+}
+
+.account-identity__avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.account-identity__body {
+    flex: 1 1 16rem;
+    min-width: 0;
+}
+
+.account-identity__name {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    line-height: var(--leading-snug);
+}
+
+.account-identity__email {
+    margin-top: 0.25rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    overflow-wrap: anywhere;
+}
+
+.account-identity__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+}
+
+.account-identity__hint {
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+/* Form */
+.account-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-5);
+    max-width: 40rem;
+}
+
+.account-form__hint {
+    grid-column: 1 / -1;
+    margin-top: -0.75rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.account-form__actions {
+    grid-column: 1 / -1;
+    margin-top: var(--space-2);
+}
+
+.password-control {
+    position: relative;
+}
+
+.password-control .ui-control {
+    padding-right: 4rem;
+}
+
+.password-control__toggle {
+    position: absolute;
+    top: 50%;
+    right: var(--space-4);
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+}
+
+.password-control__toggle:hover {
+    color: var(--color-accent);
+}
+
+.account-nav a:focus-visible,
+.password-control__toggle:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Cropper */
+.cropper-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+}
+
+.cropper-frame__area {
+    width: 100%;
+    height: 100%;
+}
+
+:deep(.el-dialog__footer) {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+}
+</style>

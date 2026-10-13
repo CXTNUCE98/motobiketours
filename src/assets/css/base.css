@@ -10,6 +10,22 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
+a {
+    transition: color var(--transition-base), background-color var(--transition-base),
+        border-color var(--transition-base), opacity var(--transition-base);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* Khung nội dung: tối đa --content-max, lề hai bên co giãn theo màn hình */
 .shell {
     max-width: calc(var(--content-max) + 2 * var(--gutter));
@@ -149,4 +165,11 @@ html:root {
     --el-border-radius-small: var(--radius-sm);
     --el-box-shadow-light: var(--shadow-popover);
     --el-font-family: var(--font-sans);
+}
+
+/* el-rate khai báo biến ngay trên .el-rate nên phải ghi đè ở đây (html .el-rate thắng .el-rate) */
+html .el-rate {
+    --el-rate-fill-color: var(--color-accent);
+    --el-rate-void-color: var(--color-border);
+    --el-rate-text-color: var(--color-text-muted);
 }

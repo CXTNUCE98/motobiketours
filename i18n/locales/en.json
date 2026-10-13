@@ -71,7 +71,8 @@
       "zalo": "Zalo",
       "viber": "Viber",
       "line": "Line",
-      "kakaotalk": "KakaoTalk"
+      "kakaotalk": "KakaoTalk",
+      "fanpage": "Fanpage"
     },
     "instantResponse": "Instant Response",
     "fastSupport": "Fast Support",
@@ -168,7 +169,21 @@
     "usernameRequired": "Username is required",
     "usernameMin": "Username must be at least 2 characters",
     "passwordMin": "Password must be at least 6 characters",
-    "myBookings": "My bookings"
+    "myBookings": "My bookings",
+    "show": "Show",
+    "hide": "Hide",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "alreadyHaveAccount": "Already have an account?",
+    "noAccount": "Don't have an account?",
+    "loginFailed": "Login failed, please try again",
+    "registerSuccess": "Registration successful!",
+    "registerFailed": "Registration failed, please try again",
+    "social": {
+      "google": "Google",
+      "facebook": "Facebook",
+      "twitter": "Twitter"
+    }
   },
   "common": {
     "language": "Language",
@@ -223,10 +238,170 @@
     "pagination": "Pagination",
     "previousPage": "Previous",
     "nextPage": "Next",
-    "close": "Close"
+    "close": "Close",
+    "uploadFailed": "Upload failed",
+    "actionFailed": "Action failed",
+    "cropImage": "Crop Image",
+    "thumbnailUploaded": "Thumbnail uploaded successfully",
+    "errorOccurred": "Something went wrong, please try again",
+    "success": "Success",
+    "dragToReorder": "Drag to reorder"
   },
   "booking": {
-    "bookNow": "Book Now"
+    "bookNow": "Book Now",
+    "heroEyebrow": "BOOK A TOUR",
+    "heroTitleBase": "Complete your",
+    "heroEmphasis": "booking",
+    "heroIntro": "Just a few steps left before your journey begins.",
+    "loadingTour": "Loading tour information...",
+    "tourNotFound": "Tour not found",
+    "tourNotFoundDesc": "The tour you are looking for does not exist or has been removed.",
+    "backToTours": "Browse other tours",
+    "processingTitle": "Processing your booking...",
+    "processingDesc": "Please do not close this page.",
+    "loginRequired": "Please log in to book this tour",
+    "steps": {
+      "ariaLabel": "Booking progress",
+      "date": "Date",
+      "info": "Details",
+      "payment": "Payment",
+      "confirm": "Confirm"
+    },
+    "datePeople": {
+      "title": "Choose your start date",
+      "lead": "Pick the date you want to begin your journey and the number of travellers.",
+      "calendarLabel": "Start date",
+      "datePlaceholder": "Choose a start date",
+      "selectedDate": "Selected date",
+      "peopleLabel": "Travellers",
+      "decrease": "Decrease number of travellers",
+      "increase": "Increase number of travellers",
+      "unit": "people",
+      "minPeople": "Minimum {count} people",
+      "maxPeople": "Maximum {count} people"
+    },
+    "summary": {
+      "pricePerPerson": "Price / person",
+      "people": "Travellers",
+      "discount": "Discount",
+      "total": "Total",
+      "paymentMethod": "Payment method"
+    },
+    "customerInfo": {
+      "title": "Your details",
+      "lead": "Please fill in your contact information so we can assist you best.",
+      "fullName": "Full name",
+      "fullNamePlaceholder": "John Doe",
+      "email": "Email",
+      "emailPlaceholder": "email{'@'}example.com",
+      "phone": "Phone number",
+      "phonePlaceholder": "0901234567",
+      "address": "Address",
+      "addressOptional": "(Optional)",
+      "addressPlaceholder": "Street, ward/district, city",
+      "specialRequests": "Special requests",
+      "specialRequestsPlaceholder": "E.g. automatic transmission, preferred seating...",
+      "specialRequestsHint": "We will do our best to accommodate your requests.",
+      "tipsTitle": "Please note",
+      "tip1": "Your email will be used to send the booking confirmation",
+      "tip2": "Your phone number is used to reach you if needed",
+      "tip3": "Your information is kept fully confidential",
+      "validation": {
+        "nameRequired": "Please enter your full name",
+        "emailRequired": "Please enter your email",
+        "emailInvalid": "Invalid email address",
+        "phoneRequired": "Please enter your phone number",
+        "phoneInvalid": "Invalid phone number"
+      }
+    },
+    "payment": {
+      "title": "Payment method",
+      "lead": "Choose the payment method that suits you.",
+      "methods": {
+        "vnpay": "VNPay",
+        "vnpayDesc": "Pay via VNPay, supports every local bank",
+        "momo": "MoMo",
+        "momoDesc": "Pay via the MoMo e-wallet",
+        "stripe": "Stripe",
+        "stripeDesc": "International payment via Stripe",
+        "cash": "Cash",
+        "cashDesc": "Pay directly on the day of departure"
+      },
+      "infoTitle": "Payment information",
+      "infoRedirect": "You will be redirected to the {method} payment gateway to complete your transaction.",
+      "infoSsl": "Transactions are SSL encrypted",
+      "infoSecure": "Your payment details are kept fully secure",
+      "cashTitle": "Cash payment",
+      "cashInfo": "You will pay your guide directly when the tour begins.",
+      "cashPrepare": "Please prepare the exact amount in cash",
+      "cashConfirm": "Your booking will be confirmed after payment"
+    },
+    "confirmStep": {
+      "title": "Confirm your booking",
+      "lead": "Please review your information before confirming.",
+      "tripInfo": "Trip information",
+      "startDate": "Start date",
+      "people": "Travellers",
+      "peopleCount": "{count} people",
+      "customerInfo": "Your details",
+      "fullName": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "address": "Address",
+      "specialRequests": "Special requests",
+      "confirmButton": "Confirm booking",
+      "terms": "By confirming, you agree to our terms of service and privacy policy."
+    },
+    "success": {
+      "eyebrow": "BOOKING",
+      "titleBase": "Booking",
+      "emphasis": "confirmed",
+      "lead": "Thank you for trusting us with your journey.",
+      "bookingCode": "Booking code",
+      "checkEmailTitle": "Check your email",
+      "checkEmailDesc": "We have sent your booking confirmation and trip details to your inbox.",
+      "supportTitle": "24/7 support",
+      "supportDesc": "If you have any questions, reach out to us by hotline or email.",
+      "nextStepsTitle": "Next steps",
+      "step1Title": "Review your details",
+      "step1Desc": "Check your booking information in the confirmation email.",
+      "step2Title": "Pack your bags",
+      "step2Desc": "Read the preparation guide in the email for the best experience.",
+      "step3Title": "Get ready to depart",
+      "step3Desc": "Arrive at the meeting point on time and ready for your journey.",
+      "viewBookings": "View my bookings",
+      "backHome": "Back to home"
+    },
+    "failed": {
+      "eyebrow": "PAYMENT",
+      "titleBase": "Payment",
+      "emphasis": "unsuccessful",
+      "defaultMessage": "The payment could not be completed.",
+      "bookingCode": "Booking code",
+      "createdTitle": "Booking already created",
+      "createdDesc": "Your booking has been recorded. You can retry payment or choose another method.",
+      "helpTitle": "Need help?",
+      "helpDesc": "Contact our support team if you run into any issue.",
+      "reasonsTitle": "Possible reasons",
+      "reason1": "Insufficient balance in the payment account",
+      "reason2": "Incorrect card or account information",
+      "reason3": "Unstable network connection",
+      "reason4": "The transaction session has expired",
+      "retry": "Retry payment",
+      "viewBookings": "View my bookings",
+      "backHome": "Back to home",
+      "urgentHelp": "Need urgent help?",
+      "callHotline": "Call our hotline",
+      "orEmail": "or email"
+    },
+    "createSuccess": "Booking created successfully!",
+    "createFailed": "Booking failed, please try again.",
+    "updateSuccess": "Booking updated.",
+    "updateFailed": "Failed to update booking.",
+    "cancelSuccess": "Booking cancelled.",
+    "cancelFailed": "Failed to cancel booking.",
+    "confirmSuccess": "Booking confirmed.",
+    "confirmFailed": "Failed to confirm booking."
   },
   "home": {
     "findYourPerfectTour": "Find Your Perfect Tour at ANDAGO",
@@ -269,7 +444,9 @@
       "south": "South Vietnam Tours",
       "asia": "Asia Tours",
       "europe": "Europe Tours"
-    }
+    },
+    "newsViews": "{count} views",
+    "testimonialGoTo": "View testimonial {n}"
   },
   "tour": {
     "editTour": "Edit Tour",
@@ -475,7 +652,26 @@
     "count": "{count} tour | {count} tours",
     "viewMode": "View",
     "viewGrid": "Grid",
-    "viewList": "List"
+    "viewList": "List",
+    "noItinerary": "No itinerary available for this tour yet",
+    "relatedTours": "Related tours",
+    "groupSizeDefault": "2–10 people",
+    "difficultyLabel": "Difficulty",
+    "priceOnRequest": "Contact us",
+    "gallery": {
+      "prev": "Previous photo",
+      "next": "Next photo",
+      "open": "View larger photo",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "download": "Download photo",
+      "thumbnail": "Photo {index}"
+    },
+    "share": {
+      "facebook": "Share on Facebook",
+      "twitter": "Share on Twitter",
+      "whatsapp": "Share on WhatsApp"
+    }
   },
   "footer": {
     "address": "Address",
@@ -489,7 +685,8 @@
       "south": "South Vietnam Tours",
       "domestic": "Domestic Tours",
       "asia": "Asia Tours"
-    }
+    },
+    "noItinerary": "No detailed itinerary for this tour yet"
   },
   "service": {
     "professionalService": "PROFESSIONAL SERVICE",
@@ -506,7 +703,27 @@
     "professional": "Professional",
     "professionalDesc": "Experienced team of tour guides",
     "support247": "Support 24/7",
-    "support247Desc": "We are always ready to assist you anytime, anywhere"
+    "support247Desc": "We are always ready to assist you anytime, anywhere",
+    "list": {
+      "emptyTitle": "No services found",
+      "emptyDesc": "Try a different search keyword",
+      "clearSearch": "Clear search",
+      "priceFrom": "From"
+    },
+    "detail": {
+      "eyebrow": "Service",
+      "price": "Price",
+      "highlights": "Highlights",
+      "included": "Included",
+      "notIncluded": "Not included",
+      "features": "Key features",
+      "reviews": "Reviews",
+      "contactCta": "Contact us",
+      "relatedTitle": "Other services",
+      "notFound": "Service not found",
+      "notFoundDesc": "The service you are looking for does not exist.",
+      "backToList": "Back to list"
+    }
   },
   "blog": {
     "blog": "BLOG & STORIES",
@@ -539,7 +756,71 @@
     "readArticle": "Read article",
     "readTime": "{count} min read",
     "emptyTitle": "No stories found",
-    "emptyDesc": "Try another category or keyword"
+    "emptyDesc": "Try another category or keyword",
+    "detail": {
+      "shareFacebook": "Share on Facebook",
+      "shareTwitter": "Share on X (Twitter)",
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied!",
+      "tags": "Tags",
+      "relatedPosts": "Related posts",
+      "notFound": "Post not found",
+      "notFoundDesc": "This post may have been removed or the link is incorrect.",
+      "backToBlog": "Back to Blog"
+    },
+    "editor": {
+      "titleCreate": "Create new post",
+      "titlePreview": "Preview post",
+      "backToEdit": "Back to edit",
+      "preview": "Preview",
+      "saveDraft": "Save as draft",
+      "savingDraft": "Saving...",
+      "publish": "Publish",
+      "publishing": "Publishing...",
+      "postNameLabel": "Post name",
+      "postNamePlaceholder": "Enter an engaging post name...",
+      "languageLabel": "Language",
+      "languagePlaceholder": "Select language",
+      "langEn": "English",
+      "langVi": "Vietnamese",
+      "categoryLabel": "Category",
+      "tagsLabel": "Tags",
+      "tagsHint": "Add relevant tags to help readers find your post",
+      "tagsPlaceholder": "Type a tag and press Enter",
+      "addTag": "Add",
+      "shortDescriptionLabel": "Short description",
+      "shortDescriptionPlaceholder": "A short summary shown on the post card...",
+      "thumbnailLabel": "Thumbnail",
+      "thumbnailUpload": "Upload",
+      "thumbnailDrag": "or drag and drop",
+      "thumbnailUploading": "Uploading...",
+      "thumbnailRule": "Recommended size 1280 × 720px (max 2MB)",
+      "removeThumbnail": "Remove thumbnail",
+      "contentPlaceholder": "Type or paste your content here!",
+      "wordsCount": "{count} words",
+      "charsCount": "{count} characters",
+      "untitledPost": "Untitled post",
+      "noContent": "No content yet...",
+      "loginRequiredTitle": "Please log in",
+      "loginRequiredDesc": "You need to log in to create a new post.",
+      "validation": {
+        "titleRequired": "Title is required",
+        "languageRequired": "Language is required",
+        "categoryRequired": "Category is required",
+        "contentRequired": "Content is required",
+        "shortDescriptionRequired": "Short description is required"
+      },
+      "message": {
+        "imageOnly": "Please upload an image file",
+        "uploadingImage": "Uploading image...",
+        "uploadSuccess": "Image uploaded successfully!",
+        "uploadError": "Failed to upload image",
+        "thumbnailSuccess": "Thumbnail uploaded successfully!",
+        "draftSaved": "Draft saved successfully!",
+        "published": "Post published successfully!",
+        "createError": "Failed to create blog post"
+      }
+    }
   },
   "hotSpots": {
     "title": "Hot Spots",
@@ -570,7 +851,32 @@
     "geoTimeout": "Location timed out. Please try again later",
     "geoNotSupported": "Your browser doesn't support geolocation",
     "changeVehicle": "Change Vehicle",
-    "selectVehicle": "Select Vehicle"
+    "selectVehicle": "Select Vehicle",
+    "buildTrip": "Plan your own trip",
+    "viewModeLabel": "View mode",
+    "count": "{count} spot | {count} spots",
+    "locationSource": "Location",
+    "deleteConfirm": "Are you sure you want to delete this hot spot?",
+    "searchPlaceholder": "Search by name or address",
+    "mapRegionLabel": "Hot spots map",
+    "hotBadge": "Trending",
+    "coordinates": "Coordinates",
+    "clearFilters": "Clear filters",
+    "namePlaceholder": "Spot name...",
+    "addressPlaceholder": "Full address...",
+    "descriptionPlaceholder": "Describe the spot...",
+    "openingHoursPlaceholder": "e.g. 08:00 - 22:00",
+    "priceInfoPlaceholder": "e.g. Free or 50.000đ",
+    "markAsHot": "Mark as a trending hot spot",
+    "validation": {
+      "name": "Please enter a name",
+      "nameLength": "Name should be at least 3 characters",
+      "category": "Please select a category",
+      "address": "Please enter an address",
+      "lat": "Please enter the latitude",
+      "lng": "Please enter the longitude"
+    },
+    "minutes": "minutes"
   },
   "customTour": {
     "title": "Smart Car Tour Builder",
@@ -589,7 +895,12 @@
     "vehicle": "Selected Vehicle",
     "estimatedPrice": "Estimated Price",
     "bookNow": "Book This Tour Now",
-    "selectVehicle": "Choose Your Ride"
+    "selectVehicle": "Choose Your Ride",
+    "tabsLabel": "Planning steps",
+    "dragHandle": "Drag to reorder",
+    "removeStop": "Remove from itinerary",
+    "distanceValue": "{value} km",
+    "durationValue": "{value} min"
   },
   "vehicles": {
     "title": "Vehicle Management",
@@ -609,7 +920,16 @@
     "deleteConfirm": "Are you sure you want to delete this vehicle?",
     "createSuccess": "Vehicle created successfully!",
     "updateSuccess": "Vehicle updated successfully!",
-    "deleteSuccess": "Vehicle deleted successfully!"
+    "deleteSuccess": "Vehicle deleted successfully!",
+    "selected": "Selected",
+    "moreAmenities": "+{count} more",
+    "capacityUnit": "seats",
+    "validation": {
+      "model": "Please enter the model name",
+      "type": "Please select a type",
+      "capacity": "Please enter the capacity",
+      "pricePerKm": "Please enter the price per km"
+    }
   },
   "review": {
     "title": "Reviews & Ratings",
@@ -629,7 +949,8 @@
     "noReviews": "No reviews yet for this tour.",
     "validation": {
       "contentRequired": "Please enter your review content"
-    }
+    },
+    "starBreakdown": "{star} star: {percent}%"
   },
   "wishlist": {
     "title": "Wishlist",
@@ -637,7 +958,13 @@
     "addSuccess": "Added to wishlist",
     "removeSuccess": "Removed from wishlist",
     "myWishlist": "My Favorite Tours",
-    "savedItems": "Saved Tours"
+    "savedItems": "Saved Tours",
+    "drawer": {
+      "count": "{count} saved tour | {count} saved tours",
+      "emptyHint": "Start saving the journeys you love.",
+      "remove": "Remove",
+      "exploreMore": "Explore more tours"
+    }
   },
   "news": {
     "badge": "NEWS & EVENTS",
@@ -652,6 +979,158 @@
     "articleCount": "{count} article | {count} articles",
     "readMore": "Read more",
     "emptyTitle": "No news found",
-    "emptyDesc": "Try adjusting your search"
+    "emptyDesc": "Try adjusting your search",
+    "detail": {
+      "otherNews": "More news",
+      "share": "Share",
+      "notFound": "News not found",
+      "notFoundDesc": "This article may have been removed or the link is incorrect.",
+      "backToNews": "Back to News"
+    }
+  },
+  "tourCard": {
+    "wishlistAdd": "Add to wishlist",
+    "wishlistRemove": "Remove from wishlist"
+  },
+  "profile": {
+    "eyebrow": "Account",
+    "title": "My Account",
+    "nav": {
+      "ariaLabel": "Account navigation",
+      "info": "Account info",
+      "bookings": "My bookings",
+      "wishlist": "My wishlist"
+    },
+    "sections": {
+      "identity": "Profile photo",
+      "details": "Personal details",
+      "security": "Password"
+    },
+    "avatar": {
+      "upload": "Upload photo",
+      "remove": "Remove photo",
+      "hint": "JPG, PNG or GIF, max 5MB.",
+      "cropTitle": "Crop your photo",
+      "cropCancel": "Cancel",
+      "cropSave": "Crop & save"
+    },
+    "form": {
+      "username": "Display name",
+      "email": "Email",
+      "emailLocked": "Email can't be changed for security reasons.",
+      "save": "Save changes",
+      "saving": "Saving...",
+      "currentPassword": "Current password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "updatePassword": "Update password",
+      "updatingPassword": "Updating..."
+    },
+    "validation": {
+      "usernameRequired": "Please enter a display name",
+      "currentPasswordRequired": "Please enter your current password",
+      "newPasswordRequired": "Please enter a new password",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "confirmPasswordRequired": "Please confirm your new password",
+      "passwordMismatch": "Passwords do not match"
+    },
+    "messages": {
+      "avatarInvalidType": "Please select an image file",
+      "avatarTooLarge": "Image must be smaller than 5MB",
+      "updateSuccess": "Profile updated successfully!",
+      "updateError": "Failed to update profile",
+      "passwordSuccess": "Password changed successfully!",
+      "passwordError": "Failed to change password"
+    },
+    "bookings": {
+      "title": "My Bookings",
+      "searchLabel": "Search by tour name",
+      "searchPlaceholder": "Enter tour name...",
+      "code": "Booking code",
+      "date": "Departure",
+      "people": "Travelers",
+      "cancel": "Cancel",
+      "emptyTitle": "No bookings yet",
+      "emptyDesc": "Book your first trip with us.",
+      "emptyDescFiltered": "No bookings with this status.",
+      "exploreTours": "Explore tours",
+      "filters": {
+        "all": "All"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "stats": {
+        "total": "Total",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "cancelConfirmTitle": "Confirm booking cancellation",
+      "cancelConfirmMessage": "Are you sure you want to cancel this booking? This action cannot be undone.",
+      "cancelConfirmBtn": "Cancel booking",
+      "cancelKeepBtn": "Keep booking",
+      "detailPage": {
+        "backToList": "Back to list",
+        "title": "Booking detail",
+        "code": "Booking code",
+        "loading": "Loading booking information...",
+        "notFoundTitle": "Booking not found",
+        "notFoundDesc": "This booking doesn't exist or was removed.",
+        "tourInfo": "Trip information",
+        "startDate": "Departure date",
+        "numberOfPeople": "Travelers",
+        "duration": "Duration",
+        "customerInfo": "Customer information",
+        "name": "Full name",
+        "email": "Email",
+        "phone": "Phone number",
+        "address": "Address",
+        "specialRequests": "Special requests",
+        "paymentSummary": "Payment summary",
+        "tourPrice": "Tour price",
+        "discount": "Discount",
+        "totalPrice": "Total",
+        "paymentStatus": "Payment status",
+        "paymentStatusValues": {
+          "unpaid": "Unpaid",
+          "deposit_paid": "Deposit paid",
+          "fully_paid": "Fully paid"
+        },
+        "paymentMethod": "Payment method",
+        "createdAt": "Booked on {date}"
+      }
+    }
+  },
+  "comment": {
+    "title": "Comments ({count})",
+    "placeholder": "Write a comment...",
+    "post": "Post comment",
+    "posting": "Posting...",
+    "replyPlaceholder": "Write a reply...",
+    "postReply": "Post reply",
+    "reply": "Reply",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "like": "Like",
+    "dislike": "Dislike",
+    "loginPrompt": "Log in to comment",
+    "login": "Log in",
+    "empty": "No comments yet. Be the first!",
+    "loadMoreReplies": "Load {count} more replies",
+    "justNow": "Just now",
+    "minutesAgo": "{count}m ago",
+    "hoursAgo": "{count}h ago",
+    "daysAgo": "{count}d ago",
+    "confirmDelete": "Are you sure you want to delete this comment?",
+    "errorTitle": "Error",
+    "deleteError": "Failed to delete comment. You can only delete your own comments.",
+    "replyError": "Failed to post reply. Please try again.",
+    "likeLoginRequired": "Please login to like comments",
+    "dislikeLoginRequired": "Please login to dislike comments"
   }
 }

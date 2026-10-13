@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useBlogsQuery, useBlogByIdQuery } from '~/composables/useBlogQuery'
 import { useCreateCommentMutation } from '~/composables/useBlogMutation'
 import CommentItem from '~/components/CommentItem.vue'
@@ -8,15 +9,29 @@ import { useQuery } from '@tanstack/vue-query'
 import { sanitizeHtml } from '~/utils/sanitize'
 
 const route = useRoute()
-const id = computed(() => String(route?.params?.id))
+const { t, locale } = useI18n()
+const localePath = useLocalePath()
 const { user } = useAuth()
+
+const id = computed(() => String(route?.params?.id))
 
 // Fetch Post Detail
 const { data: detailBlog, isLoading } = useBlogByIdQuery(id)
 
 const post = computed(() => detailBlog.value || null)
 
-// Fetch Related Posts
+// Nhãn danh mục (khớp với trang danh sách blog)
+const categories = computed(() => [
+  { label: t('blog.type.travelTips'), value: 'travel-tips' },
+  { label: t('blog.type.destination'), value: 'destination' },
+  { label: t('blog.type.culture'), value: 'culture' },
+  { label: t('blog.type.food'), value: 'food' },
+  { label: t('blog.type.adventure'), value: 'adventure' },
+  { label: t('blog.type.guides'), value: 'guides' },
+])
+const categoryLabel = computed(() => categories.value.find(c => c.value === post.value?.category)?.label || post.value?.category)
+
+// Fetch Related Posts (cùng danh mục)
 const { data: relatedData } = useBlogsQuery(computed(() => ({
   category: post.value?.category,
   r: 4
@@ -60,6 +75,10 @@ const handleCreateComment = () => {
       avatar: user.value?.avatar || `https://ui-avatars.com/api/?name=${user.value?.userName}`,
       userName: user.value?.userName
     }
+  }, {
+    onSuccess: () => {
+      newCommentContent.value = ''
+    }
   })
 }
 
@@ -71,7 +90,7 @@ const updateReadingProgress = () => {
   const documentHeight = document.documentElement.scrollHeight
   const scrollTop = window.scrollY
   const trackLength = documentHeight - windowHeight
-  readingProgress.value = (scrollTop / trackLength) * 100
+  readingProgress.value = trackLength > 0 ? (scrollTop / trackLength) * 100 : 0
 }
 
 onMounted(() => {
@@ -82,7 +101,7 @@ onUnmounted(() => {
   window.removeEventListener('scroll', updateReadingProgress)
 })
 
-// Share functions
+// Share
 const shareOnFacebook = () => {
   const url = encodeURIComponent(window.location.href)
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
@@ -97,8 +116,8 @@ const shareOnTwitter = () => {
 const copyLink = () => {
   navigator.clipboard.writeText(window.location.href)
   ElNotification({
-    title: 'Success',
-    message: 'Link copied to clipboard!',
+    title: t('common.success'),
+    message: t('blog.detail.linkCopied'),
     type: 'success',
   })
 }
@@ -106,13 +125,12 @@ const copyLink = () => {
 const formatDate = (dateString) => {
   if (!dateString) return ''
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  return date.toLocaleDateString(locale.value === 'vi' ? 'vi-VN' : 'en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 }
 
-const calculateReadTime = (text, wordsPerMinute = 180) => {
-  const wordCount = text?.trim()?.split(/\s+/)?.length || 0;
-  const minutes = Math.ceil(wordCount / wordsPerMinute);
-  return minutes;
+const calculateReadTime = (numWords, wordsPerMinute = 180) => {
+  if (!numWords || numWords <= 0) return 0
+  return Math.ceil(numWords / wordsPerMinute)
 }
 
 const getImageUrl = (thumbnail) => {
@@ -123,279 +141,349 @@ const getImageUrl = (thumbnail) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="blog-detail">
     <div v-if="post">
-      <!-- Reading Progress Bar -->
-      <div class="fixed top-0 left-0 h-1 bg-gradient-to-r from-orange-500 to-red-600 z-50 transition-all duration-100"
-        :style="{ width: readingProgress + '%' }"></div>
+      <div class="blog-detail__progress" :style="{ width: readingProgress + '%' }" aria-hidden="true" />
 
-      <!-- Hero Section -->
-      <section class="relative h-[60vh] min-h-[500px] overflow-hidden">
-        <div class="absolute inset-0">
-          <img :src="getImageUrl(post?.thumbnail)" :alt="post?.name" class="w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
+      <header class="shell blog-detail__head">
+        <p class="blog-detail__eyebrow">
+          <NuxtLink :to="localePath('/blog')">{{ categoryLabel || t('blog.blog') }}</NuxtLink>
+        </p>
+        <h1 class="blog-detail__title">{{ post.name }}</h1>
+
+        <div class="blog-detail__meta">
+          <img v-if="post.author?.avatar" :src="post.author.avatar" :alt="post.author?.userName" class="blog-detail__avatar">
+          <span v-if="post.author?.userName">{{ post.author.userName }}</span>
+          <span>{{ formatDate(post.createdAt) }}</span>
+          <span v-if="calculateReadTime(post.numWords)">{{ t('blog.readTime', { count: calculateReadTime(post.numWords) }) }}</span>
         </div>
 
-        <div class="relative z-10 h-full container mx-auto px-4 flex flex-col justify-end pb-16">
-          <!-- Breadcrumb -->
-          <nav class="flex items-center gap-2 text-sm text-gray-300 mb-6">
-            <router-link to="/" class="hover:text-white transition-colors">Home</router-link>
-            <span>/</span>
-            <router-link to="/blog" class="hover:text-white transition-colors">Blog</router-link>
-            <span>/</span>
-            <span class="text-white font-medium">{{ post?.category }}</span>
-          </nav>
-
-          <!-- Category Badge -->
-          <div class="mb-6">
-            <span
-              class="inline-block px-4 py-1.5 bg-orange-500/90 backdrop-blur-sm text-white text-sm font-bold rounded-full uppercase tracking-wider shadow-lg">
-              {{ post?.category }}
-            </span>
-          </div>
-
-          <!-- Title -->
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-8 max-w-4xl shadow-sm">
-            {{ post?.name }}
-          </h1>
-
-          <!-- Meta Info -->
-          <div class="flex items-center gap-6">
-            <div class="flex items-center gap-4">
-              <img :src="post?.author?.avatar || 'https://ui-avatars.com/api/?name=' + post?.author?.userName"
-                :alt="post?.author?.userName"
-                class="w-14 h-14 rounded-full object-cover border-2 border-white/50 shadow-lg" />
-              <div>
-                <div class="text-white font-bold text-lg">{{ post?.author?.userName }}</div>
-                <div class="text-gray-300 text-sm flex items-center gap-2">
-                  <span>{{ formatDate(post?.createdAt) }}</span>
-                  <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
-                  <span>{{ calculateReadTime(post?.content) }} min read</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="blog-detail__share">
+          <UiButton variant="ghost" size="sm" @click="shareOnFacebook">{{ t('blog.detail.shareFacebook') }}</UiButton>
+          <UiButton variant="ghost" size="sm" @click="shareOnTwitter">{{ t('blog.detail.shareTwitter') }}</UiButton>
+          <UiButton variant="ghost" size="sm" @click="copyLink">{{ t('blog.detail.copyLink') }}</UiButton>
         </div>
-      </section>
+      </header>
 
-      <!-- Main Content -->
-      <div class="container mx-auto px-4 py-12">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+      <div class="shell blog-detail__cover">
+        <img :src="getImageUrl(post.thumbnail)" :alt="post.name" loading="eager" decoding="async">
+      </div>
 
-          <!-- Article Content (8 cols) -->
-          <article class="lg:col-span-8">
-            <div
-              class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 md:p-12 border border-transparent dark:border-gray-700">
-              <!-- Content Body -->
-              <div
-                class="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-orange-600 hover:prose-a:text-orange-700 prose-img:rounded-2xl"
-                v-html="sanitizeHtml(post?.content)"></div>
+      <div class="shell">
+        <div class="blog-detail__measure">
+          <div class="prose" v-html="sanitizeHtml(post.content)" />
 
-              <!-- Tags -->
-              <div class="mt-12 pt-8 border-t border-gray-100 dark:border-gray-700"
-                v-if="post?.tags && post?.tags?.length">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Tags</h3>
-                <div class="flex flex-wrap gap-3">
-                  <span v-for="tag in post.tags" :key="tag"
-                    class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full text-sm font-medium hover:bg-orange-50 dark:hover:bg-orange-900/30 hover:text-orange-600 dark:hover:text-orange-400 transition-colors cursor-pointer">
-                    #{{ tag }}
-                  </span>
-                </div>
-              </div>
+          <ul v-if="post.tags?.length" class="blog-detail__tags" role="list" :aria-label="t('blog.detail.tags')">
+            <li v-for="tag in post.tags" :key="tag">#{{ tag }}</li>
+          </ul>
 
-              <!-- Share Section -->
-              <div class="mt-10 pt-8 border-t border-gray-100 dark:border-gray-700">
-                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Share this article</h3>
-                <div class="flex flex-wrap gap-3">
-                  <button @click="shareOnFacebook"
-                    class="flex items-center gap-2 px-6 py-3 bg-[#1877f2] text-white rounded-full font-medium hover:bg-[#0c63d4] transition-all hover:-translate-y-1 shadow-lg shadow-blue-200 dark:shadow-none">
-                    <i class='bx bxl-facebook text-xl'></i> Facebook
-                  </button>
-                  <button @click="shareOnTwitter"
-                    class="flex items-center gap-2 px-6 py-3 bg-[#1da1f2] text-white rounded-full font-medium hover:bg-[#0c8bd9] transition-all hover:-translate-y-1 shadow-lg shadow-blue-200 dark:shadow-none">
-                    <i class='bx bxl-twitter text-xl'></i> Twitter
-                  </button>
-                  <button @click="copyLink"
-                    class="flex items-center gap-2 px-6 py-3 bg-gray-800 dark:bg-gray-700 text-white rounded-full font-medium hover:bg-gray-900 dark:hover:bg-gray-600 transition-all hover:-translate-y-1 shadow-lg shadow-gray-200 dark:shadow-none">
-                    <i class='bx bx-link text-xl'></i> Copy Link
-                  </button>
-                </div>
-              </div>
+          <section class="blog-detail__comments" :aria-label="t('comment.title', { count: comments.length })">
+            <h2 class="blog-detail__comments-title">{{ t('comment.title', { count: comments.length }) }}</h2>
 
-              <!-- Author Bio -->
-              <div
-                class="mt-12 p-8 bg-gradient-to-br from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-2xl flex flex-col md:flex-row gap-6 items-center md:items-start text-center md:text-left">
-                <img :src="post?.author?.avatar || 'https://ui-avatars.com/api/?name=' + post?.author?.userName"
-                  :alt="post?.author?.userName"
-                  class="w-24 h-24 rounded-full object-cover border-4 border-white dark:border-gray-600 shadow-md flex-shrink-0" />
-                <div>
-                  <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">{{ post?.author?.userName }}</h3>
-                  <p class="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-                    {{ post?.author?.bio || 'Passionate traveler and writer.' }}</p>
-                  <div class="flex gap-3 justify-center md:justify-start">
-                    <a href="#"
-                      class="w-10 h-10 bg-white dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 hover:shadow-md transition-all">
-                      <i class='bx bxl-facebook text-xl'></i>
-                    </a>
-                    <a href="#"
-                      class="w-10 h-10 bg-white dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 hover:shadow-md transition-all">
-                      <i class='bx bxl-twitter text-xl'></i>
-                    </a>
-                    <a href="#"
-                      class="w-10 h-10 bg-white dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-500 dark:text-gray-300 hover:text-orange-500 dark:hover:text-orange-400 hover:shadow-md transition-all">
-                      <i class='bx bxl-instagram text-xl'></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
+            <form v-if="user" class="blog-detail__comment-form" @submit.prevent="handleCreateComment">
+              <label class="visually-hidden" for="new-comment">{{ t('comment.placeholder') }}</label>
+              <textarea id="new-comment" v-model="newCommentContent" class="ui-control" rows="4"
+                :placeholder="t('comment.placeholder')" required></textarea>
+              <UiButton type="submit" :disabled="createCommentMutation?.isPending?.value || !newCommentContent.trim()">
+                {{ createCommentMutation?.isPending?.value ? t('comment.posting') : t('comment.post') }}
+              </UiButton>
+            </form>
 
-              <!-- Comments Section -->
-              <div class="mt-16">
-                <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-8">
-                  Comments ({{ commentsData?.total || 0 }})
-                </h3>
-
-                <!-- Comment Form -->
-                <form v-if="user" @submit.prevent="handleCreateComment" class="space-y-4 mb-8">
-                  <textarea v-model="newCommentContent" placeholder="Write a comment..." rows="4"
-                    class="w-full px-6 py-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-all text-gray-900 dark:text-white placeholder-gray-400"
-                    required></textarea>
-                  <button type="submit" :disabled="createCommentMutation?.isPending?.value || !newCommentContent.trim()"
-                    class="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-full hover:shadow-lg hover:shadow-orange-200 dark:hover:shadow-none hover:-translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-                    {{ createCommentMutation?.isPending?.value ? 'Posting...' : 'Post Comment' }}
-                  </button>
-                </form>
-
-                <!-- Login prompt -->
-                <div v-else class="mb-8 p-6 bg-gray-50 dark:bg-gray-700 rounded-xl text-center">
-                  <p class="text-gray-600 dark:text-gray-300 mb-4">Please login to comment</p>
-                  <router-link to="/login"
-                    class="inline-block px-6 py-3 bg-orange-500 text-white font-bold rounded-full hover:bg-orange-600 transition-colors">
-                    Login
-                  </router-link>
-                </div>
-
-                <!-- Comments List -->
-                <div v-if="commentsLoading" class="text-center py-8">
-                  <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto">
-                  </div>
-                </div>
-
-                <div v-else-if="comments.length > 0" class="space-y-6">
-                  <CommentItem v-for="comment in comments" :key="comment.id" :comment="comment" :current-user="user"
-                    :blog-id="id" @refresh="refetchComments" />
-                </div>
-
-                <div v-else class="text-center py-8 text-gray-500 dark:text-gray-400">
-                  No comments yet. Be the first to comment!
-                </div>
-              </div>
+            <div v-else class="blog-detail__login-prompt">
+              <p>{{ t('comment.loginPrompt') }}</p>
+              <UiButton :to="localePath('/login')">{{ t('comment.login') }}</UiButton>
             </div>
-          </article>
 
-          <!-- Sidebar (4 cols) -->
-          <aside class="lg:col-span-4 space-y-8">
-            <!-- Sticky Container -->
-            <div class="sticky top-24 space-y-8">
+            <p v-if="commentsLoading" class="blog-detail__comments-status">{{ t('common.loadingData') }}</p>
 
-              <!-- Share Widget -->
-              <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-transparent dark:border-gray-700">
-                <h3
-                  class="text-lg font-bold text-gray-800 dark:text-white mb-4 pb-3 border-b-2 border-orange-500 inline-block">
-                  Share</h3>
-                <div class="flex gap-3">
-                  <button @click="shareOnFacebook"
-                    class="flex-1 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all">
-                    <i class='bx bxl-facebook text-2xl'></i>
-                  </button>
-                  <button @click="shareOnTwitter"
-                    class="flex-1 h-12 bg-sky-50 dark:bg-sky-900/30 text-sky-500 dark:text-sky-400 rounded-xl flex items-center justify-center hover:bg-sky-500 hover:text-white dark:hover:bg-sky-500 dark:hover:text-white transition-all">
-                    <i class='bx bxl-twitter text-2xl'></i>
-                  </button>
-                  <button @click="copyLink"
-                    class="flex-1 h-12 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl flex items-center justify-center hover:bg-gray-800 hover:text-white dark:hover:bg-gray-600 dark:hover:text-white transition-all">
-                    <i class='bx bx-link text-2xl'></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Related Posts -->
-              <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-transparent dark:border-gray-700"
-                v-if="relatedPosts.length > 0">
-                <h3
-                  class="text-lg font-bold text-gray-800 dark:text-white mb-6 pb-3 border-b-2 border-orange-500 inline-block">
-                  Related Posts</h3>
-                <div class="space-y-6">
-                  <router-link v-for="relatedPost in relatedPosts" :key="relatedPost?.id"
-                    :to="`/blog/${relatedPost?.id}`" class="group flex gap-4 items-start">
-                    <div class="w-20 h-20 rounded-xl overflow-hidden flex-shrink-0">
-                      <img :src="getImageUrl(relatedPost?.thumbnail)" :alt="relatedPost?.name"
-                        class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                    <div>
-                      <h4
-                        class="font-bold text-gray-800 dark:text-white leading-snug mb-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors line-clamp-2">
-                        {{ relatedPost?.name }}</h4>
-                      <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{
-                        formatDate(relatedPost?.createdAt)
-                      }}</span>
-                    </div>
-                  </router-link>
-                </div>
-              </div>
-
-              <!-- Newsletter -->
-              <div
-                class="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl shadow-lg p-8 text-center text-white relative overflow-hidden">
-                <div
-                  class="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-                </div>
-                <div class="relative z-10">
-                  <i class='bx bx-envelope text-4xl mb-4'></i>
-                  <h3 class="text-xl font-bold mb-2">Join Our Newsletter</h3>
-                  <p class="text-indigo-100 text-sm mb-6">Get the latest travel tips and stories delivered to your
-                    inbox.
-                  </p>
-                  <input type="email" placeholder="Your email address"
-                    class="w-full px-4 py-3 rounded-xl text-gray-800 mb-3 focus:outline-none focus:ring-2 focus:ring-white/50" />
-                  <button
-                    class="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-bold rounded-xl transition-colors shadow-lg">Subscribe</button>
-                </div>
-              </div>
-
+            <div v-else-if="comments.length > 0" class="blog-detail__comments-list">
+              <CommentItem v-for="comment in comments" :key="comment.id" :comment="comment" :current-user="user"
+                :blog-id="id" @refresh="refetchComments" />
             </div>
-          </aside>
 
+            <p v-else class="blog-detail__comments-status">{{ t('comment.empty') }}</p>
+          </section>
         </div>
       </div>
+
+      <section v-if="relatedPosts.length > 0" class="shell blog-detail__related" :aria-label="t('blog.detail.relatedPosts')">
+        <h2 class="blog-detail__related-title">{{ t('blog.detail.relatedPosts') }}</h2>
+        <ul class="blog-detail__related-grid" role="list">
+          <li v-for="relatedPost in relatedPosts" :key="relatedPost.id">
+            <ArticleCard :to="localePath(`/blog/${relatedPost.id}`)" :image="getImageUrl(relatedPost.thumbnail)"
+              :title="relatedPost.name" :meta="[formatDate(relatedPost.createdAt)]" />
+          </li>
+        </ul>
+      </section>
     </div>
-    <div v-else-if="isLoading" class="flex items-center justify-center min-h-screen">
-      <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-orange-500"></div>
+
+    <div v-else-if="isLoading" class="shell blog-detail__status">
+      <p>{{ t('common.loadingData') }}</p>
     </div>
-    <div v-else class="flex items-center justify-center min-h-screen">
-      <p class="text-xl text-gray-600 dark:text-gray-400">Post not found</p>
+
+    <div v-else class="shell blog-detail__notfound">
+      <UiEmptyState :title="t('blog.detail.notFound')" :description="t('blog.detail.notFoundDesc')">
+        <UiButton :to="localePath('/blog')">{{ t('blog.detail.backToBlog') }}</UiButton>
+      </UiEmptyState>
     </div>
   </div>
 </template>
 
-<style>
-/* Custom scrollbar for the page */
-::-webkit-scrollbar {
-  width: 8px;
+<style scoped>
+.blog-detail__progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 50;
+  height: 2px;
+  background: var(--color-accent);
+  transition: width var(--transition-fast);
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
+.blog-detail__head {
+  padding-top: var(--space-page-top);
+  padding-bottom: var(--space-fluid-lg);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #cbd5e0;
-  border-radius: 4px;
+.blog-detail__eyebrow {
+  margin-bottom: var(--space-5);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #a0aec0;
+.blog-detail__eyebrow a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-accent);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.blog-detail__eyebrow a::before {
+  content: '';
+  flex-shrink: 0;
+  width: 2.5rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.blog-detail__title {
+  max-width: 50rem;
+  font-family: var(--font-serif);
+  font-size: var(--text-display);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.blog-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-6);
+  color: var(--color-text-muted);
+  font-size: var(--text-ui);
+}
+
+.blog-detail__meta > * + *::before {
+  content: '·';
+  margin-right: var(--space-3);
+}
+
+.blog-detail__avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-right: var(--space-2);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.blog-detail__share {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
+}
+
+.blog-detail__share :deep(.ui-btn) {
+  padding-inline: 0;
+}
+
+.blog-detail__cover {
+  margin-bottom: var(--space-block);
+}
+
+.blog-detail__cover img {
+  width: 100%;
+  max-height: 32rem;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  background: var(--color-bg-subtle);
+}
+
+.blog-detail__measure {
+  max-width: 42rem;
+  margin-inline: auto;
+  padding-bottom: var(--space-block);
+}
+
+/* Kiểu chữ cho nội dung v-html */
+.prose :deep(h1),
+.prose :deep(h2),
+.prose :deep(h3),
+.prose :deep(h4) {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-3);
+  font-family: var(--font-serif);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+}
+
+.prose :deep(h1) {
+  font-size: var(--text-h3);
+}
+
+.prose :deep(h2) {
+  font-size: var(--text-title-lg);
+}
+
+.prose :deep(h3) {
+  font-size: var(--text-title);
+}
+
+.prose :deep(p) {
+  margin-bottom: var(--space-5);
+  color: var(--color-text);
+  font-size: var(--text-lead);
+  line-height: var(--leading-body);
+}
+
+.prose :deep(a) {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.prose :deep(strong) {
+  font-weight: var(--weight-semibold);
+}
+
+.prose :deep(ul),
+.prose :deep(ol) {
+  margin: 0 0 var(--space-5) var(--space-5);
+  color: var(--color-text);
+  line-height: var(--leading-body);
+}
+
+.prose :deep(img) {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  margin-block: var(--space-6);
+  border-radius: var(--radius-md);
+}
+
+.prose :deep(blockquote) {
+  margin-block: var(--space-6);
+  padding-left: var(--space-5);
+  border-left: 2px solid var(--color-accent);
+  color: var(--color-text-muted);
+  font-family: var(--font-serif);
+  font-size: var(--text-lead);
+  font-style: italic;
+}
+
+.blog-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-6);
+  margin-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.blog-detail__tags li {
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 2rem;
+}
+
+.blog-detail__comments {
+  padding-top: var(--space-block);
+  margin-top: var(--space-block);
+  border-top: 1px solid var(--color-border-strong);
+}
+
+.blog-detail__comments-title {
+  margin-bottom: var(--space-fluid-md);
+  font-family: var(--font-serif);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-regular);
+}
+
+.blog-detail__comment-form {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-fluid-md);
+}
+
+.blog-detail__comment-form .ui-btn {
+  justify-self: start;
+}
+
+.blog-detail__login-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  margin-bottom: var(--space-fluid-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.blog-detail__login-prompt p {
+  color: var(--color-text-muted);
+}
+
+.blog-detail__comments-status {
+  padding-block: var(--space-6);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.blog-detail__related {
+  padding-bottom: var(--section-space);
+  margin-top: var(--space-block);
+  border-top: 1px solid var(--color-border-strong);
+}
+
+.blog-detail__related-title {
+  padding-top: var(--space-fluid-lg);
+  margin-bottom: var(--space-fluid-md);
+  font-family: var(--font-serif);
+  font-size: var(--text-h3);
+  font-weight: var(--weight-regular);
+}
+
+.blog-detail__related-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: var(--space-fluid-lg) var(--space-fluid-sm);
+}
+
+.blog-detail__status,
+.blog-detail__notfound {
+  padding-block: var(--section-space);
+  color: var(--color-text-muted);
+  text-align: center;
 }
 </style>

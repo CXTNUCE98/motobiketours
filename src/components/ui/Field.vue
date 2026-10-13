@@ -1,23 +1,26 @@
 <script setup lang="ts">
 // Khung cho một ô nhập: nhãn + control (slot) + thông báo lỗi.
 // Slot nhận { id, describedBy, invalid } để gắn vào input bên trong.
+// Form render ở server nên truyền `id` cố định: id tự sinh (useId) có thể lệch giữa server và client.
 const props = defineProps<{
     label: string;
     error?: string;
+    id?: string;
 }>();
 
-const id = useId();
-const errorId = `${id}-error`;
+const autoId = useId();
+const fieldId = computed(() => props.id || autoId);
+const errorId = computed(() => `${fieldId.value}-error`);
 const slotProps = computed(() => ({
-    id,
-    describedBy: props.error ? errorId : undefined,
+    id: fieldId.value,
+    describedBy: props.error ? errorId.value : undefined,
     invalid: props.error ? 'true' : undefined,
 }));
 </script>
 
 <template>
     <div class="ui-field">
-        <label :for="id" class="ui-field__label">{{ label }}</label>
+        <label :for="fieldId" class="ui-field__label">{{ label }}</label>
         <slot v-bind="slotProps" />
         <p v-if="error" :id="errorId" class="ui-field__error">{{ error }}</p>
     </div>

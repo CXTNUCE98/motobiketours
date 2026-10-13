@@ -16,7 +16,9 @@ Quy tắc:
 - **Không viết mã màu** (`#fff`, `rgb()`, `bg-blue-500`, `text-gray-700`…) trong component. Dùng `var(--color-*)`.
 - **Không viết `dark:`**. Dark mode đổi màu tự động qua token (`:root.dark` trong `tokens.css`).
 - Cỡ chữ dùng `var(--text-*)`, khoảng cách `var(--space-*)`, bo góc `var(--radius-*)`, transition `var(--transition-*)`.
-- Element Plus (dialog, message, select, date picker…) đã nhận màu từ token, không cần ghi đè thủ công.
+- Element Plus (dialog, message, select, date picker, rate…) đã nhận màu từ token, không cần ghi đè thủ công.
+- Thư viện cần mã màu cụ thể (vd. đường vẽ Leaflet): `readCssVar('--color-accent')` trong `src/utils/cssVar.ts`.
+- Chèn chữ vào chuỗi HTML (vd. divIcon của Leaflet): luôn qua `escapeHtml()` trong `src/utils/sanitize.ts`.
 
 ### Token hay dùng
 

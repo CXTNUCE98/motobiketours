@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useMutation, useQueryClient } from '@tanstack/vue-query'
+import { useI18n } from 'vue-i18n'
 import { logger } from '~/utils/logger'
 
 const props = defineProps({
@@ -21,12 +22,13 @@ const props = defineProps({
 const emit = defineEmits(['refresh'])
 
 const { user } = useAuth()
+const { t } = useI18n()
 const queryClient = useQueryClient()
 
 const showReplyForm = ref(false)
 const replyContent = ref('')
 
-// Format date
+// Thời gian tương đối (vừa xong, N phút/giờ/ngày trước)
 const formatDate = (dateString) => {
     if (!dateString) return ''
     const date = new Date(dateString)
@@ -36,10 +38,10 @@ const formatDate = (dateString) => {
     const hours = Math.floor(diff / 3600000)
     const days = Math.floor(diff / 86400000)
 
-    if (minutes < 1) return 'Just now'
-    if (minutes < 60) return `${minutes}m ago`
-    if (hours < 24) return `${hours}h ago`
-    if (days < 7) return `${days}d ago`
+    if (minutes < 1) return t('comment.justNow')
+    if (minutes < 60) return t('comment.minutesAgo', { count: minutes })
+    if (hours < 24) return t('comment.hoursAgo', { count: hours })
+    if (days < 7) return t('comment.daysAgo', { count: days })
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
@@ -54,10 +56,10 @@ const createReplyMutation = useMutation({
         showReplyForm.value = false
         emit('refresh')
     },
-    onError: (error) => {
+    onError: () => {
         ElNotification({
-            title: 'Error',
-            message: 'Failed to post reply. Please try again.',
+            title: t('comment.errorTitle'),
+            message: t('comment.replyError'),
             type: 'error',
         })
     }
@@ -91,8 +93,8 @@ const deleteMutation = useMutation({
     onError: (error) => {
         logger.error('Error deleting comment:', error)
         ElNotification({
-            title: 'Error',
-            message: 'Failed to delete comment. You can only delete your own comments.',
+            title: t('comment.errorTitle'),
+            message: t('comment.deleteError'),
             type: 'error',
         })
     }
@@ -116,8 +118,8 @@ const handleReply = () => {
 const handleLike = () => {
     if (!user.value) {
         ElNotification({
-            title: 'Error',
-            message: 'Please login to like comments',
+            title: t('comment.errorTitle'),
+            message: t('comment.likeLoginRequired'),
             type: 'error',
         })
         return
@@ -128,8 +130,8 @@ const handleLike = () => {
 const handleDislike = () => {
     if (!user.value) {
         ElNotification({
-            title: 'Error',
-            message: 'Please login to dislike comments',
+            title: t('comment.errorTitle'),
+            message: t('comment.dislikeLoginRequired'),
             type: 'error',
         })
         return
@@ -138,7 +140,7 @@ const handleDislike = () => {
 }
 
 const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this comment?')) {
+    if (confirm(t('comment.confirmDelete'))) {
         deleteMutation.mutate(props.comment.id)
     }
 }
@@ -150,80 +152,59 @@ const isOwnComment = computed(() => {
 
 <template>
     <div class="comment-item">
-        <div class="flex gap-4">
-            <!-- Avatar -->
-            <img :src="comment?.author?.avatar" :alt="comment?.author?.userName"
-                class="w-10 h-10 rounded-full object-cover flex-shrink-0 border-2 border-gray-200 dark:border-gray-600" />
+        <img :src="comment?.author?.avatar" :alt="comment?.author?.userName" class="comment-item__avatar">
 
-            <div class="flex-1">
-                <!-- Header -->
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="font-bold text-gray-800 dark:text-white">{{ comment?.author?.userName }}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(comment?.createdAt) }}</span>
+        <div class="comment-item__body">
+            <p class="comment-item__head">
+                <span class="comment-item__author">{{ comment?.author?.userName }}</span>
+                <span aria-hidden="true">·</span>
+                <span class="comment-item__date">{{ formatDate(comment?.createdAt) }}</span>
+            </p>
+
+            <p class="comment-item__content">{{ comment?.content }}</p>
+
+            <div class="comment-item__actions">
+                <button type="button" class="comment-item__action" :disabled="likeMutation.isPending.value"
+                    @click="handleLike">
+                    {{ t('comment.like') }}<span v-if="comment?.likeCount"> ({{ comment.likeCount }})</span>
+                </button>
+                <button type="button" class="comment-item__action" :disabled="likeMutation.isPending.value"
+                    @click="handleDislike">
+                    {{ t('comment.dislike') }}<span v-if="comment?.dislikeCount"> ({{ comment.dislikeCount }})</span>
+                </button>
+                <UiButton v-if="user" variant="ghost" size="sm" @click="showReplyForm = !showReplyForm">
+                    {{ t('comment.reply') }}
+                </UiButton>
+                <button v-if="isOwnComment" type="button" class="comment-item__action comment-item__action--danger"
+                    :disabled="deleteMutation?.isPending?.value" @click="handleDelete">
+                    {{ t('comment.delete') }}
+                </button>
+            </div>
+
+            <form v-if="showReplyForm" class="comment-item__reply-form" @submit.prevent="handleReply">
+                <label class="visually-hidden" :for="`reply-${comment.id}`">{{ t('comment.replyPlaceholder') }}</label>
+                <textarea :id="`reply-${comment.id}`" v-model="replyContent" class="ui-control" rows="3"
+                    :placeholder="t('comment.replyPlaceholder')" required></textarea>
+                <div class="comment-item__reply-actions">
+                    <UiButton type="submit" size="sm" :disabled="createReplyMutation?.isPending?.value || !replyContent.trim()">
+                        {{ createReplyMutation?.isPending?.value ? t('comment.posting') : t('comment.postReply') }}
+                    </UiButton>
+                    <UiButton type="button" variant="ghost" size="sm" @click="showReplyForm = false">
+                        {{ t('comment.cancel') }}
+                    </UiButton>
                 </div>
-                <!-- Content -->
-                <p class="text-gray-700 dark:text-gray-300 mb-3 leading-relaxed">{{ comment?.content }}</p>
+            </form>
 
-                <!-- Actions -->
-                <div class="flex items-center gap-4 text-sm">
-                    <button @click="handleLike" :disabled="likeMutation.isPending.value"
-                        class="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
-                        <i class='bx bx-like'></i>
-                        <span>{{ comment?.likeCount }}</span>
-                    </button>
+            <div v-if="comment?.replies && comment?.replies?.length > 0" class="comment-item__replies">
+                <CommentItem v-for="reply in comment?.replies" :key="reply.id" :comment="reply"
+                    :current-user="currentUser" :blog-id="blogId" @refresh="emit('refresh')" />
+            </div>
 
-                    <button @click="handleDislike" :disabled="likeMutation.isPending.value"
-                        class="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
-                        <i class='bx bx-dislike'></i>
-                        <span>{{ comment?.dislikeCount }}</span>
-                    </button>
-
-                    <button v-if="user" @click="showReplyForm = !showReplyForm"
-                        class="flex items-center gap-1 text-gray-600 dark:text-gray-400 hover:text-orange-500 dark:hover:text-orange-400 transition-colors">
-                        <i class='bx bx-reply'></i>
-                        <span>Reply</span>
-                    </button>
-
-                    <button v-if="isOwnComment" @click="handleDelete" :disabled="deleteMutation?.isPending?.value"
-                        class="flex items-center gap-1 text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 transition-colors">
-                        <i class='bx bx-trash'></i>
-                        <span>Delete</span>
-                    </button>
-                </div>
-
-                <!-- Reply Form -->
-                <div v-if="showReplyForm" class="mt-4">
-                    <textarea v-model="replyContent" placeholder="Write a reply..." rows="3"
-                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 dark:focus:ring-orange-500/20 transition-all text-gray-900 dark:text-white placeholder-gray-400 text-sm"
-                        required></textarea>
-                    <div class="flex gap-2 mt-2">
-                        <button @click="handleReply"
-                            :disabled="createReplyMutation?.isPending?.value || !replyContent.trim()"
-                            class="px-4 py-2 bg-orange-500 text-white text-sm font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            {{ createReplyMutation?.isPending?.value ? 'Posting...' : 'Post Reply' }}
-                        </button>
-                        <button @click="showReplyForm = false"
-                            class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Nested Replies -->
-                <div v-if="comment?.replies && comment?.replies?.length > 0"
-                    class="mt-6 space-y-6 pl-4 border-l-2 border-gray-200 dark:border-gray-700">
-                    <CommentItem v-for="reply in comment?.replies" :key="reply.id" :comment="reply"
-                        :current-user="currentUser" :blog-id="blogId" @refresh="emit('refresh')" />
-                </div>
-
-                <!-- Load more replies -->
-                <div v-if="comment?.replyCount > 5 && (!comment?.replies || comment?.replies?.length < comment?.replyCount)"
-                    class="mt-4">
-                    <button
-                        class="text-sm text-orange-500 hover:text-orange-600 dark:text-orange-400 dark:hover:text-orange-300 font-medium">
-                        Load {{ comment?.replyCount - (comment?.replies?.length || 0) }} more replies
-                    </button>
-                </div>
+            <div v-if="comment?.replyCount > 5 && (!comment?.replies || comment?.replies?.length < comment?.replyCount)"
+                class="comment-item__load-more">
+                <button type="button">
+                    {{ t('comment.loadMoreReplies', { count: comment?.replyCount - (comment?.replies?.length || 0) }) }}
+                </button>
             </div>
         </div>
     </div>
@@ -231,7 +212,99 @@ const isOwnComment = computed(() => {
 
 <style scoped>
 .comment-item {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
+    display: flex;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.comment-item__avatar {
+    flex-shrink: 0;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--color-bg-subtle);
+}
+
+.comment-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.comment-item__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.comment-item__author {
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+}
+
+.comment-item__content {
+    margin-top: var(--space-2);
+    color: var(--color-text);
+    line-height: var(--leading-body);
+}
+
+.comment-item__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-3);
+}
+
+.comment-item__action {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    transition: color var(--transition-base);
+}
+
+.comment-item__action:hover:not(:disabled) {
+    color: var(--color-accent);
+}
+
+.comment-item__action--danger:hover:not(:disabled) {
+    color: var(--color-danger);
+}
+
+.comment-item__action:focus-visible,
+.comment-item__load-more button:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.comment-item__reply-form {
+    margin-top: var(--space-4);
+}
+
+.comment-item__reply-actions {
+    display: flex;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+}
+
+.comment-item__replies {
+    margin-top: var(--space-4);
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--color-border);
+}
+
+.comment-item__load-more {
+    margin-top: var(--space-3);
+}
+
+.comment-item__load-more button {
+    color: var(--color-accent);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
 }
 </style>

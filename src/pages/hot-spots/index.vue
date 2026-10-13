@@ -11,18 +11,29 @@ const filters = ref<GetHotSpotsQuery>({
     lng: undefined,
 });
 
-const categories = [
+// Computed để nhãn danh mục cập nhật ngay khi đổi ngôn ngữ.
+const categories = computed(() => [
     { label: t('hotSpots.categories.all'), value: '' },
     { label: t('hotSpots.categories.checkin'), value: 'Check-in' },
     { label: t('hotSpots.categories.nature'), value: 'Cảnh đẹp' },
     { label: t('hotSpots.categories.spiritual'), value: 'Vãn cảnh' },
     { label: t('hotSpots.categories.food'), value: 'Ẩm thực' },
-];
+]);
 
 const selectedSpotId = ref<string | null>(null);
 const isDetailOpen = ref(false);
 
 const { data: spots, isLoading, isFetching, refetch: refresh } = useHotSpotsQuery(filters);
+
+// Tìm kiếm tại chỗ trên danh sách đã tải, không gọi lại API.
+const searchQuery = ref('');
+const filteredSpots = computed(() => {
+    const list: HotSpot[] = spots.value || [];
+    const query = searchQuery.value.trim().toLowerCase();
+    if (!query) return list;
+    return list.filter((spot) =>
+        spot.name?.toLowerCase().includes(query) || spot.address?.toLowerCase().includes(query));
+});
 
 const { coords, isSupported, error: geoError, isLoading: isGeoLoading, isFallback } = useGeolocationStore();
 
@@ -126,11 +137,11 @@ const handleEdit = (spot: HotSpot) => {
 const handleDelete = async (id: string) => {
     try {
         await ElMessageBox.confirm(
-            'Are you sure you want to delete this hot spot?',
-            'Warning',
+            t('hotSpots.deleteConfirm'),
+            t('common.warning'),
             {
-                confirmButtonText: 'Delete',
-                cancelButtonText: 'Cancel',
+                confirmButtonText: t('common.remove'),
+                cancelButtonText: t('common.cancel'),
                 type: 'warning',
             }
         );
@@ -140,201 +151,106 @@ const handleDelete = async (id: string) => {
     }
 };
 
+const clearSearch = () => {
+    searchQuery.value = '';
+};
+
 useHead({
     title: `${t('hotSpots.title')} | ANDAGO`,
 });
 </script>
 
 <template>
-    <div class="min-h-screen bg-zinc-50 dark:bg-black pt-24 pb-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="hot-spots-page">
+        <UiPageHero :eyebrow="t('nav.hotSpots')" :title="t('hotSpots.title')" :intro="t('hotSpots.discoverMost')">
+            <template #actions>
+                <UiButton @click="isCustomTourOpen = true">{{ t('hotSpots.buildTrip') }}</UiButton>
+                <UiButton v-if="isAdmin" variant="outline" @click="handleCreate">+ {{ t('common.create') }}</UiButton>
+            </template>
+        </UiPageHero>
 
-            <!-- Spotlight Header -->
-            <div
-                class="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-zinc-100 dark:border-zinc-800">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                    <div>
-                        <h1 class="text-4xl md:text-5xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-                            {{ t('hotSpots.title') }}
-                        </h1>
-                        <p class="mt-3 text-zinc-500 dark:text-zinc-400 font-medium max-w-lg">
-                            {{ t('hotSpots.discoverMost') }}
-                        </p>
-                        <div v-if="locationErrorMessage"
-                            class="mt-4 flex items-center gap-2 text-red-500 text-sm font-medium">
-                            <i class='bx bx-error-circle'></i>
-                            <span>{{ locationErrorMessage }}</span>
-                        </div>
+        <section class="shell hot-spots-layout" aria-labelledby="hot-spots-toolbar-title">
+            <!-- Toolbar -->
+            <div class="hs-toolbar">
+                <div class="hs-toolbar__row">
+                    <h2 id="hot-spots-toolbar-title" class="visually-hidden">{{ t('hotSpots.title') }}</h2>
+                    <div class="hs-chips" role="group" :aria-label="t('common.category')">
+                        <UiChip v-for="cat in categories" :key="cat.value" :active="filters.category === cat.value"
+                            @click="filters.category = cat.value">
+                            {{ cat.label }}
+                        </UiChip>
                     </div>
 
-                    <div class="flex items-center gap-4">
-                        <!-- Custom Switch for Mini Map (Only show in Grid mode) -->
-                        <el-tooltip class="box-item" :content="t('hotSpots.miniMap')" placement="top">
-                            <transition enter-active-class="transition duration-300 ease-out"
-                                enter-from-class="opacity-0 translate-x-4" enter-to-class="opacity-100 translate-x-0"
-                                leave-active-class="transition duration-200 ease-in"
-                                leave-from-class="opacity-100 translate-x-0" leave-to-class="opacity-0 translate-x-4">
-                                <button v-if="!isMapView" @click="isMiniMap = !isMiniMap"
-                                    class="group flex items-center gap-3 bg-zinc-100 dark:bg-zinc-800 p-1.5 rounded-full transition-all duration-300 hover:ring-2 hover:ring-blue-500/20"
-                                    :class="{ 'ring-2 ring-blue-500/30 bg-blue-50/50 dark:bg-blue-900/10': isMiniMap }">
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center transition-all duration-500"
-                                        :class="isMiniMap ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30' : 'bg-white dark:bg-zinc-700 text-zinc-400'">
-                                        <i class='bx bxs-map-pin' :class="{ 'animate-bounce': isMiniMap }"></i>
-                                    </div>
-                                </button>
-                            </transition>
-                        </el-tooltip>
-
-                        <!-- Custom Tour Builder Button -->
-                        <el-tooltip class="box-item" :content="t('customTour.title')" placement="top">
-                            <button @click="isCustomTourOpen = true"
-                                class="h-11 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-full hover:shadow-lg hover:scale-105 active:scale-95 transition-all text-sm flex items-center gap-2">
-                                <i class='bx bxs-car'></i>
-                            </button>
-                        </el-tooltip>
-
-                        <!-- Create hot spot (Admin only) -->
-                        <el-tooltip class="box-item" :content="t('common.create')" placement="top">
-                            <button v-if="isAdmin" @click="handleCreate"
-                                class="h-11 flex items-center justify-center px-6 bg-zinc-900 dark:bg-zinc-800 text-white font-bold rounded-full hover:scale-105 active:scale-95 transition-all shadow-lg text-sm">
-                                <i class='bx bx-plus-circle'></i>
-                            </button>
-                        </el-tooltip>
-                    </div>
+                    <label class="visually-hidden" for="hs-search">{{ t('hotSpots.searchPlaceholder') }}</label>
+                    <input id="hs-search" v-model="searchQuery" type="search" class="ui-control ui-control--pill hs-search"
+                        :placeholder="t('hotSpots.searchPlaceholder')">
                 </div>
 
-                <!-- Filter Bar -->
-                <div class="mt-12 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div class="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-hide">
-                        <button v-for="cat in categories" :key="cat.value" @click="filters.category = cat.value"
-                            class="px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap shadow-sm border"
-                            :class="filters.category === cat.value
-                                ? 'bg-blue-600 border-blue-600 text-white shadow-blue-200 dark:shadow-none'
-                                : 'bg-white dark:bg-zinc-800 border-zinc-100 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-blue-400'">
-                            {{ cat.label }}
+                <div class="hs-toolbar__row hs-toolbar__row--secondary">
+                    <div class="view-toggle" role="group" :aria-label="t('hotSpots.viewModeLabel')">
+                        <button type="button" :aria-pressed="!isMapView" @click="isMapView = false">
+                            {{ t('common.grid') }}
+                        </button>
+                        <button type="button" :aria-pressed="isMapView" @click="isMapView = true">
+                            {{ t('hotSpots.map') }}
                         </button>
                     </div>
 
-                    <div class="flex items-center gap-6 w-full sm:w-auto justify-end">
-                        <!-- View mode switcher -->
-                        <div class="flex items-center bg-zinc-100 dark:bg-zinc-800 p-1 rounded-2xl">
-                            <button @click="isMapView = false"
-                                class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all"
-                                :class="!isMapView ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">
-                                <i class='bx bxs-grid-alt'></i>
-                                {{ t('common.grid') || 'Lưới' }}
-                            </button>
-                            <button @click="isMapView = true"
-                                class="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all"
-                                :class="isMapView ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'">
-                                <i class='bx bxs-map'></i>
-                                {{ t('hotSpots.map') || 'Bản đồ' }}
-                            </button>
-                        </div>
+                    <button v-if="!isMapView" type="button" class="hs-minimap-toggle" :aria-pressed="isMiniMap"
+                        @click="isMiniMap = !isMiniMap">
+                        {{ t('hotSpots.miniMap') }}
+                    </button>
 
-                        <div
-                            class="hidden lg:flex items-center gap-2 px-4 py-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl text-xs font-bold text-zinc-400 border border-zinc-100 dark:border-zinc-800">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            {{ isFallback ? 'IP' : 'GPS' }}
-                        </div>
-                    </div>
+                    <span class="hs-location-source">
+                        {{ t('hotSpots.locationSource') }}: {{ isFallback ? 'IP' : 'GPS' }}
+                    </span>
                 </div>
 
-                <!-- Mini Map Section -->
-                <transition enter-active-class="transition duration-500 ease-out"
-                    enter-from-class="transform scale-95 opacity-0 -translate-y-4"
-                    enter-to-class="transform scale-100 opacity-100 translate-y-0"
-                    leave-active-class="transition duration-300 ease-in"
-                    leave-from-class="transform scale-100 opacity-100 translate-y-0"
-                    leave-to-class="transform scale-95 opacity-0 -translate-y-4">
-                    <div v-if="isMiniMap" class="mt-12 h-64 md:h-80 relative group">
-                        <ClientOnly>
-                            <LeafletMap :spots="spots || []" :selected-spot-id="selectedSpotId"
-                                @select-spot="selectSpot"
-                                :center="filters.lat && filters.lng ? [filters.lat, filters.lng] : undefined" />
-                        </ClientOnly>
-                        <!-- Overlay gradient for depth -->
-                        <div
-                            class="absolute inset-0 pointer-events-none rounded-2xl ring-1 ring-inset ring-black/5 dark:ring-white/5 shadow-inner">
-                        </div>
-                    </div>
-                </transition>
-
-                <!-- Grid/Map Results -->
-                <div v-if="isLoading" class="mt-20 flex flex-col items-center justify-center py-20">
-                    <div class="relative">
-                        <div class="w-16 h-16 border-4 border-blue-100 dark:border-blue-900/30 rounded-full"></div>
-                        <div
-                            class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin">
-                        </div>
-                    </div>
-                    <p class="mt-6 text-zinc-500 dark:text-zinc-400 font-bold animate-pulse">
-                        {{ t('common.loadingData') }}...
-                    </p>
-                </div>
-
-                <div v-else-if="!spots || spots.length === 0"
-                    class="mt-20 text-center py-20 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[2.5rem]">
-                    <i class='bx bxs-map-pin text-6xl text-zinc-300 dark:text-zinc-700'></i>
-                    <h3 class="mt-4 text-xl font-bold text-zinc-400">{{ t('common.noLocationsFound') }}</h3>
-                    <p class="text-sm text-zinc-500 mt-1">{{ t('common.tryAgain') }}</p>
-                    <el-button @click="() => refresh()"
-                        class="mt-6 px-6 py-2 bg-zinc-900 dark:bg-white dark:text-black text-white rounded-full font-bold">{{
-                            t('common.reload') }}</el-button>
-                </div>
-
-                <!-- Main View Toggle -->
-                <div v-else class="mt-12">
-                    <transition name="fade-slide" mode="out-in">
-                        <div v-if="isMapView" key="map-view"
-                            class="h-[600px] rounded-[2.5rem] overflow-hidden border border-zinc-100 dark:border-zinc-800 shadow-sm relative group">
-                            <ClientOnly>
-                                <LeafletMap :spots="spots" :selected-spot-id="selectedSpotId" @select-spot="selectSpot"
-                                    :center="filters.lat && filters.lng ? [filters.lat, filters.lng] : undefined" />
-                            </ClientOnly>
-                            <!-- Decorative corner accent -->
-                            <div class="absolute top-6 left-6 z-[1000] pointer-events-none">
-                                <div
-                                    class="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md px-4 py-2 rounded-2xl shadow-xl border border-white/20 dark:border-white/5 flex items-center gap-3">
-                                    <div class="w-2 h-2 rounded-full bg-blue-500 animate-ping"></div>
-                                    <span
-                                        class="text-[10px] font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Live
-                                        Exploration</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div v-else key="grid-view" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <template v-if="spots?.length > 0">
-                                <HotSpotCard v-for="spot in spots" :key="spot.id" :spot="spot" :is-locating="isLocating"
-                                    @click="selectSpot(spot.id)" @edit="handleEdit" @delete="handleDelete"
-                                    class="cursor-pointer" />
-                            </template>
-                        </div>
-                    </transition>
-                </div>
-
-                <!-- Mini Footer / Social Section -->
-                <!-- <div class="mt-20 pt-12 border-t border-zinc-100 dark:border-zinc-800">
-                    <div class="flex items-center justify-between flex-wrap gap-4">
-                        <h4 class="text-xl font-bold flex items-center gap-2">
-                            {{ t('common.communityCorner') }}
-                            <span
-                                class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 text-[10px] rounded uppercase font-black tracking-tighter">New</span>
-                        </h4>
-                    </div>
-
-                    <div class="mt-6 flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-                        <div v-for="i in 8" :key="i" class="flex-shrink-0 flex flex-col items-center gap-2">
-                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-blue-500/20 p-0.5">
-                                <img :src="`https://i.pravatar.cc/150?u=${i}`"
-                                    class="w-full h-full rounded-full grayscale hover:grayscale-0 transition-all cursor-pointer" />
-                            </div>
-                            <span class="text-[10px] font-bold text-zinc-400">@user_{{ i }}</span>
-                        </div>
-                    </div>
-                </div> -->
+                <p v-if="locationErrorMessage" class="hs-location-error" role="alert">{{ locationErrorMessage }}</p>
             </div>
-        </div>
+
+            <!-- Mini map -->
+            <div v-if="isMiniMap && !isMapView" class="hs-mini-map" role="region" :aria-label="t('hotSpots.miniMap')">
+                <ClientOnly>
+                    <LeafletMap :spots="filteredSpots" :selected-spot-id="selectedSpotId" @select-spot="selectSpot"
+                        :center="filters.lat && filters.lng ? [filters.lat, filters.lng] : undefined" />
+                </ClientOnly>
+            </div>
+
+            <!-- Loading -->
+            <ul v-if="isLoading" class="hs-grid" role="list" aria-busy="true">
+                <li v-for="i in 8" :key="i">
+                    <UiSkeletonCard />
+                </li>
+            </ul>
+
+            <!-- Empty -->
+            <UiEmptyState v-else-if="!spots || spots.length === 0" :title="t('common.noLocationsFound')"
+                :description="t('common.tryAgain')">
+                <UiButton variant="outline" @click="() => refresh()">{{ t('common.reload') }}</UiButton>
+            </UiEmptyState>
+
+            <!-- Map view -->
+            <div v-else-if="isMapView" class="hs-map-frame" role="region" :aria-label="t('hotSpots.mapRegionLabel')">
+                <ClientOnly>
+                    <LeafletMap :spots="filteredSpots" :selected-spot-id="selectedSpotId" @select-spot="selectSpot"
+                        :center="filters.lat && filters.lng ? [filters.lat, filters.lng] : undefined" />
+                </ClientOnly>
+            </div>
+
+            <!-- Grid view -->
+            <template v-else>
+                <ul v-if="filteredSpots.length > 0" class="hs-grid" role="list" :aria-busy="isFetching ? 'true' : 'false'">
+                    <li v-for="spot in filteredSpots" :key="spot.id">
+                        <HotSpotCard :spot="spot" :is-locating="isLocating" class="hs-grid__item" @click="selectSpot(spot.id)"
+                            @edit="handleEdit" @delete="handleDelete" />
+                    </li>
+                </ul>
+                <UiEmptyState v-else :title="t('common.noLocationsFound')" :description="t('common.tryAgain')">
+                    <UiButton variant="outline" @click="clearSearch">{{ t('hotSpots.clearFilters') }}</UiButton>
+                </UiEmptyState>
+            </template>
+        </section>
 
         <!-- Detail Modal -->
         <HotSpotDetailModal v-model="isDetailOpen" :spot-id="selectedSpotId" @change-spot="selectedSpotId = $event" />
@@ -344,35 +260,133 @@ useHead({
 
         <!-- Custom Tour Builder Dialog -->
         <el-dialog v-model="isCustomTourOpen" width="1200" align-center destroy-on-close :show-close="true"
-            :lock-scroll="true" class="custom-tour-dialog dark:bg-zinc-900">
+            :lock-scroll="true" class="custom-tour-dialog">
             <CustomTourBuilder />
         </el-dialog>
     </div>
 </template>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+.hot-spots-layout {
+    padding-bottom: var(--section-space);
 }
 
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+/* Toolbar */
+.hs-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-fluid-md);
+    border-bottom: 1px solid var(--color-border-strong);
 }
 
-/* Transitions */
-.fade-slide-enter-active,
-.fade-slide-leave-active {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.hs-toolbar__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
 }
 
-.fade-slide-enter-from {
-    opacity: 0;
-    transform: translateY(20px);
+.hs-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
 }
 
-.fade-slide-leave-to {
-    opacity: 0;
-    transform: translateY(-20px);
+.hs-search {
+    flex: 1 1 14rem;
+    max-width: 20rem;
+    min-height: 2.5rem;
+    padding-block: var(--space-2);
+    font-size: var(--text-md);
+}
+
+.view-toggle {
+    display: inline-flex;
+    padding: 3px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+}
+
+.view-toggle button {
+    min-height: 2.125rem;
+    padding: 0 0.875rem;
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
+}
+
+.view-toggle button:hover {
+    color: var(--color-text);
+}
+
+.view-toggle button[aria-pressed='true'] {
+    background: var(--color-text);
+    color: var(--color-bg);
+}
+
+.hs-minimap-toggle {
+    min-height: 2.125rem;
+    padding: 0 var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
+    transition: border-color var(--transition-base), color var(--transition-base), background-color var(--transition-base);
+}
+
+.hs-minimap-toggle:hover {
+    border-color: var(--color-text);
+    color: var(--color-text);
+}
+
+.hs-minimap-toggle[aria-pressed='true'] {
+    border-color: var(--color-text);
+    background: var(--color-text);
+    color: var(--color-bg);
+}
+
+.hs-location-source {
+    margin-left: auto;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.hs-location-error {
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+}
+
+.view-toggle button:focus-visible,
+.hs-minimap-toggle:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Kết quả */
+.hs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-fluid-md) var(--space-fluid-sm);
+    transition: opacity var(--transition-base);
+}
+
+.hs-grid :deep(.hs-grid__item) {
+    cursor: pointer;
+}
+
+[aria-busy='true'] {
+    opacity: 0.55;
+}
+
+.hs-map-frame {
+    height: min(70vh, 640px);
+}
+
+.hs-mini-map {
+    height: min(40vh, 320px);
+    margin-bottom: var(--space-fluid-md);
 }
 </style>

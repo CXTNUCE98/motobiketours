@@ -178,7 +178,7 @@ onMounted(() => {
                 <UiSectionHeading :title="t('contact.sendUsAMessage')" :lead="t('contact.fillOut')" />
 
                 <form class="contact-form" novalidate @submit.prevent="submit">
-                    <UiField :label="t('contact.fullName')" :error="errors.fullName">
+                    <UiField id="contact-full-name" :label="t('contact.fullName')" :error="errors.fullName">
                         <template #default="{ id, describedBy, invalid }">
                             <input :id="id" v-model="form.fullName" type="text" class="ui-control"
                                 autocomplete="name" placeholder="John Doe" :aria-describedby="describedBy"
@@ -187,7 +187,7 @@ onMounted(() => {
                         </template>
                     </UiField>
 
-                    <UiField :label="t('contact.email')" :error="errors.email">
+                    <UiField id="contact-email" :label="t('contact.email')" :error="errors.email">
                         <template #default="{ id, describedBy, invalid }">
                             <input :id="id" v-model="form.email" type="email" class="ui-control"
                                 autocomplete="email" placeholder="john@example.com" :aria-describedby="describedBy"
@@ -195,7 +195,7 @@ onMounted(() => {
                         </template>
                     </UiField>
 
-                    <UiField :label="t('contact.phone')" :error="errors.phone">
+                    <UiField id="contact-phone" :label="t('contact.phone')" :error="errors.phone">
                         <template #default="{ id, describedBy, invalid }">
                             <input :id="id" v-model="form.phone" type="tel" class="ui-control" autocomplete="tel"
                                 placeholder="+84 123 456 789" :aria-describedby="describedBy" :aria-invalid="invalid"
@@ -203,7 +203,7 @@ onMounted(() => {
                         </template>
                     </UiField>
 
-                    <UiField :label="t('contact.country')" :error="errors.country">
+                    <UiField id="contact-country" :label="t('contact.country')" :error="errors.country">
                         <template #default="{ id }">
                             <SearchableSelect v-model="form.country" :input-id="id" :options="countryOptions"
                                 :placeholder="t('contact.yourCountry')" :loading="isLoadingCountries"
@@ -212,7 +212,7 @@ onMounted(() => {
                         </template>
                     </UiField>
 
-                    <UiField class="contact-form__wide" :label="t('contact.subject')" :error="errors.title">
+                    <UiField id="contact-subject" class="contact-form__wide" :label="t('contact.subject')" :error="errors.title">
                         <template #default="{ id, describedBy, invalid }">
                             <input :id="id" v-model="form.title" type="text" class="ui-control"
                                 :placeholder="t('contact.howCanHelp')" :aria-describedby="describedBy"
@@ -220,7 +220,7 @@ onMounted(() => {
                         </template>
                     </UiField>
 
-                    <UiField class="contact-form__wide" :label="t('contact.message')" :error="errors.content">
+                    <UiField id="contact-message" class="contact-form__wide" :label="t('contact.message')" :error="errors.content">
                         <template #default="{ id, describedBy, invalid }">
                             <textarea :id="id" v-model="form.content" rows="5" class="ui-control"
                                 :placeholder="t('contact.tellUsAboutYourTrip')" :aria-describedby="describedBy"

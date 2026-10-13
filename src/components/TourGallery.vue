@@ -6,6 +6,8 @@ const props = defineProps<{
     title: string;
 }>();
 
+const { t } = useI18n();
+
 const selectedIndex = ref(0);
 const showLightbox = ref(false);
 const isHovering = ref(false);
@@ -83,145 +85,79 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div @mouseenter="isHovering = true" @mouseleave="isHovering = false" class="space-y-4">
-        <!-- Main Image -->
-        <div @click="openLightbox()" class="relative group cursor-pointer overflow-hidden rounded-2xl shadow-xl">
-            <img :src="currentImage" :alt="title"
-                class="w-full h-[400px] object-cover transition-transform duration-700 group-hover:scale-105" />
-
-            <!-- Zoom Icon Overlay -->
-            <div
-                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <div
-                    class="bg-white/90 backdrop-blur-md rounded-full p-4 transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                    <svg class="w-8 h-8 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Image Counter -->
-            <div
-                class="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-semibold">
-                {{ selectedIndex + 1 }} / {{ images.length }}
-            </div>
-
-            <!-- Navigation Arrows -->
-            <button @click.stop="prevImage"
-                class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md hover:bg-white text-gray-800 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 shadow-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
+    <div class="tour-gallery" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
+        <!-- Main image -->
+        <div class="gallery-main">
+            <button type="button" class="gallery-main__frame" :aria-label="t('tour.gallery.open')"
+                @click="openLightbox()">
+                <img :src="currentImage" :alt="title" />
             </button>
-            <button @click.stop="nextImage"
-                class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md hover:bg-white text-gray-800 rounded-full p-3 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 shadow-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
+
+            <span class="gallery-main__counter" aria-hidden="true">{{ selectedIndex + 1 }} / {{ images.length }}</span>
+
+            <button v-if="images.length > 1" type="button" class="gallery-main__nav gallery-main__nav--prev"
+                :aria-label="t('tour.gallery.prev')" @click.stop="prevImage">
+                <span aria-hidden="true">‹</span>
+            </button>
+            <button v-if="images.length > 1" type="button" class="gallery-main__nav gallery-main__nav--next"
+                :aria-label="t('tour.gallery.next')" @click.stop="nextImage">
+                <span aria-hidden="true">›</span>
             </button>
         </div>
 
-        <!-- Thumbnail Grid -->
-        <div class="grid grid-cols-6 gap-3">
-            <div v-for="(image, index) in images" :key="index" @click="selectImage(index)"
-                class="relative cursor-pointer overflow-hidden rounded-lg transition-all duration-300 hover:scale-105"
-                :class="index === selectedIndex ? 'ring-4 ring-blue-500 shadow-lg' : 'ring-2 ring-gray-200 hover:ring-gray-300'">
-                <img :src="image" :alt="`${title} - ${index + 1}`" class="w-full h-20 object-cover" />
-                <div v-if="index === selectedIndex"
-                    class="absolute inset-0 bg-blue-500/20 flex items-center justify-center">
-                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </div>
-            </div>
-        </div>
+        <!-- Thumbnails -->
+        <ul v-if="images.length > 1" class="gallery-thumbs" role="list">
+            <li v-for="(image, index) in images" :key="index">
+                <button type="button" class="gallery-thumbs__item" :aria-current="index === selectedIndex"
+                    :aria-label="t('tour.gallery.thumbnail', { index: index + 1 })" @click="selectImage(index)">
+                    <img :src="image" alt="" loading="lazy" decoding="async" />
+                </button>
+            </li>
+        </ul>
 
-        <!-- Lightbox Modal -->
+        <!-- Lightbox -->
         <ClientOnly>
             <Teleport to="body">
                 <Transition name="lightbox">
-                    <div v-if="showLightbox" @click="closeLightbox"
-                        class="fixed inset-0 z-[9999] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div v-if="showLightbox" class="gallery-lightbox" role="dialog" aria-modal="true"
+                        :aria-label="title" @click="closeLightbox">
+                        <div class="gallery-lightbox__bar">
+                            <span class="gallery-lightbox__counter">{{ selectedIndex + 1 }} / {{ images.length }}</span>
 
-                        <!-- Top Bar Actions -->
-                        <div class="absolute top-6 right-6 flex items-center gap-4 z-20">
-                            <!-- Zoom Toggle -->
-                            <button @click.stop="isZoomed = !isZoomed"
-                                class="bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
-                                :title="isZoomed ? 'Thu nhỏ' : 'Phóng to'">
-                                <svg v-if="isZoomed" class="w-6 h-6" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
-                                </svg>
-                                <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                                </svg>
-                            </button>
-
-                            <!-- Download Button -->
-                            <a :href="currentImage" download target="_blank" @click.stop
-                                class="bg-white/10 hover:bg-white/20 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
-                                title="Tải ảnh">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                            </a>
-
-                            <!-- Close Button -->
-                            <button @click="closeLightbox"
-                                class="bg-white/10 hover:bg-red-500/80 text-white rounded-full p-3 transition-all duration-300 hover:scale-110"
-                                title="Đóng">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <!-- Image Counter -->
-                        <div
-                            class="absolute top-6 left-6 bg-white/10 backdrop-blur-md text-white px-6 py-3 rounded-full text-lg font-semibold z-10">
-                            {{ selectedIndex + 1 }} / {{ images.length }}
-                        </div>
-
-                        <!-- Main Image -->
-                        <div @click.stop
-                            class="relative w-full h-full flex items-center justify-center overflow-hidden">
-                            <img :src="currentImage" :alt="title" class="transition-transform duration-300 rounded-lg"
-                                :class="isZoomed ? 'w-full h-auto object-cover max-h-none cursor-zoom-out' : 'max-w-full max-h-[90vh] object-contain cursor-zoom-in'"
-                                @click="isZoomed = !isZoomed" />
-                        </div>
-
-                        <!-- Navigation Arrows -->
-                        <button @click.stop="prevImage"
-                            class="absolute left-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-4 transition-all duration-300 hover:scale-110 group">
-                            <svg class="w-8 h-8 group-hover:-translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <button @click.stop="nextImage"
-                            class="absolute right-6 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-4 transition-all duration-300 hover:scale-110 group">
-                            <svg class="w-8 h-8 group-hover:translate-x-1 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
-                                    d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-
-                        <!-- Caption -->
-                        <div class="absolute bottom-6 left-0 right-0 text-center pointer-events-none">
-                            <div class="inline-block bg-black/50 backdrop-blur-md text-white px-6 py-3 rounded-full">
-                                <h3 class="text-lg font-medium">{{ title }}</h3>
+                            <div class="gallery-lightbox__actions">
+                                <button type="button" class="gallery-lightbox__btn"
+                                    :aria-label="isZoomed ? t('tour.gallery.zoomOut') : t('tour.gallery.zoomIn')"
+                                    @click.stop="isZoomed = !isZoomed">
+                                    <span aria-hidden="true">{{ isZoomed ? '−' : '+' }}</span>
+                                </button>
+                                <a :href="currentImage" download target="_blank" class="gallery-lightbox__btn"
+                                    :aria-label="t('tour.gallery.download')" @click.stop>
+                                    <span aria-hidden="true">↓</span>
+                                </a>
+                                <button type="button" class="gallery-lightbox__btn" :aria-label="t('common.close')"
+                                    @click="closeLightbox">
+                                    <span aria-hidden="true">×</span>
+                                </button>
                             </div>
                         </div>
+
+                        <div class="gallery-lightbox__stage" @click.stop>
+                            <img :src="currentImage" :alt="title" class="gallery-lightbox__image"
+                                :class="{ 'is-zoomed': isZoomed }" @click="isZoomed = !isZoomed" />
+                        </div>
+
+                        <button v-if="images.length > 1" type="button"
+                            class="gallery-lightbox__nav gallery-lightbox__nav--prev" :aria-label="t('tour.gallery.prev')"
+                            @click.stop="prevImage">
+                            <span aria-hidden="true">‹</span>
+                        </button>
+                        <button v-if="images.length > 1" type="button"
+                            class="gallery-lightbox__nav gallery-lightbox__nav--next" :aria-label="t('tour.gallery.next')"
+                            @click.stop="nextImage">
+                            <span aria-hidden="true">›</span>
+                        </button>
+
+                        <p class="gallery-lightbox__caption">{{ title }}</p>
                     </div>
                 </Transition>
             </Teleport>
@@ -230,9 +166,261 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.tour-gallery {
+    display: grid;
+    gap: var(--space-3);
+}
+
+/* Main image */
+.gallery-main {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-subtle);
+}
+
+.gallery-main__frame {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+}
+
+.gallery-main__frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.gallery-main__frame:hover img,
+.gallery-main__frame:focus-visible img {
+    transform: scale(1.03);
+}
+
+.gallery-main__frame:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -3px;
+}
+
+.gallery-main::after {
+    content: '';
+    position: absolute;
+    inset: 70% 0 0;
+    background: linear-gradient(to top, var(--color-scrim), transparent);
+    pointer-events: none;
+}
+
+.gallery-main__counter {
+    position: absolute;
+    right: var(--space-4);
+    bottom: var(--space-3);
+    z-index: 1;
+    color: var(--color-inverse-text);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-wide);
+}
+
+.gallery-main__nav {
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+    color: var(--color-text);
+    font-size: var(--text-2xl);
+    line-height: 1;
+    transform: translateY(-50%);
+    transition: background-color var(--transition-base);
+}
+
+.gallery-main__nav:hover {
+    background: var(--color-bg);
+}
+
+.gallery-main__nav:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.gallery-main__nav--prev {
+    left: var(--space-4);
+}
+
+.gallery-main__nav--next {
+    right: var(--space-4);
+}
+
+/* Thumbnails */
+.gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+    gap: var(--space-2);
+}
+
+.gallery-thumbs__item {
+    display: block;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    opacity: 0.65;
+    transition: opacity var(--transition-base), border-color var(--transition-base);
+}
+
+.gallery-thumbs__item:hover {
+    opacity: 1;
+}
+
+.gallery-thumbs__item[aria-current='true'] {
+    border-color: var(--color-accent);
+    opacity: 1;
+}
+
+.gallery-thumbs__item:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.gallery-thumbs__item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Lightbox */
+.gallery-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-6);
+    background: var(--color-inverse-bg);
+}
+
+.gallery-lightbox__bar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-5) var(--space-6);
+}
+
+.gallery-lightbox__counter {
+    color: var(--color-inverse-muted);
+    font-size: var(--text-sm);
+    letter-spacing: var(--tracking-wide);
+}
+
+.gallery-lightbox__actions {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.gallery-lightbox__btn {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-inverse-text) 12%, transparent);
+    color: var(--color-inverse-text);
+    font-size: var(--text-xl);
+    line-height: 1;
+    transition: background-color var(--transition-base);
+}
+
+.gallery-lightbox__btn:hover {
+    background: color-mix(in srgb, var(--color-inverse-text) 22%, transparent);
+}
+
+.gallery-lightbox__btn:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.gallery-lightbox__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 64rem;
+}
+
+.gallery-lightbox__image {
+    max-width: 100%;
+    max-height: 78vh;
+    border-radius: var(--radius-md);
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform var(--transition-base);
+}
+
+.gallery-lightbox__image.is-zoomed {
+    max-width: none;
+    max-height: none;
+    width: 100%;
+    height: auto;
+    cursor: zoom-out;
+}
+
+.gallery-lightbox__nav {
+    position: absolute;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--color-inverse-text) 12%, transparent);
+    color: var(--color-inverse-text);
+    font-size: var(--text-3xl);
+    line-height: 1;
+    transform: translateY(-50%);
+    transition: background-color var(--transition-base);
+}
+
+.gallery-lightbox__nav:hover {
+    background: color-mix(in srgb, var(--color-inverse-text) 22%, transparent);
+}
+
+.gallery-lightbox__nav:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.gallery-lightbox__nav--prev {
+    left: var(--space-6);
+}
+
+.gallery-lightbox__nav--next {
+    right: var(--space-6);
+}
+
+.gallery-lightbox__caption {
+    position: absolute;
+    bottom: var(--space-6);
+    color: var(--color-inverse-muted);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    text-align: center;
+}
+
 .lightbox-enter-active,
 .lightbox-leave-active {
-    transition: opacity 0.3s ease;
+    transition: opacity var(--transition-base);
 }
 
 .lightbox-enter-from,

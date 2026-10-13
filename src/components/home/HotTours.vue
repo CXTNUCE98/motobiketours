@@ -39,32 +39,38 @@ const getWishlistStatus = (tourId: string) =>
 </script>
 
 <template>
-  <section class="fade-in-section py-12 md:py-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-    <div class="max-w-7xl mx-auto px-4 md:px-6">
-      <div class="text-center mb-8 md:mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold mb-2">
-          <span class="text-gray-800 dark:text-white uppercase">{{ t('nav.tours') }} </span>
-          <span class="text-[#1A71C7] dark:text-blue-400"> HOT</span>
-        </h2>
-        <p class="text-gray-600 dark:text-gray-300 text-lg">{{ t('home.hotToursDescription') }}</p>
-      </div>
+  <section class="hot-tours" aria-labelledby="hot-tours-title">
+    <div class="shell">
+      <UiSectionHeading id="hot-tours-title" :title="t('home.hotTours')" emphasis="HOT"
+        :lead="t('home.hotToursDescription')" />
 
-      <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div v-for="i in 4" :key="i" class="bg-gray-200 dark:bg-gray-700 animate-pulse rounded-2xl h-96"></div>
-      </div>
+      <ul v-if="isLoading" class="hot-tours__grid" role="list" aria-busy="true">
+        <li v-for="i in 4" :key="i">
+          <UiSkeletonCard />
+        </li>
+      </ul>
 
-      <div v-else-if="featuredTours.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <TourCard
-          v-for="tour in featuredTours"
-          :key="tour.id"
-          :tour="tour"
-          :is-wishlisted-override="getWishlistStatus(tour.id)"
-        />
-      </div>
+      <ul v-else-if="featuredTours.length > 0" class="hot-tours__grid" role="list">
+        <li v-for="tour in featuredTours" :key="tour.id">
+          <TourCard :tour="tour" :is-wishlisted-override="getWishlistStatus(tour.id)" />
+        </li>
+      </ul>
 
-      <div v-else class="text-center py-12">
-        <p class="text-gray-600 dark:text-gray-400">{{ t('home.noHotTours') }}</p>
-      </div>
+      <UiEmptyState v-else :title="t('home.noHotTours')" />
     </div>
   </section>
 </template>
+
+<style scoped>
+.hot-tours {
+    padding-block: var(--section-space);
+    background: var(--color-bg-subtle);
+}
+
+.hot-tours__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-fluid-md) var(--space-fluid-sm);
+    margin-top: var(--space-fluid-lg);
+}
+</style>

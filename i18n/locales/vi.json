@@ -71,7 +71,8 @@
       "zalo": "Zalo",
       "viber": "Viber",
       "line": "Line",
-      "kakaotalk": "KakaoTalk"
+      "kakaotalk": "KakaoTalk",
+      "fanpage": "Fanpage"
     },
     "instantResponse": "Phản hồi ngay lập tức",
     "fastSupport": "Hỗ trợ nhanh chóng",
@@ -168,7 +169,21 @@
     "usernameRequired": "Tên người dùng là bắt buộc",
     "usernameMin": "Tên người dùng phải có ít nhất 2 ký tự",
     "passwordMin": "Mật khẩu phải có ít nhất 6 ký tự",
-    "myBookings": "Tour đã đặt"
+    "myBookings": "Tour đã đặt",
+    "show": "Hiện",
+    "hide": "Ẩn",
+    "showPassword": "Hiện mật khẩu",
+    "hidePassword": "Ẩn mật khẩu",
+    "alreadyHaveAccount": "Đã có tài khoản?",
+    "noAccount": "Chưa có tài khoản?",
+    "loginFailed": "Đăng nhập thất bại, vui lòng thử lại",
+    "registerSuccess": "Đăng ký thành công!",
+    "registerFailed": "Đăng ký thất bại, vui lòng thử lại",
+    "social": {
+      "google": "Google",
+      "facebook": "Facebook",
+      "twitter": "Twitter"
+    }
   },
   "common": {
     "language": "Ngôn ngữ",
@@ -223,10 +238,170 @@
     "pagination": "Phân trang",
     "previousPage": "Trang trước",
     "nextPage": "Trang sau",
-    "close": "Đóng"
+    "close": "Đóng",
+    "uploadFailed": "Tải lên thất bại",
+    "actionFailed": "Thao tác thất bại",
+    "cropImage": "Cắt ảnh",
+    "thumbnailUploaded": "Tải ảnh đại diện thành công",
+    "errorOccurred": "Đã xảy ra lỗi, vui lòng thử lại",
+    "success": "Thành công",
+    "dragToReorder": "Kéo để sắp xếp"
   },
   "booking": {
-    "bookNow": "Đặt bây giờ"
+    "bookNow": "Đặt bây giờ",
+    "heroEyebrow": "ĐẶT TOUR",
+    "heroTitleBase": "Hoàn tất đặt chỗ",
+    "heroEmphasis": "của bạn",
+    "heroIntro": "Chỉ còn vài bước nữa là bạn có thể bắt đầu hành trình khám phá.",
+    "loadingTour": "Đang tải thông tin tour...",
+    "tourNotFound": "Không tìm thấy tour",
+    "tourNotFoundDesc": "Tour bạn đang tìm không tồn tại hoặc đã bị xóa.",
+    "backToTours": "Xem các tour khác",
+    "processingTitle": "Đang xử lý đặt chỗ...",
+    "processingDesc": "Vui lòng không tắt trang này.",
+    "loginRequired": "Vui lòng đăng nhập để đặt tour",
+    "steps": {
+      "ariaLabel": "Tiến trình đặt chỗ",
+      "date": "Chọn ngày",
+      "info": "Thông tin",
+      "payment": "Thanh toán",
+      "confirm": "Xác nhận"
+    },
+    "datePeople": {
+      "title": "Chọn ngày khởi hành",
+      "lead": "Chọn ngày bạn muốn bắt đầu hành trình và số người tham gia.",
+      "calendarLabel": "Ngày khởi hành",
+      "datePlaceholder": "Chọn ngày khởi hành",
+      "selectedDate": "Ngày đã chọn",
+      "peopleLabel": "Số người",
+      "decrease": "Giảm số người",
+      "increase": "Tăng số người",
+      "unit": "người",
+      "minPeople": "Tối thiểu {count} người",
+      "maxPeople": "Tối đa {count} người"
+    },
+    "summary": {
+      "pricePerPerson": "Giá / người",
+      "people": "Số người",
+      "discount": "Giảm giá",
+      "total": "Tổng cộng",
+      "paymentMethod": "Phương thức thanh toán"
+    },
+    "customerInfo": {
+      "title": "Thông tin khách hàng",
+      "lead": "Vui lòng điền đầy đủ thông tin liên hệ để chúng tôi có thể hỗ trợ bạn tốt nhất.",
+      "fullName": "Họ và tên",
+      "fullNamePlaceholder": "Nguyễn Văn A",
+      "email": "Email",
+      "emailPlaceholder": "email{'@'}example.com",
+      "phone": "Số điện thoại",
+      "phonePlaceholder": "0901234567",
+      "address": "Địa chỉ",
+      "addressOptional": "(Tùy chọn)",
+      "addressPlaceholder": "Số nhà, đường, quận/huyện, thành phố",
+      "specialRequests": "Yêu cầu đặc biệt",
+      "specialRequestsPlaceholder": "Ví dụ: cần xe số tự động, chỗ ngồi ưu tiên...",
+      "specialRequestsHint": "Chúng tôi sẽ cố gắng đáp ứng mọi yêu cầu của bạn.",
+      "tipsTitle": "Lưu ý",
+      "tip1": "Email sẽ được dùng để gửi xác nhận booking",
+      "tip2": "Số điện thoại để liên hệ khi cần thiết",
+      "tip3": "Thông tin được bảo mật tuyệt đối",
+      "validation": {
+        "nameRequired": "Vui lòng nhập họ tên",
+        "emailRequired": "Vui lòng nhập email",
+        "emailInvalid": "Email không hợp lệ",
+        "phoneRequired": "Vui lòng nhập số điện thoại",
+        "phoneInvalid": "Số điện thoại không hợp lệ"
+      }
+    },
+    "payment": {
+      "title": "Phương thức thanh toán",
+      "lead": "Chọn phương thức thanh toán phù hợp với bạn.",
+      "methods": {
+        "vnpay": "VNPay",
+        "vnpayDesc": "Thanh toán qua VNPay, hỗ trợ mọi ngân hàng",
+        "momo": "MoMo",
+        "momoDesc": "Thanh toán qua ví điện tử MoMo",
+        "stripe": "Stripe",
+        "stripeDesc": "Thanh toán quốc tế qua Stripe",
+        "cash": "Tiền mặt",
+        "cashDesc": "Thanh toán trực tiếp khi khởi hành"
+      },
+      "infoTitle": "Thông tin thanh toán",
+      "infoRedirect": "Bạn sẽ được chuyển đến cổng thanh toán {method} để hoàn tất giao dịch.",
+      "infoSsl": "Giao dịch được mã hóa SSL",
+      "infoSecure": "Thông tin thanh toán được bảo mật tuyệt đối",
+      "cashTitle": "Thanh toán tiền mặt",
+      "cashInfo": "Bạn sẽ thanh toán trực tiếp cho hướng dẫn viên khi bắt đầu tour.",
+      "cashPrepare": "Vui lòng chuẩn bị đủ tiền mặt",
+      "cashConfirm": "Booking sẽ được xác nhận sau khi thanh toán"
+    },
+    "confirmStep": {
+      "title": "Xác nhận đặt chỗ",
+      "lead": "Vui lòng kiểm tra lại thông tin trước khi xác nhận.",
+      "tripInfo": "Thông tin chuyến đi",
+      "startDate": "Ngày khởi hành",
+      "people": "Số người",
+      "peopleCount": "{count} người",
+      "customerInfo": "Thông tin khách hàng",
+      "fullName": "Họ tên",
+      "email": "Email",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "specialRequests": "Yêu cầu đặc biệt",
+      "confirmButton": "Xác nhận đặt chỗ",
+      "terms": "Bằng việc xác nhận, bạn đồng ý với điều khoản dịch vụ và chính sách bảo mật của chúng tôi."
+    },
+    "success": {
+      "eyebrow": "ĐẶT CHỖ",
+      "titleBase": "Đặt chỗ",
+      "emphasis": "thành công",
+      "lead": "Cảm ơn bạn đã tin tưởng và lựa chọn dịch vụ của chúng tôi.",
+      "bookingCode": "Mã đặt chỗ",
+      "checkEmailTitle": "Kiểm tra email",
+      "checkEmailDesc": "Chúng tôi đã gửi email xác nhận đặt chỗ và thông tin chi tiết chuyến đi tới hộp thư của bạn.",
+      "supportTitle": "Hỗ trợ 24/7",
+      "supportDesc": "Nếu có bất kỳ thắc mắc nào, hãy liên hệ với chúng tôi qua hotline hoặc email.",
+      "nextStepsTitle": "Các bước tiếp theo",
+      "step1Title": "Kiểm tra thông tin",
+      "step1Desc": "Xem lại thông tin booking trong email xác nhận.",
+      "step2Title": "Chuẩn bị hành trang",
+      "step2Desc": "Đọc kỹ hướng dẫn chuẩn bị trong email để có trải nghiệm tốt nhất.",
+      "step3Title": "Sẵn sàng khởi hành",
+      "step3Desc": "Đến điểm tập trung đúng giờ và sẵn sàng cho hành trình.",
+      "viewBookings": "Xem booking của tôi",
+      "backHome": "Về trang chủ"
+    },
+    "failed": {
+      "eyebrow": "THANH TOÁN",
+      "titleBase": "Thanh toán",
+      "emphasis": "thất bại",
+      "defaultMessage": "Thanh toán không thành công.",
+      "bookingCode": "Mã đặt chỗ",
+      "createdTitle": "Booking đã được tạo",
+      "createdDesc": "Booking của bạn đã được ghi nhận. Bạn có thể thử thanh toán lại hoặc chọn phương thức khác.",
+      "helpTitle": "Cần hỗ trợ?",
+      "helpDesc": "Liên hệ với đội ngũ hỗ trợ của chúng tôi nếu bạn gặp bất kỳ vấn đề nào.",
+      "reasonsTitle": "Nguyên nhân có thể",
+      "reason1": "Không đủ số dư trong tài khoản thanh toán",
+      "reason2": "Thông tin thẻ/tài khoản không chính xác",
+      "reason3": "Kết nối mạng không ổn định",
+      "reason4": "Phiên giao dịch đã hết hạn",
+      "retry": "Thử thanh toán lại",
+      "viewBookings": "Xem booking của tôi",
+      "backHome": "Về trang chủ",
+      "urgentHelp": "Cần hỗ trợ khẩn cấp?",
+      "callHotline": "Gọi hotline",
+      "orEmail": "hoặc email"
+    },
+    "createSuccess": "Đặt tour thành công!",
+    "createFailed": "Đặt tour thất bại, vui lòng thử lại.",
+    "updateSuccess": "Cập nhật đặt tour thành công.",
+    "updateFailed": "Cập nhật đặt tour thất bại.",
+    "cancelSuccess": "Đã huỷ đặt tour.",
+    "cancelFailed": "Huỷ đặt tour thất bại.",
+    "confirmSuccess": "Đã xác nhận đặt tour.",
+    "confirmFailed": "Xác nhận đặt tour thất bại."
   },
   "home": {
     "findYourPerfectTour": "Tìm Chuyến Tham Quan Hoàn Hảo Của Bạn Tại ANDAGO",
@@ -269,7 +444,9 @@
       "south": "Tour Miền Nam",
       "asia": "Tour Châu Á",
       "europe": "Tour Châu Âu"
-    }
+    },
+    "newsViews": "{count} lượt xem",
+    "testimonialGoTo": "Xem đánh giá {n}"
   },
   "tour": {
     "editTour": "Chỉnh sửa Tour",
@@ -475,7 +652,26 @@
     "count": "{count} tour",
     "viewMode": "Kiểu hiển thị",
     "viewGrid": "Lưới",
-    "viewList": "Danh sách"
+    "viewList": "Danh sách",
+    "noItinerary": "Chưa có lịch trình cho tour này",
+    "relatedTours": "Tour liên quan",
+    "groupSizeDefault": "2–10 người",
+    "difficultyLabel": "Độ khó",
+    "priceOnRequest": "Liên hệ",
+    "gallery": {
+      "prev": "Ảnh trước",
+      "next": "Ảnh sau",
+      "open": "Xem ảnh lớn",
+      "zoomIn": "Phóng to",
+      "zoomOut": "Thu nhỏ",
+      "download": "Tải ảnh",
+      "thumbnail": "Ảnh {index}"
+    },
+    "share": {
+      "facebook": "Chia sẻ qua Facebook",
+      "twitter": "Chia sẻ qua Twitter",
+      "whatsapp": "Chia sẻ qua WhatsApp"
+    }
   },
   "footer": {
     "address": "Địa chỉ",
@@ -507,7 +703,27 @@
     "professional": "Chuyên nghiệp",
     "professionalDesc": "Đội ngũ hướng dẫn viên giàu kinh nghiệm",
     "support247": "Hỗ trợ 24/7",
-    "support247Desc": "Luôn sẵn lòng hỗ trợ bạn mọi lúc, mọi nơi"
+    "support247Desc": "Luôn sẵn lòng hỗ trợ bạn mọi lúc, mọi nơi",
+    "list": {
+      "emptyTitle": "Không tìm thấy dịch vụ nào",
+      "emptyDesc": "Hãy thử tìm kiếm với từ khóa khác",
+      "clearSearch": "Xóa tìm kiếm",
+      "priceFrom": "Từ"
+    },
+    "detail": {
+      "eyebrow": "Dịch vụ",
+      "price": "Giá",
+      "highlights": "Điểm nổi bật",
+      "included": "Bao gồm",
+      "notIncluded": "Không bao gồm",
+      "features": "Tính năng nổi bật",
+      "reviews": "Đánh giá",
+      "contactCta": "Liên hệ tư vấn",
+      "relatedTitle": "Dịch vụ khác",
+      "notFound": "Không tìm thấy dịch vụ",
+      "notFoundDesc": "Dịch vụ bạn tìm kiếm không tồn tại.",
+      "backToList": "Quay lại danh sách"
+    }
   },
   "blog": {
     "blog": "BLOG & CÂU CHUYỆN",
@@ -540,7 +756,71 @@
     "readArticle": "Đọc bài viết",
     "readTime": "{count} phút đọc",
     "emptyTitle": "Không tìm thấy câu chuyện nào",
-    "emptyDesc": "Hãy thử thể loại hoặc từ khóa khác"
+    "emptyDesc": "Hãy thử thể loại hoặc từ khóa khác",
+    "detail": {
+      "shareFacebook": "Chia sẻ Facebook",
+      "shareTwitter": "Chia sẻ X (Twitter)",
+      "copyLink": "Sao chép liên kết",
+      "linkCopied": "Đã sao chép liên kết!",
+      "tags": "Thẻ",
+      "relatedPosts": "Bài viết liên quan",
+      "notFound": "Không tìm thấy bài viết",
+      "notFoundDesc": "Bài viết bạn tìm có thể đã bị gỡ hoặc đường dẫn không đúng.",
+      "backToBlog": "Quay lại Blog"
+    },
+    "editor": {
+      "titleCreate": "Tạo bài viết mới",
+      "titlePreview": "Xem trước bài viết",
+      "backToEdit": "Quay lại chỉnh sửa",
+      "preview": "Xem trước",
+      "saveDraft": "Lưu nháp",
+      "savingDraft": "Đang lưu...",
+      "publish": "Đăng bài",
+      "publishing": "Đang đăng...",
+      "postNameLabel": "Tên bài viết",
+      "postNamePlaceholder": "Nhập tên bài viết hấp dẫn...",
+      "languageLabel": "Ngôn ngữ",
+      "languagePlaceholder": "Chọn ngôn ngữ",
+      "langEn": "English",
+      "langVi": "Tiếng Việt",
+      "categoryLabel": "Danh mục",
+      "tagsLabel": "Thẻ",
+      "tagsHint": "Thêm thẻ liên quan để độc giả dễ tìm bài viết của bạn",
+      "tagsPlaceholder": "Nhập thẻ rồi nhấn Enter",
+      "addTag": "Thêm",
+      "shortDescriptionLabel": "Mô tả ngắn",
+      "shortDescriptionPlaceholder": "Mô tả ngắn gọn về bài viết để hiển thị trên thẻ...",
+      "thumbnailLabel": "Ảnh đại diện",
+      "thumbnailUpload": "Tải ảnh lên",
+      "thumbnailDrag": "hoặc kéo thả vào đây",
+      "thumbnailUploading": "Đang tải lên...",
+      "thumbnailRule": "Kích thước đề xuất 1280 × 720px (tối đa 2MB)",
+      "removeThumbnail": "Xóa ảnh đại diện",
+      "contentPlaceholder": "Nhập nội dung bài viết của bạn...",
+      "wordsCount": "{count} từ",
+      "charsCount": "{count} ký tự",
+      "untitledPost": "Bài viết chưa có tiêu đề",
+      "noContent": "Chưa có nội dung...",
+      "loginRequiredTitle": "Vui lòng đăng nhập",
+      "loginRequiredDesc": "Bạn cần đăng nhập để tạo bài viết mới.",
+      "validation": {
+        "titleRequired": "Vui lòng nhập tiêu đề",
+        "languageRequired": "Vui lòng chọn ngôn ngữ",
+        "categoryRequired": "Vui lòng chọn danh mục",
+        "contentRequired": "Vui lòng nhập nội dung",
+        "shortDescriptionRequired": "Vui lòng nhập mô tả ngắn"
+      },
+      "message": {
+        "imageOnly": "Vui lòng tải lên tệp hình ảnh",
+        "uploadingImage": "Đang tải ảnh lên...",
+        "uploadSuccess": "Tải ảnh thành công!",
+        "uploadError": "Tải ảnh thất bại",
+        "thumbnailSuccess": "Tải ảnh đại diện thành công!",
+        "draftSaved": "Đã lưu nháp thành công!",
+        "published": "Đã đăng bài thành công!",
+        "createError": "Không thể tạo bài viết"
+      }
+    }
   },
   "hotSpots": {
     "title": "Địa điểm Hot",
@@ -571,7 +851,32 @@
     "geoTimeout": "Không thể xác định vị trí. Vui lòng thử lại sau",
     "geoNotSupported": "Trình duyệt của bạn không hỗ trợ định vị",
     "changeVehicle": "Thay đổi xe",
-    "selectVehicle": "Chọn xe"
+    "selectVehicle": "Chọn xe",
+    "buildTrip": "Xây lịch trình riêng",
+    "viewModeLabel": "Kiểu hiển thị",
+    "count": "{count} địa điểm",
+    "locationSource": "Định vị",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa địa điểm này?",
+    "searchPlaceholder": "Tìm theo tên hoặc địa chỉ",
+    "mapRegionLabel": "Bản đồ địa điểm hot",
+    "hotBadge": "Nổi bật",
+    "coordinates": "Tọa độ",
+    "clearFilters": "Xóa bộ lọc",
+    "namePlaceholder": "Tên địa điểm...",
+    "addressPlaceholder": "Địa chỉ đầy đủ...",
+    "descriptionPlaceholder": "Mô tả địa điểm...",
+    "openingHoursPlaceholder": "VD: 08:00 - 22:00",
+    "priceInfoPlaceholder": "VD: Miễn phí hoặc 50.000đ",
+    "markAsHot": "Đánh dấu là địa điểm nổi bật",
+    "validation": {
+      "name": "Vui lòng nhập tên địa điểm",
+      "nameLength": "Tên cần tối thiểu 3 ký tự",
+      "category": "Vui lòng chọn loại địa điểm",
+      "address": "Vui lòng nhập địa chỉ",
+      "lat": "Vui lòng nhập vĩ độ",
+      "lng": "Vui lòng nhập kinh độ"
+    },
+    "minutes": "phút"
   },
   "customTour": {
     "title": "Tự Xây Dựng Lịch Trình Ô Tô",
@@ -590,7 +895,12 @@
     "vehicle": "Loại xe đã chọn",
     "estimatedPrice": "Giá dự kiến",
     "bookNow": "Đặt tour ngay bây giờ",
-    "selectVehicle": "Chọn xế cưng của bạn"
+    "selectVehicle": "Chọn xế cưng của bạn",
+    "tabsLabel": "Các bước lên lịch trình",
+    "dragHandle": "Kéo để sắp xếp lại",
+    "removeStop": "Xóa khỏi lịch trình",
+    "distanceValue": "{value} km",
+    "durationValue": "{value} phút"
   },
   "vehicles": {
     "title": "Quản lý xe",
@@ -610,7 +920,16 @@
     "deleteConfirm": "Bạn có chắc chắn muốn xóa xe này không?",
     "createSuccess": "Thêm xe thành công!",
     "updateSuccess": "Cập nhật xe thành công!",
-    "deleteSuccess": "Xóa xe thành công!"
+    "deleteSuccess": "Xóa xe thành công!",
+    "selected": "Đã chọn",
+    "moreAmenities": "+{count} khác",
+    "capacityUnit": "chỗ",
+    "validation": {
+      "model": "Vui lòng nhập tên dòng xe",
+      "type": "Vui lòng chọn loại xe",
+      "capacity": "Vui lòng nhập sức chứa",
+      "pricePerKm": "Vui lòng nhập giá mỗi km"
+    }
   },
   "review": {
     "title": "Đánh giá & Nhận xét",
@@ -630,7 +949,8 @@
     "noReviews": "Chưa có đánh giá nào cho tour này.",
     "validation": {
       "contentRequired": "Vui lòng nhập nội dung nhận xét"
-    }
+    },
+    "starBreakdown": "{star} sao: {percent}%"
   },
   "wishlist": {
     "title": "Danh sách yêu thích",
@@ -638,7 +958,13 @@
     "addSuccess": "Đã thêm vào danh sách yêu thích",
     "removeSuccess": "Đã xóa khỏi danh sách yêu thích",
     "myWishlist": "Tour yêu thích của tôi",
-    "savedItems": "Tour đã lưu"
+    "savedItems": "Tour đã lưu",
+    "drawer": {
+      "count": "{count} tour đã lưu",
+      "emptyHint": "Hãy bắt đầu lưu những hành trình bạn yêu thích.",
+      "remove": "Xóa",
+      "exploreMore": "Khám phá thêm tour"
+    }
   },
   "news": {
     "badge": "TIN TỨC & SỰ KIỆN",
@@ -653,6 +979,158 @@
     "articleCount": "{count} bài viết",
     "readMore": "Đọc tiếp",
     "emptyTitle": "Không tìm thấy tin tức",
-    "emptyDesc": "Hãy thử điều chỉnh từ khóa tìm kiếm"
+    "emptyDesc": "Hãy thử điều chỉnh từ khóa tìm kiếm",
+    "detail": {
+      "otherNews": "Tin khác",
+      "share": "Chia sẻ",
+      "notFound": "Không tìm thấy tin tức",
+      "notFoundDesc": "Tin tức bạn tìm có thể đã bị gỡ hoặc đường dẫn không đúng.",
+      "backToNews": "Quay lại Tin tức"
+    }
+  },
+  "tourCard": {
+    "wishlistAdd": "Thêm vào yêu thích",
+    "wishlistRemove": "Bỏ khỏi yêu thích"
+  },
+  "profile": {
+    "eyebrow": "Tài khoản",
+    "title": "Tài khoản của tôi",
+    "nav": {
+      "ariaLabel": "Điều hướng tài khoản",
+      "info": "Thông tin tài khoản",
+      "bookings": "Tour đã đặt",
+      "wishlist": "Tour yêu thích"
+    },
+    "sections": {
+      "identity": "Ảnh đại diện",
+      "details": "Thông tin cá nhân",
+      "security": "Mật khẩu"
+    },
+    "avatar": {
+      "upload": "Tải ảnh lên",
+      "remove": "Gỡ ảnh",
+      "hint": "Ảnh JPG, PNG hoặc GIF, tối đa 5MB.",
+      "cropTitle": "Cắt ảnh đại diện",
+      "cropCancel": "Hủy",
+      "cropSave": "Cắt & lưu"
+    },
+    "form": {
+      "username": "Tên hiển thị",
+      "email": "Email",
+      "emailLocked": "Không thể thay đổi email vì lý do bảo mật.",
+      "save": "Lưu thay đổi",
+      "saving": "Đang lưu...",
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới",
+      "updatePassword": "Cập nhật mật khẩu",
+      "updatingPassword": "Đang cập nhật..."
+    },
+    "validation": {
+      "usernameRequired": "Vui lòng nhập tên hiển thị",
+      "currentPasswordRequired": "Vui lòng nhập mật khẩu hiện tại",
+      "newPasswordRequired": "Vui lòng nhập mật khẩu mới",
+      "passwordMinLength": "Mật khẩu phải có ít nhất 6 ký tự",
+      "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu mới",
+      "passwordMismatch": "Mật khẩu xác nhận không khớp"
+    },
+    "messages": {
+      "avatarInvalidType": "Vui lòng chọn một tệp ảnh",
+      "avatarTooLarge": "Ảnh phải nhỏ hơn 5MB",
+      "updateSuccess": "Cập nhật hồ sơ thành công!",
+      "updateError": "Cập nhật hồ sơ thất bại",
+      "passwordSuccess": "Đổi mật khẩu thành công!",
+      "passwordError": "Đổi mật khẩu thất bại"
+    },
+    "bookings": {
+      "title": "Tour đã đặt",
+      "searchLabel": "Tìm theo tên tour",
+      "searchPlaceholder": "Nhập tên tour...",
+      "code": "Mã đặt tour",
+      "date": "Khởi hành",
+      "people": "Số người",
+      "cancel": "Hủy",
+      "emptyTitle": "Chưa có tour đã đặt",
+      "emptyDesc": "Hãy đặt chuyến đi đầu tiên của bạn.",
+      "emptyDescFiltered": "Không có tour nào ở trạng thái này.",
+      "exploreTours": "Khám phá tour",
+      "filters": {
+        "all": "Tất cả"
+      },
+      "status": {
+        "pending": "Chờ xác nhận",
+        "confirmed": "Đã xác nhận",
+        "completed": "Hoàn thành",
+        "cancelled": "Đã hủy"
+      },
+      "stats": {
+        "total": "Tổng cộng",
+        "pending": "Chờ xác nhận",
+        "confirmed": "Đã xác nhận",
+        "completed": "Hoàn thành",
+        "cancelled": "Đã hủy"
+      },
+      "cancelConfirmTitle": "Xác nhận hủy booking",
+      "cancelConfirmMessage": "Bạn có chắc chắn muốn hủy booking này? Hành động này không thể hoàn tác.",
+      "cancelConfirmBtn": "Hủy booking",
+      "cancelKeepBtn": "Giữ lại",
+      "detailPage": {
+        "backToList": "Quay lại danh sách",
+        "title": "Chi tiết booking",
+        "code": "Mã booking",
+        "loading": "Đang tải thông tin booking...",
+        "notFoundTitle": "Không tìm thấy booking",
+        "notFoundDesc": "Booking này không tồn tại hoặc đã bị xóa.",
+        "tourInfo": "Thông tin chuyến đi",
+        "startDate": "Ngày khởi hành",
+        "numberOfPeople": "Số người",
+        "duration": "Thời gian",
+        "customerInfo": "Thông tin khách hàng",
+        "name": "Họ tên",
+        "email": "Email",
+        "phone": "Số điện thoại",
+        "address": "Địa chỉ",
+        "specialRequests": "Yêu cầu đặc biệt",
+        "paymentSummary": "Chi tiết thanh toán",
+        "tourPrice": "Giá tour",
+        "discount": "Giảm giá",
+        "totalPrice": "Tổng cộng",
+        "paymentStatus": "Trạng thái thanh toán",
+        "paymentStatusValues": {
+          "unpaid": "Chưa thanh toán",
+          "deposit_paid": "Đã cọc",
+          "fully_paid": "Đã thanh toán"
+        },
+        "paymentMethod": "Phương thức thanh toán",
+        "createdAt": "Đặt ngày {date}"
+      }
+    }
+  },
+  "comment": {
+    "title": "Bình luận ({count})",
+    "placeholder": "Viết bình luận...",
+    "post": "Đăng bình luận",
+    "posting": "Đang đăng...",
+    "replyPlaceholder": "Viết phản hồi...",
+    "postReply": "Đăng phản hồi",
+    "reply": "Phản hồi",
+    "cancel": "Hủy",
+    "delete": "Xóa",
+    "like": "Thích",
+    "dislike": "Không thích",
+    "loginPrompt": "Đăng nhập để bình luận",
+    "login": "Đăng nhập",
+    "empty": "Chưa có bình luận nào. Hãy là người đầu tiên!",
+    "loadMoreReplies": "Xem thêm {count} phản hồi",
+    "justNow": "Vừa xong",
+    "minutesAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "daysAgo": "{count} ngày trước",
+    "confirmDelete": "Bạn có chắc muốn xóa bình luận này?",
+    "errorTitle": "Lỗi",
+    "deleteError": "Không thể xóa bình luận. Bạn chỉ có thể xóa bình luận của mình.",
+    "replyError": "Không thể đăng phản hồi. Vui lòng thử lại.",
+    "likeLoginRequired": "Vui lòng đăng nhập để thích bình luận",
+    "dislikeLoginRequired": "Vui lòng đăng nhập để không thích bình luận"
   }
 }

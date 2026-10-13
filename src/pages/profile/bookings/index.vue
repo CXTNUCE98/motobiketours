@@ -5,17 +5,15 @@ definePageMeta({
     middleware: ['auth']
 })
 
-// Filter options configuration
-const filterOptions = [
-    { key: 'all', label: 'Tất cả', icon: 'bx-list-ul', color: 'blue' },
-    { key: 'pending', label: 'Chờ xác nhận', icon: 'bx-time-five', color: 'yellow' },
-    { key: 'confirmed', label: 'Đã xác nhận', icon: 'bx-check-circle', color: 'blue' },
-    { key: 'completed', label: 'Hoàn thành', icon: 'bx-check-double', color: 'green' },
-    { key: 'cancelled', label: 'Đã hủy', icon: 'bx-x-circle', color: 'red' },
-] as const
+const { t } = useI18n()
+const route = useRoute()
+const localePath = useLocalePath()
+const { formatPrice } = useCurrency()
+
+const filterKeys = ['all', 'pending', 'confirmed', 'completed', 'cancelled'] as const
 
 // State
-const bookingsTab = ref<'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled'>('all')
+const bookingsTab = ref<typeof filterKeys[number]>('all')
 const bookingsSearch = ref('')
 
 // Reactive filters
@@ -54,16 +52,18 @@ const filteredBookings = computed(() => {
     )
 })
 
-const { formatPrice } = useCurrency()
+const formatDate = (value: string | Date) => new Date(value).toLocaleDateString('vi-VN')
+
+const canCancelRow = (booking: any) => booking.status === 'pending' || booking.status === 'confirmed'
 
 // Methods
 const handleCancelBooking = async (id: string) => {
     ElMessageBox.confirm(
-        'Bạn có chắc chắn muốn hủy booking này? Hành động này không thể hoàn tác.',
-        'Xác nhận hủy booking',
+        t('profile.bookings.cancelConfirmMessage'),
+        t('profile.bookings.cancelConfirmTitle'),
         {
-            confirmButtonText: 'Hủy booking',
-            cancelButtonText: 'Giữ lại',
+            confirmButtonText: t('profile.bookings.cancelConfirmBtn'),
+            cancelButtonText: t('profile.bookings.cancelKeepBtn'),
             type: 'warning',
         }
     ).then(async () => {
@@ -71,194 +71,381 @@ const handleCancelBooking = async (id: string) => {
         refetchBookings()
     }).catch(() => { })
 }
+
+// Điều hướng tài khoản: đánh dấu mục đang hoạt động theo đường dẫn hiện tại
+const isNavActive = (path: string, exact = false) => {
+    const target = localePath(path)
+    return exact ? route.path === target : route.path === target || route.path.startsWith(`${target}/`)
+}
 </script>
 
 <template>
-    <div
-        class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 py-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Hero Section -->
-            <div class="mb-8">
-                <button @click="$router.back()"
-                    class="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4 transition-colors">
-                    <i class="bx bx-arrow-back text-xl"></i>
-                    <span class="font-medium">Quay lại</span>
-                </button>
-                <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-2">
-                    <i class="bx bx-calendar-check text-blue-600 dark:text-blue-400 mr-3"></i>
-                    My Bookings
-                </h1>
-                <p class="text-lg text-gray-600 dark:text-gray-400">Quản lý tất cả booking của
-                    bạn</p>
-            </div>
+    <div class="account-page">
+        <header class="shell account-head">
+            <UiEyebrow>{{ t('profile.eyebrow') }}</UiEyebrow>
+            <h1 class="account-head__title">{{ t('profile.bookings.title') }}</h1>
+        </header>
 
-            <!-- Stats Overview -->
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                <div
-                    class="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Tổng cộng</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ bookingStats.total }}</div>
-                </div>
-                <div
-                    class="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Chờ xác nhận</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ bookingStats.pending }}</div>
-                </div>
-                <div
-                    class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Đã xác nhận</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ bookingStats.confirmed }}</div>
-                </div>
-                <div
-                    class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Hoàn thành</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ bookingStats.completed }}</div>
-                </div>
-                <div
-                    class="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Đã hủy</div>
-                    <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ bookingStats.cancelled }}</div>
-                </div>
-            </div>
+        <div class="shell account-layout">
+            <nav class="account-nav" :aria-label="t('profile.nav.ariaLabel')">
+                <ul role="list">
+                    <li>
+                        <NuxtLink :to="localePath('/profile')" :aria-current="isNavActive('/profile', true) ? 'page' : undefined">
+                            {{ t('profile.nav.info') }}
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink :to="localePath('/profile/bookings')" :aria-current="isNavActive('/profile/bookings') ? 'page' : undefined">
+                            {{ t('profile.nav.bookings') }}
+                        </NuxtLink>
+                    </li>
+                    <li>
+                        <NuxtLink :to="localePath('/profile/wishlist')" :aria-current="isNavActive('/profile/wishlist') ? 'page' : undefined">
+                            {{ t('profile.nav.wishlist') }}
+                        </NuxtLink>
+                    </li>
+                </ul>
+            </nav>
 
-            <!-- Search -->
-            <div class="relative mb-6">
-                <i class="bx bx-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl"></i>
-                <input v-model="bookingsSearch" type="text" placeholder="Tìm kiếm theo tên tour..."
-                    class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:border-blue-500 dark:focus:border-blue-400 outline-none transition-all bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
-            </div>
-
-            <!-- Filter Tabs -->
-            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mb-6">
-                <button v-for="option in filterOptions" :key="option.key" @click="bookingsTab = option.key"
-                    class="px-4 py-2 rounded-xl font-semibold whitespace-nowrap transition-all text-sm"
-                    :class="bookingsTab === option.key
-                        ? `bg-${option.color}-600 text-white shadow-lg`
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'">
-                    <i :class="`bx ${option.icon} mr-1`"></i> {{ option.label }}
-                </button>
-            </div>
-
-            <!-- Loading -->
-            <div v-if="bookingsLoading" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div v-for="i in 4" :key="i" class="bg-white dark:bg-gray-800 rounded-xl p-4 animate-pulse">
-                    <div class="flex gap-4">
-                        <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                        <div class="flex-1 space-y-3">
-                            <div class="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                            <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                        </div>
+            <div class="account-main">
+                <!-- Tổng quan -->
+                <dl class="booking-summary">
+                    <div>
+                        <dt>{{ t('profile.bookings.stats.total') }}</dt>
+                        <dd>{{ bookingStats.total }}</dd>
                     </div>
-                </div>
-            </div>
-
-            <!-- Bookings Grid -->
-            <div v-else-if="filteredBookings.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-                <div v-for="booking in filteredBookings" :key="booking.id"
-                    class="bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all overflow-hidden border border-gray-200 dark:border-gray-700 fade-in-up">
-                    <div class="p-4">
-                        <div class="flex gap-4 mb-3">
-                            <!-- Thumbnail -->
-                            <div class="relative w-24 h-24 rounded-xl overflow-hidden flex-shrink-0">
-                                <img :src="booking.tour.thumbnail" :alt="booking.tour.title"
-                                    class="w-full h-full object-cover" />
-                                <div class="absolute top-1 right-1 px-2 py-0.5 rounded-lg text-xs font-bold backdrop-blur-sm"
-                                    :class="{
-                                        'bg-yellow-500/90 text-white': booking.status === 'pending',
-                                        'bg-blue-500/90 text-white': booking.status === 'confirmed',
-                                        'bg-green-500/90 text-white': booking.status === 'completed',
-                                        'bg-red-500/90 text-white': booking.status === 'cancelled',
-                                    }">
-                                    <i :class="`bx ${booking.status === 'pending' ? 'bx-time-five' :
-                                        booking.status === 'confirmed' ? 'bx-check-circle' :
-                                            booking.status === 'completed' ? 'bx-check-double' :
-                                                'bx-x-circle'
-                                        }`"></i>
-                                </div>
-                            </div>
-
-                            <!-- Info -->
-                            <div class="flex-1 min-w-0">
-                                <h4 class="font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">{{
-                                    booking.tour.title }}</h4>
-                                <div class="space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                                    <div class="flex items-center gap-2">
-                                        <i class="bx bx-calendar text-blue-500"></i>
-                                        <span>{{ new Date(booking.startDate).toLocaleDateString('vi-VN') }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="bx bx-group text-purple-500"></i>
-                                        <span>{{ booking.numberOfPeople }} người</span>
-                                        <i class="bx bx-money text-green-500 ml-2"></i>
-                                        <span class="font-bold text-gray-900 dark:text-white">{{
-                                            formatPrice(booking.totalPrice) }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="flex gap-2 pt-3 border-t border-gray-200 dark:border-gray-700">
-                            <button @click="$router.push(`/profile/bookings/${booking.id}`)"
-                                class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-all text-sm">
-                                <i class="bx bx-detail mr-1"></i> Chi tiết
-                            </button>
-                            <button v-if="booking.status === 'pending' || booking.status === 'confirmed'"
-                                @click="handleCancelBooking(booking.id)"
-                                class="px-3 py-2 border-2 border-red-500 text-red-500 rounded-lg font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-all text-sm">
-                                <i class="bx bx-x mr-1"></i> Hủy
-                            </button>
-                        </div>
+                    <div>
+                        <dt>{{ t('profile.bookings.stats.pending') }}</dt>
+                        <dd>{{ bookingStats.pending }}</dd>
                     </div>
-                </div>
-            </div>
+                    <div>
+                        <dt>{{ t('profile.bookings.stats.confirmed') }}</dt>
+                        <dd>{{ bookingStats.confirmed }}</dd>
+                    </div>
+                    <div>
+                        <dt>{{ t('profile.bookings.stats.completed') }}</dt>
+                        <dd>{{ bookingStats.completed }}</dd>
+                    </div>
+                    <div>
+                        <dt>{{ t('profile.bookings.stats.cancelled') }}</dt>
+                        <dd>{{ bookingStats.cancelled }}</dd>
+                    </div>
+                </dl>
 
-            <!-- Empty State -->
-            <div v-else class="text-center py-12">
-                <div
-                    class="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                    <i class="bx bx-calendar-x text-5xl text-gray-400"></i>
+                <!-- Bộ lọc + tìm kiếm -->
+                <div class="booking-toolbar">
+                    <div class="booking-toolbar__filters" role="group" :aria-label="t('profile.bookings.title')">
+                        <UiChip v-for="key in filterKeys" :key="key" :active="bookingsTab === key" @click="bookingsTab = key">
+                            {{ key === 'all' ? t('profile.bookings.filters.all') : t(`profile.bookings.status.${key}`) }}
+                        </UiChip>
+                    </div>
+
+                    <UiField class="booking-toolbar__search" :label="t('profile.bookings.searchLabel')">
+                        <template #default="{ id }">
+                            <input :id="id" v-model="bookingsSearch" type="search" class="ui-control"
+                                :placeholder="t('profile.bookings.searchPlaceholder')">
+                        </template>
+                    </UiField>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Chưa có booking nào</h3>
-                <p class="text-gray-600 dark:text-gray-400 mb-4">
-                    {{ bookingsTab !== 'all' ? 'Không có booking nào ở trạng thái này'
-                        : 'Hãy đặt chuyến đi đầu tiên của bạn!' }}
-                </p>
-                <button @click="$router.push('/')"
-                    class="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all">
-                    <i class="bx bx-world text-xl"></i>
-                    <span>Khám phá tours</span>
-                </button>
+
+                <!-- Loading -->
+                <ul v-if="bookingsLoading" class="booking-list" role="list" aria-busy="true">
+                    <li v-for="i in 4" :key="i">
+                        <UiSkeletonCard ratio="1 / 1" />
+                    </li>
+                </ul>
+
+                <!-- Danh sách booking -->
+                <ul v-else-if="filteredBookings.length > 0" class="booking-list" role="list">
+                    <li v-for="booking in filteredBookings" :key="booking.id" class="booking-row">
+                        <div class="booking-row__media">
+                            <img :src="booking.tour.thumbnail" :alt="booking.tour.title" loading="lazy" decoding="async">
+                        </div>
+
+                        <div class="booking-row__body">
+                            <p class="booking-row__code">{{ t('profile.bookings.code') }} · {{ booking.id }}</p>
+                            <h3 class="booking-row__title">
+                                <NuxtLink :to="localePath(`/profile/bookings/${booking.id}`)" class="booking-row__link">
+                                    {{ booking.tour.title }}
+                                </NuxtLink>
+                            </h3>
+                            <dl class="booking-row__facts">
+                                <div>
+                                    <dt>{{ t('profile.bookings.date') }}</dt>
+                                    <dd>{{ formatDate(booking.startDate) }}</dd>
+                                </div>
+                                <div>
+                                    <dt>{{ t('profile.bookings.people') }}</dt>
+                                    <dd>{{ booking.numberOfPeople }}</dd>
+                                </div>
+                            </dl>
+                        </div>
+
+                        <div class="booking-row__meta">
+                            <span class="status-label" :class="`status-label--${booking.status}`">
+                                {{ t(`profile.bookings.status.${booking.status}`) }}
+                            </span>
+                            <p class="booking-row__total">{{ formatPrice(booking.totalPrice) }}</p>
+                            <UiButton v-if="canCancelRow(booking)" variant="outline" size="sm" class="booking-row__cancel"
+                                @click="handleCancelBooking(booking.id)">
+                                {{ t('profile.bookings.cancel') }}
+                            </UiButton>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Trạng thái rỗng -->
+                <UiEmptyState v-else :title="t('profile.bookings.emptyTitle')"
+                    :description="bookingsTab !== 'all' ? t('profile.bookings.emptyDescFiltered') : t('profile.bookings.emptyDesc')">
+                    <UiButton :to="localePath('/tour')">{{ t('profile.bookings.exploreTours') }}</UiButton>
+                </UiEmptyState>
             </div>
         </div>
     </div>
 </template>
 
-
-
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+.account-head {
+    padding-top: var(--space-page-top);
+    padding-bottom: var(--space-fluid-lg);
 }
 
-.scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+.account-head__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
+.account-layout {
+    display: grid;
+    gap: var(--space-fluid-lg);
+    align-items: start;
+    padding-bottom: var(--section-space);
+}
+
+@media (min-width: 64rem) {
+    .account-layout {
+        grid-template-columns: minmax(12rem, 1fr) 3fr;
     }
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+/* Điều hướng tài khoản */
+.account-nav ul {
+    border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 64rem) {
+    .account-nav {
+        position: sticky;
+        top: calc(var(--header-height) + 1.5rem);
     }
 }
 
-.fade-in-up {
-    animation: fadeInUp 0.5s ease-out;
+.account-nav a {
+    display: block;
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+    text-decoration: none;
+}
+
+.account-nav a:hover {
+    color: var(--color-text);
+}
+
+.account-nav a[aria-current='page'] {
+    color: var(--color-accent);
+    font-weight: var(--weight-medium);
+}
+
+.account-nav a:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+/* Tổng quan */
+.booking-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 7rem), 1fr));
+    margin-bottom: var(--space-fluid-lg);
+    border-block: 1px solid var(--color-border);
+}
+
+.booking-summary > div {
+    padding-block: var(--space-4);
+    border-left: 1px solid var(--color-border);
+    text-align: center;
+}
+
+.booking-summary > div:first-child {
+    border-left: 0;
+}
+
+.booking-summary dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.booking-summary dd {
+    margin-top: 0.375rem;
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-variant-numeric: lining-nums;
+}
+
+/* Bộ lọc + tìm kiếm */
+.booking-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-fluid-md);
+}
+
+.booking-toolbar__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.booking-toolbar__search {
+    flex: 1 1 16rem;
+    max-width: 22rem;
+}
+
+/* Danh sách booking */
+.booking-list {
+    border-top: 1px solid var(--color-border);
+}
+
+.booking-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-4) var(--space-fluid-sm);
+    padding-block: var(--space-fluid-sm);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.booking-row__media {
+    aspect-ratio: 4 / 3;
+    max-width: 10rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+}
+
+.booking-row__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.booking-row__body {
+    min-width: 0;
+}
+
+.booking-row__code {
+    margin-bottom: 0.375rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+.booking-row__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-snug);
+}
+
+.booking-row__link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.booking-row__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.booking-row__link:hover {
+    color: var(--color-accent);
+}
+
+.booking-row__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    margin-top: var(--space-3);
+}
+
+.booking-row__facts dt {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+}
+
+.booking-row__facts dd {
+    font-size: var(--text-ui);
+}
+
+.booking-row__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+}
+
+.booking-row__total {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-variant-numeric: lining-nums;
+}
+
+.booking-row__cancel {
+    position: relative;
+    z-index: 1;
+}
+
+/* Nhãn trạng thái */
+.status-label {
+    display: inline-flex;
+    padding: 0.25rem var(--space-3);
+    border: 1px solid currentColor;
+    border-radius: var(--radius-pill);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.status-label--pending {
+    color: var(--color-warning);
+}
+
+.status-label--confirmed {
+    color: var(--color-accent);
+}
+
+.status-label--completed {
+    color: var(--color-success);
+}
+
+.status-label--cancelled {
+    color: var(--color-danger);
+}
+
+.booking-row__link:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 4px;
 }
 </style>

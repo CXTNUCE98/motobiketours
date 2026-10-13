@@ -17,6 +17,8 @@ const route = useRoute();
 const router = useRouter();
 const { isAuthenticated } = useAuth();
 const { formatPrice } = useCurrency();
+const { t } = useI18n();
+const localePath = useLocalePath();
 
 // Get tour ID from route
 const tourId = computed(() => route.params.tourId as string);
@@ -68,7 +70,7 @@ const handleBack = () => {
 
 const handleConfirm = async () => {
     if (!isAuthenticated.value) {
-        ElMessage.warning('Vui lòng đăng nhập để đặt tour');
+        ElMessage.warning(t('booking.loginRequired'));
         router.push('/login');
         return;
     }
@@ -94,165 +96,200 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="booking-page">
         <!-- Loading State -->
-        <div v-if="isLoadingTour" class="flex items-center justify-center min-h-screen">
-            <div class="text-center">
-                <i class="bx bx-loader-alt animate-spin text-6xl text-blue-500 mb-4"></i>
-                <p class="text-gray-600 dark:text-gray-400">Đang tải thông tin tour...</p>
-            </div>
+        <div v-if="isLoadingTour" class="booking-page__status shell">
+            <p>{{ t('booking.loadingTour') }}</p>
         </div>
 
         <!-- Main Content -->
-        <div v-else-if="tourData" class="container mx-auto px-4 py-8 md:py-12">
-            <!-- Page Header -->
-            <div class="mb-8 text-center fade-in-up">
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                    Đặt chỗ của bạn
-                </h1>
-                <p class="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                    Chỉ còn vài bước nữa là bạn có thể bắt đầu hành trình khám phá tuyệt vời!
-                </p>
+        <template v-else-if="tourData">
+            <header class="booking-head">
+                <div class="shell">
+                    <UiEyebrow>{{ t('booking.heroEyebrow') }}</UiEyebrow>
+                    <h1 class="booking-head__title">
+                        {{ t('booking.heroTitleBase') }}
+                        <em>{{ t('booking.heroEmphasis') }}</em>
+                    </h1>
+                    <p class="booking-head__intro">{{ t('booking.heroIntro') }}</p>
+                </div>
+            </header>
+
+            <div class="shell booking-steps-wrap">
+                <BookingSteps :current-step="currentStep" />
             </div>
 
-            <!-- Stepper -->
-            <div class="mb-12 fade-in-up animation-delay-200">
-                <BookingSteps :currentStep="currentStep" />
-            </div>
-
-            <!-- Steps Content -->
-            <div class="max-w-7xl mx-auto">
+            <div class="shell booking-body">
                 <!-- Step 1: Date & People -->
-                <div v-show="currentStep === 1" class="fade-in-up animation-delay-300">
+                <div v-show="currentStep === 1">
                     <DatePeoplePicker :tour-id="tourId" :price-per-person="tourData.priceUsd" :min-people="1"
                         :max-people="20" @next="handleDatePeopleNext" />
                 </div>
 
                 <!-- Step 2: Customer Info -->
-                <div v-show="currentStep === 2" class="fade-in-up animation-delay-300">
+                <div v-show="currentStep === 2">
                     <CustomerInfoForm :initial-data="bookingData.customerInfo" @next="handleCustomerInfoNext"
                         @back="handleBack" />
                 </div>
 
                 <!-- Step 3: Payment Method -->
-                <div v-show="currentStep === 3" class="fade-in-up animation-delay-300">
-                    <div class="mb-8">
-                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                            Phương thức thanh toán
-                        </h2>
-                        <p class="text-gray-600 dark:text-gray-400">
-                            Chọn phương thức thanh toán phù hợp với bạn
-                        </p>
+                <div v-show="currentStep === 3" class="booking-layout">
+                    <div class="booking-layout__main">
+                        <UiSectionHeading :title="t('booking.payment.title')" :lead="t('booking.payment.lead')" />
+                        <PaymentMethodSelector v-model="bookingData.paymentMethod!" />
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="lg:col-span-2">
-                            <div class="card p-6 md:p-8">
-                                <PaymentMethodSelector v-model="bookingData.paymentMethod!" />
+                    <aside class="booking-layout__aside">
+                        <div class="booking-total">
+                            <p class="booking-total__label">{{ t('booking.summary.total') }}</p>
+                            <p class="booking-total__amount">{{ formatPrice(totalPrice) }}</p>
+
+                            <div class="booking-total__actions">
+                                <UiButton block @click="handlePaymentNext">{{ t('common.nextStep') }}</UiButton>
+                                <UiButton variant="outline" block @click="handleBack">{{ t('common.prevStep')
+                                    }}</UiButton>
                             </div>
                         </div>
-
-                        <div class="space-y-6">
-                            <!-- Price Summary -->
-                            <div
-                                class="card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-2 border-blue-200 dark:border-blue-800">
-                                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Tổng cộng</h3>
-                                <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-6">
-                                    {{ formatPrice(totalPrice) }}
-                                </div>
-
-                                <div class="space-y-3">
-                                    <button @click="handlePaymentNext" class="w-full btn-primary py-4 text-lg">
-                                        <span>Tiếp tục</span>
-                                        <i class="bx bx-right-arrow-alt text-xl ml-2"></i>
-                                    </button>
-
-                                    <button @click="handleBack"
-                                        class="w-full px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-bold transition-all hover:border-gray-400">
-                                        <i class="bx bx-left-arrow-alt text-xl mr-2"></i>
-                                        <span>Quay lại</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </aside>
                 </div>
 
                 <!-- Step 4: Confirm -->
-                <div v-show="currentStep === 4" class="fade-in-up animation-delay-300">
+                <div v-show="currentStep === 4">
                     <BookingSummary :booking-data="bookingData as CreateBookingDto" :tour-data="tourData"
                         :total-price="totalPrice" @back="handleBack" @confirm="handleConfirm" />
                 </div>
             </div>
 
             <!-- Loading Overlay for Booking Submission -->
-            <div v-if="createBookingMutation.isPending.value"
-                class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md mx-4 text-center">
-                    <i class="bx bx-loader-alt animate-spin text-6xl text-blue-500 mb-4"></i>
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                        Đang xử lý đặt chỗ...
-                    </h3>
-                    <p class="text-gray-600 dark:text-gray-400">
-                        Vui lòng không tắt trang này
-                    </p>
+            <div v-if="createBookingMutation.isPending.value" class="booking-overlay" role="status" aria-live="polite">
+                <div class="booking-overlay__box">
+                    <p class="booking-overlay__title">{{ t('booking.processingTitle') }}</p>
+                    <p class="booking-overlay__desc">{{ t('booking.processingDesc') }}</p>
                 </div>
             </div>
-        </div>
+        </template>
 
         <!-- Error State -->
-        <div v-else class="flex items-center justify-center min-h-screen">
-            <div class="text-center">
-                <i class="bx bx-error-circle text-6xl text-red-500 mb-4"></i>
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                    Không tìm thấy tour
-                </h2>
-                <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Tour bạn đang tìm không tồn tại hoặc đã bị xóa
-                </p>
-                <button @click="router.push('/tours')" class="btn-primary">
-                    <i class="bx bx-home mr-2"></i>
-                    Quay về trang chủ
-                </button>
-            </div>
+        <div v-else class="booking-page__status shell">
+            <UiEmptyState :title="t('booking.tourNotFound')" :description="t('booking.tourNotFoundDesc')">
+                <UiButton :to="localePath('/tour')">{{ t('booking.backToTours') }}</UiButton>
+            </UiEmptyState>
         </div>
     </div>
 </template>
 
 <style scoped>
-@keyframes fade-in-up {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+.booking-page__status {
+    display: grid;
+    place-items: center;
+    min-height: 50vh;
+    text-align: center;
+    color: var(--color-text-muted);
+}
+
+.booking-head {
+    padding-block: var(--space-fluid-lg) var(--space-fluid-md);
+}
+
+.booking-head__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+}
+
+.booking-head__title em {
+    color: var(--color-accent);
+    font-style: italic;
+}
+
+.booking-head__intro {
+    max-width: 36rem;
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-lead);
+    line-height: var(--leading-body);
+}
+
+.booking-steps-wrap {
+    padding-bottom: var(--space-fluid-md);
+}
+
+.booking-body {
+    padding-bottom: var(--section-space);
+}
+
+.booking-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
+}
+
+@media (min-width: 64rem) {
+    .booking-layout {
+        grid-template-columns: 2fr 1fr;
     }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
-.fade-in-up {
-    animation: fade-in-up 0.6s ease-out forwards;
+.booking-layout__aside {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
 }
 
-.animation-delay-200 {
-    animation-delay: 0.2s;
-    opacity: 0;
+.booking-total {
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-strong);
 }
 
-.animation-delay-300 {
-    animation-delay: 0.3s;
-    opacity: 0;
+.booking-total__label {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
 }
 
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+.booking-total__amount {
+    margin-top: var(--space-2);
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    color: var(--color-accent);
 }
 
-.animate-spin {
-    animation: spin 1s linear infinite;
+.booking-total__actions {
+    display: grid;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+}
+
+.booking-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    padding: var(--space-6);
+    background: var(--color-backdrop);
+}
+
+.booking-overlay__box {
+    max-width: 24rem;
+    width: 100%;
+    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    text-align: center;
+}
+
+.booking-overlay__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+}
+
+.booking-overlay__desc {
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
 }
 </style>

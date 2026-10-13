@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { EditPen, Lock, Plus } from '@element-plus/icons-vue';
-
 const props = defineProps<{
     tourId: string;
 }>();
@@ -20,6 +18,8 @@ const isSubmitting = ref(false);
 
 const { mutateAsync: uploadImage } = useUploadMutation();
 const createReviewMutation = useCreateReviewMutation(props.tourId);
+
+const rateColors = ['var(--color-accent)', 'var(--color-accent)', 'var(--color-accent)'];
 
 const handleFileUpload = async (file: any) => {
     try {
@@ -69,94 +69,97 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-    <div
-        class="review-form bg-white dark:bg-zinc-900/50 p-8 rounded-3xl border border-gray-100 dark:border-zinc-800 shadow-sm relative overflow-hidden">
+    <div class="review-form">
+        <h3 class="review-form__title">{{ t('review.write') }}</h3>
 
-        <h3 class="text-2xl font-black mb-8 text-gray-900 dark:text-zinc-100 flex items-center gap-3">
-            <el-icon class="text-blue-600">
-                <EditPen />
-            </el-icon>
-            {{ t('review.write') }}
-        </h3>
+        <UiEmptyState v-if="!isAuthenticated" :title="t('review.loginRequired')">
+            <UiButton to="/login">{{ t('auth.signIn') }}</UiButton>
+        </UiEmptyState>
 
-        <div v-if="!isAuthenticated"
-            class="text-center py-10 bg-gray-50 dark:bg-zinc-800/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-zinc-700">
-            <el-icon size="48" class="text-gray-300 dark:text-zinc-600 mb-4">
-                <Lock />
-            </el-icon>
-            <p class="text-gray-500 dark:text-zinc-400 mb-6 font-medium">{{ t('review.loginRequired') }}</p>
-            <el-button type="primary" size="large" class="!rounded-full px-10 shadow-lg shadow-blue-500/30"
-                @click="$router.push('/login')">
-                {{ t('auth.signIn') }}
-            </el-button>
-        </div>
-
-        <el-form v-else label-position="top" class="custom-form">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6">
-                <el-form-item :label="t('review.rating')" class="rating-item">
-                    <div
-                        class="flex items-center gap-4 bg-gray-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-gray-100 dark:border-zinc-700">
-                        <el-rate v-model="form.rating" size="large" show-score score-template="{value} / 5" />
-                    </div>
-                </el-form-item>
+        <form v-else class="review-form__fields" novalidate @submit.prevent="handleSubmit">
+            <div class="review-form__rating">
+                <p id="review-rating-label" class="review-form__label">{{ t('review.rating') }}</p>
+                <el-rate v-model="form.rating" size="large" show-score score-template="{value} / 5"
+                    :colors="rateColors" void-color="var(--color-border)" aria-labelledby="review-rating-label" />
             </div>
 
-            <el-form-item :label="t('review.content')">
-                <el-input v-model="form.content" type="textarea" :rows="5" :placeholder="t('review.placeholder')"
-                    class="custom-textarea" />
-            </el-form-item>
+            <UiField :label="t('review.content')">
+                <template #default="{ id }">
+                    <textarea :id="id" v-model="form.content" rows="5" class="ui-control"
+                        :placeholder="t('review.placeholder')"></textarea>
+                </template>
+            </UiField>
 
-            <el-form-item :label="t('review.images')">
+            <div class="review-form__images">
+                <p class="review-form__label">{{ t('review.images') }}</p>
                 <el-upload v-model:file-list="fileList" list-type="picture-card" :http-request="handleFileUpload"
-                    :on-remove="handleRemoveImage" class="custom-upload">
-                    <div class="flex flex-col items-center">
-                        <el-icon class="mb-1">
-                            <Plus />
-                        </el-icon>
-                        <span class="text-xs">{{ t('common.upload') }}</span>
-                    </div>
+                    :on-remove="handleRemoveImage" class="review-form__upload">
+                    <span class="review-form__upload-btn">
+                        <span aria-hidden="true">+</span>
+                        {{ t('common.upload') }}
+                    </span>
                 </el-upload>
-            </el-form-item>
-
-            <div class="flex justify-end mt-8">
-                <el-button type="primary" :loading="isSubmitting" size="large"
-                    class="submit-btn !rounded-full px-12 h-14 text-base font-bold shadow-xl shadow-blue-600/20"
-                    @click="handleSubmit">
-                    {{ t('review.submit') }}
-                </el-button>
             </div>
-        </el-form>
+
+            <UiButton type="submit" :disabled="isSubmitting">
+                {{ isSubmitting ? t('common.processing') : t('review.submit') }}
+            </UiButton>
+        </form>
     </div>
 </template>
 
 <style scoped>
-.custom-textarea :deep(.el-textarea__inner) {
-    @apply rounded-2xl bg-gray-50 dark:bg-zinc-800/50 border-gray-100 dark:border-zinc-700 focus:border-blue-500 focus:bg-white dark:focus:bg-zinc-800 transition-all p-4 text-base;
+.review-form__title {
+    margin-bottom: var(--space-6);
+    font-family: var(--font-serif);
+    font-size: var(--text-title-lg);
+    font-weight: var(--weight-regular);
 }
 
-.custom-upload :deep(.el-upload--picture-card) {
-    @apply rounded-2xl border-2 border-dashed border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 hover:border-blue-500 hover:text-blue-500 transition-all w-24 h-24;
+.review-form__fields {
+    display: grid;
+    gap: var(--space-6);
+    max-width: 36rem;
 }
 
-.custom-upload :deep(.el-upload-list__item) {
-    @apply rounded-2xl border-0 shadow-sm w-24 h-24;
+.review-form__label {
+    margin-bottom: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
 }
 
-.submit-btn {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border: none;
+.review-form__upload-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 
-.submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 20px -5px rgba(37, 99, 235, 0.4);
+:deep(.el-upload--picture-card) {
+    width: 5.5rem;
+    height: 5.5rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
 }
 
-:deep(.el-form-item__label) {
-    @apply text-sm font-bold text-gray-700 dark:text-zinc-300 mb-2 pl-1;
+:deep(.el-upload--picture-card:hover) {
+    border-color: var(--color-accent);
 }
 
-.rating-item :deep(.el-rate__text) {
-    @apply font-black text-blue-600 ml-2 text-lg;
+:deep(.el-upload-list--picture-card .el-upload-list__item) {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: var(--radius-md);
+}
+
+:deep(.el-rate) {
+    --el-rate-icon-size: 22px;
+    height: auto;
 }
 </style>

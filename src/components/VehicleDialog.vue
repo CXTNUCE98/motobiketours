@@ -36,20 +36,21 @@ const formData = reactive({
     isAvailable: true,
 });
 
-const rules = reactive<FormRules>({
+// Computed để thông báo lỗi cập nhật theo ngôn ngữ đang chọn.
+const rules = computed<FormRules>(() => ({
     model: [
-        { required: true, message: 'Please input model name', trigger: 'blur' },
+        { required: true, message: t('vehicles.validation.model'), trigger: 'blur' },
     ],
     type: [
-        { required: true, message: 'Please select type', trigger: 'change' },
+        { required: true, message: t('vehicles.validation.type'), trigger: 'change' },
     ],
     capacity: [
-        { required: true, message: 'Please input capacity', trigger: 'blur' },
+        { required: true, message: t('vehicles.validation.capacity'), trigger: 'blur' },
     ],
     pricePerKm: [
-        { required: true, message: 'Please input price per km', trigger: 'blur' },
+        { required: true, message: t('vehicles.validation.pricePerKm'), trigger: 'blur' },
     ],
-});
+}));
 
 const resetForm = () => {
     if (formRef.value) formRef.value.resetFields();
@@ -165,11 +166,11 @@ const onCrop = async () => {
 
                     const res = await uploadImage({ file, folder: 'vehicles' });
                     formData.thumbnail = res.url;
-                    ElMessage.success('Thumbnail uploaded successfully');
+                    ElMessage.success(t('common.thumbnailUploaded'));
                     showCropper.value = false;
                 } catch (error) {
                     console.error(error);
-                    ElMessage.error('Upload failed');
+                    ElMessage.error(t('common.uploadFailed'));
                 } finally {
                     isUploading.value = false;
                 }
@@ -193,7 +194,7 @@ const handleSubmit = async (formEl: FormInstance | undefined) => {
                 emit('success');
                 handleClose();
             } catch (error) {
-                ElMessage.error('Action failed');
+                ElMessage.error(t('common.actionFailed'));
             }
         }
     });
@@ -206,63 +207,56 @@ const handleClose = () => {
 </script>
 
 <template>
-    <el-dialog v-model="dialogVisible" :title="isEditMode ? t('vehicles.edit') : t('vehicles.create')" :width="dialogWidth"
-        class="rounded-2xl dark:bg-zinc-900 shadow-2xl [&_.el-dialog\_\_title]:dark:text-white"
-        :before-close="handleClose">
-        <el-form ref="formRef" :model="formData" :rules="rules" label-position="top" class="mt-4">
+    <el-dialog v-model="dialogVisible" :title="isEditMode ? t('vehicles.edit') : t('vehicles.create')"
+        :width="dialogWidth" class="vehicle-dialog" :before-close="handleClose">
+        <el-form ref="formRef" :model="formData" :rules="rules" label-position="top" class="vehicle-form">
             <el-form-item :label="t('vehicles.model')" prop="model">
-                <el-input class="[&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input\_\_inner]:dark:text-white"
-                    v-model="formData.model" :placeholder="t('vehicles.model')" />
+                <el-input v-model="formData.model" :placeholder="t('vehicles.model')" />
             </el-form-item>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="vehicle-form__row">
                 <el-form-item :label="t('vehicles.type')" prop="type">
-                    <el-select v-model="formData.type"
-                        class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
+                    <el-select v-model="formData.type" class="vehicle-form__full">
                         <el-option v-for="vType in vehicleTypes" :key="vType" :label="vType" :value="vType" />
                     </el-select>
                 </el-form-item>
                 <el-form-item :label="t('vehicles.capacity')" prop="capacity">
-                    <el-input-number v-model="formData.capacity" :min="1"
-                        class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
+                    <el-input-number v-model="formData.capacity" :min="1" class="vehicle-form__full" />
                 </el-form-item>
             </div>
 
             <el-form-item :label="t('vehicles.pricePerKm')" prop="pricePerKm">
                 <el-input-number v-model="formData.pricePerKm" :precision="2" :step="0.1" :min="0"
-                    class="w-full [&_.el-input\_\_wrapper]:dark:bg-gray-800 [&_.el-input-number\_\_decrease]:(dark:bg-gray-800 dark:text-white) [&_.el-input-number\_\_increase]:(dark:bg-gray-800 dark:text-white) [&_.el-input\_\_inner]:dark:text-white" />
+                    class="vehicle-form__full" />
             </el-form-item>
 
             <el-form-item :label="t('common.images')" prop="thumbnail">
-                <div class="flex items-center gap-4">
-                    <div v-if="formData.thumbnail" class="relative group w-auto h-24 rounded-lg overflow-hidden border">
-                        <img :src="formData.thumbnail" class="w-full h-full object-cover" />
-                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center cursor-pointer transition-opacity"
+                <div class="vehicle-thumb">
+                    <div v-if="formData.thumbnail" class="vehicle-thumb__preview">
+                        <img :src="formData.thumbnail" :alt="formData.model">
+                        <button type="button" class="vehicle-thumb__remove" :aria-label="t('common.remove')"
                             @click="formData.thumbnail = ''">
-                            <el-icon class="text-white">
+                            <el-icon>
                                 <Delete />
                             </el-icon>
-                        </div>
+                        </button>
                     </div>
-                    <div v-else
-                        class="w-24 h-24 border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer hover:border-blue-500 transition-colors"
-                        @click="fileInput?.click()">
-                        <el-icon v-if="!isUploading" class="text-2xl text-zinc-400">
+                    <button v-else type="button" class="vehicle-thumb__add" @click="fileInput?.click()">
+                        <el-icon v-if="!isUploading">
                             <Plus />
                         </el-icon>
-                        <el-icon v-else class="text-2xl text-blue-500 is-loading">
+                        <el-icon v-else class="is-loading">
                             <Upload />
                         </el-icon>
-                    </div>
-                    <input ref="fileInput" type="file" class="hidden" accept="image/*"
-                        @change="handleThumbnailUpload" />
+                    </button>
+                    <input ref="fileInput" type="file" class="visually-hidden" accept="image/*"
+                        @change="handleThumbnailUpload">
                 </div>
             </el-form-item>
 
             <el-form-item :label="t('vehicles.amenities')">
                 <el-select v-model="formData.amenities" multiple filterable allow-create default-first-option
-                    :placeholder="t('vehicles.addAmenity')"
-                    class="w-full [&_.el-select\_\_wrapper]:dark:bg-gray-800 [&_.el-select\_\_selected-item]:dark:text-white">
+                    :placeholder="t('vehicles.addAmenity')" class="vehicle-form__full">
                     <el-option v-for="item in commonAmenities" :key="item" :label="item" :value="item" />
                 </el-select>
             </el-form-item>
@@ -274,42 +268,119 @@ const handleClose = () => {
         </el-form>
 
         <template #footer>
-            <div class="flex justify-end gap-2">
-                <el-button @click="handleClose">
-                    {{ t('common.cancel') }}
-                </el-button>
-                <el-button type="primary" :loading="isCreating || isUpdating" @click="handleSubmit(formRef)">
+            <div class="vehicle-dialog__actions">
+                <UiButton variant="outline" @click="handleClose">{{ t('common.cancel') }}</UiButton>
+                <UiButton :disabled="isCreating || isUpdating" @click="handleSubmit(formRef)">
                     {{ isEditMode ? t('common.update') : t('common.create') }}
-                </el-button>
+                </UiButton>
             </div>
         </template>
     </el-dialog>
 
     <!-- Image Cropper Modal -->
-    <el-dialog v-model="showCropper" title="Crop Image" :width="cropperDialogWidth" append-to-body :close-on-click-modal="false"
-        destroy-on-close>
-        <div
-            class="h-96 w-full bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center overflow-hidden rounded-lg">
-            <cropper ref="cropperRef" class="h-full w-full" :src="cropperImage" :stencil-props="{
+    <el-dialog v-model="showCropper" :title="t('common.cropImage')" :width="cropperDialogWidth" append-to-body
+        :close-on-click-modal="false" destroy-on-close class="vehicle-cropper-dialog">
+        <div class="vehicle-cropper">
+            <cropper ref="cropperRef" class="vehicle-cropper__canvas" :src="cropperImage" :stencil-props="{
                 aspectRatio: 16 / 9
             }" />
         </div>
         <template #footer>
-            <div class="flex justify-end gap-3">
-                <el-button @click="showCropper = false">{{ t('common.cancel') }}</el-button>
-                <el-button type="primary" :loading="isUploading" @click="onCrop">{{ t('common.confirm') }}</el-button>
+            <div class="vehicle-dialog__actions">
+                <UiButton variant="outline" @click="showCropper = false">{{ t('common.cancel') }}</UiButton>
+                <UiButton :disabled="isUploading" @click="onCrop">{{ t('common.confirm') }}</UiButton>
             </div>
         </template>
     </el-dialog>
 </template>
 
-
 <style scoped>
-:deep(.el-dialog) {
-    border-radius: 1.5rem;
+.vehicle-form {
+    margin-top: var(--space-2);
 }
 
-:deep(.el-form-item__label) {
-    font-weight: 600;
+.vehicle-form__row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: 0 var(--space-4);
+}
+
+.vehicle-form__full {
+    width: 100%;
+}
+
+.vehicle-thumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.vehicle-thumb__preview {
+    position: relative;
+    width: 7rem;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.vehicle-thumb__preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vehicle-thumb__remove {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-scrim);
+    color: var(--color-inverse-text);
+    opacity: 0;
+    transition: opacity var(--transition-base);
+}
+
+.vehicle-thumb__preview:hover .vehicle-thumb__remove {
+    opacity: 1;
+}
+
+.vehicle-thumb__add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 7rem;
+    aspect-ratio: 4 / 3;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    transition: border-color var(--transition-base), color var(--transition-base);
+}
+
+.vehicle-thumb__add:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.vehicle-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-3);
+}
+
+.vehicle-cropper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 24rem;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
+}
+
+.vehicle-cropper__canvas {
+    width: 100%;
+    height: 100%;
 }
 </style>

@@ -45,124 +45,123 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div>
-        <!-- Parallax Background Section -->
-        <div class="parallax"></div>
+    <section class="testimonials" aria-labelledby="testimonials-title" @mouseenter="pauseCarousel"
+        @mouseleave="resumeCarousel">
+        <div class="shell">
+            <UiSectionHeading id="testimonials-title" :eyebrow="t('home.testimonialsSubtitle')"
+                :title="t('home.testimonialsTitle')" />
 
-        <!-- Testimonials Content Section -->
-        <section class="testimonials-content relative">
-            <div class="relative z-10 h-full flex items-end justify-start">
-                <div class="w-full px-2 md:px-4 lg:px-6 pb-4 md:pb-6">
-                    <!-- Testimonial Card -->
-                    <div class="max-w-3xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 md:p-12 relative customer-section-fade"
-                        @mouseenter="pauseCarousel" @mouseleave="resumeCarousel">
-                        <!-- Icon xe hơi -->
-                        <div class="absolute top-0 right-4 w-20 h-20 md:w-24 md:h-24">
-                            <img src="/logo-car.png" alt="logo-car" loading="lazy" class="w-full h-full object-contain">
-                        </div>
+            <Transition name="fade" mode="out-in">
+                <blockquote :key="currentTestimonialIndex" class="testimonial">
+                    <p class="testimonial__quote">{{ testimonials[currentTestimonialIndex].text }}</p>
+                    <footer class="testimonial__meta">
+                        <img :src="testimonials[currentTestimonialIndex].image" alt="" class="testimonial__avatar"
+                            loading="lazy">
+                        <cite class="testimonial__name">{{ testimonials[currentTestimonialIndex].name }}</cite>
+                    </footer>
+                </blockquote>
+            </Transition>
 
-                        <!-- customer -->
-                        <div>
-                            <p class="text-red-600 dark:text-red-400 text-sm font-semibold mb-2">{{
-                                t('home.testimonialsSubtitle') }}
-                            </p>
-                            <h2 class="text-3xl md:text-4xl font-bold text-[#094174] dark:text-blue-400 mb-8">
-                                {{ t('home.testimonialsTitle') }}
-                            </h2>
-
-                            <!-- Current Testimonial with transition -->
-                            <transition name="fade" mode="out-in">
-                                <div :key="currentTestimonialIndex">
-                                    <p
-                                        class="text-gray-600 dark:text-gray-300 text-base md:text-lg leading-relaxed mb-8">
-                                        {{ testimonials[currentTestimonialIndex].text }}
-                                    </p>
-
-                                    <!-- Author -->
-                                    <div class="flex items-center gap-4">
-                                        <img :src="testimonials[currentTestimonialIndex].image"
-                                            :alt="testimonials[currentTestimonialIndex].name" loading="lazy"
-                                            class="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-gray-200" />
-                                        <div>
-                                            <h3 class="text-lg md:text-xl font-bold text-[#094174] dark:text-blue-400">
-                                                {{ testimonials[currentTestimonialIndex].name }}
-                                            </h3>
-                                        </div>
-                                    </div>
-                                </div>
-                            </transition>
-                        </div>
-
-                        <!-- Carousel indicators -->
-                        <div class="flex justify-center gap-3 mt-8">
-                            <button v-for="(testimonial, index) in testimonials" :key="testimonial.id"
-                                @click="goToTestimonial(index)" :class="[
-                                    'w-10 h-1.5 rounded-full transition-all duration-300',
-                                    currentTestimonialIndex === index
-                                        ? 'bg-red-500'
-                                        : 'bg-gray-300 hover:bg-gray-400'
-                                ]" :aria-label="`Go to testimonial ${index + 1}`"></button>
-                        </div>
-                    </div>
-                </div>
+            <div class="testimonial-nav" role="group" :aria-label="t('home.testimonialsTitle')">
+                <button v-for="(item, index) in testimonials" :key="item.id" type="button" class="testimonial-dot"
+                    :aria-current="currentTestimonialIndex === index ? 'true' : undefined"
+                    :aria-label="t('home.testimonialGoTo', { n: index + 1 })" @click="goToTestimonial(index)" />
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 </template>
 
 <style scoped>
-.parallax {
-    background-image: url('/testimonial-bg.jpg');
-    height: 80vh;
-    min-height: 500px;
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+.testimonials {
+    --em-color: var(--color-inverse-accent);
+    padding-block: var(--section-space);
+    background: var(--color-inverse-bg);
+    color: var(--color-inverse-text);
 }
 
-@media only screen and (max-width: 1366px) {
-    .parallax {
-        background-attachment: scroll;
-    }
+.testimonial {
+    max-width: 44rem;
+    margin: var(--space-fluid-xl) 0 0;
 }
 
-@media only screen and (max-width: 768px) {
-    .parallax {
-        height: 60vh;
-        min-height: 400px;
-    }
-}
-
-.testimonials-content {
-    background: transparent;
+.testimonial__quote {
     position: relative;
-    z-index: 10;
-    margin-top: -80vh;
-    height: 80vh;
-    min-height: 500px;
+    padding-left: var(--space-8);
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-style: italic;
+    line-height: var(--leading-snug);
+    text-wrap: balance;
 }
 
-@media only screen and (max-width: 768px) {
-    .testimonials-content {
-        margin-top: -60vh;
-        height: 60vh;
-        min-height: 400px;
-    }
+.testimonial__quote::before {
+    content: '\201C';
+    position: absolute;
+    top: -0.5rem;
+    left: 0;
+    color: var(--color-inverse-accent);
+    font-family: var(--font-serif);
+    font-size: var(--text-display);
+    font-style: normal;
+    line-height: 1;
+}
+
+.testimonial__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-fluid-lg);
+}
+
+.testimonial__avatar {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid var(--color-inverse-border);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.testimonial__name {
+    font-size: var(--text-ui);
+    font-style: normal;
+    font-weight: var(--weight-medium);
+}
+
+.testimonial-nav {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-fluid-lg);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-inverse-border);
+}
+
+.testimonial-dot {
+    width: 1.75rem;
+    height: 2px;
+    background: var(--color-inverse-border);
+    transition: background-color var(--transition-base);
+}
+
+.testimonial-dot:hover {
+    background: var(--color-inverse-muted);
+}
+
+.testimonial-dot[aria-current='true'] {
+    background: var(--color-inverse-accent);
+}
+
+.testimonial-dot:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 3px;
 }
 
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition: opacity var(--transition-base);
 }
 
-.fade-enter-from {
-    opacity: 0;
-    transform: translateX(-20px);
-}
-
+.fade-enter-from,
 .fade-leave-to {
     opacity: 0;
-    transform: translateX(20px);
 }
 </style>

@@ -13,6 +13,9 @@ const emit = defineEmits<{
     (e: 'next', data: { startDate: string; numberOfPeople: number }): void;
 }>();
 
+const { t } = useI18n();
+const { formatPrice } = useCurrency();
+
 // State
 const selectedDate = ref<Date | null>(null);
 const numberOfPeople = ref(props.minPeople || 1);
@@ -49,8 +52,6 @@ const handleNext = () => {
     });
 };
 
-const { formatPrice } = useCurrency();
-
 // Disable past dates
 const disabledDate = (date: Date) => {
     return date < new Date(new Date().setHours(0, 0, 0, 0));
@@ -59,126 +60,217 @@ const disabledDate = (date: Date) => {
 
 <template>
     <div class="date-people-picker">
-        <!-- Header -->
-        <div class="mb-8">
-            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-                Chọn ngày khởi hành
-            </h2>
-            <p class="text-gray-600 dark:text-gray-400">
-                Chọn ngày bạn muốn bắt đầu hành trình và số người tham gia
-            </p>
-        </div>
+        <UiSectionHeading :title="t('booking.datePeople.title')" :lead="t('booking.datePeople.lead')" />
 
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            <!-- Calendar Section -->
-            <div class="lg:col-span-3">
-                <div class="card p-6">
-                    <div class="flex items-center gap-2 mb-4">
-                        <i class="bx bx-calendar text-2xl text-blue-500"></i>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Chọn ngày</h3>
+        <form class="date-people-layout" novalidate @submit.prevent="handleNext">
+            <div class="date-people-layout__main">
+                <UiField :label="t('booking.datePeople.calendarLabel')">
+                    <template #default="{ id }">
+                        <el-date-picker :id="id" v-model="selectedDate" type="date"
+                            :placeholder="t('booking.datePeople.datePlaceholder')" :disabled-date="disabledDate"
+                            size="large" format="DD/MM/YYYY" value-format="YYYY-MM-DD" />
+                    </template>
+                </UiField>
+
+                <p v-if="selectedDate" class="date-people-layout__selected">
+                    {{ t('booking.datePeople.selectedDate') }}: <strong>{{ formattedDate }}</strong>
+                </p>
+
+                <fieldset class="people-counter">
+                    <legend>{{ t('booking.datePeople.peopleLabel') }}</legend>
+                    <div class="people-counter__control">
+                        <button type="button" class="people-counter__btn"
+                            :disabled="numberOfPeople <= (minPeople || 1)"
+                            :aria-label="t('booking.datePeople.decrease')" @click="decrementPeople">&minus;</button>
+                        <span class="people-counter__value">
+                            {{ numberOfPeople }}
+                            <span class="people-counter__unit">{{ t('booking.datePeople.unit') }}</span>
+                        </span>
+                        <button type="button" class="people-counter__btn"
+                            :disabled="maxPeople && numberOfPeople >= maxPeople"
+                            :aria-label="t('booking.datePeople.increase')" @click="incrementPeople">+</button>
                     </div>
-
-                    <el-date-picker v-model="selectedDate" type="date" placeholder="Chọn ngày khởi hành"
-                        :disabled-date="disabledDate" class="w-full" size="large" format="DD/MM/YYYY"
-                        value-format="YYYY-MM-DD" />
-
-                    <div v-if="selectedDate" class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                                <i class="bx bx-check text-2xl"></i>
-                            </div>
-                            <div>
-                                <div class="text-sm text-gray-600 dark:text-gray-400">Ngày đã chọn</div>
-                                <div class="text-lg font-bold text-gray-900 dark:text-white">
-                                    {{ formattedDate }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    <p v-if="minPeople || maxPeople" class="people-counter__hint">
+                        <span v-if="minPeople">{{ t('booking.datePeople.minPeople', { count: minPeople }) }}</span>
+                        <span v-if="minPeople && maxPeople"> · </span>
+                        <span v-if="maxPeople">{{ t('booking.datePeople.maxPeople', { count: maxPeople }) }}</span>
+                    </p>
+                </fieldset>
             </div>
 
-            <!-- People Counter & Summary -->
-            <div class="lg:col-span-2 space-y-6">
-                <!-- People Counter -->
-                <div class="card p-6">
-                    <div class="flex items-center gap-2 mb-4">
-                        <i class="bx bx-group text-2xl text-purple-500"></i>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">Số người</h3>
+            <aside class="date-people-layout__aside">
+                <dl class="date-people-summary">
+                    <div>
+                        <dt>{{ t('booking.summary.pricePerPerson') }}</dt>
+                        <dd>{{ formatPrice(pricePerPerson) }}</dd>
                     </div>
-
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
-                        <button @click="decrementPeople"
-                            class="w-12 h-12 rounded-full bg-white dark:bg-gray-700 shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                            :disabled="numberOfPeople <= (minPeople || 1)">
-                            <i class="bx bx-minus text-xl text-gray-700 dark:text-gray-300"></i>
-                        </button>
-
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-gray-900 dark:text-white">
-                                {{ numberOfPeople }}
-                            </div>
-                            <div class="text-sm text-gray-500 mt-1">người</div>
-                        </div>
-
-                        <button @click="incrementPeople"
-                            class="w-12 h-12 rounded-full bg-white dark:bg-gray-700 shadow-md hover:shadow-lg transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-                            :disabled="maxPeople && numberOfPeople >= maxPeople">
-                            <i class="bx bx-plus text-xl text-gray-700 dark:text-gray-300"></i>
-                        </button>
+                    <div>
+                        <dt>{{ t('booking.summary.people') }}</dt>
+                        <dd>&times; {{ numberOfPeople }}</dd>
                     </div>
+                </dl>
 
-                    <div v-if="minPeople || maxPeople" class="mt-3 text-sm text-gray-500 text-center">
-                        <span v-if="minPeople">Tối thiểu: {{ minPeople }} người</span>
-                        <span v-if="minPeople && maxPeople"> • </span>
-                        <span v-if="maxPeople">Tối đa: {{ maxPeople }} người</span>
-                    </div>
+                <div class="date-people-summary__total">
+                    <span>{{ t('booking.summary.total') }}</span>
+                    <span class="date-people-summary__amount">{{ formatPrice(totalPrice) }}</span>
                 </div>
 
-                <!-- Price Summary -->
-                <div
-                    class="card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-2 border-blue-200 dark:border-blue-800">
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Tổng quan</h3>
-
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 dark:text-gray-400">Giá / người</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">
-                                {{ formatPrice(pricePerPerson) }}
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-600 dark:text-gray-400">Số người</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">
-                                × {{ numberOfPeople }}
-                            </span>
-                        </div>
-
-                        <div class="h-px bg-gray-300 dark:bg-gray-600"></div>
-
-                        <div class="flex justify-between items-center pt-2">
-                            <span class="text-lg font-bold text-gray-900 dark:text-white">Tổng cộng</span>
-                            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                {{ formatPrice(totalPrice) }}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Next Button -->
-                <button @click="handleNext" :disabled="!canProceed"
-                    class="w-full btn-primary py-4 text-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
-                    <span>Tiếp tục</span>
-                    <i class="bx bx-right-arrow-alt text-xl ml-2"></i>
-                </button>
-            </div>
-        </div>
+                <UiButton type="submit" block :disabled="!canProceed">{{ t('common.nextStep') }}</UiButton>
+            </aside>
+        </form>
     </div>
 </template>
 
 <style scoped>
-:deep(.el-date-picker) {
+.date-people-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-fluid-xl);
+    align-items: start;
+    margin-top: var(--space-fluid-md);
+}
+
+@media (min-width: 64rem) {
+    .date-people-layout {
+        grid-template-columns: 3fr 2fr;
+    }
+}
+
+.date-people-layout__main {
+    display: grid;
+    gap: var(--space-5);
+}
+
+.date-people-layout__selected {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.date-people-layout__selected strong {
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-style: normal;
+}
+
+.people-counter {
+    margin: 0;
+    padding: var(--space-5) 0 0;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+}
+
+.people-counter legend {
+    float: left;
+    width: 100%;
+    margin-bottom: var(--space-3);
+    padding: 0;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.people-counter legend+* {
+    clear: both;
+}
+
+.people-counter__control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 16rem;
+}
+
+.people-counter__btn {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    line-height: 1;
+    transition: border-color var(--transition-base), color var(--transition-base);
+}
+
+.people-counter__btn:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+.people-counter__btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.people-counter__btn:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.people-counter__value {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-variant-numeric: tabular-nums;
+}
+
+.people-counter__unit {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--color-text-muted);
+}
+
+.people-counter__hint {
+    margin-top: var(--space-3);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.date-people-layout__aside {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-strong);
+}
+
+.date-people-summary>div {
+    display: flex;
+    justify-content: space-between;
+    padding-block: var(--space-2);
+    color: var(--color-text-muted);
+}
+
+.date-people-summary dd {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+}
+
+.date-people-summary__total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-top: var(--space-4);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-serif);
+}
+
+.date-people-summary__amount {
+    font-size: var(--text-h3);
+    color: var(--color-accent);
+}
+
+.date-people-layout__aside .ui-btn {
+    margin-top: var(--space-6);
+}
+
+:deep(.el-date-editor) {
     width: 100%;
 }
 </style>

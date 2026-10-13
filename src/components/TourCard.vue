@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
 import type { TourCardItem } from '@/types/api';
 
+// Thẻ tour dùng ở trang chủ và trang yêu thích (wishlist.vue — thuộc nhóm khác, không đổi API).
+// Visually khớp với tour/TourListingCard: ảnh 4:3 bo góc, eyebrow nhỏ màu nhấn, tiêu đề serif,
+// chi tiết chữ mờ, giá serif, đường kẻ thay cho khung/bóng đổ.
 type Props = {
     tour?: TourCardItem;
     rating?: number;
@@ -23,7 +25,6 @@ const props = withDefaults(defineProps<Props>(), {
     isWishlistedOverride: undefined,
 });
 
-const router = useRouter();
 const { t } = useI18n();
 const { isAuthenticated } = useAuth();
 const { formatPrice } = useCurrency();
@@ -44,7 +45,10 @@ const isWishlisted = computed(() =>
         : (wishlistStatus.value?.isWishlisted ?? false),
 );
 
+const wishlistLabel = computed(() => (isWishlisted.value ? t('tourCard.wishlistRemove') : t('tourCard.wishlistAdd')));
+
 const toggleWishlist = async (e: Event) => {
+    e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated.value) {
         ElMessage.warning(t('review.loginRequired'));
@@ -54,7 +58,7 @@ const toggleWishlist = async (e: Event) => {
     try {
         const wasWishlisted = isWishlisted.value;
         await toggleWishlistMutation.mutateAsync(tourId.value);
-        
+
         // Show success message based on previous state
         if (wasWishlisted) {
             ElMessage.success(t('wishlist.removeSuccess'));
@@ -66,9 +70,9 @@ const toggleWishlist = async (e: Event) => {
     }
 };
 
-const formattedPrice = computed(() => {
-    return formatPrice(props.tour?.price);
-});
+const detailPath = computed(() => localePath(props.tour?.to || `/tour/${props.tour?.id}`));
+
+const formattedPrice = computed(() => formatPrice(props.tour?.price));
 
 const formattedOriginalPrice = computed(() => {
     const oPrice = props.tour?.originalPrice || props.originalPrice;
@@ -76,180 +80,244 @@ const formattedOriginalPrice = computed(() => {
     return formatPrice(oPrice);
 });
 
-const handleBookTour = () => {
-    if (props.tour?.to) {
-        router.push(localePath(props.tour?.to));
-    } else {
-        router.push(localePath(`/tour/${props.tour?.id}`));
-    }
-};
-
-const handleCardClick = () => {
-    if (props.tour?.to) {
-        router.push(localePath(props.tour?.to));
-    } else {
-        router.push(localePath(`/tour/${props.tour?.id}`));
-    }
-};
+const tagsList = computed(() => (props.tour?.tags?.length ? props.tour.tags : props.tags));
+const ratingValue = computed(() => props.tour?.rating || props.rating);
 </script>
 
 <template>
-    <div class="group relative bg-white dark:bg-gray-800 rounded-2xl overflow-hidden cursor-pointer transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 border border-gray-100 dark:border-gray-700"
-        @click="handleCardClick" style="backdrop-filter: blur(10px);">
-        <!-- Image Container with Gradient Overlay -->
-        <div class="relative h-64 overflow-hidden">
-            <img :src="tour?.image" :alt="tour?.title" loading="lazy"
-                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+    <article class="tour-card" :class="`tour-card--${variant}`">
+        <div class="tour-card__media">
+            <img :src="tour?.image" :alt="tour?.title || ''" loading="lazy" decoding="async">
+            <span v-if="tour?.duration" class="tour-card__duration">{{ tour.duration }}</span>
 
-            <!-- Gradient Overlay -->
-            <div
-                class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500">
-            </div>
-
-            <!-- Wishlist Button -->
-            <button @click="toggleWishlist"
-                class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center transition-all duration-300 hover:scale-110 hover:bg-white z-10 shadow-lg"
-                :class="isWishlisted ? 'text-red-500' : 'text-gray-400'">
-                <svg class="w-5 h-5 transition-all duration-300" :fill="isWishlisted ? 'currentColor' : 'none'"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <button type="button" class="tour-card__wishlist" :class="{ 'is-active': isWishlisted }"
+                :aria-label="wishlistLabel" :aria-pressed="isWishlisted" @click="toggleWishlist">
+                <svg viewBox="0 0 24 24" :fill="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor"
+                    stroke-width="1.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M4.318 6.318a4.5 4.5 0 0 0 0 6.364L12 20.364l7.682-7.682a4.5 4.5 0 0 0-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 0 0-6.364 0z" />
                 </svg>
             </button>
-
-            <!-- Peulis Label (Top Left) -->
-            <div v-if="showPeulisLabel"
-                class="absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs font-bold z-10 bg-gradient-to-r from-red-500 to-pink-600 text-white shadow-lg">
-                Peulis
-            </div>
-
-            <!-- Discount Badge (Top Right, below wishlist) -->
-            <div v-if="tour?.discount"
-                class="absolute top-16 right-4 px-3 py-1.5 rounded-full text-xs font-bold z-10 bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg animate-pulse">
-                -{{ tour?.discount }}%
-            </div>
-
-            <!-- Badge (Alternative) -->
-            <div v-if="tour?.badge && !showPeulisLabel"
-                class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold text-gray-700 z-10 flex items-center gap-2 shadow-lg">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                <span>{{ tour?.badge }}</span>
-            </div>
-
-            <!-- Tags at bottom of image -->
-            <div v-if="tour?.tags && tour?.tags.length > 0"
-                class="absolute bottom-4 left-4 right-4 flex flex-wrap gap-2 z-10">
-                <span v-for="tag in tour?.tags.slice(0, 3)" :key="tag"
-                    class="px-3 py-1 rounded-full text-xs font-medium bg-white/90 backdrop-blur-md text-gray-700 shadow-md">
-                    {{ tag }}
-                </span>
-            </div>
         </div>
 
-        <!-- Content with Glassmorphism Effect -->
-        <div class="p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900">
-            <!-- Rating Stars -->
-            <div class="flex items-center gap-1 mb-3">
-                <svg v-for="i in 5" :key="i" class="w-4 h-4 transition-colors duration-300"
-                    :class="i <= (tour?.rating || props.rating) ? 'text-yellow-400' : 'text-gray-300'"
-                    fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                </svg>
-                <span class="text-xs text-gray-500 ml-1">({{ (tour?.rating || props.rating).toFixed(1) }})</span>
-            </div>
-
-            <!-- Price -->
-            <div class="flex items-center gap-2 mb-3">
-                <span
-                    class="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 bg-clip-text text-transparent">
-                    {{ formattedPrice }}
-                </span>
-                <span v-if="originalPrice" class="text-sm text-gray-400 line-through">
-                    {{ formattedOriginalPrice }}
-                </span>
-            </div>
-
-            <!-- Tour Title -->
-            <h3
-                class="text-gray-800 dark:text-white font-bold text-base mb-4 line-clamp-2 min-h-[3rem] leading-relaxed group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                {{ tour?.title }}
+        <div class="tour-card__body">
+            <p v-if="tour?.badge" class="tour-card__eyebrow">{{ tour.badge }}</p>
+            <h3 class="tour-card__title">
+                <NuxtLink :to="detailPath" class="tour-card__link">{{ tour?.title }}</NuxtLink>
             </h3>
 
-            <!-- Details with Icons -->
-            <div class="space-y-3 mb-5">
-                <div class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm">
-                    <div
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <span class="font-semibold text-gray-700 dark:text-gray-200">{{ t('tour.duration') }}:</span>
-                        <span class="ml-1">{{ tour?.duration }}</span>
-                    </div>
+            <template v-if="variant !== 'compact'">
+                <p v-if="tagsList.length" class="tour-card__route">{{ tagsList.join(' · ') }}</p>
+
+                <div v-if="tour?.people || ratingValue" class="tour-card__meta">
+                    <span v-if="tour?.people">{{ t('tour.peopleCount', { count: tour.people }) }}</span>
+                    <span v-if="ratingValue">{{ ratingValue.toFixed(1) }}/5</span>
                 </div>
-                <div class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm">
-                    <div
-                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-600 flex items-center justify-center">
-                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <span class="font-semibold text-gray-700 dark:text-gray-200">{{ t('tour.people') }}:</span>
-                        <span class="ml-1">{{ t('tour.peopleCount', { count: tour?.people || '2-4' }) }}</span>
-                    </div>
+            </template>
+
+            <div class="tour-card__foot">
+                <div class="tour-card__price-group">
+                    <p class="tour-card__price">{{ formattedPrice }}</p>
+                    <p v-if="formattedOriginalPrice" class="tour-card__original-price">{{ formattedOriginalPrice }}</p>
+                    <span v-if="tour?.discount" class="tour-card__discount">-{{ tour.discount }}%</span>
                 </div>
+                <span class="tour-card__more" aria-hidden="true">{{ t('tour.list.details') }} →</span>
             </div>
-
-            <!-- Book Tour Button with Gradient -->
-            <button @click.stop="handleBookTour"
-                class="w-full bg-#1A71C7 hover:opacity-80 text-white font-bold py-3.5 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-105 group/btn">
-                <svg class="w-5 h-5 transition-transform duration-300 group-hover/btn:rotate-12" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                <span>{{ t('tour.bookNowBtn') }}</span>
-                <svg class="w-5 h-5 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none"
-                    stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-            </button>
         </div>
-
-        <!-- Hover Glow Effect -->
-        <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-            style="box-shadow: 0 0 40px rgba(59, 130, 246, 0.3);"></div>
-    </div>
+    </article>
 </template>
 
 <style scoped>
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+.tour-card {
+    position: relative;
+    border-radius: var(--radius-md);
+}
+
+.tour-card:has(.tour-card__link:focus-visible) {
+    outline: var(--focus-ring);
+    outline-offset: 6px;
+}
+
+.tour-card__link {
+    color: inherit;
+    text-decoration: none;
+    outline: none;
+}
+
+/* Link trải rộng: bấm vào bất kỳ đâu trên thẻ đều mở chi tiết tour */
+.tour-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+
+.tour-card__media {
+    position: relative;
+    aspect-ratio: 4 / 3;
     overflow: hidden;
+    border-radius: var(--radius-md);
+    background: var(--color-bg-subtle);
 }
 
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.7;
-    }
+.tour-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
 }
 
-.animate-pulse {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+.tour-card:hover .tour-card__media img {
+    transform: scale(1.03);
+}
+
+.tour-card__media::after {
+    content: '';
+    position: absolute;
+    inset: 60% 0 0;
+    background: linear-gradient(to top, var(--color-scrim), transparent);
+    pointer-events: none;
+}
+
+.tour-card__duration {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 0.875rem;
+    z-index: 1;
+    color: var(--color-inverse-text);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.tour-card__wishlist {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--color-surface) 85%, transparent);
+    color: var(--color-text-muted);
+    transition: color var(--transition-base);
+}
+
+.tour-card__wishlist svg {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.tour-card__wishlist:hover,
+.tour-card__wishlist.is-active {
+    color: var(--color-danger);
+}
+
+.tour-card__wishlist:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
+}
+
+.tour-card__body {
+    display: flex;
+    flex-direction: column;
+    padding-top: 1.125rem;
+}
+
+.tour-card__eyebrow {
+    margin-bottom: 0.375rem;
+    color: var(--color-accent);
+    font-size: var(--text-2xs);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+}
+
+.tour-card__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-snug);
+    transition: color var(--transition-base);
+}
+
+.tour-card:hover .tour-card__title {
+    color: var(--color-accent);
+}
+
+.tour-card__route {
+    display: -webkit-box;
+    margin-top: var(--space-2);
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.tour-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-3);
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.tour-card__meta>span+span::before {
+    content: '·';
+    margin-right: var(--space-3);
+}
+
+.tour-card__foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+}
+
+.tour-card__price-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2);
+}
+
+.tour-card__price {
+    font-family: var(--font-serif);
+    font-size: var(--text-2xl);
+    font-variant-numeric: lining-nums;
+}
+
+.tour-card__original-price {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-decoration: line-through;
+}
+
+.tour-card__discount {
+    color: var(--color-accent);
+    font-size: var(--text-sm);
+    font-weight: var(--weight-semibold);
+}
+
+.tour-card__more {
+    color: var(--color-text-muted);
+    font-size: var(--text-md);
+}
+
+.tour-card--compact .tour-card__body {
+    padding-top: var(--space-3);
+}
+
+.tour-card--compact .tour-card__title {
+    font-size: var(--text-lg);
 }
 </style>

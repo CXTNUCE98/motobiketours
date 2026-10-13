@@ -107,8 +107,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
     <header class="site-header">
         <div class="shell site-header__bar">
             <NuxtLink :to="localePath('/')" class="site-header__logo">
-                <img src="/logo.png" class="dark:hidden" alt="ANDAGO" width="976" height="557">
-                <img src="/logo_dark.png" class="hidden dark:block" alt="ANDAGO" width="976" height="557">
+                <img src="/logo.png" class="site-header__logo-light" alt="ANDAGO" width="976" height="557">
+                <img src="/logo_dark.png" class="site-header__logo-dark" alt="ANDAGO" width="976" height="557">
             </NuxtLink>
 
             <!-- Desktop Navigation -->
@@ -261,6 +261,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 .site-header__logo img {
     height: 3.25rem;
     width: auto;
+}
+
+/* Logo theo theme: lớp .dark do @nuxtjs/color-mode gắn lên <html> */
+.site-header__logo-dark,
+:global(.dark) .site-header__logo-light {
+    display: none;
+}
+
+:global(.dark) .site-header__logo-dark {
+    display: block;
 }
 
 /* nav.* trong i18n viết hoa toàn bộ; hiển thị lại dạng câu: "Trang chủ", "Giới thiệu"... */

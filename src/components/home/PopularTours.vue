@@ -11,33 +11,59 @@ const categories = computed(() => [
 </script>
 
 <template>
-    <section class="fade-in-section py-12 md:py-16 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-        <div class="max-w-7xl mx-auto px-4">
-            <!-- Header Text -->
-            <div class="text-center mb-8 md:mb-12">
-                <p class="text-red-600 dark:text-red-400 text-sm md:text-base font-medium mb-2">
-                    {{ t('home.popularSubtitle') }}
-                </p>
-                <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#094174] dark:text-blue-400">
-                    {{ t('home.popularTitle') }}
-                </h2>
-            </div>
+    <section class="popular" aria-labelledby="popular-title">
+        <div class="shell">
+            <UiSectionHeading id="popular-title" :eyebrow="t('home.popularSubtitle')" :title="t('home.popularTitle')" />
 
-            <!-- Popular Tours Grid -->
-            <div class="flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-10">
-                <div v-for="(cat, index) in categories" :key="index"
-                    class="flex flex-col items-center group cursor-pointer">
-                    <div
-                        class="relative w-32 h-32 md:w-40 md:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 mb-4 border-4 border-white dark:border-gray-800">
-                        <img :src="cat.image" :alt="cat.title" loading="lazy"
-                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                    <h3
-                        class="text-[#094174] dark:text-blue-300 font-semibold text-sm md:text-base lg:text-lg text-center">
-                        {{ cat.title }}
-                    </h3>
-                </div>
-            </div>
+            <ul class="popular-grid" role="list">
+                <li v-for="cat in categories" :key="cat.title">
+                    <figure class="popular-photo">
+                        <img :src="cat.image" :alt="cat.title" loading="lazy" decoding="async">
+                    </figure>
+                    <p class="popular-name">{{ cat.title }}</p>
+                </li>
+            </ul>
         </div>
     </section>
 </template>
+
+<style scoped>
+.popular {
+    padding-block: var(--section-space);
+}
+
+.popular-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: var(--space-fluid-md) var(--space-fluid-sm);
+    margin-top: var(--space-fluid-lg);
+    text-align: center;
+}
+
+.popular-photo {
+    overflow: hidden;
+    max-width: 10rem;
+    aspect-ratio: 1 / 1;
+    margin-inline: auto;
+    border-radius: 50%;
+    background: var(--color-bg-subtle);
+}
+
+.popular-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.popular-grid li:hover .popular-photo img {
+    transform: scale(1.03);
+}
+
+.popular-name {
+    margin-top: var(--space-4);
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    line-height: var(--leading-snug);
+}
+</style>

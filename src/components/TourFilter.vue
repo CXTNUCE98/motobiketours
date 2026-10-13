@@ -22,6 +22,9 @@ const props = defineProps<{
     initialFilters?: FilterOptions;
 }>();
 
+// Hai instance (sidebar + bottom sheet mobile) cần id khác nhau
+const idPrefix = props.showMobile ? 'tour-filter-sheet' : 'tour-filter';
+
 // Filter state
 const searchQuery = ref(props.initialFilters?.searchQuery || '');
 const selectedDuration = ref<string>(props.initialFilters?.duration || '');
@@ -124,7 +127,7 @@ const clearFilters = () => {
         <div class="tour-filter__body">
             <!-- Search -->
             <form class="tour-filter__group" role="search" @submit.prevent="applyFilters">
-                <UiField :label="t('tour.filter.search')">
+                <UiField :id="`${idPrefix}-search`" :label="t('tour.filter.search')">
                     <template #default="{ id }">
                         <input :id="id" v-model="searchQuery" type="search" class="ui-control"
                             :placeholder="t('tour.filter.searchPlaceholder')" />
@@ -175,7 +178,7 @@ const clearFilters = () => {
 
             <!-- Depart From Filter -->
             <div class="tour-filter__group">
-                <UiField :label="t('tour.departFrom')">
+                <UiField :id="`${idPrefix}-depart`" :label="t('tour.departFrom')">
                     <template #default="{ id }">
                         <select :id="id" v-model="selectedDepartFrom" class="ui-control">
                             <option v-for="item in departFromOptions" :key="item.value" :value="item.value">

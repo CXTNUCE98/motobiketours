@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { CONTACT_INFO } from '~/constants/contact';
 
 const route = useRoute();
 const router = useRouter();
+const { t } = useI18n();
 
 const bookingId = ref(route.query.id as string);
-const errorMessage = ref(route.query.message as string || 'Thanh toán không thành công');
+const errorMessage = computed(() => (route.query.message as string) || t('booking.failed.defaultMessage'));
 
 const retryPayment = () => {
     if (bookingId.value) {
@@ -26,186 +28,178 @@ const goToMyBookings = () => {
 </script>
 
 <template>
-    <div
-        class="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800 flex items-center justify-center px-4">
-        <div class="max-w-2xl w-full">
-            <!-- Error Animation -->
-            <div class="text-center mb-8 fade-in-up">
-                <div class="relative inline-block">
-                    <div class="absolute inset-0 animate-ping bg-red-500/20 rounded-full"></div>
-                    <div
-                        class="relative w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-400 to-orange-500 flex items-center justify-center shadow-2xl shadow-red-500/50">
-                        <i class="bx bx-x text-white text-7xl animate-scale-in"></i>
-                    </div>
-                </div>
+    <div class="booking-result shell">
+        <div class="booking-result__inner">
+            <UiEyebrow>{{ t('booking.failed.eyebrow') }}</UiEyebrow>
+            <h1 class="booking-result__title booking-result__title--danger">
+                {{ t('booking.failed.titleBase') }} <em>{{ t('booking.failed.emphasis') }}</em>
+            </h1>
+            <p class="booking-result__lead">{{ errorMessage }}</p>
+            <p v-if="bookingId" class="booking-result__code">
+                {{ t('booking.failed.bookingCode') }}: <strong>{{ bookingId }}</strong>
+            </p>
 
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-                    Thanh toán thất bại
-                </h1>
-                <p class="text-lg text-gray-600 dark:text-gray-400 mb-2">
-                    {{ errorMessage }}
-                </p>
-                <div v-if="bookingId"
-                    class="inline-flex items-center gap-2 text-sm text-gray-500 bg-gray-100 dark:bg-gray-800 px-4 py-2 rounded-full">
-                    <i class="bx bx-receipt"></i>
-                    <span>Mã đặt chỗ: <span class="font-mono font-bold">{{ bookingId }}</span></span>
+            <div class="booking-result__info">
+                <div>
+                    <h2>{{ t('booking.failed.createdTitle') }}</h2>
+                    <p>{{ t('booking.failed.createdDesc') }}</p>
+                </div>
+                <div>
+                    <h2>{{ t('booking.failed.helpTitle') }}</h2>
+                    <p>{{ t('booking.failed.helpDesc') }}</p>
                 </div>
             </div>
 
-            <!-- Info Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 fade-in-up animation-delay-200">
-                <div
-                    class="card p-6 bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-2 border-yellow-200 dark:border-yellow-800">
-                    <div class="flex items-start gap-4">
-                        <div
-                            class="w-12 h-12 rounded-full bg-yellow-500 flex items-center justify-center flex-shrink-0">
-                            <i class="bx bx-info-circle text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 dark:text-white mb-2">
-                                Booking đã được tạo
-                            </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Booking của bạn đã được ghi nhận. Bạn có thể thử thanh toán lại hoặc chọn phương thức
-                                khác.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div
-                    class="card p-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 border-2 border-blue-200 dark:border-blue-800">
-                    <div class="flex items-start gap-4">
-                        <div class="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center flex-shrink-0">
-                            <i class="bx bx-support text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-gray-900 dark:text-white mb-2">
-                                Cần hỗ trợ?
-                            </h3>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">
-                                Liên hệ với đội ngũ hỗ trợ của chúng tôi nếu bạn gặp bất kỳ vấn đề nào.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Common Issues -->
-            <div class="card p-6 mb-8 fade-in-up animation-delay-300">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <i class="bx bx-error-circle text-red-500"></i>
-                    Nguyên nhân có thể
-                </h3>
-                <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
-                    <li class="flex items-start gap-2">
-                        <i class="bx bx-chevron-right text-red-500 mt-0.5"></i>
-                        <span>Không đủ số dư trong tài khoản thanh toán</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="bx bx-chevron-right text-red-500 mt-0.5"></i>
-                        <span>Thông tin thẻ/tài khoản không chính xác</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="bx bx-chevron-right text-red-500 mt-0.5"></i>
-                        <span>Kết nối mạng không ổn định</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <i class="bx bx-chevron-right text-red-500 mt-0.5"></i>
-                        <span>Phiên giao dịch đã hết hạn</span>
-                    </li>
+            <section class="booking-result__steps" aria-labelledby="failed-reasons-title">
+                <h2 id="failed-reasons-title" class="booking-result__steps-title">
+                    {{ t('booking.failed.reasonsTitle') }}
+                </h2>
+                <ul class="reason-list" role="list">
+                    <li>{{ t('booking.failed.reason1') }}</li>
+                    <li>{{ t('booking.failed.reason2') }}</li>
+                    <li>{{ t('booking.failed.reason3') }}</li>
+                    <li>{{ t('booking.failed.reason4') }}</li>
                 </ul>
+            </section>
+
+            <div class="booking-result__actions booking-result__actions--three">
+                <UiButton block @click="retryPayment">{{ t('booking.failed.retry') }}</UiButton>
+                <UiButton variant="outline" block @click="goToMyBookings">{{ t('booking.failed.viewBookings')
+                    }}</UiButton>
+                <UiButton variant="ghost" block @click="goHome">{{ t('booking.failed.backHome') }}</UiButton>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 fade-in-up animation-delay-400">
-                <button @click="retryPayment"
-                    class="flex-1 btn-primary py-4 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700">
-                    <i class="bx bx-refresh text-xl"></i>
-                    <span>Thử thanh toán lại</span>
-                </button>
-                <button @click="goToMyBookings"
-                    class="flex-1 btn-secondary py-4 flex items-center justify-center gap-2">
-                    <i class="bx bx-list-ul text-xl"></i>
-                    <span>Xem booking của tôi</span>
-                </button>
-                <button @click="goHome" class="btn-secondary py-4 flex items-center justify-center gap-2 px-6">
-                    <i class="bx bx-home text-xl"></i>
-                    <span>Về trang chủ</span>
-                </button>
-            </div>
-
-            <!-- Help Contact -->
-            <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400 fade-in-up animation-delay-500">
-                <p>Cần hỗ trợ khẩn cấp?</p>
-                <p class="mt-1">
-                    Gọi hotline:
-                    <a href="tel:1900xxxx" class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                        1900 xxxx
-                    </a>
-                    hoặc email:
-                    <a href="mailto:support@motobiketours.com"
-                        class="text-blue-600 dark:text-blue-400 font-bold hover:underline">
-                        support@motobiketours.com
-                    </a>
-                </p>
-            </div>
+            <p class="booking-result__help">
+                {{ t('booking.failed.urgentHelp') }}<br>
+                {{ t('booking.failed.callHotline') }}:
+                <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phoneIntl }}</a>
+                {{ t('booking.failed.orEmail') }}
+                <a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a>
+            </p>
         </div>
     </div>
 </template>
 
 <style scoped>
-@keyframes scale-in {
-    0% {
-        transform: scale(0) rotate(-180deg);
-    }
-
-    50% {
-        transform: scale(1.2) rotate(0deg);
-    }
-
-    100% {
-        transform: scale(1) rotate(0deg);
-    }
+.booking-result {
+    display: grid;
+    place-items: center;
+    min-height: calc(100vh - var(--header-height));
+    padding-block: var(--space-fluid-xl);
 }
 
-.animate-scale-in {
-    animation: scale-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.booking-result__inner {
+    width: 100%;
+    max-width: 40rem;
+    text-align: center;
 }
 
-@keyframes fade-in-up {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.booking-result__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h2);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
 }
 
-.fade-in-up {
-    animation: fade-in-up 0.6s ease-out;
+.booking-result__title em {
+    color: var(--color-accent);
+    font-style: italic;
 }
 
-.animation-delay-200 {
-    animation-delay: 0.2s;
-    animation-fill-mode: both;
+.booking-result__title--danger em {
+    color: var(--color-danger);
 }
 
-.animation-delay-300 {
-    animation-delay: 0.3s;
-    animation-fill-mode: both;
+.booking-result__lead {
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-lead);
+    line-height: var(--leading-body);
 }
 
-.animation-delay-400 {
-    animation-delay: 0.4s;
-    animation-fill-mode: both;
+.booking-result__code {
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
 }
 
-.animation-delay-500 {
-    animation-delay: 0.5s;
-    animation-fill-mode: both;
+.booking-result__code strong {
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-variant-numeric: tabular-nums;
+}
+
+.booking-result__info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: var(--space-fluid-md);
+    margin-top: var(--space-fluid-lg);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    text-align: left;
+}
+
+.booking-result__info h2 {
+    font-family: var(--font-serif);
+    font-size: var(--text-lg);
+    font-weight: var(--weight-regular);
+}
+
+.booking-result__info p {
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+}
+
+.booking-result__steps {
+    margin-top: var(--space-fluid-lg);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+    text-align: left;
+}
+
+.booking-result__steps-title {
+    font-family: var(--font-serif);
+    font-size: var(--text-title);
+    font-weight: var(--weight-regular);
+}
+
+.reason-list {
+    display: grid;
+    margin-top: var(--space-4);
+}
+
+.reason-list li {
+    padding-block: var(--space-3);
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+}
+
+.booking-result__actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: var(--space-3);
+    margin-top: var(--space-fluid-lg);
+}
+
+.booking-result__help {
+    margin-top: var(--space-fluid-md);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    line-height: var(--leading-body);
+}
+
+.booking-result__help a {
+    color: var(--color-text);
+    font-weight: var(--weight-medium);
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 0.2em;
+}
+
+.booking-result__help a:hover {
+    text-decoration-color: var(--color-accent);
 }
 </style>

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import 'leaflet/dist/leaflet.css';
 import type { TourItinerary } from '~/types/api';
+import { escapeHtml } from '~/utils/sanitize';
+import { readCssVar } from '~/utils/cssVar';
 
 const props = defineProps<{
     itineraries: TourItinerary[];
@@ -75,7 +77,7 @@ const updateItinerary = () => {
                 html: `
                     <div class="itinerary-marker">
                         <div class="marker-number">${index + 1}</div>
-                        <div class="marker-label">${spot.name}</div>
+                        <div class="marker-label">${escapeHtml(spot.name || '')}</div>
                     </div>
                 `,
                 iconSize: [30, 30],
@@ -89,9 +91,9 @@ const updateItinerary = () => {
 
     if (points.length > 1) {
         routeLine = L.polyline(points, {
-            color: '#3b82f6',
+            color: readCssVar('--color-accent'),
             weight: 4,
-            opacity: 0.6,
+            opacity: 0.8,
             dashArray: '10, 10',
             lineJoin: 'round'
         }).addTo(map);
@@ -144,49 +146,54 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div ref="mapContainer" class="w-full h-full bg-zinc-100 dark:bg-zinc-800"></div>
+    <div ref="mapContainer" class="interactive-map"></div>
 </template>
 
+<style scoped>
+.interactive-map {
+    width: 100%;
+    height: 100%;
+    background: var(--color-bg-subtle);
+}
+</style>
+
 <style>
+/* Không scoped: nội dung marker do Leaflet chèn trực tiếp vào DOM, nằm ngoài cây render của Vue. */
 .itinerary-marker {
     position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-family: var(--font-sans);
 }
 
 .marker-number {
-    width: 24px;
-    height: 24px;
-    background: #3b82f6;
-    color: white;
-    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--color-surface);
+    border-radius: 50%;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
     font-size: 12px;
-    font-weight: bold;
-    border: 2px solid white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-weight: var(--weight-semibold);
+    box-shadow: var(--shadow-popover);
 }
 
 .marker-label {
     position: absolute;
     top: 100%;
     margin-top: 4px;
-    background: white;
     padding: 2px 8px;
-    border-radius: 4px;
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text);
     font-size: 10px;
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     white-space: nowrap;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: #1f2937;
-}
-
-.dark .marker-label {
-    background: #374151;
-    color: #f3f4f6;
+    box-shadow: var(--shadow-popover);
 }
 
 .custom-div-icon {
