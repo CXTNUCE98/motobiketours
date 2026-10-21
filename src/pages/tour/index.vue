@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { logger } from '~/utils/logger';
 
 const route = useRoute();
 const { t } = useI18n();
@@ -10,12 +9,6 @@ const searchQuery = ref('');
 const showFilters = ref(false);
 const viewMode = ref<'grid' | 'list'>('grid');
 const sortBy = ref('default'); // 'default', 'price-low', 'price-high', 'duration'
-const showCreateDialog = ref(false);
-const selectedTour = ref<any | null>(null);
-
-// Auth
-const { user } = useAuth();
-const isAdmin = computed(() => user.value?.isAdmin);
 
 // Pagination state
 const currentPage = ref(1);
@@ -114,59 +107,6 @@ const handleClearFilters = () => {
     currentPage.value = 1;
 };
 
-const handleCreateTour = () => {
-    selectedTour.value = null;
-    showCreateDialog.value = true;
-};
-
-const editTour = (tourId: string) => {
-    const tour = tours.value.find((tourItem: any) => tourItem.id === tourId);
-    if (tour) {
-        selectedTour.value = tour;
-        showCreateDialog.value = true;
-    }
-};
-
-const handleCreateSuccess = () => {
-    selectedTour.value = null;
-};
-
-
-const { mutate: deleteTourMutation } = useDeleteTourMutation();
-
-const deleteTour = (tourId: string) => {
-    const tour = tours.value.find((tourItem: any) => tourItem.id === tourId);
-    const tourTitle = tour?.title || t('tour.thisTour');
-
-    ElMessageBox.confirm(
-        t('tour.message.deleteConfirm', { title: tourTitle }),
-        t('tour.message.deleteTitle'),
-        {
-            confirmButtonText: t('tour.message.deleteBtn'),
-            cancelButtonText: t('common.cancel'),
-            type: 'warning',
-            confirmButtonClass: 'el-button--danger'
-        }
-    ).then(() => {
-        deleteTourMutation(tourId, {
-            onSuccess: () => {
-                ElMessage.success(t('tour.message.deleteSuccess'));
-            },
-            onError: (error: unknown) => {
-                logger.error('Error deleting tour:', error);
-                let errorMessage = t('tour.message.deleteError');
-                if (error && typeof error === 'object') {
-                    const apiError = error as { message?: string; response?: { data?: { message?: string } } };
-                    errorMessage = apiError?.message || apiError?.response?.data?.message || errorMessage;
-                }
-                ElMessage.error(errorMessage);
-            }
-        });
-    }).catch(() => {
-        // User cancelled, do nothing
-    });
-};
-
 const sortOptions = computed(() => [
     { label: t('tour.filter.sortOptions.default'), value: 'default' },
     { label: t('tour.filter.sortOptions.priceLow'), value: 'price-low' },
@@ -238,8 +178,6 @@ onMounted(() => {
                                 {{ t('tour.viewList') }}
                             </button>
                         </div>
-
-                        <UiButton v-if="isAdmin" size="sm" @click="handleCreateTour">+ {{ t('tour.createBtn') }}</UiButton>
                     </div>
                 </div>
 
@@ -255,8 +193,7 @@ onMounted(() => {
                     <ul :class="viewMode === 'grid' ? 'tour-grid' : 'tour-list'" role="list"
                         :aria-busy="isFetching ? 'true' : 'false'">
                         <li v-for="tour in tours" :key="tour.id">
-                            <TourListingCard :tour="tour" :layout="viewMode" :editable="isAdmin" @edit="editTour"
-                                @delete="deleteTour" />
+                            <TourListingCard :tour="tour" :layout="viewMode" />
                         </li>
                     </ul>
 
@@ -270,10 +207,6 @@ onMounted(() => {
                 </UiEmptyState>
             </div>
         </section>
-
-        <!-- Create Tour Dialog -->
-        <LazyCreateTourDialog v-if="isAdmin && showCreateDialog" v-model:visible="showCreateDialog"
-            :tour-data="selectedTour" @success="handleCreateSuccess" />
 
         <!-- Mobile Filter Sheet -->
         <Transition name="sheet">

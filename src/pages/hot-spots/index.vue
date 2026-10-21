@@ -2,8 +2,6 @@
 import type { HotSpot, GetHotSpotsQuery } from '~/types/api';
 
 const { t } = useI18n();
-const { user } = useAuth();
-const isAdmin = computed(() => user.value?.isAdmin);
 
 const filters = ref<GetHotSpotsQuery>({
     category: '',
@@ -118,38 +116,7 @@ watch(isMapView, (val) => {
     if (val) isMiniMap.value = false;
 });
 
-const isCreateDialogOpen = ref(false);
 const isCustomTourOpen = ref(false);
-const editingSpot = ref<HotSpot | null>(null);
-
-const { mutateAsync: deleteHotSpot } = useDeleteHotSpot();
-
-const handleCreate = () => {
-    editingSpot.value = null;
-    isCreateDialogOpen.value = true;
-};
-
-const handleEdit = (spot: HotSpot) => {
-    editingSpot.value = spot;
-    isCreateDialogOpen.value = true;
-};
-
-const handleDelete = async (id: string) => {
-    try {
-        await ElMessageBox.confirm(
-            t('hotSpots.deleteConfirm'),
-            t('common.warning'),
-            {
-                confirmButtonText: t('common.remove'),
-                cancelButtonText: t('common.cancel'),
-                type: 'warning',
-            }
-        );
-        await deleteHotSpot(id);
-    } catch (error) {
-        // Cancelled or error
-    }
-};
 
 const clearSearch = () => {
     searchQuery.value = '';
@@ -165,7 +132,6 @@ useHead({
         <UiPageHero :eyebrow="t('nav.hotSpots')" :title="t('hotSpots.title')" :intro="t('hotSpots.discoverMost')">
             <template #actions>
                 <UiButton @click="isCustomTourOpen = true">{{ t('hotSpots.buildTrip') }}</UiButton>
-                <UiButton v-if="isAdmin" variant="outline" @click="handleCreate">+ {{ t('common.create') }}</UiButton>
             </template>
         </UiPageHero>
 
@@ -242,8 +208,7 @@ useHead({
             <template v-else>
                 <ul v-if="filteredSpots.length > 0" class="hs-grid" role="list" :aria-busy="isFetching ? 'true' : 'false'">
                     <li v-for="spot in filteredSpots" :key="spot.id">
-                        <HotSpotCard :spot="spot" :is-locating="isLocating" class="hs-grid__item" @click="selectSpot(spot.id)"
-                            @edit="handleEdit" @delete="handleDelete" />
+                        <HotSpotCard :spot="spot" :is-locating="isLocating" class="hs-grid__item" @click="selectSpot(spot.id)" />
                     </li>
                 </ul>
                 <UiEmptyState v-else :title="t('common.noLocationsFound')" :description="t('common.tryAgain')">
@@ -254,9 +219,6 @@ useHead({
 
         <!-- Detail Modal -->
         <HotSpotDetailModal v-model="isDetailOpen" :spot-id="selectedSpotId" @change-spot="selectedSpotId = $event" />
-
-        <!-- Create/Edit Dialog -->
-        <CreateHotSpotDialog v-model="isCreateDialogOpen" :spot-data="editingSpot" @success="refresh" />
 
         <!-- Custom Tour Builder Dialog -->
         <el-dialog v-model="isCustomTourOpen" width="1200" align-center destroy-on-close :show-close="true"

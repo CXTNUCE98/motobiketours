@@ -55,34 +55,3 @@ export function sanitizeHtml(
   return DOMPurify.sanitize(dirty, config);
 }
 
-/**
- * Sanitize HTML for preview mode (more permissive)
- * Allows more HTML tags and attributes for rich content preview
- */
-export function sanitizeHtmlForPreview(
-  dirty: string | null | undefined
-): string {
-  return sanitizeHtml(dirty, {
-    ALLOWED_TAGS: [
-      'p', 'br', 'strong', 'em', 'u', 's', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-      'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'a', 'img',
-      'table', 'thead', 'tbody', 'tr', 'th', 'td',
-      'div', 'span', 'hr', 'iframe', 'video', 'audio'
-    ],
-    ALLOWED_ATTR: [
-      'href', 'title', 'alt', 'src', 'width', 'height', 'class', 'style',
-      'target', 'rel', 'frameborder', 'allowfullscreen', 'controls', 'autoplay'
-    ],
-  });
-}
-
-/**
- * Vue composable for sanitizing HTML in components
- */
-export function useSanitize() {
-  return {
-    sanitize: sanitizeHtml,
-    sanitizeForPreview: sanitizeHtmlForPreview,
-  };
-}
-

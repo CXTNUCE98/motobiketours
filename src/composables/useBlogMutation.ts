@@ -1,28 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/vue-query';
-import type { BlogPost, CreateBlogDto } from '~/types/api';
-
-/**
- * Mutation tạo bài viết blog mới
- */
-export const useCreateBlogMutation = () => {
-  const queryClient = useQueryClient();
-  const { handleApiError } = useErrorHandler();
-
-  return useMutation({
-    mutationFn: async (data: CreateBlogDto): Promise<BlogPost> => {
-      return (await $motobikertoursApi('/blog', {
-        method: 'POST',
-        body: data,
-      })) as BlogPost;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
-    },
-    onError: (error) => {
-      handleApiError(error, 'Create Blog');
-    },
-  });
-};
 
 /**
  * Mutation tạo comment mới

@@ -18,7 +18,6 @@
     "@nuxtjs/i18n": "^10.2.1",
     "@nuxtjs/sitemap": "^7.2.10",
     "@tanstack/vue-query": "^5.80.7",
-    "@vueup/vue-quill": "^1.2.0",
     "axios": "^1.6.8",
     "boxicons": "^2.1.4",
     "canvas-confetti": "^1.9.4",

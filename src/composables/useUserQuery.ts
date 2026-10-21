@@ -5,11 +5,12 @@ import type { User } from '~/types/api';
  * Query lấy thông tin profile người dùng hiện tại
  */
 export const useUserProfileQuery = (userId: string | Ref<string | undefined>) => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, getAuthHeaders } = useAuth();
   return useQuery({
     queryKey: ['user-profile', userId],
     queryFn: async (): Promise<User> => {
       const user = await $motobikertoursApi('/users/{id}', {
+        headers: getAuthHeaders(),
         path: { id: unref(userId) as string },
       }) as unknown as User;
       return user;

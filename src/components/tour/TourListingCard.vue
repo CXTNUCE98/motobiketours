@@ -1,21 +1,13 @@
 <script setup lang="ts">
 import type { Tour } from '~/types/api';
 
-// Thẻ tour trên trang danh sách. Cả thẻ bấm được (link trải rộng),
-// nút quản trị nằm trên lớp link nên không lồng phần tử tương tác trong <a>.
+// Thẻ tour trên trang danh sách. Cả thẻ bấm được (link trải rộng).
 const props = withDefaults(defineProps<{
     tour: Tour;
     layout?: 'grid' | 'list';
-    editable?: boolean;
 }>(), {
     layout: 'grid',
-    editable: false,
 });
-
-const emit = defineEmits<{
-    (e: 'edit', id: string): void;
-    (e: 'delete', id: string): void;
-}>();
 
 const { t, te } = useI18n();
 const localePath = useLocalePath();
@@ -61,13 +53,6 @@ const typeLabels = computed(() =>
             <div class="tour-card__foot">
                 <p class="tour-card__price">{{ formatPrice(tour.priceUsd) }}</p>
                 <span class="tour-card__more" aria-hidden="true">{{ t('tour.list.details') }} →</span>
-            </div>
-
-            <div v-if="editable" class="tour-card__admin">
-                <button type="button" @click="emit('edit', tour.id)">{{ t('tour.edit') }}</button>
-                <button type="button" class="is-danger" @click="emit('delete', tour.id)">
-                    {{ t('tour.message.deleteBtn') }}
-                </button>
             </div>
         </div>
     </article>
@@ -221,29 +206,6 @@ const typeLabels = computed(() =>
 .tour-card__more {
     color: var(--color-text-muted);
     font-size: var(--text-md);
-}
-
-.tour-card__admin {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    gap: var(--space-4);
-    margin-top: var(--space-3);
-}
-
-.tour-card__admin button {
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
-}
-
-.tour-card__admin button:hover {
-    color: var(--color-text);
-}
-
-.tour-card__admin .is-danger:hover {
-    color: var(--color-danger);
 }
 
 /* Dạng danh sách: ảnh và nội dung đứng cạnh nhau khi đủ rộng */

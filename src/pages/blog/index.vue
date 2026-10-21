@@ -16,8 +16,6 @@ type BlogListItem = {
   author?: { userName?: string; avatar?: string }
 }
 
-const { user } = useAuth();
-const isUser = computed(() => !!user.value?.email);
 const localePath = useLocalePath()
 
 const { t, locale } = useI18n()
@@ -131,11 +129,7 @@ const postAuthor = (post: BlogListItem) => ({
 <template>
   <div class="blog-page">
     <UiPageHero :eyebrow="t('blog.blog')" :title="t('blog.discover')" :emphasis="t('blog.epicJourneys')"
-      :intro="t('blog.epicJourneysDesc')">
-      <template v-if="isUser" #actions>
-        <UiButton :to="localePath('/blog/create')">+ {{ t('blog.create') }}</UiButton>
-      </template>
-    </UiPageHero>
+      :intro="t('blog.epicJourneysDesc')" />
 
     <!-- Bộ lọc -->
     <section class="shell blog-filters" :aria-label="t('blog.filter.title')">

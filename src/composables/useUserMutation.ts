@@ -7,11 +7,13 @@ import type { User, UpdateUserDto } from '~/types/api';
 export const useUpdateUserMutation = () => {
   const queryClient = useQueryClient();
   const { handleApiError } = useErrorHandler();
+  const { getAuthHeaders } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, data }: { id: string; data: UpdateUserDto }): Promise<User> => {
       return await $motobikertoursApi('/users/{id}', {
         method: 'PATCH',
+        headers: getAuthHeaders(),
         body: data,
         path: { id },
       });

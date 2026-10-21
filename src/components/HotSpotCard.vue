@@ -9,15 +9,11 @@ const props = defineProps<{
 }>();
 
 defineEmits<{
-    (e: 'edit', spot: HotSpot): void;
-    (e: 'delete', id: string): void;
     (e: 'addToTrip', spot: HotSpot): void;
     (e: 'removeFromTrip', id: string): void;
 }>();
 
 const { t } = useI18n();
-const { user } = useAuth();
-const isAdmin = computed(() => user.value?.isAdmin);
 
 // Tính lại nhãn khoảng cách mỗi khi đổi ngôn ngữ để phần dịch cập nhật đúng.
 const distanceLabel = computed(() => {
@@ -57,13 +53,6 @@ const distanceLabel = computed(() => {
                         {{ t('hotSpots.added') }}
                     </button>
                 </template>
-            </div>
-
-            <div v-if="isAdmin" class="spot-card__admin">
-                <button type="button" @click.stop="$emit('edit', spot)">{{ t('common.edit') }}</button>
-                <button type="button" class="is-danger" @click.stop="$emit('delete', spot.id)">
-                    {{ t('common.remove') }}
-                </button>
             </div>
         </div>
     </article>
@@ -190,29 +179,6 @@ const distanceLabel = computed(() => {
 .spot-card__trip-btn.is-added {
     border-color: var(--color-accent);
     color: var(--color-accent);
-}
-
-.spot-card__admin {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    gap: var(--space-4);
-    margin-top: var(--space-3);
-}
-
-.spot-card__admin button {
-    color: var(--color-text-muted);
-    font-size: var(--text-sm);
-    text-decoration: underline;
-    text-underline-offset: 0.25em;
-}
-
-.spot-card__admin button:hover {
-    color: var(--color-text);
-}
-
-.spot-card__admin .is-danger:hover {
-    color: var(--color-danger);
 }
 
 .spot-card :deep(.el-rate__text) {

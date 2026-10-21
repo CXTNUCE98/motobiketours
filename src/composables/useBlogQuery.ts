@@ -11,6 +11,10 @@ export interface BlogsResponse {
   totalPages: number;
 }
 
+// Bản nháp soạn ở trang admin không hiển thị công khai.
+// Giữ "waiting" vì các bài cũ đăng từ web trước đây đều lưu ở trạng thái này.
+const PUBLIC_BLOG_STATUSES = 'published,waiting';
+
 /**
  * Query lấy danh sách bài viết blog
  */
@@ -19,7 +23,7 @@ export const useBlogsQuery = (filters: any = {}) => {
     queryKey: ['blogs', filters],
     queryFn: async (): Promise<BlogsResponse> => {
       return (await $motobikertoursApi('/blog', {
-        query: cleanObject(unref(filters)),
+        query: { ...cleanObject(unref(filters)), status: PUBLIC_BLOG_STATUSES },
       })) as BlogsResponse;
     },
     staleTime: 5 * 60 * 1000, // 5 min — blogs change moderately
