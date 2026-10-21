@@ -6,6 +6,7 @@ const props = defineProps<{
 const emit = defineEmits(['success']);
 const { t } = useI18n();
 const { isAuthenticated } = useAuth();
+const { openLoginPopup } = useLoginPopup();
 
 const form = ref({
     rating: 5,
@@ -99,7 +100,7 @@ const handleSubmit = async () => {
         <h3 class="review-form__title">{{ t('review.write') }}</h3>
 
         <UiEmptyState v-if="!isAuthenticated" :title="t('review.loginRequired')">
-            <UiButton to="/login">{{ t('auth.signIn') }}</UiButton>
+            <UiButton @click="openLoginPopup">{{ t('auth.signIn') }}</UiButton>
         </UiEmptyState>
 
         <form v-else class="review-form__fields" novalidate @submit.prevent="handleSubmit">

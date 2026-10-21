@@ -5,9 +5,9 @@ import { useI18n } from 'vue-i18n'
 import { useCountriesQuery } from '@/composables/useCountriesQuery'
 import isEmail from 'validator/lib/isEmail';
 import isMobilePhone from 'validator/lib/isMobilePhone';
-import { CONTACT_INFO } from '~/constants/contact';
 
 const { t } = useI18n()
+const { contact, primaryPhone, primaryEmail, localized, phoneHref, channelName } = useSiteSettings()
 const route = useRoute()
 const { data: countries, isLoading: isLoadingCountries } = useCountriesQuery()
 
@@ -92,25 +92,12 @@ const submit = async () => {
     }
     try {
         isSubmitting.value = true
-        // Gọi API thực tế thay vì dùng mock setTimeout
-        await $fetch('/api/contact', {
-            method: 'POST',
-            body: {
-                fullName: form.fullName,
-                email: form.email,
-                phone: form.phone,
-                country: form.country,
-                title: form.title,
-                content: form.content
-            }
-        })
-        notify('success', t('contact.sendMailSuccess') || 'Đã gửi yêu cầu thành công! Chúng tôi sẽ liên hệ lại sớm nhất.')
+        await sendContactMessage({ ...form })
+        notify('success', t('contact.sendMailSuccess'))
         Object.assign(form, { fullName: '', email: '', phone: '', country: '', title: '', content: '' })
         for (const k of Object.keys(errors) as (keyof ContactForm)[]) delete errors[k]
-    } catch (e: any) {
-        console.log('Mail submit error:', e)
-        const errorMessage = e.data?.statusMessage || e.message || 'Gửi thất bại, vui lòng thử lại'
-        notify('error', errorMessage)
+    } catch {
+        notify('error', t('contact.form.error'))
     } finally {
         isSubmitting.value = false
     }
@@ -140,15 +127,15 @@ const toggleFaq = (index: number) => {
     activeFaq.value = activeFaq.value === index ? null : index
 }
 
-// Các kênh chat; số điện thoại hiển thị riêng ở khối hotline
-const chatChannels = computed(() => [
-    { key: 'zalo', link: 'https://zalo.me/84854242357', sub: t('contact.hours') },
-    { key: 'viber', link: 'https://viber.click/84854242357', sub: t('contact.hours') },
-    { key: 'line', link: 'https://line.me/ti/p/~84854242357', sub: t('contact.hours') },
-    { key: 'whatsapp', link: 'https://wa.me/84854242357', sub: t('contact.instantResponse') },
-    { key: 'messenger', link: 'https://m.me/61579936051310', sub: t('contact.fastSupport') },
-    { key: 'kakaotalk', link: 'https://open.kakao.com/o/+84854242357', sub: 'KakaoTalk ID' },
-])
+// Các kênh chat (cấu hình trong admin); số điện thoại hiển thị riêng ở khối hotline
+const chatChannels = computed(() =>
+    (contact.value?.channels ?? []).map((channel, index) => ({
+        key: `${channel.type}-${index}`,
+        link: channel.url,
+        name: channelName(channel),
+        sub: localized(channel.note),
+    })),
+)
 
 onMounted(() => {
     if (route.query.subject) {
@@ -165,8 +152,8 @@ onMounted(() => {
         <UiPageHero :eyebrow="t('contact.contactUs')" :title="t('contact.connect')"
             :emphasis="t('contact.yourJourney')" :intro="t('contact.desc')">
             <template #actions>
-                <UiButton :href="CONTACT_INFO.phoneHref">{{ t('contact.quickInfo.call') }}</UiButton>
-                <UiButton :href="`mailto:${CONTACT_INFO.email}`" variant="outline">
+                <UiButton v-if="primaryPhone" :href="phoneHref(primaryPhone.number)">{{ t('contact.quickInfo.call') }}</UiButton>
+                <UiButton v-if="primaryEmail" :href="`mailto:${primaryEmail}`" variant="outline">
                     {{ t('contact.quickInfo.email') }}
                 </UiButton>
             </template>
@@ -241,30 +228,34 @@ onMounted(() => {
                 <h2 id="contact-channels-title" class="contact-channels__title">{{ t('contact.channelsTitle') }}</h2>
 
                 <dl class="contact-channels__direct">
-                    <div>
+                    <div v-if="contact?.phones.length">
                         <dt>{{ t('contact.quickInfo.call') }}</dt>
-                        <dd>
-                            <a :href="CONTACT_INFO.phoneHref" class="contact-channels__hotline">
-                                {{ CONTACT_INFO.phoneIntl }}
+                        <dd v-for="(phone, index) in contact.phones" :key="phone.number">
+                            <a :href="phoneHref(phone.number)"
+                                :class="index === 0 ? 'contact-channels__hotline' : undefined">
+                                {{ phone.number }}
                             </a>
-                            <span class="contact-channels__sub">{{ t('contact.hours') }}</span>
+                            <span v-if="index === 0 && localized(contact.hours)" class="contact-channels__sub">
+                                {{ localized(contact.hours) }}
+                            </span>
+                            <span v-else-if="phone.label" class="contact-channels__sub">{{ phone.label }}</span>
                         </dd>
                     </div>
-                    <div>
+                    <div v-if="contact?.emails.length">
                         <dt>{{ t('contact.quickInfo.email') }}</dt>
-                        <dd><a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a></dd>
+                        <dd v-for="email in contact.emails" :key="email"><a :href="`mailto:${email}`">{{ email }}</a></dd>
                     </div>
-                    <div>
+                    <div v-if="contact?.address">
                         <dt>{{ t('contact.quickInfo.visit') }}</dt>
-                        <dd>{{ CONTACT_INFO.address }}</dd>
+                        <dd>{{ contact.address }}</dd>
                     </div>
                 </dl>
 
-                <ul class="contact-channels__chats" role="list">
+                <ul v-if="chatChannels.length" class="contact-channels__chats" role="list">
                     <li v-for="channel in chatChannels" :key="channel.key">
                         <a :href="channel.link" target="_blank" rel="noopener noreferrer">
-                            <span class="contact-channels__name">{{ t(`contact.quickInfo.${channel.key}`) }}</span>
-                            <span class="contact-channels__sub">{{ channel.sub }}</span>
+                            <span class="contact-channels__name">{{ channel.name }}</span>
+                            <span v-if="channel.sub" class="contact-channels__sub">{{ channel.sub }}</span>
                             <span class="contact-channels__arrow" aria-hidden="true">↗</span>
                         </a>
                     </li>
@@ -296,8 +287,8 @@ onMounted(() => {
                 </div>
             </div>
 
-            <div class="contact-map">
-                <iframe :src="CONTACT_INFO.mapEmbedUrl" :title="t('contact.mapTitle')" allowfullscreen loading="lazy"
+            <div v-if="contact?.mapEmbedUrl" class="contact-map">
+                <iframe :src="contact.mapEmbedUrl" :title="t('contact.mapTitle')" allowfullscreen loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </section>

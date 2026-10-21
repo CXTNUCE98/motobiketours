@@ -65,17 +65,8 @@
     "quickInfo": {
       "call": "Gọi cho chúng tôi",
       "email": "Gửi email",
-      "visit": "Ghé thăm",
-      "whatsapp": "WhatsApp",
-      "messenger": "Messenger",
-      "zalo": "Zalo",
-      "viber": "Viber",
-      "line": "Line",
-      "kakaotalk": "KakaoTalk",
-      "fanpage": "Fanpage"
+      "visit": "Ghé thăm"
     },
-    "instantResponse": "Phản hồi ngay lập tức",
-    "fastSupport": "Hỗ trợ nhanh chóng",
     "chatWithUs": "Chat với chúng tôi",
     "sendUsAMessage": "Gửi tin nhắn cho chúng tôi",
     "fillOut": "Hãy điền vào mẫu bên dưới và nhóm của chúng tôi sẽ liên hệ lại với bạn trong vòng 24 giờ.",
@@ -138,7 +129,6 @@
       "customTour": "Tôi có thể tùy chỉnh tour không?",
       "answerCustomTour": "Chắc chắn! Chúng tôi chuyên cung cấp các tour du lịch tùy chỉnh. Hãy liên hệ với chúng tôi để thiết kế một chương trình du lịch độc đáo cho bạn."
     },
-    "hours": "Thứ 2 – Chủ nhật, 8:00 – 20:00",
     "channelsTitle": "Kênh liên hệ",
     "mapTitle": "Bản đồ văn phòng ANDAGO"
   },
@@ -410,15 +400,9 @@
     "confirmFailed": "Xác nhận đặt tour thất bại."
   },
   "home": {
-    "findYourPerfectTour": "Tìm Chuyến Tham Quan Hoàn Hảo Của Bạn Tại ANDAGO",
     "discoverTheWorld": "Khám Phá Thế Giới",
     "discoverVietnam": "Khám Phá Vẻ Đẹp Việt Nam",
-    "completeTravel": "Du Lịch Trọn Vẹn",
-    "memorableJourney": "Hành Trình Đáng Nhớ",
-    "unforgettableMemories": "Kỷ Niệm Khó Quên",
     "uniqueLocations": "Địa điểm độc đáo cả trong và ngoài nước. Mạng đến sự đa dạng để khách hàng thoải mái lựa chọn chuyến đi cho riêng mình.",
-    "completeTravelDescription": "Trải nghiệm những điểm đến tuyệt vời nhất tại Việt Nam cùng đội ngũ hướng dẫn viên chuyên nghiệp.",
-    "unforgettableMemoriesDescription": "Tạo nên những kỷ niệm đẹp cùng gia đình và bạn bè trong những chuyến đi khó quên.",
     "hotTours": "TOUR HOT",
     "hotToursDescription": "Tour được nhiều khách lựa chọn nhất",
     "noHotTours": "Chưa có tour hot nào",
@@ -572,6 +556,19 @@
     "groupSizeDefault": "2–10 người",
     "difficultyLabel": "Độ khó",
     "priceOnRequest": "Liên hệ",
+    "perPerson": "/ khách",
+    "bookingHint": "Chọn ngày và số khách ở bước tiếp theo",
+    "askBeforeBooking": "Cần hỏi trước khi đặt?",
+    "vehicle": "Phương tiện",
+    "seatCount": "{count} chỗ",
+    "stops": "Lịch trình",
+    "stopCount": "{count} điểm dừng",
+    "stopTicket": "Giá vé: {price}",
+    "hoursCount": "{count} giờ",
+    "minutesCount": "{count} phút",
+    "sectionNav": "Các phần của trang tour",
+    "readMore": "Đọc tiếp",
+    "readLess": "Thu gọn",
     "gallery": {
       "prev": "Ảnh trước",
       "next": "Ảnh sau",
@@ -579,12 +576,18 @@
       "zoomIn": "Phóng to",
       "zoomOut": "Thu nhỏ",
       "download": "Tải ảnh",
-      "thumbnail": "Ảnh {index}"
+      "thumbnail": "Ảnh {index}",
+      "viewAll": "Xem tất cả {count} ảnh",
+      "empty": "Ảnh của tour đang được cập nhật"
     },
     "share": {
       "facebook": "Chia sẻ qua Facebook",
       "twitter": "Chia sẻ qua Twitter",
-      "whatsapp": "Chia sẻ qua WhatsApp"
+      "whatsapp": "Chia sẻ qua WhatsApp",
+      "button": "Chia sẻ",
+      "copyLink": "Sao chép liên kết",
+      "copied": "Đã sao chép liên kết",
+      "copyFailed": "Không sao chép được liên kết"
     }
   },
   "footer": {
@@ -797,11 +800,14 @@
     "validation": {
       "contentRequired": "Vui lòng nhập nội dung nhận xét"
     },
-    "starBreakdown": "{star} sao: {percent}%"
+    "starBreakdown": "{star} sao: {percent}%",
+    "writeButton": "Viết đánh giá",
+    "imageUnavailable": "Ảnh không còn khả dụng"
   },
   "wishlist": {
     "title": "Danh sách yêu thích",
     "empty": "Danh sách yêu thích của bạn đang trống",
+    "loginRequired": "Vui lòng đăng nhập để lưu tour",
     "addSuccess": "Đã thêm vào danh sách yêu thích",
     "removeSuccess": "Đã xóa khỏi danh sách yêu thích",
     "myWishlist": "Tour yêu thích của tôi",

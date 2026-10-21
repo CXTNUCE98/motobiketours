@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { getSlides } from '@/data/homeData';
-import { CONTACT_INFO } from '~/constants/contact';
-
 const { t } = useI18n();
 const localePath = useLocalePath();
+const { home, primaryPhone, localized, phoneHref } = useSiteSettings();
 
-// Dùng lại ảnh của 3 "slide" trước đây làm bộ sưu tập ảnh thật cho hero biên tập.
-const slides = computed(() => getSlides(t));
+// Bộ ảnh dọc dưới tiêu đề, cấu hình trong admin (Cấu hình → Trang chủ)
+const slides = computed(() =>
+    (home.value?.heroSlides ?? []).map((slide, index) => ({
+        key: `${slide.image}-${index}`,
+        image: slide.image,
+        caption: localized(slide.caption),
+    })),
+);
 </script>
 
 <template>
@@ -14,14 +18,16 @@ const slides = computed(() => getSlides(t));
         :intro="t('home.uniqueLocations')">
         <template #actions>
             <UiButton :to="localePath('/tour')">{{ t('about.exploreTours') }}</UiButton>
-            <UiButton :href="CONTACT_INFO.phoneHref" variant="outline">{{ t('about.callAdvice') }}</UiButton>
+            <UiButton v-if="primaryPhone" :href="phoneHref(primaryPhone.number)" variant="outline">
+                {{ t('about.callAdvice') }}
+            </UiButton>
         </template>
 
-        <ul class="hero-gallery" role="list">
-            <li v-for="slide in slides" :key="slide.image">
+        <ul v-if="slides.length" class="hero-gallery" role="list">
+            <li v-for="slide in slides" :key="slide.key">
                 <figure class="hero-photo">
-                    <img :src="slide.image" :alt="slide.title" loading="eager" decoding="async">
-                    <figcaption aria-hidden="true">{{ slide.title }}</figcaption>
+                    <img :src="slide.image" :alt="slide.caption" loading="eager" decoding="async">
+                    <figcaption v-if="slide.caption" aria-hidden="true">{{ slide.caption }}</figcaption>
                 </figure>
             </li>
         </ul>

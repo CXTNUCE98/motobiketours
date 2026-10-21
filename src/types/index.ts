@@ -27,21 +27,6 @@ export interface News {
   to?: string;
 }
 
-export interface Testimonial {
-  id: number;
-  name: string;
-  image: string;
-  text: string;
-}
-
-export interface Slide {
-  title: string;
-  subtitle: string;
-  description: string;
-  image: string;
-  videoThumb: string;
-}
-
 export interface ServiceReview {
   id: string;
   name: string;

@@ -39,7 +39,19 @@ const rateColors = ['var(--color-accent)', 'var(--color-accent)', 'var(--color-a
                     <div v-if="review.images?.length" class="review-item__images">
                         <el-image v-for="(img, idx) in review.images" :key="idx" :src="img"
                             class="review-item__image" :preview-src-list="review.images" :initial-index="idx"
-                            fit="cover" preview-teleported hide-on-click-modal />
+                            fit="cover" preview-teleported hide-on-click-modal>
+                            <template #error>
+                                <span class="review-item__image-error">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                        <rect x="3.5" y="5" width="17" height="14" rx="2" />
+                                        <circle cx="9" cy="10" r="1.6" />
+                                        <path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5" />
+                                    </svg>
+                                    {{ t('review.imageUnavailable') }}
+                                </span>
+                            </template>
+                        </el-image>
                     </div>
                 </div>
             </li>
@@ -113,6 +125,29 @@ const rateColors = ['var(--color-accent)', 'var(--color-accent)', 'var(--color-a
     width: 5.5rem;
     height: 5.5rem;
     border-radius: var(--radius-sm);
+}
+
+/* Ảnh review tải lỗi (vd. đã bị xoá trên Cloudinary) */
+.review-item__image-error {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: var(--space-1);
+    width: 100%;
+    height: 100%;
+    padding: var(--space-2);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-muted);
+    font-size: var(--text-micro);
+    line-height: var(--leading-snug);
+    text-align: center;
+}
+
+.review-item__image-error svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
 :deep(.el-rate) {

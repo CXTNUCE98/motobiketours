@@ -65,17 +65,8 @@
     "quickInfo": {
       "call": "Call Us",
       "email": "Email Us",
-      "visit": "Visit Us",
-      "whatsapp": "WhatsApp",
-      "messenger": "Messenger",
-      "zalo": "Zalo",
-      "viber": "Viber",
-      "line": "Line",
-      "kakaotalk": "KakaoTalk",
-      "fanpage": "Fanpage"
+      "visit": "Visit Us"
     },
-    "instantResponse": "Instant Response",
-    "fastSupport": "Fast Support",
     "chatWithUs": "Chat with us",
     "sendUsAMessage": "Send Us a Message",
     "fillOut": "Fill out the form below and our team will get back to you within 24 hours.",
@@ -138,7 +129,6 @@
       "customTour": "Can I customize my tour?",
       "answerCustomTour": "Absolutely! We specialize in tailor-made tours. Contact us with your preferences, and we'll design a unique itinerary just for you."
     },
-    "hours": "Mon–Sun, 8am–8pm",
     "channelsTitle": "Ways to reach us",
     "mapTitle": "ANDAGO office map"
   },
@@ -410,15 +400,9 @@
     "confirmFailed": "Failed to confirm booking."
   },
   "home": {
-    "findYourPerfectTour": "Find Your Perfect Tour at ANDAGO",
     "discoverTheWorld": "Discover The World",
     "discoverVietnam": "Discover the beauty of Vietnam",
-    "completeTravel": "Complete travel",
-    "memorableJourney": "A memorable journey",
-    "unforgettableMemories": "Unforgettable memories",
     "uniqueLocations": "Unique locations both domestically and internationally. The network offers diversity for customers to comfortably choose their own trip.",
-    "completeTravelDescription": "Experience the best destinations in Vietnam with a professional guide team.",
-    "unforgettableMemoriesDescription": "Create beautiful memories with family and friends on unforgettable trips.",
     "hotTours": "HOT TOURS",
     "hotToursDescription": "Tours most selected by customers",
     "noHotTours": "No hot tours available",
@@ -572,6 +556,19 @@
     "groupSizeDefault": "2–10 people",
     "difficultyLabel": "Difficulty",
     "priceOnRequest": "Contact us",
+    "perPerson": "/ person",
+    "bookingHint": "Pick your date and group size in the next step",
+    "askBeforeBooking": "Questions before booking?",
+    "vehicle": "Vehicle",
+    "seatCount": "{count} seats",
+    "stops": "Itinerary",
+    "stopCount": "{count} stop | {count} stops",
+    "stopTicket": "Tickets: {price}",
+    "hoursCount": "{count} hr | {count} hrs",
+    "minutesCount": "{count} min | {count} min",
+    "sectionNav": "Tour sections",
+    "readMore": "Read more",
+    "readLess": "Show less",
     "gallery": {
       "prev": "Previous photo",
       "next": "Next photo",
@@ -579,12 +576,18 @@
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
       "download": "Download photo",
-      "thumbnail": "Photo {index}"
+      "thumbnail": "Photo {index}",
+      "viewAll": "View all {count} photos",
+      "empty": "Photos for this tour are being updated"
     },
     "share": {
       "facebook": "Share on Facebook",
       "twitter": "Share on Twitter",
-      "whatsapp": "Share on WhatsApp"
+      "whatsapp": "Share on WhatsApp",
+      "button": "Share",
+      "copyLink": "Copy link",
+      "copied": "Link copied",
+      "copyFailed": "Couldn't copy the link"
     }
   },
   "footer": {
@@ -797,11 +800,14 @@
     "validation": {
       "contentRequired": "Please enter your review content"
     },
-    "starBreakdown": "{star} star: {percent}%"
+    "starBreakdown": "{star} star: {percent}%",
+    "writeButton": "Write a review",
+    "imageUnavailable": "Photo unavailable"
   },
   "wishlist": {
     "title": "Wishlist",
     "empty": "Your wishlist is empty",
+    "loginRequired": "Please log in to save tours",
     "addSuccess": "Added to wishlist",
     "removeSuccess": "Removed from wishlist",
     "myWishlist": "My Favorite Tours",

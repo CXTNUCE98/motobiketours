@@ -1,19 +1,44 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
     images: string[];
     title: string;
-}>();
+    // Trang tour: lưới ảnh trên màn rộng, carousel trên điện thoại
+    mosaic?: boolean;
+}>(), {
+    mosaic: false,
+});
 
 const { t } = useI18n();
 
+const root = ref<HTMLElement | null>(null);
 const selectedIndex = ref(0);
 const showLightbox = ref(false);
-const isHovering = ref(false);
 const isZoomed = ref(false);
 
-const currentImage = computed(() => props.images[selectedIndex.value] || '');
+// Ảnh tải lỗi (vd. đã bị xoá trên Cloudinary) bị bỏ khỏi gallery thay vì hiện icon ảnh vỡ
+const failedImages = ref(new Set<string>());
+const markFailed = (src: string) => {
+    if (failedImages.value.has(src)) return;
+    failedImages.value = new Set(failedImages.value).add(src);
+};
+
+const visibleImages = computed(() => props.images.filter((src) => src && !failedImages.value.has(src)));
+
+watch(visibleImages, (list) => {
+    if (selectedIndex.value >= list.length) selectedIndex.value = 0;
+});
+
+// Lưới: 1 ảnh lớn + 4 ảnh nhỏ, hoặc 1 + 2, hoặc ảnh đơn / đôi khi có ít ảnh
+const mosaicImages = computed(() => {
+    const list = visibleImages.value;
+    if (list.length >= 5) return list.slice(0, 5);
+    if (list.length >= 3) return list.slice(0, 3);
+    return list;
+});
+
+const currentImage = computed(() => visibleImages.value[selectedIndex.value] || '');
 
 const selectImage = (index: number) => {
     selectedIndex.value = index;
@@ -34,11 +59,23 @@ const closeLightbox = () => {
 };
 
 const nextImage = () => {
-    selectedIndex.value = (selectedIndex.value + 1) % props.images.length;
+    selectedIndex.value = (selectedIndex.value + 1) % visibleImages.value.length;
 };
 
 const prevImage = () => {
-    selectedIndex.value = (selectedIndex.value - 1 + props.images.length) % props.images.length;
+    selectedIndex.value = (selectedIndex.value - 1 + visibleImages.value.length) % visibleImages.value.length;
+};
+
+// Vuốt ngang trên ảnh chính để chuyển ảnh (điện thoại)
+let touchStartX = 0;
+const onTouchStart = (e: TouchEvent) => {
+    touchStartX = e.changedTouches[0].clientX;
+};
+const onTouchEnd = (e: TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) < 40 || visibleImages.value.length < 2) return;
+    if (dx < 0) nextImage();
+    else prevImage();
 };
 
 // Keyboard navigation
@@ -50,70 +87,93 @@ const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'ArrowLeft') prevImage();
 };
 
-// Auto-rotate
-let rotateInterval: ReturnType<typeof setInterval> | null = null;
-
-const startAutoRotate = () => {
-    if (rotateInterval) return;
-    rotateInterval = setInterval(() => {
-        if (!isHovering.value && !showLightbox.value) {
-            nextImage();
-        }
-    }, 4000);
-};
-
-const stopAutoRotate = () => {
-    if (rotateInterval) {
-        clearInterval(rotateInterval);
-        rotateInterval = null;
-    }
-};
-
 // Lifecycle
 import { onMounted, onBeforeUnmount } from 'vue';
 
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
-    startAutoRotate();
+    // Ảnh render sẵn từ server có thể lỗi trước khi Vue gắn @error
+    root.value?.querySelectorAll('img').forEach((img) => {
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+            markFailed(img.getAttribute('src')!);
+        }
+    });
 });
 
 onBeforeUnmount(() => {
     window.removeEventListener('keydown', handleKeydown);
-    stopAutoRotate();
     document.body.style.overflow = '';
 });
 </script>
 
 <template>
-    <div class="tour-gallery" @mouseenter="isHovering = true" @mouseleave="isHovering = false">
-        <!-- Main image -->
-        <div class="gallery-main">
-            <button type="button" class="gallery-main__frame" :aria-label="t('tour.gallery.open')"
-                @click="openLightbox()">
-                <img :src="currentImage" :alt="title" />
-            </button>
-
-            <span class="gallery-main__counter" aria-hidden="true">{{ selectedIndex + 1 }} / {{ images.length }}</span>
-
-            <button v-if="images.length > 1" type="button" class="gallery-main__nav gallery-main__nav--prev"
-                :aria-label="t('tour.gallery.prev')" @click.stop="prevImage">
-                <span aria-hidden="true">‹</span>
-            </button>
-            <button v-if="images.length > 1" type="button" class="gallery-main__nav gallery-main__nav--next"
-                :aria-label="t('tour.gallery.next')" @click.stop="nextImage">
-                <span aria-hidden="true">›</span>
-            </button>
+    <div ref="root" class="tour-gallery" :class="{ 'tour-gallery--mosaic': mosaic }">
+        <!-- Không còn ảnh nào tải được -->
+        <div v-if="!visibleImages.length" class="gallery-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                stroke-linejoin="round" aria-hidden="true">
+                <rect x="3.5" y="5" width="17" height="14" rx="2" />
+                <circle cx="9" cy="10" r="1.6" />
+                <path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5" />
+            </svg>
+            <p>{{ t('tour.gallery.empty') }}</p>
         </div>
 
-        <!-- Thumbnails -->
-        <ul v-if="images.length > 1" class="gallery-thumbs" role="list">
-            <li v-for="(image, index) in images" :key="index">
-                <button type="button" class="gallery-thumbs__item" :aria-current="index === selectedIndex"
-                    :aria-label="t('tour.gallery.thumbnail', { index: index + 1 })" @click="selectImage(index)">
-                    <img :src="image" alt="" loading="lazy" decoding="async" />
+        <template v-else>
+            <!-- Lưới ảnh: chỉ ở chế độ mosaic, trên màn rộng -->
+            <div v-if="mosaic" class="gallery-mosaic" :class="`gallery-mosaic--${mosaicImages.length}`">
+                <button v-for="(image, index) in mosaicImages" :key="image" type="button" class="gallery-mosaic__tile"
+                    :aria-label="t('tour.gallery.thumbnail', { index: index + 1 })" @click="openLightbox(index)">
+                    <img :src="image" :alt="index === 0 ? title : ''" :loading="index === 0 ? 'eager' : 'lazy'"
+                        decoding="async" @error="markFailed(image)" />
                 </button>
-            </li>
-        </ul>
+                <button v-if="visibleImages.length > 1" type="button" class="gallery-mosaic__all"
+                    @click="openLightbox(0)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3.5" y="5" width="17" height="14" rx="2" />
+                        <circle cx="9" cy="10" r="1.6" />
+                        <path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5" />
+                    </svg>
+                    {{ t('tour.gallery.viewAll', { count: visibleImages.length }) }}
+                </button>
+            </div>
+
+            <!-- Carousel: ở chế độ mosaic chỉ hiện trên điện thoại -->
+            <div class="gallery-carousel">
+                <div class="gallery-main" @touchstart.passive="onTouchStart" @touchend.passive="onTouchEnd">
+                    <button type="button" class="gallery-main__frame" :aria-label="t('tour.gallery.open')"
+                        @click="openLightbox()">
+                        <img :src="currentImage" :alt="title" @error="markFailed(currentImage)" />
+                    </button>
+
+                    <span class="gallery-main__counter" aria-hidden="true">{{ selectedIndex + 1 }} / {{
+                        visibleImages.length }}</span>
+
+                    <button v-if="visibleImages.length > 1" type="button"
+                        class="gallery-main__nav gallery-main__nav--prev" :aria-label="t('tour.gallery.prev')"
+                        @click.stop="prevImage">
+                        <span aria-hidden="true">‹</span>
+                    </button>
+                    <button v-if="visibleImages.length > 1" type="button"
+                        class="gallery-main__nav gallery-main__nav--next" :aria-label="t('tour.gallery.next')"
+                        @click.stop="nextImage">
+                        <span aria-hidden="true">›</span>
+                    </button>
+                </div>
+
+                <!-- Thumbnails -->
+                <ul v-if="visibleImages.length > 1" class="gallery-thumbs" role="list">
+                    <li v-for="(image, index) in visibleImages" :key="image">
+                        <button type="button" class="gallery-thumbs__item" :aria-current="index === selectedIndex"
+                            :aria-label="t('tour.gallery.thumbnail', { index: index + 1 })"
+                            @click="selectImage(index)">
+                            <img :src="image" alt="" loading="lazy" decoding="async" @error="markFailed(image)" />
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </template>
 
         <!-- Lightbox -->
         <ClientOnly>
@@ -122,7 +182,7 @@ onBeforeUnmount(() => {
                     <div v-if="showLightbox" class="gallery-lightbox" role="dialog" aria-modal="true"
                         :aria-label="title" @click="closeLightbox">
                         <div class="gallery-lightbox__bar">
-                            <span class="gallery-lightbox__counter">{{ selectedIndex + 1 }} / {{ images.length }}</span>
+                            <span class="gallery-lightbox__counter">{{ selectedIndex + 1 }} / {{ visibleImages.length }}</span>
 
                             <div class="gallery-lightbox__actions">
                                 <button type="button" class="gallery-lightbox__btn"
@@ -146,12 +206,12 @@ onBeforeUnmount(() => {
                                 :class="{ 'is-zoomed': isZoomed }" @click="isZoomed = !isZoomed" />
                         </div>
 
-                        <button v-if="images.length > 1" type="button"
+                        <button v-if="visibleImages.length > 1" type="button"
                             class="gallery-lightbox__nav gallery-lightbox__nav--prev" :aria-label="t('tour.gallery.prev')"
                             @click.stop="prevImage">
                             <span aria-hidden="true">‹</span>
                         </button>
-                        <button v-if="images.length > 1" type="button"
+                        <button v-if="visibleImages.length > 1" type="button"
                             class="gallery-lightbox__nav gallery-lightbox__nav--next" :aria-label="t('tour.gallery.next')"
                             @click.stop="nextImage">
                             <span aria-hidden="true">›</span>
@@ -166,9 +226,122 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.tour-gallery {
+.tour-gallery,
+.gallery-carousel {
     display: grid;
     gap: var(--space-3);
+}
+
+/* Không có ảnh */
+.gallery-empty {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    gap: var(--space-3);
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 18rem;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-subtle);
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    text-align: center;
+}
+
+.gallery-empty svg {
+    width: 2rem;
+    height: 2rem;
+}
+
+/* Lưới ảnh (mosaic) */
+.gallery-mosaic {
+    display: none;
+}
+
+@media (min-width: 48rem) {
+    .tour-gallery--mosaic .gallery-mosaic {
+        position: relative;
+        display: grid;
+        gap: var(--space-2);
+        height: clamp(18rem, 28vw, 26rem);
+        overflow: hidden;
+        border-radius: var(--radius-lg);
+    }
+
+    .tour-gallery--mosaic .gallery-carousel {
+        display: none;
+    }
+}
+
+.gallery-mosaic--2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.gallery-mosaic--3 {
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.gallery-mosaic--5 {
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.gallery-mosaic--3 > :first-child,
+.gallery-mosaic--5 > :first-child {
+    grid-row: span 2;
+}
+
+.gallery-mosaic__tile {
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--color-bg-subtle);
+}
+
+.gallery-mosaic__tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.gallery-mosaic__tile:hover img,
+.gallery-mosaic__tile:focus-visible img {
+    transform: scale(1.03);
+}
+
+.gallery-mosaic__tile:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: -3px;
+}
+
+.gallery-mosaic__all {
+    position: absolute;
+    right: var(--space-4);
+    bottom: var(--space-4);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.5rem;
+    padding: 0 var(--space-4);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: var(--text-md);
+    font-weight: var(--weight-medium);
+    box-shadow: var(--shadow-popover);
+}
+
+.gallery-mosaic__all svg {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.gallery-mosaic__all:focus-visible {
+    outline: var(--focus-ring);
+    outline-offset: 2px;
 }
 
 /* Main image */

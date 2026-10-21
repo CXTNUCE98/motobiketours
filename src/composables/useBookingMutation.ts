@@ -6,7 +6,7 @@ import type { CreateBookingDto, UpdateBookingDto } from '~/types/booking';
  */
 export function useCreateBookingMutation() {
   const { getAuthHeaders } = useAuth();
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
   const queryClient = useQueryClient();
 
@@ -15,7 +15,8 @@ export function useCreateBookingMutation() {
       const response = await $motobikertoursApi('/bookings', {
         method: 'POST',
         headers: getAuthHeaders(),
-        body: data,
+        // locale quyết định ngôn ngữ email xác nhận gửi cho khách
+        body: { ...data, locale: locale.value === 'en' ? 'en' : 'vi' },
       });
       return response;
     },

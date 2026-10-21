@@ -1,7 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 const { t } = useI18n();
-import { testimonials } from '@/data/homeData';
+const { home, localized } = useSiteSettings();
+
+// Đánh giá cấu hình trong admin (Cấu hình → Trang chủ)
+const testimonials = computed(() =>
+    (home.value?.testimonials ?? []).map((item) => ({
+        name: item.name,
+        role: localized(item.role),
+        avatar: item.avatar,
+        text: localized(item.quote),
+    })),
+);
+const current = computed(() => testimonials.value[currentTestimonialIndex.value] ?? testimonials.value[0]);
 
 // Carousel state
 const currentTestimonialIndex = ref(0);
@@ -15,7 +26,8 @@ const goToTestimonial = (index: number) => {
 const startCarousel = () => {
     if (carouselInterval) clearInterval(carouselInterval);
     carouselInterval = setInterval(() => {
-        currentTestimonialIndex.value = (currentTestimonialIndex.value + 1) % testimonials.length;
+        if (testimonials.value.length < 2) return;
+        currentTestimonialIndex.value = (currentTestimonialIndex.value + 1) % testimonials.value.length;
     }, 5000);
 };
 
@@ -45,7 +57,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <section class="testimonials" aria-labelledby="testimonials-title" @mouseenter="pauseCarousel"
+    <section v-if="current" class="testimonials" aria-labelledby="testimonials-title" @mouseenter="pauseCarousel"
         @mouseleave="resumeCarousel">
         <div class="shell">
             <UiSectionHeading id="testimonials-title" :eyebrow="t('home.testimonialsSubtitle')"
@@ -53,17 +65,21 @@ onUnmounted(() => {
 
             <Transition name="fade" mode="out-in">
                 <blockquote :key="currentTestimonialIndex" class="testimonial">
-                    <p class="testimonial__quote">{{ testimonials[currentTestimonialIndex].text }}</p>
+                    <p class="testimonial__quote">{{ current.text }}</p>
                     <footer class="testimonial__meta">
-                        <img :src="testimonials[currentTestimonialIndex].image" alt="" class="testimonial__avatar"
+                        <img v-if="current.avatar" :src="current.avatar" alt="" class="testimonial__avatar"
                             loading="lazy">
-                        <cite class="testimonial__name">{{ testimonials[currentTestimonialIndex].name }}</cite>
+                        <cite class="testimonial__name">
+                            {{ current.name }}<template v-if="current.role"> · {{ current.role }}</template>
+                        </cite>
                     </footer>
                 </blockquote>
             </Transition>
 
-            <div class="testimonial-nav" role="group" :aria-label="t('home.testimonialsTitle')">
-                <button v-for="(item, index) in testimonials" :key="item.id" type="button" class="testimonial-dot"
+            <div v-if="testimonials.length > 1" class="testimonial-nav" role="group"
+                :aria-label="t('home.testimonialsTitle')">
+                <button v-for="(item, index) in testimonials" :key="`${item.name}-${index}`" type="button"
+                    class="testimonial-dot"
                     :aria-current="currentTestimonialIndex === index ? 'true' : undefined"
                     :aria-label="t('home.testimonialGoTo', { n: index + 1 })" @click="goToTestimonial(index)" />
             </div>

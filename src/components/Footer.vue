@@ -1,8 +1,7 @@
 <script setup>
-import { CONTACT_INFO } from '~/constants/contact';
-
 const { t } = useI18n();
 const localePath = useLocalePath();
+const { contact, primaryPhone, primaryEmail, phoneHref } = useSiteSettings();
 
 const tourLinks = computed(() => [
     { title: t('footer.tourCategories.north'), url: localePath('/tour/city/mien-bac') },
@@ -19,19 +18,19 @@ const tourLinks = computed(() => [
             <div>
                 <NuxtLink :to="localePath('/')" class="site-footer__brand">ANDAGO</NuxtLink>
                 <dl class="site-footer__contact">
-                    <div>
+                    <div v-if="contact?.address">
                         <dt>{{ t('footer.address') }}</dt>
-                        <dd>{{ CONTACT_INFO.address }}</dd>
+                        <dd>{{ contact.address }}</dd>
                     </div>
-                    <div>
+                    <div v-if="primaryEmail">
                         <dt>{{ t('footer.email') }}</dt>
-                        <dd><a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a></dd>
+                        <dd><a :href="`mailto:${primaryEmail}`">{{ primaryEmail }}</a></dd>
                     </div>
-                    <div>
+                    <div v-if="primaryPhone">
                         <dt>{{ t('footer.phone') }}</dt>
                         <dd>
-                            <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phone }}</a>
-                            ({{ CONTACT_INFO.phonePerson }})
+                            <a :href="phoneHref(primaryPhone.number)">{{ primaryPhone.number }}</a>
+                            <template v-if="primaryPhone.label"> ({{ primaryPhone.label }})</template>
                         </dd>
                     </div>
                 </dl>

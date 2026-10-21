@@ -5,7 +5,6 @@ import { useI18n } from 'vue-i18n'
 import { useCountriesQuery } from '@/composables/useCountriesQuery'
 import isEmail from 'validator/lib/isEmail';
 import isMobilePhone from 'validator/lib/isMobilePhone';
-import { CONTACT_INFO } from '~/constants/contact';
 
 const props = defineProps<{
     modelValue: boolean
@@ -17,6 +16,7 @@ const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
 const { notify } = useNotifications()
+const { contact, primaryPhone, localized, phoneHref, channelName } = useSiteSettings()
 const { data: countries, isLoading: isLoadingCountries } = useCountriesQuery()
 
 const isOpen = computed({
@@ -104,16 +104,12 @@ const submit = async () => {
     }
     try {
         isSubmitting.value = true
-        await $fetch('/api/contact', {
-            method: 'POST',
-            body: { ...form }
-        })
+        await sendContactMessage({ ...form })
         notify('success', t('contact.sendMailSuccess'))
         isOpen.value = false
         Object.assign(form, { fullName: '', email: '', phone: '', country: '', title: '', content: '' })
-    } catch (e: any) {
-        const errorMessage = e.data?.statusMessage || e.message || t('contact.form.error')
-        notify('error', errorMessage)
+    } catch {
+        notify('error', t('contact.form.error'))
     } finally {
         isSubmitting.value = false
     }
@@ -126,16 +122,14 @@ watch(() => props.modelValue, (val) => {
     }
 }, { immediate: true })
 
-// Kênh chat nhanh; cùng danh mục với trang Liên hệ (contact.quickInfo.*)
-const chatChannels = computed(() => [
-    { key: 'zalo', link: 'https://zalo.me/84854242357' },
-    { key: 'whatsapp', link: 'https://wa.me/84854242357' },
-    { key: 'messenger', link: 'https://m.me/61579936051310' },
-    { key: 'viber', link: 'https://viber.click/84854242357' },
-    { key: 'line', link: 'https://line.me/ti/p/+84854242357' },
-    { key: 'kakaotalk', link: 'https://open.kakao.com/o/+84854242357' },
-    { key: 'fanpage', link: 'https://www.facebook.com/profile.php?id=61579936051310' },
-])
+// Kênh chat nhanh: cùng danh sách với trang Liên hệ (cấu hình trong admin)
+const chatChannels = computed(() =>
+    (contact.value?.channels ?? []).map((channel, index) => ({
+        key: `${channel.type}-${index}`,
+        link: channel.url,
+        name: channelName(channel),
+    })),
+)
 </script>
 
 <template>
@@ -157,18 +151,20 @@ const chatChannels = computed(() => [
                 <aside class="contact-popup__channels" aria-labelledby="contact-popup-channels-title">
                     <h3 id="contact-popup-channels-title">{{ t('contact.channelsTitle') }}</h3>
 
-                    <dl class="contact-popup__direct">
+                    <dl v-if="primaryPhone" class="contact-popup__direct">
                         <dt>{{ t('contact.quickInfo.call') }}</dt>
                         <dd>
-                            <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phoneIntl }}</a>
-                            <span class="contact-popup__sub">{{ t('contact.hours') }}</span>
+                            <a :href="phoneHref(primaryPhone.number)">{{ primaryPhone.number }}</a>
+                            <span v-if="contact && localized(contact.hours)" class="contact-popup__sub">
+                                {{ localized(contact.hours) }}
+                            </span>
                         </dd>
                     </dl>
 
-                    <ul class="contact-popup__chats" role="list">
+                    <ul v-if="chatChannels.length" class="contact-popup__chats" role="list">
                         <li v-for="channel in chatChannels" :key="channel.key">
                             <a :href="channel.link" target="_blank" rel="noopener noreferrer">
-                                <span>{{ t(`contact.quickInfo.${channel.key}`) }}</span>
+                                <span>{{ channel.name }}</span>
                                 <span aria-hidden="true">↗</span>
                             </a>
                         </li>

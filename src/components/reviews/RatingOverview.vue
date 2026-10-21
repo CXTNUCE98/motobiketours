@@ -20,7 +20,7 @@ const getPercentage = (star: number) => {
 <template>
     <div class="rating-overview" :class="{ 'rating-overview--large': size === 'large' }">
         <div class="rating-overview__summary">
-            <p class="rating-overview__average">{{ stats?.averageRating || 0 }}</p>
+            <p class="rating-overview__average">{{ Number(stats?.averageRating || 0).toFixed(1) }}</p>
             <el-rate :model-value="stats?.averageRating || 0" disabled :colors="rateColors"
                 void-color="var(--color-border)" size="large" />
             <p class="rating-overview__total">{{ t('review.total', { count: stats?.totalReviews || 0 }) }}</p>
@@ -61,7 +61,8 @@ const getPercentage = (star: number) => {
 
 .rating-overview__average {
     font-family: var(--font-serif);
-    font-size: var(--text-display);
+    font-size: var(--text-h2);
+    font-variant-numeric: lining-nums;
     line-height: 1;
 }
 
@@ -73,8 +74,9 @@ const getPercentage = (star: number) => {
 .rating-overview__breakdown {
     display: grid;
     flex: 1 1 18rem;
-    gap: var(--space-3);
+    gap: var(--space-2);
     min-width: min(100%, 18rem);
+    max-width: 26rem;
 }
 
 .rating-overview__breakdown li {

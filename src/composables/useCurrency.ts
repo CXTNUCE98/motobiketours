@@ -3,9 +3,10 @@ import { useI18n } from 'vue-i18n';
 
 export const useCurrency = () => {
   const { locale } = useI18n();
+  const { general } = useSiteSettings();
 
-  // 1 USD = 24,000 VND (approximate exchange rate)
-  const USD_TO_VND_RATE = 24000;
+  // Tỷ giá cấu hình trong admin (Cấu hình → Chung); 24.000 khi chưa tải được cấu hình
+  const USD_TO_VND_RATE = computed(() => general.value?.usdToVndRate || 24000);
 
   const currencyCode = computed(() => (locale.value === 'vi' ? 'VND' : 'USD'));
   const currencySymbol = computed(() => (locale.value === 'vi' ? 'đ' : '$'));
@@ -23,7 +24,7 @@ export const useCurrency = () => {
     const numericPrice = typeof priceUsd === 'string' ? Number(priceUsd) : priceUsd;
 
     if (locale.value === 'vi') {
-      const priceVnd = Math.round(numericPrice * USD_TO_VND_RATE);
+      const priceVnd = Math.round(numericPrice * USD_TO_VND_RATE.value);
       // Format with dots as thousands separator and add 'đ' suffix
       return new Intl.NumberFormat('vi-VN').format(priceVnd) + ' đ';
     }
@@ -33,7 +34,7 @@ export const useCurrency = () => {
   };
 
   const convertToVnd = (priceUsd: number) => {
-    return Math.round(priceUsd * USD_TO_VND_RATE);
+    return Math.round(priceUsd * USD_TO_VND_RATE.value);
   };
 
   return {

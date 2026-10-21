@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-import { CONTACT_INFO } from '~/constants/contact';
-
 const { t } = useI18n();
 const localePath = useLocalePath();
+const { contact, about, primaryPhone, primaryEmail, localized, phoneHref } = useSiteSettings();
 
 useSeoMeta({
     title: () => t('about.introTitle'),
@@ -19,17 +18,12 @@ const heroPhotos = computed(() => [
 const serviceKeys = ['flights', 'hotels', 'tours', 'visa', 'rentals', 'insurance'];
 const advantageKeys = ['price', 'quality', 'diversity', 'speed', 'support', 'promotions'];
 
-// Ảnh chân dung thật: đặt file vào src/public/guides/ rồi điền đường dẫn vào `photo`,
-// ví dụ '/guides/jane-cooper.jpg'. Khi chưa có ảnh, thẻ hiển thị chữ cái đầu của tên.
-const guides = [
-    { name: 'Jane Cooper', photo: '' },
-    { name: 'Wade Warren', photo: '' },
-    { name: 'Jenny Wilson', photo: '' },
-    { name: 'Mamnun Khan', photo: '' },
-];
+// Hướng dẫn viên cấu hình trong admin (Cấu hình → Giới thiệu); chưa có ảnh thì thẻ hiện chữ cái đầu của tên
+const guides = computed(() => about.value?.guides ?? []);
 
 const padNumber = (index: number) => String(index + 1).padStart(2, '0');
-const initials = (name: string) => name.split(' ').map((word) => word[0]).join('');
+const initials = (name: string) =>
+    name.split(/\s+/).filter(Boolean).map((word) => word[0]).join('').slice(0, 3).toUpperCase();
 </script>
 
 <template>
@@ -38,7 +32,9 @@ const initials = (name: string) => name.split(' ').map((word) => word[0]).join('
             :intro="t('about.introDesc1')">
             <template #actions>
                 <UiButton :to="localePath('/tour')">{{ t('about.exploreTours') }}</UiButton>
-                <UiButton :href="CONTACT_INFO.phoneHref" variant="outline">{{ t('about.callAdvice') }}</UiButton>
+                <UiButton v-if="primaryPhone" :href="phoneHref(primaryPhone.number)" variant="outline">
+                    {{ t('about.callAdvice') }}
+                </UiButton>
             </template>
 
             <ul class="hero-gallery" role="list">
@@ -83,7 +79,7 @@ const initials = (name: string) => name.split(' ').map((word) => word[0]).join('
         </section>
 
         <!-- Hướng dẫn viên -->
-        <section class="guides" aria-labelledby="guides-title">
+        <section v-if="guides.length" class="guides" aria-labelledby="guides-title">
             <div class="shell">
                 <div class="split guides-head">
                     <UiSectionHeading id="guides-title" :eyebrow="t('about.guidesSub')"
@@ -92,14 +88,14 @@ const initials = (name: string) => name.split(' ').map((word) => word[0]).join('
                 </div>
 
                 <ul class="guide-grid" role="list">
-                    <li v-for="guide in guides" :key="guide.name">
+                    <li v-for="(guide, index) in guides" :key="`${guide.name}-${index}`">
                         <div class="guide-photo">
                             <img v-if="guide.photo" :src="guide.photo" :alt="guide.name" loading="lazy"
                                 decoding="async" />
                             <span v-else class="guide-initials" aria-hidden="true">{{ initials(guide.name) }}</span>
                         </div>
                         <h3 class="guide-name">{{ guide.name }}</h3>
-                        <p class="guide-role">{{ t('about.guidesSub') }}</p>
+                        <p class="guide-role">{{ localized(guide.role) || t('about.guidesSub') }}</p>
                     </li>
                 </ul>
             </div>
@@ -119,19 +115,19 @@ const initials = (name: string) => name.split(' ').map((word) => word[0]).join('
                     </div>
 
                     <dl class="cta-contacts">
-                        <div>
+                        <div v-if="contact?.address">
                             <dt>{{ t('contact.quickInfo.visit') }}</dt>
-                            <dd>{{ CONTACT_INFO.address }}</dd>
+                            <dd>{{ contact.address }}</dd>
                         </div>
-                        <div>
+                        <div v-if="primaryEmail">
                             <dt>{{ t('contact.quickInfo.email') }}</dt>
-                            <dd><a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a></dd>
+                            <dd><a :href="`mailto:${primaryEmail}`">{{ primaryEmail }}</a></dd>
                         </div>
-                        <div>
+                        <div v-if="primaryPhone">
                             <dt>{{ t('contact.quickInfo.call') }}</dt>
                             <dd>
-                                <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phone }}</a>
-                                <span class="cta-person">{{ CONTACT_INFO.phonePerson }}</span>
+                                <a :href="phoneHref(primaryPhone.number)">{{ primaryPhone.number }}</a>
+                                <span v-if="primaryPhone.label" class="cta-person">{{ primaryPhone.label }}</span>
                             </dd>
                         </div>
                     </dl>

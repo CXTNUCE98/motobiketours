@@ -1,9 +1,11 @@
 <script lang="ts" setup>
 import { sanitizeHtml } from '~/utils/sanitize';
-import { CONTACT_INFO } from '~/constants/contact';
 
 const route = useRoute();
 const { t, te } = useI18n();
+const { general } = useSiteSettings();
+const { isAuthenticated } = useAuth();
+const { openLoginPopup } = useLoginPopup();
 const localePath = useLocalePath();
 const id = computed(() => String(route.params.id || ''));
 
@@ -41,6 +43,13 @@ const tourCode = computed(() => {
     return '';
 });
 
+// Tiêu đề hiển thị bỏ tiền tố mã tour ("TOUR SM6: Bà Nà Hill" → "Bà Nà Hill"), mã hiện thành nhãn riêng
+const displayTitle = computed(() => {
+    const title = tour.value?.title || '';
+    if (!tourCode.value) return title;
+    return title.slice(title.indexOf(':') + 1).trim() || title;
+});
+
 // Eyebrow trên đầu trang: khởi hành từ · thời lượng
 const heroEyebrow = computed(() => {
     if (!tour.value) return '';
@@ -54,20 +63,104 @@ const typeLabels = computed(() =>
         .join(' · '),
 );
 
-const padNumber = (index: number) => String(index + 1).padStart(2, '0');
+const ratingStats = computed(() => tour.value?.ratingStats);
+const reviewCount = computed(() => ratingStats.value?.totalReviews || 0);
+const averageRating = computed(() => Number(ratingStats.value?.averageRating || 0));
+const rateColors = ['var(--color-accent)', 'var(--color-accent)', 'var(--color-accent)'];
 
-// Related tours (same departure location)
+// Hàng thông tin chính; chỉ hiện mục có dữ liệu
+const FACT_ICONS: Record<string, string[]> = {
+    duration: ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', 'M12 7v5l3 2'],
+    depart: ['M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z', 'M12 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5z'],
+    type: ['M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1l8 8-9.1 9.1z', 'M8.5 8.5h.01'],
+    vehicle: ['M3 16.5v-4.2L5.2 7h13.6l2.2 5.3v4.2z', 'M3 12.3h18', 'M7.5 15a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z', 'M16.5 15a1.8 1.8 0 1 0 0 3.6 1.8 1.8 0 0 0 0-3.6z'],
+    stops: ['M6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', 'M18 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', 'M8 18h8a3 3 0 0 0 0-6H8a3 3 0 0 1 0-6h8'],
+};
+
+const facts = computed(() => {
+    if (!tour.value) return [];
+    const vehicle = tour.value.suggestedVehicle;
+    const stopCount = tour.value.itineraries?.length || 0;
+    return [
+        { key: 'duration', label: t('tour.duration'), value: tour.value.duration },
+        { key: 'depart', label: t('tour.departFrom'), value: tour.value.departFrom },
+        { key: 'type', label: t('tour.list.type'), value: typeLabels.value },
+        {
+            key: 'vehicle',
+            label: t('tour.vehicle'),
+            value: vehicle
+                ? [vehicle.model, vehicle.capacity ? t('tour.seatCount', { count: vehicle.capacity }) : '']
+                    .filter(Boolean)
+                    .join(' · ')
+                : '',
+        },
+        { key: 'stops', label: t('tour.stops'), value: stopCount ? t('tour.stopCount', { count: stopCount }, stopCount) : '' },
+    ].filter((fact) => fact.value);
+});
+
+// Mục lục dính
+const sections = computed(() =>
+    [
+        overviewHtml.value ? { id: 'tour-overview', label: t('tour.overview') } : null,
+        { id: 'tour-itinerary', label: t('tour.itinerary') },
+        { id: 'tour-reviews', label: reviewCount.value ? `${t('tour.reviews')} (${reviewCount.value})` : t('tour.reviews') },
+    ].filter((section): section is { id: string; label: string } => !!section),
+);
+
+// Mô tả dài thì thu gọn, bấm "Đọc tiếp" để mở
+const overviewEl = ref<HTMLElement | null>(null);
+const overviewExpanded = ref(false);
+const overviewCollapsible = ref(false);
+watch(
+    [overviewHtml, overviewEl],
+    async () => {
+        await nextTick();
+        overviewCollapsible.value = (overviewEl.value?.scrollHeight || 0) > 640;
+    },
+    { immediate: true, flush: 'post' },
+);
+
+// Viết đánh giá: form chỉ mở khi bấm nút; chưa đăng nhập thì mở popup đăng nhập
+const showReviewForm = ref(false);
+const onWriteReview = () => {
+    if (!isAuthenticated.value) {
+        ElMessage.warning(t('review.loginRequired'));
+        openLoginPopup();
+        return;
+    }
+    showReviewForm.value = true;
+};
+
+// Tour liên quan: cùng nơi khởi hành; không có thì lấy các tour khác
 const { data: relatedToursData } = useToursQuery(
     computed(() => ({ q: tour.value?.departFrom })),
     computed(() => !!tour.value?.departFrom)
 );
 
+const sameDepartureTours = computed(() =>
+    ((relatedToursData.value as any)?.data || []).filter((item: any) => item.id !== tour.value?.id),
+);
+
+const { data: otherToursData } = useToursQuery(
+    computed(() => ({})),
+    computed(() => !!relatedToursData.value && sameDepartureTours.value.length === 0)
+);
+
 const relatedTours = computed(() => {
-    const data = (relatedToursData.value as any)?.data || [];
-    if (!data.length || !tour.value) return [];
-    return data
-        .filter((t: any) => t.id !== (tour.value as any)?.id)
-        .slice(0, 3);
+    if (!tour.value) return [];
+    const list = sameDepartureTours.value.length
+        ? sameDepartureTours.value
+        : ((otherToursData.value as any)?.data || []).filter((item: any) => item.id !== tour.value?.id);
+    return list.slice(0, 3);
+});
+
+useSeoMeta({
+    title: () => (displayTitle.value ? `${displayTitle.value} | ${general.value?.siteName || 'Andago Tours'}` : undefined),
+    description: () => tour.value?.description || undefined,
+    ogTitle: () => displayTitle.value || undefined,
+    ogDescription: () => tour.value?.description || undefined,
+    ogImage: () => gallery.value[0] || undefined,
+    twitterCard: 'summary_large_image',
 });
 </script>
 
@@ -100,109 +193,97 @@ const relatedTours = computed(() => {
 
     <!-- Tour Detail View -->
     <div v-else-if="tour" class="tour-detail">
-        <!-- Editorial header -->
+        <!-- Header: tiêu đề, số sao, mô tả ngắn, lưu / chia sẻ -->
         <header class="shell tour-hero">
             <p class="tour-hero__back">
                 <NuxtLink :to="localePath('/tour')">← {{ t('tour.allTours') }}</NuxtLink>
             </p>
             <UiEyebrow v-if="heroEyebrow">{{ heroEyebrow }}</UiEyebrow>
-            <h1 class="tour-hero__title">{{ tour.title }}</h1>
-            <p v-if="tour.routes" class="tour-hero__route">{{ tour.routes }}</p>
-            <div class="tour-hero__actions">
-                <UiButton href="#tour-booking">{{ t('tour.bookTourNow') }}</UiButton>
-                <UiButton href="#tour-reviews" variant="outline">{{ t('tour.reviews') }}</UiButton>
+            <div class="tour-hero__head">
+                <div class="tour-hero__text">
+                    <h1 class="tour-hero__title">{{ displayTitle }}</h1>
+                    <div class="tour-hero__meta">
+                        <a v-if="reviewCount" href="#tour-reviews" class="tour-hero__rating">
+                            <el-rate :model-value="averageRating" disabled size="small" :colors="rateColors"
+                                void-color="var(--color-border)" />
+                            <strong>{{ averageRating.toFixed(1) }}</strong>
+                            <span>{{ t('review.total', { count: reviewCount }) }}</span>
+                        </a>
+                        <span v-if="tour.routes">{{ tour.routes }}</span>
+                        <span v-if="tourCode" class="tour-hero__code">{{ t('tour.tourCode') }} {{ tourCode }}</span>
+                    </div>
+                    <p v-if="tour.description" class="tour-hero__lead">{{ tour.description }}</p>
+                </div>
+                <TourActions :tour-id="tour.id" :title="displayTitle" />
             </div>
         </header>
 
-        <!-- Gallery -->
-        <section class="shell tour-hero-gallery" :aria-label="t('tour.form.gallery')">
-            <TourGallery :images="gallery" :title="tour.title" />
-        </section>
-
-        <!-- Main content + booking -->
+        <!-- Nội dung + thẻ đặt tour -->
         <section class="shell tour-layout">
             <div class="tour-layout__main">
-                <!-- Key facts -->
-                <dl class="tour-facts">
-                    <div>
-                        <dt>{{ t('tour.departFrom') }}</dt>
-                        <dd>{{ tour.departFrom || '—' }}</dd>
-                    </div>
-                    <div>
-                        <dt>{{ t('tour.duration') }}</dt>
-                        <dd>{{ tour.duration || '—' }}</dd>
-                    </div>
-                    <div v-if="typeLabels">
-                        <dt>{{ t('tour.list.type') }}</dt>
-                        <dd>{{ typeLabels }}</dd>
-                    </div>
-                    <div>
-                        <dt>{{ t('tour.tourCode') }}</dt>
-                        <dd>{{ tourCode || t('tour.steps.none') }}</dd>
+                <TourGallery :images="gallery" :title="displayTitle" mosaic />
+
+                <dl v-if="facts.length" class="tour-facts">
+                    <div v-for="fact in facts" :key="fact.key">
+                        <dt>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path v-for="d in FACT_ICONS[fact.key]" :key="d" :d="d" />
+                            </svg>
+                            {{ fact.label }}
+                        </dt>
+                        <dd>{{ fact.value }}</dd>
                     </div>
                 </dl>
 
-                <!-- Overview -->
-                <div v-if="overviewHtml" class="tour-section">
-                    <UiSectionHeading :title="t('tour.overview')" />
-                    <div class="tour-prose" v-html="sanitizeHtml(overviewHtml)"></div>
+                <TourSectionNav :sections="sections" />
+
+                <!-- Tổng quan -->
+                <div v-if="overviewHtml" id="tour-overview" class="tour-section">
+                    <h2 class="tour-section__title">{{ t('tour.overview') }}</h2>
+                    <div ref="overviewEl" class="tour-prose"
+                        :class="{ 'tour-prose--collapsed': overviewCollapsible && !overviewExpanded }"
+                        v-html="sanitizeHtml(overviewHtml)"></div>
+                    <UiButton v-if="overviewCollapsible" variant="ghost" size="sm" class="tour-prose__toggle"
+                        :aria-expanded="overviewExpanded" @click="overviewExpanded = !overviewExpanded">
+                        {{ overviewExpanded ? t('tour.readLess') : t('tour.readMore') }}
+                    </UiButton>
                 </div>
 
-                <!-- Itinerary -->
-                <div id="tour-itinerary" class="tour-section">
-                    <UiSectionHeading :title="t('tour.itinerary')" />
-
-                    <template v-if="tour.itineraries && tour.itineraries.length > 0">
+                <!-- Lịch trình: danh sách điểm dừng + bản đồ -->
+                <div id="tour-itinerary" class="tour-section tour-section--itinerary">
+                    <h2 class="tour-section__title">{{ t('tour.itinerary') }}</h2>
+                    <div v-if="tour.itineraries && tour.itineraries.length > 0" class="tour-itinerary">
+                        <TourStops :itineraries="tour.itineraries" />
                         <div class="tour-map">
                             <InteractiveMap :itineraries="tour.itineraries" />
                         </div>
-
-                        <ol class="tour-timeline" role="list">
-                            <li v-for="(item, idx) in tour.itineraries" :key="item.id">
-                                <span class="tour-timeline__number" aria-hidden="true">{{ padNumber(idx) }}</span>
-                                <div class="tour-timeline__body">
-                                    <h3 class="tour-timeline__title">{{ item.hotSpot?.name }}</h3>
-                                    <p v-if="item.activityDescription" class="tour-timeline__desc">
-                                        {{ item.activityDescription }}
-                                    </p>
-                                </div>
-                            </li>
-                        </ol>
-                    </template>
+                    </div>
                     <UiEmptyState v-else :title="t('tour.noItinerary')" />
                 </div>
 
-                <!-- Reviews -->
+                <!-- Đánh giá -->
                 <div id="tour-reviews" class="tour-section">
-                    <UiSectionHeading :title="t('review.title')" />
-                    <ReviewsRatingOverview :stats="tour.ratingStats" size="large" />
-                    <ReviewsReviewForm :tour-id="tour.id" />
-                    <ReviewsReviewList :reviews="reviews || []" />
-                </div>
-
-                <!-- Contact -->
-                <div class="tour-section">
-                    <h2 class="tour-contact__title">{{ t('contact.contactUs') }}</h2>
-                    <dl class="tour-contact">
-                        <div>
-                            <dt>{{ t('contact.quickInfo.call') }}</dt>
-                            <dd><a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phoneIntl }}</a></dd>
-                        </div>
-                        <div>
-                            <dt>{{ t('contact.quickInfo.email') }}</dt>
-                            <dd><a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a></dd>
-                        </div>
-                        <div>
-                            <dt>{{ t('contact.quickInfo.visit') }}</dt>
-                            <dd>{{ CONTACT_INFO.address }}</dd>
-                        </div>
-                    </dl>
+                    <div class="tour-section__head">
+                        <h2 class="tour-section__title">{{ t('review.title') }}</h2>
+                        <UiButton v-if="!showReviewForm" variant="outline" size="sm" @click="onWriteReview">
+                            {{ t('review.writeButton') }}
+                        </UiButton>
+                    </div>
+                    <ReviewsRatingOverview v-if="reviewCount" :stats="ratingStats" size="large"
+                        class="tour-reviews__overview" />
+                    <div v-if="showReviewForm" class="tour-reviews__form">
+                        <ReviewsReviewForm :tour-id="tour.id" @success="showReviewForm = false" />
+                        <UiButton variant="ghost" size="sm" @click="showReviewForm = false">
+                            {{ t('common.cancel') }}
+                        </UiButton>
+                    </div>
+                    <ReviewsReviewList :reviews="reviews || []" class="tour-reviews__list" />
                 </div>
             </div>
 
             <aside id="tour-booking" class="tour-layout__aside">
-                <BookingCard :price="tour.priceUsd || t('tour.priceOnRequest')" :duration="tour.duration"
-                    :group-size="t('tour.groupSizeDefault')" :tour-id="tour.id" />
+                <BookingCard :price="tour.priceUsd" :tour-id="tour.id" />
             </aside>
         </section>
 
@@ -215,6 +296,8 @@ const relatedTours = computed(() => {
                 </li>
             </ul>
         </section>
+
+        <TourBookingBar :tour-id="tour.id" :price="tour.priceUsd" />
     </div>
 
     <!-- Not Found -->
@@ -267,12 +350,29 @@ const relatedTours = computed(() => {
 
 /* Hero */
 .tour-hero {
-    padding-top: var(--space-page-top);
-    padding-bottom: var(--space-fluid-lg);
+    padding-top: var(--space-fluid-md);
+    padding-bottom: var(--space-fluid-md);
 }
 
 .tour-hero__back {
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-5);
+}
+
+.tour-hero :deep(.ui-eyebrow) {
+    margin-bottom: var(--space-4);
+}
+
+.tour-hero__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-5) var(--space-8);
+}
+
+.tour-hero__text {
+    flex: 1 1 32rem;
+    min-width: 0;
 }
 
 .tour-hero__back a {
@@ -289,37 +389,74 @@ const relatedTours = computed(() => {
 .tour-hero__title {
     max-width: 52rem;
     font-family: var(--font-serif);
-    font-size: var(--text-display);
+    font-size: var(--text-h2);
     font-weight: var(--weight-regular);
-    line-height: var(--leading-display);
-    letter-spacing: var(--tracking-display);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
     text-wrap: balance;
 }
 
-.tour-hero__route {
-    max-width: 40rem;
-    margin-top: var(--space-5);
+.tour-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2) var(--space-5);
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--text-ui);
+}
+
+.tour-hero__rating {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: inherit;
+    text-decoration: none;
+}
+
+.tour-hero__rating strong {
+    color: var(--color-text);
+    font-weight: var(--weight-semibold);
+}
+
+.tour-hero__rating span {
+    text-decoration: underline;
+    text-decoration-color: var(--color-border);
+    text-underline-offset: 0.25em;
+}
+
+.tour-hero__rating:hover span {
+    text-decoration-color: var(--color-accent);
+}
+
+.tour-hero__rating :deep(.el-rate) {
+    --el-rate-icon-size: 15px;
+    height: auto;
+}
+
+.tour-hero__rating :deep(.el-rate__item) {
+    margin-right: 1px;
+}
+
+.tour-hero__code {
+    padding: 0.125rem var(--space-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+}
+
+.tour-hero__lead {
+    max-width: 44rem;
+    margin-top: var(--space-4);
     color: var(--color-text-muted);
     font-size: var(--text-lead);
     line-height: var(--leading-body);
 }
 
-.tour-hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-3);
-    margin-top: var(--space-8);
-}
-
-.tour-hero a:focus-visible,
-.tour-timeline a:focus-visible {
+.tour-hero a:focus-visible {
     outline: var(--focus-ring);
     outline-offset: 3px;
-}
-
-/* Gallery */
-.tour-hero-gallery {
-    padding-bottom: var(--section-space);
 }
 
 /* Layout: main + booking */
@@ -332,16 +469,41 @@ const relatedTours = computed(() => {
 
 @media (min-width: 64rem) {
     .tour-layout {
-        grid-template-columns: 1fr 21rem;
+        grid-template-columns: minmax(0, 1fr) 21rem;
+        gap: var(--space-fluid-lg);
+    }
+
+    /* Cột phải cao bằng cột nội dung để thẻ đặt tour dính được khi cuộn */
+    .tour-layout__aside {
+        align-self: stretch;
     }
 }
 
 .tour-layout__main {
+    display: grid;
+    gap: var(--space-fluid-md);
     min-width: 0;
 }
 
 .tour-section {
-    padding-top: var(--space-block);
+    padding-top: var(--space-8);
+    scroll-margin-top: calc(var(--header-height) + 3.5rem);
+}
+
+.tour-section__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+}
+
+.tour-section__title {
+    font-family: var(--font-serif);
+    font-size: var(--text-h3);
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
 }
 
 /* Key facts */
@@ -361,10 +523,19 @@ const relatedTours = computed(() => {
 }
 
 .tour-facts dt {
+    display: grid;
+    gap: var(--space-3);
+    justify-items: start;
     color: var(--color-text-muted);
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-label);
     text-transform: uppercase;
+}
+
+.tour-facts dt svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: var(--color-accent);
 }
 
 .tour-facts dd {
@@ -375,6 +546,10 @@ const relatedTours = computed(() => {
 }
 
 /* Overview prose */
+.tour-prose > :deep(:first-child) {
+    margin-top: 0;
+}
+
 .tour-prose {
     max-width: 44rem;
     margin-top: var(--space-fluid-md);
@@ -410,96 +585,72 @@ const relatedTours = computed(() => {
     text-underline-offset: 0.25em;
 }
 
-/* Itinerary map */
+/* Mô tả dài: thu gọn, mờ dần ở mép dưới */
+.tour-prose--collapsed {
+    max-height: 28rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent);
+    mask-image: linear-gradient(to bottom, #000 65%, transparent);
+}
+
+.tour-prose__toggle {
+    margin-top: var(--space-3);
+}
+
+/* Lịch trình: danh sách + bản đồ cạnh nhau khi cột nội dung đủ rộng */
+.tour-section--itinerary {
+    container-type: inline-size;
+}
+
+.tour-itinerary {
+    display: grid;
+    gap: var(--space-fluid-md);
+    margin-top: var(--space-fluid-md);
+}
+
 .tour-map {
+    order: -1;
+    /* Giữ z-index nội bộ của Leaflet (control = 1000) bên dưới mục lục dính và popup */
+    isolation: isolate;
     aspect-ratio: 16 / 9;
     overflow: hidden;
-    margin-top: var(--space-fluid-md);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
 }
 
-/* Itinerary timeline (như danh sách dịch vụ ở trang giới thiệu) */
-.tour-timeline {
-    margin-top: var(--space-fluid-md);
-    border-bottom: 1px solid var(--color-border);
+@container (min-width: 44rem) {
+    .tour-itinerary {
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+        align-items: start;
+    }
+
+    .tour-map {
+        position: sticky;
+        top: calc(var(--header-height) + 4.5rem);
+        order: 0;
+        aspect-ratio: 4 / 5;
+        max-height: 32rem;
+    }
 }
 
-.tour-timeline > li {
-    display: grid;
-    grid-template-columns: 3.25rem 1fr;
-    gap: var(--space-4);
-    padding-block: var(--space-5);
-    border-top: 1px solid var(--color-border);
-}
-
-.tour-timeline__number {
-    color: var(--color-accent);
-    font-family: var(--font-serif);
-    font-size: var(--text-2xl);
-    font-style: italic;
-    font-variant-numeric: lining-nums tabular-nums;
-}
-
-.tour-timeline__title {
-    font-family: var(--font-serif);
-    font-size: var(--text-title);
-    font-weight: var(--weight-regular);
-    line-height: var(--leading-snug);
-}
-
-.tour-timeline__desc {
-    margin-top: 0.375rem;
-    color: var(--color-text-muted);
-    line-height: var(--leading-body);
-}
-
-/* Contact */
-.tour-contact__title {
-    padding-bottom: var(--space-4);
-    border-bottom: 1px solid var(--color-border-strong);
-    font-family: var(--font-serif);
-    font-size: var(--text-3xl);
-    font-weight: var(--weight-regular);
-}
-
-.tour-contact {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-    gap: var(--space-4);
+/* Đánh giá */
+.tour-reviews__overview,
+.tour-reviews__list {
     margin-top: var(--space-fluid-md);
 }
 
-.tour-contact > div {
-    padding-block: var(--space-4);
-    border-top: 1px solid var(--color-border);
+.tour-reviews__form {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
+    margin-top: var(--space-fluid-md);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
 }
 
-.tour-contact dt {
-    color: var(--color-text-muted);
-    font-size: var(--text-xs);
-    font-weight: var(--weight-semibold);
-    letter-spacing: var(--tracking-label);
-    text-transform: uppercase;
-}
-
-.tour-contact dd {
-    margin-top: 0.375rem;
-    font-family: var(--font-serif);
-    font-size: var(--text-lg);
-    line-height: var(--leading-snug);
-    overflow-wrap: anywhere;
-}
-
-.tour-contact a {
-    color: inherit;
-    text-decoration: underline;
-    text-decoration-color: var(--color-border);
-    text-underline-offset: 0.2em;
-}
-
-.tour-contact a:hover {
-    text-decoration-color: var(--color-accent);
+.tour-reviews__form > :first-child {
+    width: 100%;
 }
 
 /* Related tours */

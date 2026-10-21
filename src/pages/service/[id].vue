@@ -15,8 +15,8 @@ const relatedServices = computed(() => {
     return services.filter(s => s.id !== service.value!.id).slice(0, 3);
 });
 
-const contactPhone = '1900 9477';
-const contactPhoneHref = computed(() => `tel:${contactPhone.replace(/\s/g, '')}`);
+// Hotline chính trong cấu hình admin (Cấu hình → Liên hệ)
+const { primaryPhone, phoneHref } = useSiteSettings();
 </script>
 
 <template>
@@ -89,7 +89,9 @@ const contactPhoneHref = computed(() => `tel:${contactPhone.replace(/\s/g, '')}`
                 <div class="service-detail__contact">
                     <p class="service-detail__contact-price">{{ service.priceRange }}</p>
                     <UiButton :to="localePath('/contact')" block>{{ t('service.detail.contactCta') }}</UiButton>
-                    <UiButton :href="contactPhoneHref" variant="outline" block>{{ contactPhone }}</UiButton>
+                    <UiButton v-if="primaryPhone" :href="phoneHref(primaryPhone.number)" variant="outline" block>
+                        {{ primaryPhone.number }}
+                    </UiButton>
 
                     <ul v-if="service.features?.length" class="service-detail__features" role="list">
                         <li v-for="(feature, idx) in service.features" :key="idx">{{ feature }}</li>

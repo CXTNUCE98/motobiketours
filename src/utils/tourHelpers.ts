@@ -11,15 +11,6 @@ export const getTourImageUrl = (thumbnail: string | null | undefined): string =>
 };
 
 /**
- * Convert price from USD to VND
- * Using approximate exchange rate (1 USD = 24,000 VND)
- */
-const USD_TO_VND_RATE = 24000;
-export const convertUsdToVnd = (priceUsd: number): number => {
-  return Math.round(priceUsd * USD_TO_VND_RATE);
-};
-
-/**
  * Format duration string from API
  */
 export const formatDuration = (duration: string): string => {

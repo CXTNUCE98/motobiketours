@@ -138,6 +138,11 @@
         },
         "tags": [
           "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "post": {
@@ -168,6 +173,11 @@
         },
         "tags": [
           "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -202,6 +212,11 @@
         },
         "tags": [
           "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "patch": {
@@ -283,6 +298,11 @@
         },
         "tags": [
           "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "delete": {
@@ -305,6 +325,378 @@
         },
         "tags": [
           "users"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin-notifications": {
+      "get": {
+        "operationId": "AdminNotificationsController_list",
+        "summary": "Danh sách thông báo của trang quản trị (admin only)",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "unreadOnly",
+            "required": false,
+            "in": "query",
+            "description": "Chỉ lấy thông báo chưa đọc",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin-notifications/unread-count": {
+      "get": {
+        "operationId": "AdminNotificationsController_unreadCount",
+        "summary": "Số thông báo chưa đọc, dùng cho badge (admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin-notifications/{id}/read": {
+      "patch": {
+        "operationId": "AdminNotificationsController_markRead",
+        "summary": "Đánh dấu một thông báo đã đọc (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin-notifications/read-all": {
+      "post": {
+        "operationId": "AdminNotificationsController_markAllRead",
+        "summary": "Đánh dấu tất cả đã đọc (admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin-notifications/email-status": {
+      "get": {
+        "operationId": "AdminNotificationsController_emailStatus",
+        "summary": "Trạng thái cấu hình SMTP (admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/admin-notifications/test-email": {
+      "post": {
+        "operationId": "AdminNotificationsController_sendTestEmail",
+        "summary": "Gửi email thử tới danh sách email admin (admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-notifications"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/contact-messages": {
+      "post": {
+        "operationId": "ContactMessagesController_create",
+        "summary": "Gửi form liên hệ từ website: báo admin qua chuông thông báo và email theo cấu hình",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateContactMessageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Message accepted"
+          }
+        },
+        "tags": [
+          "contact"
+        ]
+      }
+    },
+    "/settings/public": {
+      "get": {
+        "operationId": "SettingsController_getPublic",
+        "summary": "Cấu hình website cho trang khách: liên hệ, giới thiệu, trang chủ (không gồm cấu hình thông báo)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return public site settings"
+          }
+        },
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/settings": {
+      "get": {
+        "operationId": "SettingsController_getAll",
+        "summary": "Toàn bộ cấu hình website (admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/settings/general": {
+      "put": {
+        "operationId": "SettingsController_updateGeneral",
+        "summary": "Cập nhật cấu hình chung (admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGeneralSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/settings/contact": {
+      "put": {
+        "operationId": "SettingsController_updateContact",
+        "summary": "Cập nhật thông tin liên hệ (admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateContactSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/settings/about": {
+      "put": {
+        "operationId": "SettingsController_updateAbout",
+        "summary": "Cập nhật trang giới thiệu (admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAboutSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/settings/home": {
+      "put": {
+        "operationId": "SettingsController_updateHome",
+        "summary": "Cập nhật nội dung trang chủ (admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateHomeSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/settings/notifications": {
+      "put": {
+        "operationId": "SettingsController_updateNotifications",
+        "summary": "Cập nhật cấu hình thông báo (admin only)",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotificationSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "settings"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -407,6 +799,34 @@
               "example": true,
               "type": "boolean"
             }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Sort by column",
+            "schema": {
+              "enum": [
+                "priceUsd",
+                "createdAt",
+                "durationRange",
+                "title"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -443,6 +863,21 @@
         ]
       }
     },
+    "/tours/admin/deleted": {
+      "get": {
+        "operationId": "ToursController_findDeleted",
+        "summary": "Get all soft-deleted tours (admin only)",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Return soft-deleted tours"
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      }
+    },
     "/tours/{id}": {
       "get": {
         "operationId": "ToursController_findOne",
@@ -452,6 +887,15 @@
             "name": "id",
             "required": true,
             "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "light",
+            "required": false,
+            "in": "query",
+            "description": "true: chỉ lấy thông tin cơ bản (bỏ lịch trình, đánh giá)",
             "schema": {
               "type": "string"
             }
@@ -525,6 +969,33 @@
         ]
       }
     },
+    "/tours/admin/{id}/restore": {
+      "patch": {
+        "operationId": "ToursController_restore",
+        "summary": "Restore a soft-deleted tour (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tour restored successfully"
+          },
+          "404": {
+            "description": "Tour not found"
+          }
+        },
+        "tags": [
+          "tours"
+        ]
+      }
+    },
     "/tours/estimate": {
       "post": {
         "operationId": "ToursController_estimate",
@@ -571,11 +1042,45 @@
         },
         "tags": [
           "Hot spots"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "get": {
         "operationId": "HotSpotsController_executeFindAll",
         "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Search query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "p",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "r",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          },
           {
             "name": "lat",
             "required": false,
@@ -665,6 +1170,11 @@
         },
         "tags": [
           "Hot spots"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "delete": {
@@ -686,6 +1196,11 @@
         },
         "tags": [
           "Hot spots"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -820,6 +1335,72 @@
         ]
       }
     },
+    "/admin/audit-logs": {
+      "get": {
+        "operationId": "AuditLogController_findAll",
+        "summary": "Get audit logs (admin only)",
+        "parameters": [
+          {
+            "name": "entityType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by entity type (e.g. Tour, Booking)",
+            "schema": {
+              "example": "Tour",
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date range filter (ISO 8601)",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "End date range filter (ISO 8601)",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return paginated audit logs"
+          }
+        },
+        "tags": [
+          "audit-logs"
+        ]
+      }
+    },
     "/services": {
       "get": {
         "operationId": "ServicesController_findAll",
@@ -895,7 +1476,7 @@
     "/blog": {
       "post": {
         "operationId": "BlogController_create",
-        "summary": "Create a new blog post",
+        "summary": "Create a new blog post (admin only)",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -920,6 +1501,11 @@
         },
         "tags": [
           "blog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       },
       "get": {
@@ -981,6 +1567,18 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by status (comma separated)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         ],
         "responses": {
@@ -1017,6 +1615,79 @@
         },
         "tags": [
           "blog"
+        ]
+      },
+      "patch": {
+        "operationId": "BlogController_update",
+        "summary": "Update a blog post (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBlogDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Blog post updated successfully"
+          },
+          "404": {
+            "description": "Blog post not found"
+          },
+          "409": {
+            "description": "Blog with this name already exists"
+          }
+        },
+        "tags": [
+          "blog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "BlogController_remove",
+        "summary": "Delete a blog post (admin only)",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog post deleted successfully"
+          },
+          "404": {
+            "description": "Blog post not found"
+          }
+        },
+        "tags": [
+          "blog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
@@ -1511,6 +2182,766 @@
           }
         ]
       }
+    },
+    "/wishlist/check-bulk": {
+      "post": {
+        "operationId": "WishlistController_checkWishlistBulk",
+        "summary": "Kiểm tra trạng thái wishlist cho nhiều tour cùng lúc",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tourIds": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "description": "Danh sách ID tour cần kiểm tra"
+                  }
+                },
+                "required": [
+                  "tourIds"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Map { tourId: isWishlisted }"
+          }
+        },
+        "tags": [
+          "Wishlist"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/bookings": {
+      "post": {
+        "operationId": "BookingsController_createBooking",
+        "summary": "Create new booking",
+        "description": "Create a new booking for authenticated user",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Booking created successfully"
+          },
+          "400": {
+            "description": "Invalid input data"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      },
+      "get": {
+        "operationId": "BookingsController_getBookingsList",
+        "summary": "Get all bookings (Admin only)",
+        "description": "Retrieve paginated list of all bookings with optional filters",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Booking status",
+            "schema": {
+              "example": "confirmed",
+              "enum": [
+                "pending",
+                "confirmed",
+                "cancelled",
+                "completed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentStatus",
+            "required": false,
+            "in": "query",
+            "description": "Payment status",
+            "schema": {
+              "example": "fully_paid",
+              "enum": [
+                "unpaid",
+                "deposit_paid",
+                "fully_paid"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "User ID to filter bookings",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tourId",
+            "required": false,
+            "in": "query",
+            "description": "Tour ID to filter bookings",
+            "schema": {
+              "example": "507f1f77bcf86cd799439012",
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date range filter (ISO 8601)",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "End date range filter (ISO 8601)",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "default": "1",
+              "example": "1",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "default": "10",
+              "example": "10",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "example": "createdAt",
+              "enum": [
+                "createdAt",
+                "startDate",
+                "totalPrice"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "default": "DESC",
+              "example": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden - Admin only"
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/my-bookings": {
+      "get": {
+        "operationId": "BookingsController_getMyBookings",
+        "summary": "Get my bookings",
+        "description": "Retrieve paginated list of current user bookings with optional filters",
+        "parameters": [
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Booking status",
+            "schema": {
+              "example": "confirmed",
+              "enum": [
+                "pending",
+                "confirmed",
+                "cancelled",
+                "completed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "paymentStatus",
+            "required": false,
+            "in": "query",
+            "description": "Payment status",
+            "schema": {
+              "example": "fully_paid",
+              "enum": [
+                "unpaid",
+                "deposit_paid",
+                "fully_paid"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "userId",
+            "required": false,
+            "in": "query",
+            "description": "User ID to filter bookings",
+            "schema": {
+              "example": "507f1f77bcf86cd799439011",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tourId",
+            "required": false,
+            "in": "query",
+            "description": "Tour ID to filter bookings",
+            "schema": {
+              "example": "507f1f77bcf86cd799439012",
+              "type": "string"
+            }
+          },
+          {
+            "name": "fromDate",
+            "required": false,
+            "in": "query",
+            "description": "Start date range filter (ISO 8601)",
+            "schema": {
+              "example": "2026-01-01",
+              "type": "string"
+            }
+          },
+          {
+            "name": "toDate",
+            "required": false,
+            "in": "query",
+            "description": "End date range filter (ISO 8601)",
+            "schema": {
+              "example": "2026-12-31",
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number for pagination",
+            "schema": {
+              "default": "1",
+              "example": "1",
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "default": "10",
+              "example": "10",
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "Field to sort by",
+            "schema": {
+              "example": "createdAt",
+              "enum": [
+                "createdAt",
+                "startDate",
+                "totalPrice"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "description": "Sort order",
+            "schema": {
+              "default": "DESC",
+              "example": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List retrieved successfully"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}": {
+      "get": {
+        "operationId": "BookingsController_getBookingDetail",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      },
+      "patch": {
+        "operationId": "BookingsController_updateBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}/confirm": {
+      "post": {
+        "operationId": "BookingsController_confirmBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}/cancel": {
+      "post": {
+        "operationId": "BookingsController_cancelBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/bookings/{id}/invoice": {
+      "get": {
+        "operationId": "BookingsController_generateInvoice",
+        "summary": "Download booking invoice PDF",
+        "description": "Generate and download PDF invoice for a booking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invoice PDF downloaded successfully"
+          },
+          "404": {
+            "description": "Booking not found"
+          }
+        },
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/payments/initiate": {
+      "post": {
+        "operationId": "PaymentsController_initiatePayment",
+        "summary": "Khởi tạo thanh toán",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InitiatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Payment URL được tạo thành công"
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ"
+          },
+          "404": {
+            "description": "Booking không tồn tại"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/vnpay/callback": {
+      "get": {
+        "operationId": "PaymentsController_vnpayCallback",
+        "summary": "VNPay callback endpoint",
+        "parameters": [],
+        "responses": {
+          "302": {
+            "description": "Redirect to success/failed page"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/payments/booking/{bookingId}": {
+      "get": {
+        "operationId": "PaymentsController_getBookingPayments",
+        "summary": "Lấy payment history của booking",
+        "parameters": [
+          {
+            "name": "bookingId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment history"
+          }
+        },
+        "tags": [
+          "Payments"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "summary": "Check application health status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The Health Check is successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {},
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "The Health Check is not successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "error"
+                    },
+                    "info": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "error": {
+                      "type": "object",
+                      "example": {
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      },
+                      "nullable": true
+                    },
+                    "details": {
+                      "type": "object",
+                      "example": {
+                        "database": {
+                          "status": "up"
+                        },
+                        "redis": {
+                          "status": "down",
+                          "message": "Could not connect"
+                        }
+                      },
+                      "additionalProperties": {
+                        "type": "object",
+                        "required": [
+                          "status"
+                        ],
+                        "properties": {
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/stats/dashboard": {
+      "get": {
+        "operationId": "StatsController_getDashboard",
+        "summary": "Thống kê doanh thu theo tháng, quý, năm cho trang quản trị (admin only)",
+        "parameters": [
+          {
+            "name": "year",
+            "required": false,
+            "in": "query",
+            "description": "Năm cần thống kê (mặc định là năm hiện tại theo giờ Việt Nam)",
+            "schema": {
+              "example": 2026,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return dashboard statistics"
+          }
+        },
+        "tags": [
+          "stats"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
     }
   },
   "info": {
@@ -1520,7 +2951,16 @@
     "contact": {}
   },
   "tags": [],
-  "servers": [],
+  "servers": [
+    {
+      "url": "http://localhost:3001",
+      "description": "Local Development"
+    },
+    {
+      "url": "https://motobikertours-api.vercel.app",
+      "description": "Production"
+    }
+  ],
   "components": {
     "securitySchemes": {
       "bearer": {
@@ -1647,6 +3087,344 @@
           }
         }
       },
+      "CreateContactMessageDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "email": {
+            "type": "string",
+            "example": "john@example.com"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+84 123 456 789"
+          },
+          "country": {
+            "type": "string",
+            "example": "Vietnam"
+          },
+          "title": {
+            "type": "string",
+            "example": "Tour Hà Giang tháng 11"
+          },
+          "content": {
+            "type": "string",
+            "example": "Tôi muốn hỏi về lịch trình..."
+          }
+        },
+        "required": [
+          "fullName",
+          "email",
+          "content"
+        ]
+      },
+      "UpdateGeneralSettingsDto": {
+        "type": "object",
+        "properties": {
+          "siteName": {
+            "type": "string",
+            "example": "Andago Tours"
+          },
+          "websiteUrl": {
+            "type": "string",
+            "example": "https://andago.vercel.app"
+          },
+          "usdToVndRate": {
+            "type": "number",
+            "example": 24000
+          }
+        },
+        "required": [
+          "siteName",
+          "websiteUrl",
+          "usdToVndRate"
+        ]
+      },
+      "ContactPhoneDto": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "example": "+84 854.242.357"
+          },
+          "label": {
+            "type": "string",
+            "example": "Mr An"
+          }
+        },
+        "required": [
+          "number",
+          "label"
+        ]
+      },
+      "LocalizedTextDto": {
+        "type": "object",
+        "properties": {
+          "vi": {
+            "type": "string"
+          },
+          "en": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vi",
+          "en"
+        ]
+      },
+      "ContactChannelDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "zalo",
+              "whatsapp",
+              "messenger",
+              "viber",
+              "line",
+              "kakaotalk",
+              "telegram",
+              "wechat",
+              "facebook",
+              "instagram",
+              "tiktok",
+              "youtube",
+              "other"
+            ]
+          },
+          "label": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string",
+            "example": "https://zalo.me/84854242357"
+          },
+          "note": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          }
+        },
+        "required": [
+          "type",
+          "label",
+          "url",
+          "note"
+        ]
+      },
+      "UpdateContactSettingsDto": {
+        "type": "object",
+        "properties": {
+          "phones": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactPhoneDto"
+            }
+          },
+          "emails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "address": {
+            "type": "string"
+          },
+          "hours": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          },
+          "mapEmbedUrl": {
+            "type": "string"
+          },
+          "channels": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ContactChannelDto"
+            }
+          }
+        },
+        "required": [
+          "phones",
+          "emails",
+          "address",
+          "hours",
+          "mapEmbedUrl",
+          "channels"
+        ]
+      },
+      "TourGuideDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          },
+          "photo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "role",
+          "photo"
+        ]
+      },
+      "UpdateAboutSettingsDto": {
+        "type": "object",
+        "properties": {
+          "guides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TourGuideDto"
+            }
+          }
+        },
+        "required": [
+          "guides"
+        ]
+      },
+      "HeroSlideDto": {
+        "type": "object",
+        "properties": {
+          "image": {
+            "type": "string"
+          },
+          "caption": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          }
+        },
+        "required": [
+          "image",
+          "caption"
+        ]
+      },
+      "LongLocalizedTextDto": {
+        "type": "object",
+        "properties": {
+          "vi": {
+            "type": "string"
+          },
+          "en": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vi",
+          "en"
+        ]
+      },
+      "TestimonialDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "$ref": "#/components/schemas/LocalizedTextDto"
+          },
+          "avatar": {
+            "type": "string"
+          },
+          "quote": {
+            "$ref": "#/components/schemas/LongLocalizedTextDto"
+          }
+        },
+        "required": [
+          "name",
+          "role",
+          "avatar",
+          "quote"
+        ]
+      },
+      "UpdateHomeSettingsDto": {
+        "type": "object",
+        "properties": {
+          "heroSlides": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HeroSlideDto"
+            }
+          },
+          "testimonials": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TestimonialDto"
+            }
+          }
+        },
+        "required": [
+          "heroSlides",
+          "testimonials"
+        ]
+      },
+      "NotificationChannelsDto": {
+        "type": "object",
+        "properties": {
+          "inApp": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "inApp",
+          "email"
+        ]
+      },
+      "NotificationEventsDto": {
+        "type": "object",
+        "properties": {
+          "booking_created": {
+            "$ref": "#/components/schemas/NotificationChannelsDto"
+          },
+          "booking_cancelled": {
+            "$ref": "#/components/schemas/NotificationChannelsDto"
+          },
+          "contact_message": {
+            "$ref": "#/components/schemas/NotificationChannelsDto"
+          },
+          "review_created": {
+            "$ref": "#/components/schemas/NotificationChannelsDto"
+          },
+          "user_registered": {
+            "$ref": "#/components/schemas/NotificationChannelsDto"
+          }
+        },
+        "required": [
+          "booking_created",
+          "booking_cancelled",
+          "contact_message",
+          "review_created",
+          "user_registered"
+        ]
+      },
+      "UpdateNotificationSettingsDto": {
+        "type": "object",
+        "properties": {
+          "adminEmails": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customerBookingEmail": {
+            "type": "boolean"
+          },
+          "events": {
+            "$ref": "#/components/schemas/NotificationEventsDto"
+          }
+        },
+        "required": [
+          "adminEmails",
+          "customerBookingEmail",
+          "events"
+        ]
+      },
       "ItineraryDto": {
         "type": "object",
         "properties": {
@@ -1765,7 +3543,8 @@
           },
           "suggestedVehicleId": {
             "type": "string",
-            "description": "Recommended vehicle for this tour"
+            "description": "Recommended vehicle for this tour (null to clear)",
+            "nullable": true
           }
         },
         "required": [
@@ -1876,7 +3655,8 @@
           },
           "suggestedVehicleId": {
             "type": "string",
-            "description": "Recommended vehicle for this tour"
+            "description": "Recommended vehicle for this tour (null to clear)",
+            "nullable": true
           }
         }
       },
@@ -2100,6 +3880,28 @@
           }
         }
       },
+      "BlogAuthorDto": {
+        "type": "object",
+        "properties": {
+          "authId": {
+            "type": "string",
+            "example": "uuid-123"
+          },
+          "userName": {
+            "type": "string",
+            "example": "admin"
+          },
+          "avatar": {
+            "type": "string",
+            "example": "https://res.cloudinary.com/.../avatar.jpg"
+          }
+        },
+        "required": [
+          "authId",
+          "userName",
+          "avatar"
+        ]
+      },
       "CreateBlogDto": {
         "type": "object",
         "properties": {
@@ -2150,12 +3952,7 @@
             "example": "waiting"
           },
           "author": {
-            "type": "object",
-            "example": {
-              "authId": "uuid-123",
-              "avatar": "image-url",
-              "userName": "admin"
-            }
+            "$ref": "#/components/schemas/BlogAuthorDto"
           }
         },
         "required": [
@@ -2170,6 +3967,60 @@
           "status",
           "author"
         ]
+      },
+      "UpdateBlogDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Digital right managements"
+          },
+          "lang": {
+            "type": "string",
+            "example": "vi"
+          },
+          "thumbnail": {
+            "type": "string",
+            "example": "image-j_muyWVa"
+          },
+          "shortDescription": {
+            "type": "string",
+            "example": "21421412421"
+          },
+          "content": {
+            "type": "string",
+            "example": "<p>Content here...</p><figure class=\"image\"><img src=\"image-BIZu3Aad\"></figure>"
+          },
+          "tags": {
+            "example": [
+              "2412421"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "numWords": {
+            "type": "number",
+            "example": 9
+          },
+          "category": {
+            "type": "string",
+            "example": "Technology"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "waiting",
+              "published",
+              "draft"
+            ],
+            "example": "waiting"
+          },
+          "author": {
+            "$ref": "#/components/schemas/BlogAuthorDto"
+          }
+        }
       },
       "CreateCommentDto": {
         "type": "object",
@@ -2258,6 +4109,226 @@
           "tourId",
           "rating",
           "content"
+        ]
+      },
+      "CustomerInfoDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Customer full name",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "description": "Customer email address",
+            "example": "nguyenvana@gmail.com"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Customer phone number",
+            "example": "0901234567"
+          },
+          "address": {
+            "type": "string",
+            "description": "Customer address (optional)",
+            "example": "123 Nguyen Trai, District 1, HCMC"
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "phone"
+        ]
+      },
+      "CreateBookingDto": {
+        "type": "object",
+        "properties": {
+          "tourId": {
+            "type": "string",
+            "description": "Tour ID to book",
+            "example": "507f1f77bcf86cd799439012"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Tour start date (ISO 8601)",
+            "example": "2026-02-15"
+          },
+          "numberOfPeople": {
+            "type": "number",
+            "description": "Number of people",
+            "example": 2,
+            "minimum": 1
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method",
+            "enum": [
+              "vnpay",
+              "momo",
+              "stripe",
+              "cash"
+            ],
+            "example": "vnpay"
+          },
+          "specialRequests": {
+            "type": "string",
+            "description": "Special requests or notes (optional)",
+            "example": "Vegetarian meals required"
+          },
+          "customerInfo": {
+            "description": "Customer information",
+            "example": {
+              "name": "Nguyễn Văn A",
+              "email": "nguyenvana@gmail.com",
+              "phone": "0901234567",
+              "address": "123 Nguyen Trai, District 1, HCMC"
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CustomerInfoDto"
+              }
+            ]
+          },
+          "voucherCode": {
+            "type": "string",
+            "description": "Voucher code for discount (optional)",
+            "example": "SUMMER2026"
+          },
+          "locale": {
+            "type": "string",
+            "description": "Ngôn ngữ khách đang dùng, quyết định ngôn ngữ email xác nhận",
+            "enum": [
+              "vi",
+              "en"
+            ]
+          }
+        },
+        "required": [
+          "tourId",
+          "startDate",
+          "numberOfPeople",
+          "paymentMethod",
+          "customerInfo"
+        ]
+      },
+      "UpdateBookingDto": {
+        "type": "object",
+        "properties": {
+          "tourId": {
+            "type": "string",
+            "description": "Tour ID to book",
+            "example": "507f1f77bcf86cd799439012"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Tour start date (ISO 8601)",
+            "example": "2026-02-15"
+          },
+          "numberOfPeople": {
+            "type": "number",
+            "description": "Number of people",
+            "example": 2,
+            "minimum": 1
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method",
+            "enum": [
+              "vnpay",
+              "momo",
+              "stripe",
+              "cash"
+            ],
+            "example": "vnpay"
+          },
+          "specialRequests": {
+            "type": "string",
+            "description": "Special requests or notes (optional)",
+            "example": "Vegetarian meals required"
+          },
+          "customerInfo": {
+            "description": "Customer information",
+            "example": {
+              "name": "Nguyễn Văn A",
+              "email": "nguyenvana@gmail.com",
+              "phone": "0901234567",
+              "address": "123 Nguyen Trai, District 1, HCMC"
+            },
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CustomerInfoDto"
+              }
+            ]
+          },
+          "voucherCode": {
+            "type": "string",
+            "description": "Voucher code for discount (optional)",
+            "example": "SUMMER2026"
+          },
+          "locale": {
+            "type": "string",
+            "description": "Ngôn ngữ khách đang dùng, quyết định ngôn ngữ email xác nhận",
+            "enum": [
+              "vi",
+              "en"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "Booking status",
+            "enum": [
+              "pending",
+              "confirmed",
+              "cancelled",
+              "completed"
+            ],
+            "example": "confirmed"
+          },
+          "paymentStatus": {
+            "type": "string",
+            "description": "Payment status",
+            "enum": [
+              "unpaid",
+              "deposit_paid",
+              "fully_paid"
+            ],
+            "example": "fully_paid"
+          },
+          "transactionId": {
+            "type": "string",
+            "description": "Transaction ID from payment gateway",
+            "example": "TXN202601091234567"
+          }
+        }
+      },
+      "InitiatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "description": "Booking ID",
+            "example": "507f1f77bcf86cd799439012"
+          },
+          "paymentMethod": {
+            "type": "string",
+            "description": "Payment method",
+            "enum": [
+              "vnpay",
+              "momo",
+              "cash"
+            ],
+            "example": "vnpay"
+          },
+          "ipAddr": {
+            "type": "string",
+            "description": "IP address của khách hàng",
+            "example": "127.0.0.1"
+          }
+        },
+        "required": [
+          "bookingId",
+          "paymentMethod"
         ]
       }
     }

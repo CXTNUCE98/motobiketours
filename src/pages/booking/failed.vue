@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router';
 import { ref, computed } from 'vue';
-import { CONTACT_INFO } from '~/constants/contact';
 
 const route = useRoute();
 const router = useRouter();
 const { t } = useI18n();
+const { primaryPhone, primaryEmail, phoneHref } = useSiteSettings();
 
 const bookingId = ref(route.query.id as string);
 const errorMessage = computed(() => (route.query.message as string) || t('booking.failed.defaultMessage'));
@@ -69,12 +69,16 @@ const goToMyBookings = () => {
                 <UiButton variant="ghost" block @click="goHome">{{ t('booking.failed.backHome') }}</UiButton>
             </div>
 
-            <p class="booking-result__help">
+            <p v-if="primaryPhone || primaryEmail" class="booking-result__help">
                 {{ t('booking.failed.urgentHelp') }}<br>
-                {{ t('booking.failed.callHotline') }}:
-                <a :href="CONTACT_INFO.phoneHref">{{ CONTACT_INFO.phoneIntl }}</a>
-                {{ t('booking.failed.orEmail') }}
-                <a :href="`mailto:${CONTACT_INFO.email}`">{{ CONTACT_INFO.email }}</a>
+                <template v-if="primaryPhone">
+                    {{ t('booking.failed.callHotline') }}:
+                    <a :href="phoneHref(primaryPhone.number)">{{ primaryPhone.number }}</a>
+                </template>
+                <template v-if="primaryEmail">
+                    {{ t('booking.failed.orEmail') }}
+                    <a :href="`mailto:${primaryEmail}`">{{ primaryEmail }}</a>
+                </template>
             </p>
         </div>
     </div>

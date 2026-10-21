@@ -103,6 +103,8 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-04-15',
   runtimeConfig: {
+    // server: secret gửi kèm IP khách sang API, ghi đè bằng NUXT_API_PROXY_SECRET (khớp API_PROXY_SECRET của BE)
+    apiProxySecret: '',
     // client
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE,
