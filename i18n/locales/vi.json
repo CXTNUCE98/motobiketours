@@ -239,7 +239,18 @@
     "cropImage": "Cắt ảnh",
     "thumbnailUploaded": "Tải ảnh đại diện thành công",
     "errorOccurred": "Đã xảy ra lỗi, vui lòng thử lại",
-    "success": "Thành công"
+    "success": "Thành công",
+    "imageUrl": {
+      "label": "URL ảnh",
+      "placeholder": "Hoặc dán URL ảnh (https://...)",
+      "placeholderMultiple": "Hoặc dán URL ảnh, nhiều link cách nhau bởi dấu cách",
+      "use": "Dùng URL",
+      "checking": "Đang kiểm tra",
+      "invalid": "\"{url}\" không phải URL ảnh hợp lệ (cần dạng https://...).",
+      "loadFailed": "Không hiển thị được ảnh từ URL này. Hãy dùng link trực tiếp tới file ảnh (thường kết thúc bằng .jpg, .png, .webp).",
+      "loadFailedMany": "{count} URL không hiển thị được ảnh. Hãy dùng link trực tiếp tới file ảnh.",
+      "duplicate": "Ảnh này đã có trong danh sách"
+    }
   },
   "booking": {
     "bookNow": "Đặt bây giờ",

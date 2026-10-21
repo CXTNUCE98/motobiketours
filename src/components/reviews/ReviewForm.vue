@@ -21,19 +21,32 @@ const createReviewMutation = useCreateReviewMutation(props.tourId);
 
 const rateColors = ['var(--color-accent)', 'var(--color-accent)', 'var(--color-accent)'];
 
+// Trả về kết quả để el-upload lưu vào file.response (khi xóa ảnh cần URL thật, không phải blob xem trước);
+// ném lỗi lại để el-upload bỏ ô ảnh tải hỏng khỏi danh sách
 const handleFileUpload = async (file: any) => {
     try {
         const response = await uploadImage({ file: file.file, folder: 'reviews' });
         form.value.images.push(response.url);
         ElMessage.success(t('review.imageUploadSuccess') || 'Image uploaded successfully');
+        return response;
     } catch (err) {
         ElMessage.error(t('review.imageUploadError') || 'Failed to upload image');
+        throw err;
     }
 };
 
 const handleRemoveImage = (file: any) => {
     const url = file.response?.url || file.url;
     form.value.images = form.value.images.filter(img => img !== url);
+};
+
+const addImageUrls = (urls: string[]) => {
+    const fresh = urls.filter((url, index) => !form.value.images.includes(url) && urls.indexOf(url) === index);
+    if (fresh.length < urls.length) ElMessage.info(t('common.imageUrl.duplicate'));
+    for (const url of fresh) {
+        form.value.images.push(url);
+        fileList.value.push({ name: url.split('/').pop() || url, url, status: 'success' });
+    }
 };
 
 const handleSubmit = async () => {
@@ -99,6 +112,8 @@ const handleSubmit = async () => {
                         {{ t('common.upload') }}
                     </span>
                 </el-upload>
+                <UiImageUrlInput multiple :placeholder="t('common.imageUrl.placeholderMultiple')"
+                    class="review-form__url" @submit="addImageUrls" />
             </div>
 
             <UiButton type="submit" :disabled="isSubmitting">
@@ -138,6 +153,10 @@ const handleSubmit = async () => {
     gap: 0.25rem;
     color: var(--color-text-muted);
     font-size: var(--text-sm);
+}
+
+.review-form__url {
+    margin-top: var(--space-3);
 }
 
 :deep(.el-upload--picture-card) {

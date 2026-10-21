@@ -24,6 +24,8 @@ const { data: userData } = useUserProfileQuery(computed(() => authUser.value?.id
 // Avatar Upload
 const avatarPreview = ref<string | null>(null)
 const avatarFile = ref<File | null>(null)
+// URL ảnh dán vào: giống ảnh tải lên, chỉ lưu khi bấm "Lưu" ở phần thông tin cá nhân
+const pastedAvatarUrl = ref<string | null>(null)
 const fileInputRef = ref<any>(null)
 
 // Cropper State
@@ -69,6 +71,7 @@ const onCrop = () => {
                 const file = new File([blob], 'avatar.png', { type: 'image/png' })
                 avatarFile.value = file
                 avatarPreview.value = URL.createObjectURL(blob)
+                pastedAvatarUrl.value = null
                 showCropper.value = false
             }
         }, 'image/png')
@@ -82,9 +85,16 @@ const triggerFileInput = () => {
 const removeAvatar = () => {
     avatarFile.value = null
     avatarPreview.value = null
+    pastedAvatarUrl.value = null
     if (fileInputRef.value) {
         fileInputRef.value.value = ''
     }
+}
+
+const applyAvatarUrl = ([url]: string[]) => {
+    if (!url) return
+    removeAvatar()
+    pastedAvatarUrl.value = url
 }
 
 // Form Data
@@ -198,6 +208,8 @@ const handleUpdateInfo = async () => {
                     userName: infoForm.userName,
                     avatar: avatarUrl.url // Chỉ gửi URL, không phải base64
                 })
+            } else if (pastedAvatarUrl.value) {
+                await updateProfile({ userName: infoForm.userName, avatar: pastedAvatarUrl.value })
             } else {
                 // Just update userName
                 await updateProfile({ userName: infoForm.userName })
@@ -228,6 +240,7 @@ const currentAvatar = computed(() => {
         // Chỉ hiển thị preview khi đang có file mới được chọn (chưa upload)
         return avatarPreview.value
     }
+    if (pastedAvatarUrl.value) return pastedAvatarUrl.value
     if (userData.value?.avatar) return userData.value?.avatar
     if (authUser.value?.avatar) return authUser.value?.avatar
     return null
@@ -309,10 +322,11 @@ const isNavActive = (path: string, exact = false) => {
                                 <UiButton type="button" variant="outline" size="sm" @click="triggerFileInput">
                                     {{ t('profile.avatar.upload') }}
                                 </UiButton>
-                                <UiButton v-if="avatarPreview" type="button" variant="ghost" size="sm" @click="removeAvatar">
+                                <UiButton v-if="avatarPreview || pastedAvatarUrl" type="button" variant="ghost" size="sm" @click="removeAvatar">
                                     {{ t('profile.avatar.remove') }}
                                 </UiButton>
                             </div>
+                            <UiImageUrlInput class="account-identity__url" :disabled="isUpdating" @submit="applyAvatarUrl" />
                             <p class="account-identity__hint">{{ t('profile.avatar.hint') }}</p>
                         </div>
                     </div>
@@ -549,6 +563,11 @@ const isNavActive = (path: string, exact = false) => {
     flex-wrap: wrap;
     gap: var(--space-3);
     margin-top: var(--space-4);
+}
+
+.account-identity__url {
+    max-width: 28rem;
+    margin-top: var(--space-3);
 }
 
 .account-identity__hint {

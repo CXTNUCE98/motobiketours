@@ -252,6 +252,9 @@ const handleClose = () => {
                     <input ref="fileInput" type="file" class="visually-hidden" accept="image/*"
                         @change="handleThumbnailUpload">
                 </div>
+                <!-- Ảnh từ URL dùng nguyên bản, không qua bước cắt như ảnh tải lên -->
+                <UiImageUrlInput class="vehicle-thumb__url" :disabled="isUploading"
+                    @submit="([url]) => { if (url) formData.thumbnail = url }" />
             </el-form-item>
 
             <el-form-item :label="t('vehicles.amenities')">
@@ -344,6 +347,10 @@ const handleClose = () => {
 
 .vehicle-thumb__preview:hover .vehicle-thumb__remove {
     opacity: 1;
+}
+
+.vehicle-thumb__url {
+    margin-top: var(--space-3);
 }
 
 .vehicle-thumb__add {
