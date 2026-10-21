@@ -1,57 +1,50 @@
 <script setup lang="ts">
-// Ô dán URL ảnh, dùng song song với nút tải ảnh lên. Chỉ phát `submit` với các URL đã tải thử thành công.
-import { normalizeImageUrl, probeImage, splitUrls } from '~/utils/imageUrl';
+// Ô dán URL ảnh, dùng song song với nút tải ảnh lên. Chỉ phát `submit` khi URL đã tải thử thành ảnh.
+import { Close } from '@element-plus/icons-vue';
+import { normalizeImageUrl, probeImage } from '~/utils/imageUrl';
 
 const props = defineProps<{
-    /** Cho dán nhiều URL một lần, cách nhau bởi dấu cách hoặc xuống dòng */
-    multiple?: boolean;
     placeholder?: string;
     disabled?: boolean;
+    autofocus?: boolean;
+    /** Hiện nút X để bỏ ô này (phát `remove`) */
+    removable?: boolean;
 }>();
 
-const emit = defineEmits<{ submit: [urls: string[]] }>();
+const emit = defineEmits<{ submit: [url: string]; remove: [] }>();
 
 const { t } = useI18n();
 const value = ref('');
 const error = ref('');
 const checking = ref(false);
+const input = ref<HTMLInputElement | null>(null);
 const errorId = useId();
 
-// Ô một dòng tự bỏ ký tự xuống dòng khi dán, làm các URL dính vào nhau
-const onPaste = (event: ClipboardEvent) => {
-    const text = event.clipboardData?.getData('text') ?? '';
-    if (!props.multiple || !/\s/.test(text.trim())) return;
-    event.preventDefault();
-    value.value = `${value.value} ${splitUrls(text).join(' ')}`.trim();
-};
+onMounted(() => {
+    if (props.autofocus) input.value?.focus();
+});
 
 const submit = async () => {
     if (checking.value || props.disabled) return;
-    const raw = props.multiple ? splitUrls(value.value) : [value.value.trim()].filter(Boolean);
-    if (!raw.length) return;
+    const raw = value.value.trim();
+    if (!raw) return;
 
-    const malformed = raw.find((item) => !normalizeImageUrl(item));
-    if (malformed) {
-        error.value = t('common.imageUrl.invalid', { url: malformed });
+    const url = normalizeImageUrl(raw);
+    if (!url) {
+        error.value = t('common.imageUrl.invalid');
         return;
     }
 
-    const urls = raw.map((item) => normalizeImageUrl(item)!);
     error.value = '';
     checking.value = true;
-    const results = await Promise.allSettled(urls.map((url) => probeImage(url)));
-    checking.value = false;
-
-    const loaded = urls.filter((_, index) => results[index]?.status === 'fulfilled');
-    const failed = raw.filter((_, index) => results[index]?.status === 'rejected');
-    if (loaded.length) emit('submit', loaded);
-
-    // Giữ lại các URL lỗi trong ô để người dùng sửa
-    value.value = failed.join(' ');
-    if (failed.length) {
-        error.value = failed.length === 1
-            ? t('common.imageUrl.loadFailed')
-            : t('common.imageUrl.loadFailedMany', { count: failed.length });
+    try {
+        await probeImage(url);
+        value.value = '';
+        emit('submit', url);
+    } catch {
+        error.value = t('common.imageUrl.loadFailed');
+    } finally {
+        checking.value = false;
     }
 };
 </script>
@@ -59,15 +52,21 @@ const submit = async () => {
 <template>
     <div class="ui-image-url">
         <div class="ui-image-url__row">
-            <input v-model="value" type="text" inputmode="url" autocomplete="off" spellcheck="false"
+            <input ref="input" v-model="value" type="text" inputmode="url" autocomplete="off" spellcheck="false"
                 class="ui-control ui-image-url__input" :aria-label="t('common.imageUrl.label')"
                 :placeholder="placeholder ?? t('common.imageUrl.placeholder')" :disabled="disabled"
                 :readonly="checking" :aria-invalid="error ? 'true' : undefined"
-                :aria-describedby="error ? errorId : undefined" @input="error = ''" @paste="onPaste"
+                :aria-describedby="error ? errorId : undefined" @input="error = ''"
                 @keydown.enter.prevent="submit">
             <UiButton variant="outline" size="sm" :disabled="disabled || checking || !value.trim()" @click="submit">
                 {{ checking ? t('common.imageUrl.checking') : t('common.imageUrl.use') }}
             </UiButton>
+            <button v-if="removable" type="button" class="ui-image-url__remove"
+                :aria-label="t('common.imageUrl.removeField')" @click="emit('remove')">
+                <el-icon>
+                    <Close />
+                </el-icon>
+            </button>
         </div>
         <p v-if="error" :id="errorId" class="ui-image-url__error" role="alert">{{ error }}</p>
     </div>
@@ -90,6 +89,25 @@ const submit = async () => {
     min-height: 2.5rem;
     padding-block: var(--space-2);
     font-size: var(--text-sm);
+}
+
+.ui-image-url__remove {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+.ui-image-url__remove:hover {
+    background: var(--color-bg-subtle);
+    color: var(--color-text);
 }
 
 .ui-image-url__error {

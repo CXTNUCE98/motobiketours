@@ -91,8 +91,7 @@ const removeAvatar = () => {
     }
 }
 
-const applyAvatarUrl = ([url]: string[]) => {
-    if (!url) return
+const applyAvatarUrl = (url: string) => {
     removeAvatar()
     pastedAvatarUrl.value = url
 }

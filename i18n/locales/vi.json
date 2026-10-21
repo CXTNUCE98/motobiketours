@@ -243,13 +243,14 @@
     "imageUrl": {
       "label": "URL ảnh",
       "placeholder": "Hoặc dán URL ảnh (https://...)",
-      "placeholderMultiple": "Hoặc dán URL ảnh, nhiều link cách nhau bởi dấu cách",
       "use": "Dùng URL",
       "checking": "Đang kiểm tra",
-      "invalid": "\"{url}\" không phải URL ảnh hợp lệ (cần dạng https://...).",
+      "invalid": "Đây không phải URL ảnh hợp lệ (cần dạng https://...).",
       "loadFailed": "Không hiển thị được ảnh từ URL này. Hãy dùng link trực tiếp tới file ảnh (thường kết thúc bằng .jpg, .png, .webp).",
-      "loadFailedMany": "{count} URL không hiển thị được ảnh. Hãy dùng link trực tiếp tới file ảnh.",
-      "duplicate": "Ảnh này đã có trong danh sách"
+      "duplicate": "Ảnh này đã có trong danh sách",
+      "add": "Thêm URL ảnh",
+      "removeField": "Bỏ ô URL này",
+      "fieldPlaceholder": "Dán URL ảnh (https://...)"
     }
   },
   "booking": {

@@ -38,6 +38,3 @@ export function probeImage(url: string, timeout = 15_000): Promise<void> {
         img.src = url;
     });
 }
-
-/** Tách nhiều URL dán cùng lúc; không tách theo dấu phẩy vì URL Cloudinary chứa dấu phẩy */
-export const splitUrls = (text: string) => text.split(/\s+/).filter(Boolean);

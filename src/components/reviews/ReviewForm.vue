@@ -40,13 +40,26 @@ const handleRemoveImage = (file: any) => {
     form.value.images = form.value.images.filter(img => img !== url);
 };
 
-const addImageUrls = (urls: string[]) => {
-    const fresh = urls.filter((url, index) => !form.value.images.includes(url) && urls.indexOf(url) === index);
-    if (fresh.length < urls.length) ElMessage.info(t('common.imageUrl.duplicate'));
-    for (const url of fresh) {
+// Mỗi link một ô nhập; ô tự biến mất khi ảnh của nó đã vào danh sách
+const urlRows = ref<number[]>([]);
+let nextRowId = 0;
+
+const addUrlRow = () => {
+    urlRows.value = [...urlRows.value, nextRowId++];
+};
+
+const removeUrlRow = (id: number) => {
+    urlRows.value = urlRows.value.filter(rowId => rowId !== id);
+};
+
+const addImageUrl = (id: number, url: string) => {
+    if (form.value.images.includes(url)) {
+        ElMessage.info(t('common.imageUrl.duplicate'));
+    } else {
         form.value.images.push(url);
         fileList.value.push({ name: url.split('/').pop() || url, url, status: 'success' });
     }
+    removeUrlRow(id);
 };
 
 const handleSubmit = async () => {
@@ -112,8 +125,15 @@ const handleSubmit = async () => {
                         {{ t('common.upload') }}
                     </span>
                 </el-upload>
-                <UiImageUrlInput multiple :placeholder="t('common.imageUrl.placeholderMultiple')"
-                    class="review-form__url" @submit="addImageUrls" />
+                <div class="review-form__urls">
+                    <UiImageUrlInput v-for="id in urlRows" :key="id" autofocus removable
+                        :placeholder="t('common.imageUrl.fieldPlaceholder')"
+                        @submit="addImageUrl(id, $event)" @remove="removeUrlRow(id)" />
+                    <UiButton variant="ghost" size="sm" class="review-form__add-url" @click="addUrlRow">
+                        <span aria-hidden="true">+</span>
+                        {{ t('common.imageUrl.add') }}
+                    </UiButton>
+                </div>
             </div>
 
             <UiButton type="submit" :disabled="isSubmitting">
@@ -155,8 +175,15 @@ const handleSubmit = async () => {
     font-size: var(--text-sm);
 }
 
-.review-form__url {
+.review-form__urls {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-3);
     margin-top: var(--space-3);
+}
+
+.review-form__add-url {
+    padding-inline: 0.75rem;
 }
 
 :deep(.el-upload--picture-card) {

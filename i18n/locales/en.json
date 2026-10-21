@@ -243,13 +243,14 @@
     "imageUrl": {
       "label": "Image URL",
       "placeholder": "Or paste an image URL (https://...)",
-      "placeholderMultiple": "Or paste image URLs, separated by spaces",
       "use": "Use URL",
       "checking": "Checking",
-      "invalid": "\"{url}\" is not a valid image URL (it must start with https://).",
+      "invalid": "This is not a valid image URL (it must start with https://).",
       "loadFailed": "This URL does not load as an image. Use a direct link to the image file (usually ending in .jpg, .png or .webp).",
-      "loadFailedMany": "{count} URLs do not load as images. Use direct links to the image files.",
-      "duplicate": "That image is already in the list"
+      "duplicate": "That image is already in the list",
+      "add": "Add image URL",
+      "removeField": "Remove this URL field",
+      "fieldPlaceholder": "Paste an image URL (https://...)"
     }
   },
   "booking": {

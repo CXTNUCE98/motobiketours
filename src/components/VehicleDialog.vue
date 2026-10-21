@@ -254,7 +254,7 @@ const handleClose = () => {
                 </div>
                 <!-- Ảnh từ URL dùng nguyên bản, không qua bước cắt như ảnh tải lên -->
                 <UiImageUrlInput class="vehicle-thumb__url" :disabled="isUploading"
-                    @submit="([url]) => { if (url) formData.thumbnail = url }" />
+                    @submit="(url: string) => (formData.thumbnail = url)" />
             </el-form-item>
 
             <el-form-item :label="t('vehicles.amenities')">
